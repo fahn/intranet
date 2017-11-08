@@ -1,0 +1,264 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Flat UI Free</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Loading Bootstrap -->
+    <link href="dist/css/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Loading Flat UI -->
+    <link href="dist/css/flat-ui.css" rel="stylesheet">
+
+    <link rel="shortcut icon" href="dist/img/favicon.ico">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements. All other JS at the end of file. -->
+    <!--[if lt IE 9]>
+      <script src="dist/js/vendor/html5shiv.js"></script>
+      <script src="dist/js/vendor/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+
+    <style>
+      body {
+        padding-bottom: 200px;
+      }
+    </style>
+
+    <div class="container">
+
+      <nav class="navbar navbar-default" role="navigation">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+            <span class="sr-only">Toggle navigation</span>
+          </button>
+          <a class="navbar-brand" href="#">BC Intern</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <ul class="nav navbar-nav">
+            <li><a href="#">Home</a></li>
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Ranking <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                    <li><a href="#">Alltime</a><li>
+                    <li><a href="#">Singe Overall</a><li>
+                    <li><a href="#">Singe Men</a><li>
+                    <li><a href="#">Singe Woman</a><li>
+                    <li class="divider"></li>
+                    <li><a href="#">Double Overall</a><li>
+                    <li><a href="#">Double Men</a><li>
+                    <li><a href="#">Double Woman</a><li>
+                    <li class="divider"></li>
+                    <li><a href="#">Double Mixed</a><li>
+                </ul>
+            </li>
+            <li class="dropdown active">
+                <a href="#"  class="dropdown-toggle" data-toggle="dropdown">Report  <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                    <li><a href="#">Add a game</a><li>
+                    <li><a href="#">List my games</a><li>
+                </ul>
+            </li>
+           </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li class="dropdown">
+              <a href="#" class="dropdown1-toggle" data-toggle="dropdown">Stefan <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="#">my Account</a></li>
+                <li><a href="#">Users</a></li>
+                <li><a href="#">Registration</a></li>
+                <li class="divider"></li>
+                <li> <a href="#"> Logout <i class="glyphicon glyphicon-log-out"></i></a></li>
+              </ul>
+            </li>
+            
+          </ul>
+        </div><!-- /.navbar-collapse -->
+      </nav>
+      
+      
+      <h4>Form</h4>
+      <div class="row">
+        <div class="col-md-12">
+          <form role="form">
+            <legend>Form Legend</legend>
+            <div class="form-group">
+              <label for="exampleInputEmail1">First Name</label>
+              <input type="text" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
+            </div>
+            <div class="form-group">
+              <label for="exampleInputEmail1">Last Name</label>
+              <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
+            </div>
+            <div class="form-group">
+              <label for="exampleInputEmail1">Email address</label>
+              <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
+            </div>
+            <div class="row">
+            <div class="col-md-6">
+            <div class="form-group">
+              <label for="exampleInputPassword1">Password</label>
+              <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+            </div>
+            </div>
+            <div class="col-md-6">
+            <div class="form-group">
+              <label for="exampleInputPassword1">repeat Password</label>
+              <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+            </div>
+            </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <label>Admin</label>
+                    <input type="checkbox" checked data-toggle="switch" data-on-color="success" data-off-color="danger" id="custom-switch-06" />
+                </div>
+                <div class="col-md-3">
+                    <label class="checkbox" for="checkbox1">
+                      <input type="checkbox" data-toggle="checkbox" value="" id="checkbox1" required>
+                      Admin
+                    </label>
+                </div>
+                <div class="col-md-3">
+                    <label class="checkbox" for="checkbox1">
+                      <input type="checkbox" data-toggle="checkbox" value="" id="checkbox1" required>
+                      Admin
+                    </label>
+                </div>
+                <div class="col-md-3">
+                    <label class="checkbox" for="checkbox1">
+                      <input type="checkbox" data-toggle="checkbox" value="" id="checkbox1" required>
+                      Admin
+                    </label>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-default">Submit</button>
+          </form>
+        </div><!-- /.col-md-12 -->
+      </div><!-- /.row -->
+      
+      
+        <div class="login-screen">
+          <div class="login-icon">
+            <img src="img/login/icon.png" alt="Welcome to Mail App" />
+            <h4>Welcome to <small>Mail App</small></h4>
+          </div>
+
+          <div class="login-form">
+            <div class="form-group">
+              <input type="text" class="form-control login-field" value="" placeholder="Enter your name" id="login-name" />
+              <label class="login-field-icon fui-user" for="login-name"></label>
+            </div>
+
+            <div class="form-group">
+              <input type="password" class="form-control login-field" value="" placeholder="Password" id="login-pass" />
+              <label class="login-field-icon fui-lock" for="login-pass"></label>
+            </div>
+
+            <a class="btn btn-primary btn-lg btn-block" href="#">Log in</a>
+            <a class="login-link" href="#">Lost your password?</a>
+          </div>
+        </div>
+        
+        
+        
+        <hr>
+        
+        <div class="row">
+            <div class="col-md-12">
+                <label>Datum</label>
+                <div class="input-group date" data-provide="datepicker">
+                <input type="text" class="form-control">
+                <div class="input-group-addon">
+                    <span class="glyphicon glyphicon-th"></span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label>Team A</label>
+                <div class="input-group date">
+                    <input type="text" class="form-control" placeholder="Team A Player 1">
+                    <div class="input-group-addon">
+                        <span class="glyphicon glyphicon-user"></span>
+                    </div>
+                </div>
+                <div class="input-group date">
+                    <input type="text" class="form-control" placeholder="Team A Player 2">
+                    <div class="input-group-addon">
+                        <span class="glyphicon glyphicon-user"></span>
+                    </div>
+                </div>
+                
+                <label>Team A Set 1 Points</label>
+                <div class="input-group date">
+                    <input type="text" class="form-control" placeholder="21">
+                    <div class="input-group-addon">
+                        <span class="glyphicon glyphicon-ok"></span>
+                    </div>
+                </div>
+                <label>Team A Set 2 Points</label>
+                <div class="input-group date">
+                    <input type="text" class="form-control" placeholder="21">
+                    <div class="input-group-addon">
+                        <span class="glyphicon glyphicon-ok"></span>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-md-6">
+                <label>Team B</label>
+                <div class="input-group date">
+                    <input type="text" class="form-control" placeholder="Team B Player 1">
+                    <div class="input-group-addon">
+                        <span class="glyphicon glyphicon-user"></span>
+                    </div>
+                </div>
+                <div class="input-group date">
+                    <input type="text" class="form-control" placeholder="Team B Player 2">
+                    <div class="input-group-addon">
+                        <span class="glyphicon glyphicon-user"></span>
+                    </div>
+                </div>
+                
+                <label>Team A Set 1 Points</label>
+                <div class="input-group date">
+                    <input type="text" class="form-control" placeholder="21">
+                    <div class="input-group-addon">
+                        <span class="glyphicon glyphicon-ok"></span>
+                    </div>
+                </div>
+                <label>Team A Set 2 Points</label>
+                <div class="input-group date">
+                    <input type="text" class="form-control" placeholder="21">
+                    <div class="input-group-addon">
+                        <span class="glyphicon glyphicon-ok"></span>
+                    </div>
+                </div>
+
+            </div>
+            
+            <div class="col-md-12">
+                <button type="button" class="btn btn-primary btn-hg">Eintragen</button>
+            </div>
+        </div>
+</div>
+
+
+    </div><!-- /.container -->
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="dist/js/vendor/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="dist/js/flat-ui.min.js"></script>
+
+    <script src="docs/assets/js/application.js"></script>
+    <script src="bootstrap-datepicker.min.js"></script>
+    <script src="custom.js"></script>
+
+  </body>
+</html>
