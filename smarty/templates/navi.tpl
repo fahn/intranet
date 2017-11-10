@@ -1,9 +1,8 @@
-1 {$isUserLoggedIn}
 {if isset($isUserLoggedIn) and $isUserLoggedIn == 1}
     <nav class="navbar navbar-default" role="navigation">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
-            
+
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
                 <span class="sr-only">Toggle navigation</span>
             </button>
@@ -15,7 +14,7 @@
             <ul class="nav navbar-nav">
                 <li><a href="index.php">Home</a></li>
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Ranking <b class="caret"></b></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Rangliste <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <li><a href="statsPlayerAlltime.php">Alltime</a><li>
                         <li><a href="statsPlayerOverall.php">Singe Overall</a><li>
@@ -29,11 +28,23 @@
                         <li><a href="statsTeamMixed.php">Double Mixed</a><li>
                     </ul>
                 </li>
-            <li class="dropdown active">
+            {if $isAdmin}
+              <li class="dropdown">
+                  <a href="#"  class="dropdown-toggle" data-toggle="dropdown">Turniere <b class="caret"></b></a>
+                  <ul class="dropdown-menu">
+                      <li><a href="rankingTournament.php">Ranglisten</a><li>
+                      <li><a href="rankingTournament.php">Turniere</a><li>
+                  </ul>
+              </li>
+            {/if}
+            <li class="dropdown">
                 <a href="#"  class="dropdown-toggle" data-toggle="dropdown">Report  <b class="caret"></b></a>
                 <ul class="dropdown-menu">
-                    <li><a href="reportInsertGame.php?formAction=NewGame">Add a game</a><li>
-                    <li><a href="reportAllGame.php">List my games</a><li>
+                  <li>Ranking</li>
+                  <li><a href="reportInsertGame.php?formAction=NewGame">Add a game</a><li>
+                  <li><a href="reportAllGame.php">List my games</a><li>
+                  <li class="divider"></li>
+                  <li>Rangliste</li>
                 </ul>
             </li>
            </ul>
@@ -49,7 +60,7 @@
               </ul>
             </li>
           </ul>
-          
+
         </div><!-- /.navbar-collapse -->
       </nav>
 {/if}

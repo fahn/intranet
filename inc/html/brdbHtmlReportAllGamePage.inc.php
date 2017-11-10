@@ -19,17 +19,29 @@ include_once '../inc/logic/prgGame.inc.php';
 include_once '../inc/logic/tools.inc.php';
 
 class BrdbHtmlReportAllGamePage extends BrdbHtmlPage {
-	
+
 	private $prgPatternElementGame;
-	
+
 	public function __construct() {
 		parent::__construct();
 		$this->prgPatternElementGame= new PrgPatternElementGame($this->brdb, $this->prgPatternElementLogin);
 		$this->prgPattern->registerPrg($this->prgPatternElementGame);
+
+
 	}
-	
+
+	public function processPage() {
+		$this->smarty->assign(array(
+			'content' => '123',
+		));
+
+		// Call all prgs and process them all
+		parent::processPage();
+
+	}
+
 	const INPUT_RADIO_ATTRIBUTE_CHECKED = 'checked = "checked"';
-	
+
 	protected function htmlBodyProtectedArea() {
 		$variableNameAdminMatchId		= $this->prgPatternElementGame->getPrefixedName(PrgPatternElementGame::FORM_GAME_ADMIN_MATCH_ID);
 		$variableNameAction 			= $this->prgPatternElementGame->getPrefixedName(PrgPatternElementGame::FORM_GAME_ACTION);
@@ -69,7 +81,7 @@ class BrdbHtmlReportAllGamePage extends BrdbHtmlPage {
 					</tr>
 				</thead>
 				<tbody>
-<?php 
+<?php
 		$res = $this->brdb->selectAllGames();
 		if (!$this->brdb->hasError()) {
 			while ($dataSet = $res->fetch_assoc()) {
@@ -78,10 +90,10 @@ class BrdbHtmlReportAllGamePage extends BrdbHtmlPage {
 ?>
 					<tr>
 						<td>
-							<input 
-								type	= "radio" 
+							<input
+								type	= "radio"
 								id		= "<?php echo $radioId; ?>"
-								name	= "<?php echo $variableNameAdminMatchId; ?>" 
+								name	= "<?php echo $variableNameAdminMatchId; ?>"
 								value	= "<?php echo $loopGame->matchId;?>"
 							/>
 							<label class = "radio" for = "<?php echo $radioId; ?>"><?php echo $loopGame->matchId; ?></label>
@@ -99,8 +111,8 @@ class BrdbHtmlReportAllGamePage extends BrdbHtmlPage {
 						<td><?php echo $loopGame->setA3; ?></td>
 						<td><?php echo $loopGame->setB3; ?></td>
 						<td><?php echo $loopGame->winner; ?></td>
-					</tr> 
-<?php 
+					</tr>
+<?php
 			}
 		} else {
 			echo "<p> Failed to get all Games from data base. Reason: " . $brdb->getError() . "</p>";
@@ -132,16 +144,9 @@ class BrdbHtmlReportAllGamePage extends BrdbHtmlPage {
 			</p>
 		</form>
 	</div>
-<?php 
+<?php
 	}
-	
-	protected function htmlBodyLogin() {
-?>
-	<div class = "goToLogin">
-		<p>You are not logged in! Please log in <a href="<?php echo BrdbHtmlPage::PAGE_INDEX;?>">here</a>!</p>
-	</div>
-<?php 
-	}
+
 }
 
 ?>

@@ -6,13 +6,17 @@
  * @author philipp
  *
  */
+ 
+ 
 class BrankDB {
-	
+
 	private $db;
-	
+
 	private $error;
 	private $hasError;
-	
+    
+    private $ini;
+
 	private $statementSelectUserByEmail;
 	private $statementSelectUserById;
 	private $statementSelectAllUser;
@@ -26,9 +30,18 @@ class BrankDB {
 	private $statementUpdateUser;
 	private $statementUpdateAdminUser;
 	private $statementInsertGame;
-	
+
+	// tournament
+	private $statementTournamentList;
+	private $statementTournamentById;
+	private $statementPlayersByTournamentId;
+	private $statementDisciplinesByTournamentId;
+
+	// insert
+	private $statementInsetPlayerToTournament;
+
 	/**
-	 * Constructor tha already prepares all needed dp commands 
+	 * Constructor tha already prepares all needed dp commands
 	 */
 	public function prepareCommands() {
 		$this->statementSelectUserByEmail
@@ -53,19 +66,35 @@ class BrankDB {
 			= $this->db->prepare("CALL DeleteGame(?);");
 		$this->statementSelectAllGames
 			= $this->db->prepare("SELECT * FROM GameOverviewList;");
-		$this->statementSelectGameById
-			= $this->db->prepare("SELECT * FROM GameOverviewList WHERE matchId = ?;");
-		$this->statementSelectPlayerIdByName
-			= $this->db->prepare("SELECT userId FROM User WHERE LOWER(_UserFullName(firstName, lastName)) = LOWER(?)");
+		$this->statementSelectGameById = $this->db->prepare("SELECT * FROM GameOverviewList WHERE matchId = ?;");
+		$this->statementSelectPlayerIdByName = $this->db->prepare("SELECT userId FROM User WHERE LOWER(_UserFullName(firstName, lastName)) = LOWER(?)");
+
+		$this->statementTournamentList = $this->db->prepare("SELECT * FROM Tournament WHERE enddate > NOW() - INTERVAL 4 DAY ORDER by startdate ASC");
+		$this->statementTournamentById = $this->db->prepare("SELECT * FROM Tournament WHERE tournamentID = ?");
+		$this->statementPlayersByTournamentId = $this->db->prepare(
+			"SELECT TP.*, TC.name AS disciplineName, TC.modus AS disciplineModus, CONCAT(User.firstName, ' ', User.lastName) AS playerName, CONCAT(Partner.firstName, ' ',Partner.lastName) as partnerName
+			FROM TournamentPlayer AS TP
+			LEFT JOIN User ON User.userid = TP.playerID
+			LEFT JOIN TournamentClass AS TC ON TC.classID = TP.classID
+			LEFT JOIN User as Partner ON TP.partnerID = Partner.userId
+			WHERE TP.tournamentID = ?"
+		);
+
+		$this->statementDisciplinesByTournamentId = $this->db->prepare("SELECT * FROM TournamentClass AS TC WHERE TC.tournamentID = ?;");
+		$this->statementInsetPlayerToTournament = $this->db->prepare("INSERT INTO TournamentPlayer set playerID = ?, partnerID = ?, tournamentID = ?, classID = ?, reporterID = ?, reportdate = NOW(),");
 	}
-	
+    
+    public function __construct() {
+        $this->ini = parse_ini_file('../inc/config.ini');
+    }
+
 	/**
 	 * Destructor that closes the DB connection
 	 */
 	public function __destruct() {
 		$this->db->close();
 	}
-	
+
 	/**
 	 * Call this method to check if an error occurred
 	 * @return boolean true in case there is an error pending
@@ -73,7 +102,7 @@ class BrankDB {
 	public function hasError() {
 		return $this->hasError;
 	}
-	
+
 	/**
 	 * Call this method to get the error.
 	 * this method will also reset the current error state.
@@ -84,7 +113,7 @@ class BrankDB {
 		$this->hasError = false;
 		return $this->error;
 	}
-	
+
 	/**
 	 * Internal method to set an error
 	 * @param string $error the error to be set
@@ -93,12 +122,12 @@ class BrankDB {
 		$this->hasError = true;
 		$this->error = $error;
 	}
-	
+
 	/**
 	 * Common method to connect to the BRDB
 	 */
 	public function connectAndSelectDB() {
-		if ($this->db = new mysqli("192.168.100.99","rangliste","Tgom0Tf2rDyeH5Bj", "BRDB")) {
+		if ($this->db = new mysqli($this->ini['db_host'], $this->ini['db_user'], $this->ini['db_pass'], $this->ini['db_name'])) {
 			return true;
 		} else {
 			$this->setError($this->db->connect_error);
@@ -118,27 +147,27 @@ class BrankDB {
 		}
 		return $statement->get_result();
 	}
-	
+
 	/**
 	 * Call this method to hand back the User with the given email from the data base
 	 * @param String $email the email to look for as string
-	 * @return mysqli_result 
+	 * @return mysqli_result
 	 */
 	public function selectUserByEmail($email) {
 		$this->statementSelectUserByEmail->bind_param("s", $email);
 		return $this->executeStatement($this->statementSelectUserByEmail);
 	}
-	
+
 	/**
 	 * Get a user from the data base by a given Id
-	 * @param integer $userId The user ID as integer 
+	 * @param integer $userId The user ID as integer
 	 * @return mysqli_result the user from the database as SQL Result
 	 */
 	public function selectUserById($userId) {
 		$this->statementSelectUserById->bind_param("i", $userId);
 		return $this->executeStatement($this->statementSelectUserById);
 	}
-	
+
 	/**
 	 * This method deletes a User from the DB with the given userId
 	 * @param integer $userId the id of the user to be deleted
@@ -148,7 +177,7 @@ class BrankDB {
 		$this->statementDeleteUser->bind_param("i", $userId);
 		return $this->executeStatement($this->statementDeleteUser);
 	}
-	
+
 	/**
 	 * Get all users from the DB
 	 * @return mysqli_result all users from the database as SQL Result
@@ -156,7 +185,7 @@ class BrankDB {
 	public function selectAllUser() {
 		return $this->executeStatement($this->statementSelectAllUser);
 	}
-	
+
 	/**
 	 * Call this method to register a new user
 	 * @param unknown $email the email of the new user
@@ -169,7 +198,7 @@ class BrankDB {
 		$this->statementInsertUser->bind_param("sssss", $email, $fname, $lname, $gender, $pass);
 		return $this->executeStatement($this->statementInsertUser);
 	}
-	
+
 	/**
 	 * Call this method to update a user
 	 * @param unknown $userId the id of the user to be updated
@@ -183,7 +212,7 @@ class BrankDB {
 		$this->statementUpdateUser->bind_param("issss", $userId, $email, $fname, $lName, $pass);
 		return $this->executeStatement($this->statementUpdateUser);
 	}
-	
+
 	/**
 	 * Call this method to update a user
 	 * @param unknown $userId the id of the user to be updated
@@ -201,7 +230,7 @@ class BrankDB {
 		$this->statementUpdateAdminUser->bind_param("isssssiii", $userId, $email, $fname, $lName, $gender, $pass, $isAdmin, $isPlayer, $isReporter);
 		return $this->executeStatement($this->statementUpdateAdminUser);
 	}
-	
+
 	/**
 	 * This method hands back all active players from the DB
 	 * @return mysqli_result the result of the mysql statement
@@ -209,7 +238,7 @@ class BrankDB {
 	public function selectAllPlayer() {
 		return $this->executeStatement($this->statementSelectAllPlayer);
 	}
-	
+
 	/**
 	 * Insert or update a game in the DB
 	 * @param unknown $matchId The match Id put 0 for a new one
@@ -220,7 +249,7 @@ class BrankDB {
 	 * @param unknown $playerB2Id the id of the second player of team b
 	 * @param unknown $setA1 First set points for team a
 	 * @param unknown $setB1 First set points for team b
-	 * @param unknown $setA2 second set points for team a 
+	 * @param unknown $setA2 second set points for team a
 	 * @param unknown $setB2 second set points for team b
 	 * @param unknown $setA3 third set points for team a
 	 * @param unknown $setB3 third set points for team b
@@ -235,10 +264,10 @@ class BrankDB {
 				$setA1, $setB1,
 				$setA2, $setB2,
 				$setA3, $setB3,
-				$winner);		
+				$winner);
 		return $this->executeStatement($this->statementInsertGame);
 	}
-	
+
 	/**
 	 * Method to delete a game by a given ID
 	 * @param int $matchId The match ID of the game to be deleted
@@ -248,7 +277,7 @@ class BrankDB {
 		$this->statementDeleteGame->bind_param("i", $matchId);
 		return $this->executeStatement($this->statementDeleteGame);
 	}
-	
+
 	/**
 	 * This method hands back the results from the given view
 	 * @param String $userStatsViewName The view from which to get the results
@@ -266,8 +295,8 @@ class BrankDB {
 
 		$this->statementGetUserStats = $this->db->prepare($sqlResultViewQuery);
 		return $this->executeStatement($this->statementGetUserStats);
-	}	
-	
+	}
+
 	/**
 	 * This method hands back a user by a given full name
 	 * @param String $fullUserName the user to be handed back by the DB
@@ -277,7 +306,7 @@ class BrankDB {
 		$this->statementSelectPlayerIdByName->bind_param("s",$fullUserName);
 		return $this->executeStatement($this->statementSelectPlayerIdByName);
 	}
-	
+
 	/**
 	 * This method returns all games from the data base
 	 * @return mysqli_result mysql statement result
@@ -285,7 +314,7 @@ class BrankDB {
 	public function selectAllGames() {
 		return $this->executeStatement($this->statementSelectAllGames);
 	}
-	
+
 	/**
 	 * This method hands back the game by the given ID
 	 * @param unknown $matchId the id of the game which to hand back
@@ -295,5 +324,32 @@ class BrankDB {
 		$this->statementSelectGameById->bind_param("i",$matchId);
 		return $this->executeStatement($this->statementSelectGameById);
 	}
+
+
+	public function selectTournamentList() {
+		return $this->executeStatement($this->statementTournamentList);
+	}
+
+	public function getTournamentData($tournamentID) {
+		$this->statementTournamentById->bind_param("i",$tournamentID);
+		return $this->executeStatement($this->statementTournamentById);
+	}
+
+	public function getPlayersByTournamentId($tournamentID) {
+		$this->statementPlayersByTournamentId->bind_param("i", $tournamentID);
+		return $this->executeStatement($this->statementPlayersByTournamentId);
+	}
+
+	public function getDisciplinesByTournamentId($tournamentID) {
+		$this->statementDisciplinesByTournamentId->bind_param("i", $tournamentID);
+		return $this->executeStatement($this->statementDisciplinesByTournamentId);
+	}
+
+	public function insetPlayerToTournament($data) {
+		$this->statementInsetPlayerToTournament->bind_param("iiiii", $data['playerID'], $data['partnerID'], $id['tournamentID'], $data['classID'], $data['reporterID'] );
+		return $this->executeStatement($this->statementInsetPlayerToTournament);
+	}
+
+
 }
 ?>

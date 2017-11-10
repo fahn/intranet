@@ -4,12 +4,9 @@
 
 {include file="messages.tpl"}
 
-
-
-
 <div id="formUserLogin" class="login-screen">
     <div class="login-icon">
-        <img src="../design/img/badminton.png" alt="Welcome to Mail App">
+        <img src="../design/img/badminton.png" alt="BC Comet Rangliste">
         <h4>BC Comet <small>Rangliste</small></h4>
     </div>
     <form>
@@ -23,13 +20,11 @@
                 <input type="password" class="form-control login-field" value="" placeholder="Password" id="{$variableNamePassw}" name="{$variableNamePassw}">
                 <label class="login-field-icon fui-lock" for="{$variableNamePassw}"></label>
             </div>
-        
+
             <input type="submit" name="{$variableNameAction}" class="btn btn-primary btn-lg btn-block" value="{$variableNameActionLogin}" formaction="{$formTO}" formmethod="post">
-            <a class="login-link" href="#">Lost your password?</a>
+            <a class="login-link" href="#">Passwort vergessen?</a>
         </div>
-    </form> 
+    </form>
 </div>
 
-
-        
 {include file="footer.tpl"}

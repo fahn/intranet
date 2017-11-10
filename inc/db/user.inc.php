@@ -5,7 +5,7 @@
  *
  */
 class User {
-	
+
 	// Constants for the User table in the database
 	const USER_CLM_ID 		= "userId";
 	const USER_CLM_LNAME	= "lastName";
@@ -16,7 +16,7 @@ class User {
 	const USER_CLM_ADMIN    = "admin";
 	const USER_CLM_REPORTER = "reporter";
 	const USER_CLM_PASS 	= "password";
-	
+
 	public $userId;
 	public $email;
 	public $firstName;
@@ -26,7 +26,7 @@ class User {
 	private $isPlayer;
 	private $isReporter;
 	public $passHash;
-	
+
 	/**
 	 * Conmstructor that knows how to retrieve all fields from a given data set
 	 * @param array $dataSet a data set prefrably directly from an SQL statement
@@ -54,7 +54,7 @@ class User {
 			$this->passHash		= "N/A";
 		}
 	}
-	
+
 	/**
 	 * Method to retrieve the full name consisting of first and last name
 	 * @return string the full name
@@ -62,15 +62,19 @@ class User {
 	public function getFullName() {
 		return $this->firstName . " " . $this->lastName;
 	}
-	
+
+	public function getID() {
+		return $this->userId;
+	}
+
 	public function isAdmin() {
 		return $this->isAdmin == true;
 	}
-	
+
 	public function isPlayer() {
 		return $this->isPlayer == true;
 	}
-	
+
 	public function isReporter() {
 		return $this->isReporter == true;
 	}

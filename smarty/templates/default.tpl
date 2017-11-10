@@ -1,1 +1,2 @@
 Willkommen {$currentUserName},
+{$user->getFullName}
