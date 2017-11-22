@@ -7,12 +7,14 @@
 
 
 
-    <div id="row">
+    <div class="row">
+      <div class="col-md-12">
         {if isset($content)}
-            {$content}
+          {$content}
         {/if}
+      </div>
     </div>
 
 
-        
+
 {include file="footer.tpl"}

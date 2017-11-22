@@ -56,7 +56,7 @@ abstract class ABrdbHtmlStatsPlayerPage extends BrdbHtmlPage {
 			'explain'    => $this->explainTable(),
 		));
 
-    $this->content = $this->smarty->fetch("stats.tpl");
+    $this->content = $this->smarty->fetch("ranking/StatsSingle.tpl");
     $this->smarty->assign('content', $this->content);
 
 		$this->smarty->display('index.tpl');

@@ -1,162 +1,104 @@
-<datalist id="allPlayerList">
-  <option value="<?php echo $fullName; ?>" />
-</datalist>
-
 <div id="formReportInsertGame">
+{include file="messages.tpl"}
   <h3>Report a Game for Badminton Ranking</h3>
   <p>Tell the date, players, set points and winner of the played game.</p>
   <hr/>
-  <form>
-    <label for = "<?php echo $variableNameDate;?>">Date and Time:</label>
-      <div class = "radioGroup">
-      <div class = "radioRow">
-      <div class = "radioCell">
-    <input
-        type		= "date"
-        id			= "<?php echo $variableNameDate;?>"
-        name		= "<?php echo $variableNameDate;?>"
-        placeholder	= "2017-05-01"
-        value		= "<?php echo $variableNameDateValue;?>"
-      />
+  <form action="{$to}" method="post">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="form-group datepicker"  data-provide="datepicker">
+          <label for = "{$variable['NameDate']}">Date and Time:</label>
+          <input class="form-control" type="input" id="{$variable['NameDate']}" name="{$variable['NameDate']}" value="{if $variable['NameDateValue']}{$variable['NameDateValue']}{else}{$smarty.now|date_format:"Y-m-d"} {/if}" tabindex=1 value="">
+        </div>
       </div>
-      <div class = "radioCell">
-      <input
-        type		= "time"
-        id			= "<?php echo $variableNameDate;?>"
-        name		= "<?php echo $variableNameTime;?>"
-        placeholder	= "20:00:00"
-        value		= "<?php echo $variableNameTimeValue;?>"
-      />
+      <div class="col-md-6">
+        <div class="form-group" >
+          <label for = "{$variable['NameTime']}">Uhrzeit:</label>
+          <input class="form-control" type="time" id="{$variable['NameTime']}" name="{$variable['NameTime']}" value="{if $variable['NameTimeValue']}{$variable['NameTimeValue']}{else}{$smarty.now|date_format:"H:i"}{/if}" tabindex=2 value="">
+        </div>
       </div>
+    </div>
+
+  <div class="row">
+    <div class="col-md-6">
+    <h4>Team 1</h4>
+      <label for="{$variable['NamePlayerA1']}" >Spieler A:</label>
+      <select class="select-selectize" name="{$variable['NamePlayerA1']}" id="{$variable['NamePlayerA1']}" tabindex=3 value="{$variable['NamePlayerA1Value']}">
+        <option value=""><br>
+        {foreach item=player from=$players}
+          <option value="{$player.userId}">{$player.fullName}<br>
+        {/foreach}
+      </select>
+      <!-- Spieler B -->
+      <label for="{$variable['NamePlayerA2']}">Spieler B:</label>
+      <select class="select-selectize" name="{$variable['NamePlayerA2']}" id="{$variable['NamePlayerA2']}" tabindex=4 value="{$variable['NamePlayerA2Value']}">
+        <option value=""><br>
+        {foreach item=player from=$players}
+          <option value="{$player.userId}">{$player.fullName}<br>
+        {/foreach}
+      </select>
+
+      <hr>
+      <h4>Satz 1</h4>
+      <div class="form-group">
+        <label for="{$variable['NameSetA1']}">Punkte</label>
+        <input class="form-control" type="number" min="0" max="30" name="{$variable['NameSetA1']}" id="{$variable['NameSetA1']}" value="{$variable['NameSetA1Value']}" class="p11" tabindex=7>
       </div>
+
+      <h4>Satz 2</h4>
+      <div class="form-group">
+        <label for="{$variable['NameSetA2']}">Punkte</label>
+        <input class="form-control" type="number" min="0" max="30" name="{$variable['NameSetA2']}" id="{$variable['NameSetA2']}" value="{$variable['NameSetA2Value']}" class="p21" tabindex=9>
       </div>
-      <div class = "radioGroup">
-      <div class = "radioRow">
-      <div class = "radioCell">
-      <label for = "<?php echo $variableNamePlayerA1;?>">Team A Player 1:</label>
-        <input
-          type		= "text"
-          id			= "<?php echo $variableNamePlayerA1;?>"
-          name		= "<?php echo $variableNamePlayerA1;?>"
-          placeholder	= "Philipp Fischer"
-          value		= "<?php echo $variableNamePlayerA1Value;?>"
-          list		= "allPlayerList"
-        />
-        <?php $this->getAllPlayerDataList(); ?>
-      <label for = "<?php echo $variableNamePlayerA2;?>">Team A Player 2:</label>
-        <input
-          type		= "text"
-          id			= "<?php echo $variableNamePlayerA2;?>"
-          name		= "<?php echo $variableNamePlayerA2;?>"
-          placeholder	= "Carsten Borchert"
-          value		= "<?php echo $variableNamePlayerA2Value;?>"
-          list		= "allPlayerList"
-        />
-        <?php $this->getAllPlayerDataList(); ?>
-      <label for = "<?php echo $variableNameSetA1;?>">Team A Set 1 Points:</label>
-        <input
-          type		= "text"
-          id			= "<?php echo $variableNameSetA1;?>"
-          name		= "<?php echo $variableNameSetA1;?>"
-          placeholder	= "21"
-          value		= "<?php echo $variableNameSetA1Value;?>"
-        />
-      <label for = "<?php echo $variableNameSetA2;?>">Team A Set 2 Points:</label>
-        <input
-          type		= "text"
-          id			= "<?php echo $variableNameSetA2;?>"
-          name		= "<?php echo $variableNameSetA2;?>"
-          placeholder	= "21"
-          value		= "<?php echo $variableNameSetA2Value;?>"
-        />
-      <label for = "<?php echo $variableNameSetA3;?>">Team A Set 3 Points:</label>
-        <input
-          type		= "text"
-          id			= "<?php echo $variableNameSetA3;?>"
-          name		= "<?php echo $variableNameSetA3;?>"
-          placeholder	= "0"
-          value		= "<?php echo $variableNameSetA3Value;?>"
-        />
+
+      <h4>Satz 3</h4>
+      <div class="form-group">
+        <label for="{$variable['NameSetA3']}">Punkte</label>
+        <input class="form-control" type="number" min="0" max="30" name="{$variable['NameSetA3']}" id="{$variable['NameSetA3']}" value="{$variable['NameSetA3Value']}" class="p31" tabindex=11>
       </div>
-      <div class = "radioCell">
-      <label for = "<?php echo $variableNamePlayerB1;?>">Team B Player 1:</label>
-        <input
-          type		= "text"
-          id			= "<?php echo $variableNamePlayerB1;?>"
-          name		= "<?php echo $variableNamePlayerB1;?>"
-          placeholder	= "Jan Sippli"
-          value		= "<?php echo $variableNamePlayerB1Value;?>"
-          list		= "allPlayerList"
-        />
-        <?php $this->getAllPlayerDataList(); ?>
-      <label for = "<?php echo $variableNamePlayerB2;?>">Team B Player 2:</label>
-        <input
-          type		= "text"
-          id			= "<?php echo $variableNamePlayerB2;?>"
-          name		= "<?php echo $variableNamePlayerB2;?>"
-          placeholder	= "Isabel Adam"
-          value		= "<?php echo $variableNamePlayerB2Value;?>"
-          list		= "allPlayerList"
-        />
-        <?php $this->getAllPlayerDataList(); ?>
-      <label for = "<?php echo $variableNameSetB1;?>">Team B Set 1 Points:</label>
-        <input
-          type		= "text"
-          id			= "<?php echo $variableNameSetB1;?>"
-          name		= "<?php echo $variableNameSetB1;?>"
-          placeholder	= "16"
-          value		= "<?php echo $variableNameSetB1Value;?>"
-        />
-      <label for = "<?php echo $variableNameSetB2;?>">Team B Set 2 Points:</label>
-        <input
-          type		= "text"
-          id			= "<?php echo $variableNameSetB2;?>"
-          name		= "<?php echo $variableNameSetB2;?>"
-          placeholder	= "18"
-          value		= "<?php echo $variableNameSetB2Value;?>"
-        />
-      <label for = "<?php echo $variableNameSetB3;?>">Team B Set 3 Points:</label>
-        <input
-          type		= "text"
-          id			= "<?php echo $variableNameSetB3;?>"
-          name		= "<?php echo $variableNameSetB3;?>"
-          placeholder	= "0"
-          value		= "<?php echo $variableNameSetB3Value;?>"
-        />
+    </div>
+
+    <div class="col-md-6" style="border-left: 3px solid #c3c3c3">
+    <h4>Team 2</h4>
+      <label for="{$variable['NamePlayerB1']}">Spieler A:</label>
+      <select class="select-selectize" name="{$variable['NamePlayerB1']}" id="{$variable['NamePlayerB1']}" value="{$variable['NamePlayerB1Value']}" tabindex=5>
+        <option value=""><br>
+        {foreach item=player from=$players}
+          <option value="{$player.userId}">{$player.fullName}<br>
+        {/foreach}
+      </select>
+      <!-- Spieler B -->
+      <label for="{$variable['NamePlayerB2']}">Spieler B:</label>
+      <select class="select-selectize" name="{$variable['NamePlayerB2']}" id="{$variable['NamePlayerB2']}" value="{$variable['NamePlayerB2Value']}" tabindex=6>
+        <option value=""><br>
+        {foreach item=player from=$players}
+          <option value="{$player.userId}">{$player.fullName}<br>
+        {/foreach}
+      </select>
+
+      <hr>
+      <h4>Satz 1</h4>
+      <div class="form-group">
+        <label for="{$variable['NameSetB1']}">Punkte</label>
+        <input class="form-control" type="number" min="0" max="30" name="{$variable['NameSetB1']}" id="{$variable['NameSetB1']}" value="{$variable['NameSetB1Value']}" class="p12" tabindex=8>
       </div>
+
+      <h4>Satz 2</h4>
+      <div class="form-group">
+        <label for="{$variable['NameSetB2']}">Punkte</label>
+        <input class="form-control" type="number" min="0" max="30" name="{$variable['NameSetB2']}" id="{$variable['NameSetB2']}" value="{$variable['NameSetB2Value']}" class="p22" tabindex=10>
       </div>
+
+      <h4>Satz 3</h4>
+      <div class="form-group">
+        <label for="{$variable['NameSetB3']}">Punkte</label>
+        <input class="form-control" type="number" min="0" max="30" name="{$variable['NameSetB3']}" id="{$variable['NameSetB3']}" value="{$variable['NameSetB3Value']}" class="p32" tabindex=12>
       </div>
-      <label>Winner:</label>
-      <div class = "radioGroup">
-      <div class = "radioRow">
-      <div class = "radioCell">
-      <input
-        type		= "radio"
-        id			= "<?php echo $variableNameWinnerSideA;?>"
-        name		= "<?php echo $variableNameWinner;?>"
-        value		= "<?php echo $variableNameWinnerSideA;?>"
-      <?php echo $checkedAttributeIsWinnerSideA . rn;  ?>
-      />
-      <label class = "radio" for = "<?php echo $variableNameWinnerSideA;?>">Winner A</label>
-      </div>
-      <div class = "radioCell">
-      <input
-        type		= "radio"
-        id			= "<?php echo $variableNameWinnerSideB;?>"
-        name		= "<?php echo $variableNameWinner;?>"
-        value		= "<?php echo $variableNameWinnerSideB;?>"
-        <?php echo $checkedAttributeIsWinnerSideB. rn;  ?>
-      />
-      <label class = "radio" for = "<?php echo $variableNameWinnerSideB;?>">Winner B</label>
-      </div>
-      </div>
-      </div>
-      <input
-      type		= "submit"
-      name		= "<?php echo $variableNameAction;?>"
-      value		= "<?php echo $variableNameActionInsertGame;?>"
-      formaction	= "<?php echo BrdbHtmlPage::PAGE_REPORT_INSERT_GAME;?>"
-      formmethod	= "post"
-    />
-  </form>
+    </div>
+  </div>
+  <hr>
+  <input type="hidden" id="userRegisterGameWinner" name="userRegisterGameWinner" value="">
+  <input type="hidden" id="formAction" name="formAction" value="Insert Game">
+  <input class="btn btn-success" type="submit" name="{$variable['NameAction']}" value="{$variable['NameActionInsertGame']}">
+</form>
 </div>

@@ -18,7 +18,7 @@ include_once '../inc/db/user.inc.php';
 include_once '../inc/logic/prgPattern.inc.php';
 
 class PrgPatternElementUser extends APrgPatternElement {
-	
+
 	private $brdb;
 
 	const FORM_USER_ADMIN_USER_ID 	= "accountAdminUserId";
@@ -31,20 +31,22 @@ class PrgPatternElementUser extends APrgPatternElement {
 	const FORM_USER_IS_REPORTER		= "accountIsReporter";
 	const FORM_USER_PASSWORD 		= "accountPassword";
 	const FORM_USER_PASSWORD2 		= "accountPassword2";
-	
+	const FORM_USER_PHONE        = "accountPhone";
+	const FORM_USER_BDAY        = "accountBday";
+
 	const FORM_USER_GENDER_MALE		= "Male";
 	const FORM_USER_GENDER_FEMALE	= "Female";
 
 	const FORM_USER_IS_YES	= "Yes";
 	const FORM_USER_IS_NO	= "No";
-	
+
 	const FORM_USER_ACTION 						= "formAction";
 	const FORM_USER_ACTION_REGISTER				= "Register";
 	const FORM_USER_ACTION_SELECT_ACCOUNT		= "Edit User";
 	const FORM_USER_ACTION_UPDATE_ACCOUNT		= "Update User";
 	const FORM_USER_ACTION_DELETE_ACCOUNT		= "Delete User";
 	const FORM_USER_ACTION_UPDATE_MY_ACCOUNT	= "Update My Account";
-	
+
 	// Errors that can be set by methods of this class
 	const ERROR_USER_DELETE_NO_USERID 				= "Please select a user for deleting it!";
 	const ERROR_USER_UPDATE_INVALID_EMAIL 			= "Please use a valid email format!";
@@ -58,11 +60,11 @@ class PrgPatternElementUser extends APrgPatternElement {
 	const SUCCESS_USER_REGISTER 					= "Succesfully registered account!";
 	const SUCCESS_USER_UPDATE	 					= "Succesfully updated account!";
 	const SUCCESS_USER_DELETE	 					= "Succesfully deleted User!";
-	
+
 	const PASSWORD_LENGTH = 8;
-	
+
 	protected $prgElementLogin;
-	
+
 	public function __construct(BrankDB $brdb, PrgPatternElementLogin $prgElementLogin) {
 		parent::__construct("userRegister");
 		$this->brdb = $brdb;
@@ -76,7 +78,7 @@ class PrgPatternElementUser extends APrgPatternElement {
 		$this->registerPostSessionVariable(self::FORM_USER_IS_REPORTER);
 		$this->registerPostSessionVariable(self::FORM_USER_ADMIN_USER_ID);
 	}
-	
+
 	public function processPost() {
 		$isUserLoggedIn = $this->prgElementLogin->isUserLoggedIn();
 		$isUserAdmin 	= $this->prgElementLogin->getLoggedInUser()->isAdmin();
@@ -86,7 +88,7 @@ class PrgPatternElementUser extends APrgPatternElement {
 		if (!$this->prgElementLogin->isUserLoggedIn()) {
 			return;
 		}
-		
+
 		if ($this->issetPostVariable(self::FORM_USER_ACTION)) {
 			$loginAction = strval(trim($this->getPostVariable(self::FORM_USER_ACTION)));
 			if ($isUserAdmin && ($loginAction === self::FORM_USER_ACTION_REGISTER)) {
@@ -100,7 +102,7 @@ class PrgPatternElementUser extends APrgPatternElement {
 			}
 		}
 	}
-	
+
 	public function processPostRegisterUser() {
 		// Check that all information has been posted
 		if ($this->issetPostVariable(self::FORM_USER_EMAIL) &&
@@ -109,7 +111,7 @@ class PrgPatternElementUser extends APrgPatternElement {
 			$this->issetPostVariable(self::FORM_USER_GENDER) &&
 			$this->issetPostVariable(self::FORM_USER_PASSWORD) &&
 			$this->issetPostVariable(self::FORM_USER_PASSWORD2)) {
-			
+
 			$email 		= strval(trim($this->getPostVariable(self::FORM_USER_EMAIL)));
 			$firstName 	= strval(trim($this->getPostVariable(self::FORM_USER_FNAME)));
 			$lastName 	= strval(trim($this->getPostVariable(self::FORM_USER_LNAME)));
@@ -118,19 +120,19 @@ class PrgPatternElementUser extends APrgPatternElement {
 			$pass2 		= strval(trim($this->getPostVariable(self::FORM_USER_PASSWORD2)));
 			$passHash 	= password_hash($pass, PASSWORD_DEFAULT);
 			$email 		= strtolower($email);
-			
+
 			// Check if password has been set
 			if (strlen($pass) < self::PASSWORD_LENGTH) {
 				$this->setFailedMessage(self::ERROR_USER_UPDATE_PASSWORD_INVALID);
 				return;
 			}
-			
+
 			// Check if passwords are the same
 			if ($pass != $pass2) {
 				$this->setFailedMessage(self::ERROR_USER_UPDATE_PASSWORD_MISSMATCH);
 				return;
 			}
-			
+
 			// First filter the email before continue
 			if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
 				// Check if the user is already registered
@@ -144,7 +146,7 @@ class PrgPatternElementUser extends APrgPatternElement {
 					$this->setFailedMessage(self::ERROR_USER_EMAIL_EXISTS);
 					return;
 				}
-				
+
 				// now everything is checked and the command for adding
 				// the user can be called
 				$res = $this->brdb->registerUser($email, $firstName, $lastName, $gender, $passHash);
@@ -163,7 +165,7 @@ class PrgPatternElementUser extends APrgPatternElement {
 			$this->setFailedMessage(self::ERROR_USER_UPDATE_MISSING_INFORMATION);
 		}
 	}
-	
+
 	public function processPostDeleteUserAccount() {
 		if ($this->issetPostVariable(self::FORM_USER_ADMIN_USER_ID)) {
 			$userId = intval($this->getPostVariable(self::FORM_USER_ADMIN_USER_ID));
@@ -177,7 +179,7 @@ class PrgPatternElementUser extends APrgPatternElement {
 			$this->setFailedMessage(self::ERROR_USER_DELETE_NO_USERID);
 		}
 	}
-	
+
 	public function processPostUpdateUserAccount() {
 		// Check that all information has been posted
 		if ($this->issetSessionVariable(self::FORM_USER_ADMIN_USER_ID) &&
@@ -190,7 +192,7 @@ class PrgPatternElementUser extends APrgPatternElement {
 			$this->issetPostVariable(self::FORM_USER_IS_ADMIN) &&
 			$this->issetPostVariable(self::FORM_USER_PASSWORD) &&
 			$this->issetPostVariable(self::FORM_USER_PASSWORD2)) {
-				
+
 			$userId     = intval($this->getSessionVariable(self::FORM_USER_ADMIN_USER_ID));
 			$email 		= strval(trim($this->getPostVariable(self::FORM_USER_EMAIL)));
 			$firstName 	= strval(trim($this->getPostVariable(self::FORM_USER_FNAME)));
@@ -199,26 +201,26 @@ class PrgPatternElementUser extends APrgPatternElement {
 			$isAdmin 	= strval(trim($this->getPostVariable(self::FORM_USER_IS_ADMIN)));
 			$isPlayer 	= strval(trim($this->getPostVariable(self::FORM_USER_IS_PLAYER)));
 			$isReporter	= strval(trim($this->getPostVariable(self::FORM_USER_IS_REPORTER)));
-			
+
 			$isAdmin 	= ($isAdmin 	== self::FORM_USER_IS_YES) ? 1 : 0;
 			$isPlayer	= ($isPlayer	== self::FORM_USER_IS_YES) ? 1 : 0;
 			$isReporter	= ($isReporter	== self::FORM_USER_IS_YES) ? 1 : 0;
-			
+
 			$pass 		= strval(trim($this->getPostVariable(self::FORM_USER_PASSWORD)));
 			$pass2 		= strval(trim($this->getPostVariable(self::FORM_USER_PASSWORD2)));
-			$passHash 	= password_hash($pass, PASSWORD_DEFAULT);
+			$passHash = password_hash($pass, PASSWORD_DEFAULT);
 			$email 		= strtolower($email);
-			
+
 			// Check if the password was set then it needs to be checked
 			// Otherwise the old password will be set to nothing which will
 			// trigger no update in the Database
-			if ((strlen($pass) > 0) && (strlen($pass2) > 0)) {				
+			if (!empty($pass) && !empty($pass2)) {
 				// Check if password has been set
 				if (strlen($pass) < self::PASSWORD_LENGTH) {
 					$this->setFailedMessage(self::ERROR_USER_UPDATE_PASSWORD_INVALID);
 					return;
 				}
-			
+
 				// Check if passwords are the same
 				if ($pass != $pass2) {
 					$this->setFailedMessage(self::ERROR_USER_UPDATE_PASSWORD_MISSMATCH);
@@ -227,7 +229,7 @@ class PrgPatternElementUser extends APrgPatternElement {
 			} else {
 				$passHash = null;
 			}
-			
+
 			// Check if oyu try to deadmin yourself this is not allowed, otherwise
 			// it would be possible to lockout oneself from the data base
 			if ($userId == $this->prgElementLogin->getLoggedInUser()->userId &&
@@ -236,7 +238,7 @@ class PrgPatternElementUser extends APrgPatternElement {
 				$this->setFailedMessage(self::ERROR_USER_UPDATE_CANNOT_DEADMIN);
 				return;
 			}
-			
+
 			// First filter the email before continue
 			if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
 				// Check if the user is already registered
@@ -254,7 +256,7 @@ class PrgPatternElementUser extends APrgPatternElement {
 						return;
 					}
 				}
-				
+
 				// now everything is checked and the command for adding
 				// the user can be called
 				$res = $this->brdb->updateAdminUser($userId, $email, $firstName, $lastName, $gender, $passHash, $isPlayer, $isAdmin, $isReporter);
@@ -272,7 +274,7 @@ class PrgPatternElementUser extends APrgPatternElement {
 			$this->setFailedMessage(self::ERROR_USER_UPDATE_MISSING_INFORMATION);
 		}
 	}
-	
+
 	public function processPostUpdateUserMyAccount() {
 		// Check that all information has been posted
 		if ($this->issetPostVariable(self::FORM_USER_EMAIL) &&
@@ -280,8 +282,8 @@ class PrgPatternElementUser extends APrgPatternElement {
 			$this->issetPostVariable(self::FORM_USER_LNAME) &&
 			$this->issetPostVariable(self::FORM_USER_PASSWORD) &&
 			$this->issetPostVariable(self::FORM_USER_PASSWORD2)) {
-				
-			$userId     = intval($this->prgElementLogin->getLoggedInUser()->userId);	
+
+			$userId     = intval($this->prgElementLogin->getLoggedInUser()->userId);
 			$email 		= strval(trim($this->getPostVariable(self::FORM_USER_EMAIL)));
 			$firstName 	= strval(trim($this->getPostVariable(self::FORM_USER_FNAME)));
 			$lastName 	= strval(trim($this->getPostVariable(self::FORM_USER_LNAME)));
@@ -289,20 +291,34 @@ class PrgPatternElementUser extends APrgPatternElement {
 			$pass2 		= strval(trim($this->getPostVariable(self::FORM_USER_PASSWORD2)));
 			$passHash 	= password_hash($pass, PASSWORD_DEFAULT);
 			$email 		= strtolower($email);
-			
-			// Check if password has been set
-			if (strlen($pass) < self::PASSWORD_LENGTH) {
-				$this->setFailedMessage(self::ERROR_USER_UPDATE_PASSWORD_INVALID);
-				return;
+
+			$phone = strval(trim($this->getPostVariable(self::FORM_USER_PHONE)));
+			$gender = strval(trim($this->getPostVariable(self::FORM_USER_GENDER)));
+			$bday = strval(trim($this->getPostVariable(self::FORM_USER_BDAY)));
+
+			if(!empty($pass) && !empty($pass2)) {
+				// Check if password has been set
+				if (strlen($pass) < self::PASSWORD_LENGTH) {
+					$this->setFailedMessage(self::ERROR_USER_UPDATE_PASSWORD_INVALID);
+					return;
+				}
+
+				// Check if passwords are the same
+				if ($pass != $pass2) {
+					$this->setFailedMessage(self::ERROR_USER_UPDATE_PASSWORD_MISSMATCH);
+					return;
+				}
+
+				#die($userId . $passHash);
+				$this->brdb->updateUserPassword($userId, $passHash);
+				if ($this->brdb->hasError()) {
+					$this->setFailedMessage($this->brdb->getError());
+					return;
+				}
+
 			}
-			
-			// Check if passwords are the same
-			if ($pass != $pass2) {
-				$this->setFailedMessage(self::ERROR_USER_UPDATE_PASSWORD_MISSMATCH);
-				return;
-			}
-			
-			// First filter the email before continue
+
+				// First filter the email before continue
 			if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
 				// Check if the user is already registered
 				// In case it is we have to throw an error
@@ -319,10 +335,16 @@ class PrgPatternElementUser extends APrgPatternElement {
 						return;
 					}
 				}
-				
+
+
 				// now everything is checked and the command for adding
 				// the user can be called
-				$res = $this->brdb->updateUser($userId, $email, $firstName, $lastName, $passHash);
+				$bday = strval(trim($this->getPostVariable(self::FORM_USER_BDAY)));
+				$bday = date("Y-m-d", strtotime($bday));
+
+				$phone = strval(trim($this->getPostVariable(self::FORM_USER_PHONE)));
+
+				$res = $this->brdb->updateUser($userId, $email, $firstName, $lastName, $phone, $bday);
 				if ($this->brdb->hasError()) {
 					$this->setFailedMessage($this->brdb->getError());
 					return;
@@ -337,7 +359,7 @@ class PrgPatternElementUser extends APrgPatternElement {
 			$this->setFailedMessage(self::ERROR_USER_UPDATE_MISSING_INFORMATION);
 		}
 	}
-	
+
 	public function getAdminUser() {
 		// If there is no post we directly get here and we try to set the class
 		// information directly from the stored information in the session
@@ -358,7 +380,7 @@ class PrgPatternElementUser extends APrgPatternElement {
 			}
 			$this->setFailedMessage(self::ERROR_USER_NO_USER_FOR_ADMIN_SELECTED);
 		}
-		
+
 		return new User();
 	}
 }

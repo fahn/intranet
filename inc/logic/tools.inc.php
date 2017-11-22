@@ -22,12 +22,25 @@ define("rn","\r\n");
  */
 class Tools {
 	public static function escapeInput($data) {
+		if(is_array($data)) {
+			return $data;
+			$tmp = array();
+			foreach($data as $key => $item) {
+				print_r($key .".". $item);
+				$tmp[] = $this->escapeInput($item);
+			}
+
+			$data = $tmp;
+		} else {
 		$data = trim($data);
 		$data = stripslashes($data);
 		$data = htmlspecialchars($data);
+
+		}
+
 		return $data;
 	}
-	
+
 	const PHP_SELF = "PHP_SELF";
 }
 

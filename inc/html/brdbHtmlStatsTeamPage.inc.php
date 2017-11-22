@@ -25,23 +25,42 @@ include_once '../inc/logic/tools.inc.php';
  *
  */
 abstract class ABrdbHtmlStatsTeamPage extends BrdbHtmlPage {
-	
+
 	private $prgPatternElementStatsTable;
 	private $tableTitle;
-	
+
 	public function __construct($tableTitle, $tableName) {
 		parent::__construct();
 		$this->prgPatternElementStatsTable= new PrgTeamStatsTablePattern($tableName, $this->brdb);
 		$this->prgPattern->registerPrg($this->prgPatternElementStatsTable);
 		$this->tableTitle = $tableTitle;
 	}
-	
+
 	/**
 	 * Implement this method to give some explanation of
 	 * what the current table is all about.
 	 */
 	abstract protected function explainTable();
-	
+
+
+	protected function htmlBody() {
+		$dataSet = array();
+	  while ($data = $this->prgPatternElementStatsTable->fetchResultViewRow()) {
+	    $dataSet[] = $data;
+	  }
+
+		$this->smarty->assign(array(
+			'tableTitle' => $this->tableTitle,
+			'players'    => $dataSet,
+			'explain'    => $this->explainTable(),
+		));
+
+    $this->content = $this->smarty->fetch("ranking/StatsTeam.tpl");
+    $this->smarty->assign('content', $this->content);
+
+		$this->smarty->display('index.tpl');
+	}
+
 	protected function htmlBodyProtectedArea() {
 		?>
 	<div id="tableRanking">
@@ -83,7 +102,7 @@ abstract class ABrdbHtmlStatsTeamPage extends BrdbHtmlPage {
 				</tr>
 			</thead>
 			<tbody>
-<?php 
+<?php
 		while ($dataSet = $this->prgPatternElementStatsTable->fetchResultViewRow()) {
 ?>
 				<tr>
@@ -106,23 +125,23 @@ abstract class ABrdbHtmlStatsTeamPage extends BrdbHtmlPage {
 					<td><?php echo $dataSet[APrgStatsTablePattern::PRG_TABLE_CLM_POINTS_WON]; ?></td>
 					<td><?php echo $dataSet[APrgStatsTablePattern::PRG_TABLE_CLM_POINTS_LOST]; ?></td>
 					<td><?php echo $dataSet[APrgStatsTablePattern::PRG_TABLE_CLM_POINTS_RATIO]; ?></td>
-				</tr> 
-<?php 
+				</tr>
+<?php
 		}
 ?>
 			</tbody>
 		</table>
 		<p>Click a column to sort it. Click again to change from ascending to descending order.</p>
 	</div>
-<?php 
+<?php
 	}
-	
+
 	protected function htmlBodyLogin() {
 ?>
 	<div class = "goToLogin">
 		<p>You are not logged in! Please log in <a href="<?php echo BrdbHtmlPage::PAGE_INDEX;?>">here</a>!</p>
 	</div>
-<?php 
+<?php
 	}
 }
 
@@ -136,7 +155,7 @@ abstract class ABrdbHtmlStatsTeamPage extends BrdbHtmlPage {
 	public function __construct() {
 		parent::__construct("Team Ranking Overall", "UserStatsTeamOverallPos");
 	}
-	
+
 	protected function explainTable() {
 		return "This is the Overall Team Ranking. All Double games played account into this table. Double Men against Men, Women, Mixed.";
 	}
@@ -151,7 +170,7 @@ class BrdbHtmlStatsTeamDisciplineDoubleMenPage extends ABrdbHtmlStatsTeamPage {
 	public function __construct() {
 		parent::__construct("Team Ranking Discipline - Double Men", "UserStatsTeamDisciplineDoubleMenPos");
 	}
-	
+
 	protected function explainTable() {
 		return "This is the Discipline Team Ranking for Double Men games. Only Double Men games acount into this table.";
 	}
@@ -166,7 +185,7 @@ class BrdbHtmlStatsTeamDisciplineDoubleWomenPage extends ABrdbHtmlStatsTeamPage 
 	public function __construct() {
 		parent::__construct("Team Ranking Discipline - Double Women", "UserStatsTeamDisciplineDoubleWomenPos");
 	}
-	
+
 	protected function explainTable() {
 		return "This is the Discipline Team Ranking for Double Women games. Only Double Women games acount into this table.";
 	}
@@ -181,7 +200,7 @@ class BrdbHtmlStatsTeamDisciplineDoubleMixedPage extends ABrdbHtmlStatsTeamPage 
 	public function __construct() {
 		parent::__construct("Team Ranking Discipline - Double Mixed", "UserStatsTeamDisciplineDoubleMixedPos");
 	}
-	
+
 	protected function explainTable() {
 		return "This is the Discipline Team Ranking for Double Mixed games. Only Double Mixed games acount into this table.";
 	}

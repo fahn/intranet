@@ -6,15 +6,15 @@
  * @author philipp
  *
  */
- 
- 
+
+
 class BrankDB {
 
 	private $db;
 
 	private $error;
 	private $hasError;
-    
+
     private $ini;
 
 	private $statementSelectUserByEmail;
@@ -28,6 +28,7 @@ class BrankDB {
 	private $statementDeleteUser;
 	private $statementDeleteGame;
 	private $statementUpdateUser;
+	private $statementUpdateUserPassword;
 	private $statementUpdateAdminUser;
 	private $statementInsertGame;
 
@@ -36,9 +37,17 @@ class BrankDB {
 	private $statementTournamentById;
 	private $statementPlayersByTournamentId;
 	private $statementDisciplinesByTournamentId;
+  private $statementLatestGamesByPlayerId;
+	private $statementGetActiveAndReporterOrAdminPlayer;
+	private $statementGetClubById;
 
 	// insert
-	private $statementInsetPlayerToTournament;
+	private $statementInsertPlayerToTournament;
+	private $statementInsertTournament;
+	private $statementInsertClassTournament;
+
+	// delete
+	private $statementDeletePlayerFromTournament;
 
 	/**
 	 * Constructor tha already prepares all needed dp commands
@@ -55,7 +64,10 @@ class BrankDB {
 		$this->statementDeleteUser
 			= $this->db->prepare("CALL DeleteUser(?)");
 		$this->statementUpdateUser
-			= $this->db->prepare("CALL UpdateUser(?, ?, ?, ?, NULL, ?, NULL, NULL, NULL)");
+			= $this->db->prepare("Update User set email = ?, firstName = ?, lastName = ?, phone = ?, bday = ? WHERE userId = ?"); //$this->db->prepare("CALL UpdateUser(?, ?, ?, ?, NULL, ?, NULL, NULL, NULL)");
+
+			$this->statementUpdateUserPassword
+				= $this->db->prepare("UPDATE User set password = ? WHERE userId = ?");
 		$this->statementUpdateAdminUser
 			= $this->db->prepare("CALL UpdateUser(?, ?, ?, ?, ?, ?, ?, ?, ?)");
 		$this->statementSelectAllPlayer
@@ -70,6 +82,7 @@ class BrankDB {
 		$this->statementSelectPlayerIdByName = $this->db->prepare("SELECT userId FROM User WHERE LOWER(_UserFullName(firstName, lastName)) = LOWER(?)");
 
 		$this->statementTournamentList = $this->db->prepare("SELECT * FROM Tournament WHERE enddate > NOW() - INTERVAL 4 DAY ORDER by startdate ASC");
+    $this->statementTournamentListMax = $this->db->prepare("SELECT * FROM Tournament WHERE enddate > NOW() ORDER by startdate ASC LIMIT ?");
 		$this->statementTournamentById = $this->db->prepare("SELECT * FROM Tournament WHERE tournamentID = ?");
 		$this->statementPlayersByTournamentId = $this->db->prepare(
 			"SELECT TP.*, TC.name AS disciplineName, TC.modus AS disciplineModus, CONCAT(User.firstName, ' ', User.lastName) AS playerName, CONCAT(Partner.firstName, ' ',Partner.lastName) as partnerName
@@ -81,9 +94,24 @@ class BrankDB {
 		);
 
 		$this->statementDisciplinesByTournamentId = $this->db->prepare("SELECT * FROM TournamentClass AS TC WHERE TC.tournamentID = ?;");
-		$this->statementInsetPlayerToTournament = $this->db->prepare("INSERT INTO TournamentPlayer set playerID = ?, partnerID = ?, tournamentID = ?, classID = ?, reporterID = ?, reportdate = NOW(),");
+		$this->statementInsertPlayerToTournament = $this->db->prepare("INSERT INTO TournamentPlayer set tournamentID = ?, playerID = ?, partnerID = ?, classID = ?, reporterID = ?, fillingDate = NOW()");
+
+		$this->statementInsertTournament = $this->db->prepare("INSERT INTO Tournament set name = ?, place = ?, startdate = ?, enddate = ?, deadline = ?, link = ?");
+
+
+    $this->statementLatestGamesByPlayerId = $this->db->prepare("SELECT * FROM GameOverviewList ORDER BY datetime DESC LIMIT 5;");
+
+		$this->statementGetActiveAndReporterOrAdminPlayer = $this->db->prepare("SELECT * FROM User WHERE activePlayer = 1 AND (admin = 1 OR reporter = 1) ORDER BY lastName ASC");
+
+		$this->statementGetClubById = $this->db->prepare("SELECT * FROM Club WHERE clubId = ? LIMIT 1");
+
+		$this->statementInsertClassTournament = $this->db->prepare("INSERT INTO TournamentClass set tournamentID = ?, name = ?, modus = ?");
+
+		$this->statementDeletePlayerFromTournament = $this->db->prepare("UPDATE TournamentPlayer set visible = 0 WHERE tournamentID = ? AND tournamentPlayerId = ?");
+
+
 	}
-    
+
     public function __construct() {
         $this->ini = parse_ini_file('../inc/config.ini');
     }
@@ -101,6 +129,10 @@ class BrankDB {
 	 */
 	public function hasError() {
 		return $this->hasError;
+	}
+
+	public function insert_id() {
+		return $this->db->insert_id;
 	}
 
 	/**
@@ -143,6 +175,7 @@ class BrankDB {
 	 */
 	public function executeStatement($statement) {
 		if (!$statement->execute()) {
+            #die(print_r($statement));
 			$this->setError($statement->error);
 		}
 		return $statement->get_result();
@@ -186,6 +219,11 @@ class BrankDB {
 		return $this->executeStatement($this->statementSelectAllUser);
 	}
 
+
+	public function GetActiveAndReporterOrAdminPlayer() {
+		return $this->executeStatement($this->statementGetActiveAndReporterOrAdminPlayer);
+	}
+
 	/**
 	 * Call this method to register a new user
 	 * @param unknown $email the email of the new user
@@ -205,12 +243,17 @@ class BrankDB {
 	 * @param unknown $email the email to be set
 	 * @param unknown $fname the first name to be set
 	 * @param unknown $lName the last name to be set
-	 * @param unknown $pass the password hash to be set
+	 * @param unknown $phone the phone to be set
 	 * @return mysqli_result result of the statement execution
 	 */
-	public function updateUser($userId, $email, $fname, $lName, $pass) {
-		$this->statementUpdateUser->bind_param("issss", $userId, $email, $fname, $lName, $pass);
+	public function updateUser($userId, $email, $fname, $lName, $phone, $bday) {
+		$this->statementUpdateUser->bind_param("sssssi", $email, $fname, $lName, $phone, $bday, $userId);
 		return $this->executeStatement($this->statementUpdateUser);
+	}
+
+	public function updateUserPassword($userId, $pass) {
+		$this->statementUpdateUserPassword->bind_param("si", $pass, $userId);
+		return $this->executeStatement($this->statementUpdateUserPassword);
 	}
 
 	/**
@@ -265,6 +308,7 @@ class BrankDB {
 				$setA2, $setB2,
 				$setA3, $setB3,
 				$winner);
+                #die($this->statementInsertGame);
 		return $this->executeStatement($this->statementInsertGame);
 	}
 
@@ -326,9 +370,21 @@ class BrankDB {
 	}
 
 
-	public function selectTournamentList() {
+  public function selectTournamentList() {
 		return $this->executeStatement($this->statementTournamentList);
 	}
+
+  public function selectTournamentListMax($id) {
+    $this->statementTournamentListMax->bind_param("i", $id);
+		return $this->executeStatement($this->statementTournamentListMax);
+	}
+
+  public function selectLatestGamesByPlayerId($id) {
+    #$this->statementLatestGamesByPlayerId->bind_param("i", $id);
+	return $this->executeStatement($this->statementLatestGamesByPlayerId);
+  }
+
+
 
 	public function getTournamentData($tournamentID) {
 		$this->statementTournamentById->bind_param("i",$tournamentID);
@@ -350,6 +406,32 @@ class BrankDB {
 		return $this->executeStatement($this->statementInsetPlayerToTournament);
 	}
 
+	public function selectGetClubById($id) {
+		$this->statementGetClubById->bind_param("i", $id);
+		return $this->executeStatement($this->statementGetClubById);
+	}
+
+
+	public function insertPlayerToTournament($tournamentId, $playerId, $partnerId, $classId, $reporterId) {
+		$this->statementInsertPlayerToTournament->bind_param("iisii", $tournamentId, $playerId, $partnerId, $classId, $reporterId);
+		return $this->executeStatement($this->statementInsertPlayerToTournament);
+	}
+
+	public function insertTournament($name, $place, $startdate, $endddate, $deadline, $link) {
+		$this->statementInsertTournament->bind_param("ssssss", $name, $place, $startdate, $endddate, $deadline, $link);
+		return $this->executeStatement($this->statementInsertTournament);
+	}
+
+	public function insertTournamentClass($id, $name, $mode) {
+		$this->statementInsertClassTournament->bind_param("iss", $id, $name, $mode);
+		return $this->executeStatement($this->statementInsertClassTournament);
+	}
+
+	public function deletePlayersFromTournamentId($tournamentId, $playerId) {
+		$this->statementDeletePlayerFromTournament->bind_param("ii", $tournamentId, $playerId);
+		return $this->executeStatement($this->statementDeletePlayerFromTournament);
+	}
 
 }
+
 ?>

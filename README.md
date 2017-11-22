@@ -3,6 +3,7 @@ Rangliste für BC Comet Braunschweig
 
 
 # Aufbau der PHP-Klassen
+```
 HtmlPageProcessor
 |  __construct()
 |  processPage()
@@ -21,3 +22,4 @@ HtmlPageProcessor
       |- BrdbHtmlParseDownPage
          |  __construct()
          |  htmlBody()
+```

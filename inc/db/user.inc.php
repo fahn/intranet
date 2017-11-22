@@ -16,6 +16,10 @@ class User {
 	const USER_CLM_ADMIN    = "admin";
 	const USER_CLM_REPORTER = "reporter";
 	const USER_CLM_PASS 	= "password";
+	const USER_CLM_PLAYERID 	= "playerId";
+  const USER_CLM_CLUBID 	= "clubId";
+	const USER_CLM_PHONE 	= "phone";
+	const USER_CLM_BDAY 	= "bday";
 
 	public $userId;
 	public $email;
@@ -26,6 +30,11 @@ class User {
 	private $isPlayer;
 	private $isReporter;
 	public $passHash;
+	public $playerId;
+  public $clubId;
+	public $clubName;
+	public $phone;
+	public $bday;
 
 	/**
 	 * Conmstructor that knows how to retrieve all fields from a given data set
@@ -34,24 +43,34 @@ class User {
 	public function __construct($dataSet = null) {
 		if ($dataSet != null) {
 			$this->userId 		= intval($dataSet[self::USER_CLM_ID]);
-			$this->email	 	= strval($dataSet[self::USER_CLM_EMAIL]);
+			$this->email	 	  = strval($dataSet[self::USER_CLM_EMAIL]);
 			$this->firstName 	= strval($dataSet[self::USER_CLM_FNAME]);
 			$this->lastName 	= strval($dataSet[self::USER_CLM_LNAME]);
-			$this->gender	 	= strval($dataSet[self::USER_CLM_GENDER]);
+			$this->gender	 	  = strval($dataSet[self::USER_CLM_GENDER]);
 			$this->isAdmin 		= boolval($dataSet[self::USER_CLM_ADMIN]);
 			$this->isPlayer 	= boolval($dataSet[self::USER_CLM_PLAYER]);
-			$this->isReporter 	= boolval($dataSet[self::USER_CLM_REPORTER]);
+			$this->isReporter = boolval($dataSet[self::USER_CLM_REPORTER]);
 			$this->passHash		= strval($dataSet[self::USER_CLM_PASS]);
+			$this->playerId		= strval($dataSet[self::USER_CLM_PLAYERID]);
+			$this->clubId		  = strval($dataSet[self::USER_CLM_CLUBID]);
+			$this->phone		  = strval($dataSet[self::USER_CLM_PHONE]);
+			$this->bday		    = strval($dataSet[self::USER_CLM_BDAY]);
+			$this->clubName		= "";
 		} else {
 			$this->userId 		= 0;
-			$this->email	 	= "N/A";
+			$this->email	 	  = "N/A";
 			$this->firstName 	= "N/A";
 			$this->lastName 	= "N/A";
-			$this->gender	 	= "N/A";
+			$this->gender	 	  = "N/A";
 			$this->isAdmin 		= false;
 			$this->isPlayer 	= false;
-			$this->isReporter 	= false;
+			$this->isReporter = false;
 			$this->passHash		= "N/A";
+			$this->playerId   = "";
+      $this->clubId     = "";
+			$this->clubName	  = "";
+			$this->phone      = "";
+			$this->bday       = "";
 		}
 	}
 
@@ -78,5 +97,6 @@ class User {
 	public function isReporter() {
 		return $this->isReporter == true;
 	}
+
 }
 ?>

@@ -1,0 +1,32 @@
+table {
+    width: 100%;
+}
+
+
+table tr:hover {
+    background-color: #e5e9ea;
+}
+
+footer {
+    margin-top: 40px;
+}
+
+
+@media (max-width: 900px) {
+  .login-screen {
+    padding: 5%;
+  }
+
+  .login-icon {
+    position: inherit;
+    margin: 0 auto;
+  }
+  .login-form {
+    width: 100%;
+  }
+}
+
+
+.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control, .select2-search input[type="text"][disabled], .select2-search input[type="text"][readonly], fieldset[disabled] .select2-search input[type="text"] {
+  color: #000;
+}

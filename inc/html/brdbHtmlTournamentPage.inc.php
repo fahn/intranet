@@ -14,7 +14,8 @@
  ********************************************************/
 
 include_once '../inc/html/brdbHtmlPage.inc.php';
-include_once '../inc/logic/prgGame.inc.php';
+include_once '../inc/logic/prgTournament.inc.php';
+include_once '../inc/logic/prgPattern.inc.php';
 include_once '../inc/logic/tools.inc.php';
 
 include_once '../inc/src/Spout/Autoloader/autoload.php';
@@ -23,25 +24,41 @@ use Box\Spout\Writer\WriterFactory;
 use Box\Spout\Common\Type;
 
 class BrdbHtmlTournamentPage extends BrdbHtmlPage {
+	private $prgElementTournament;
+	private $vars;
 
 	public function __construct() {
 		parent::__construct();
+		$this->prgElementTournament = new PrgPatternElementTournament($this->brdb, $this->prgPatternElementLogin);
+		$this->prgPattern->registerPrg($this->prgElementTournament);
+
+		$this->variable['playerId'] 	= $this->prgElementTournament->getPrefixedName(PrgPatternElementTournament::FORM_INPUT_PLAYER);
+		$this->variable['partnerId'] 	= $this->prgElementTournament->getPrefixedName(PrgPatternElementTournament::FORM_INPUT_PARTNER);
+		$this->variable['disziplin']	= $this->prgElementTournament->getPrefixedName(PrgPatternElementTournament::FORM_INPUT_DISCIPLIN);
 	}
 
   public function processPage() {
 		parent::processPage();
-
   }
 	/**
 	*/
 	protected function htmlBody() {
+		$this->getMessages();
+
 		$content = "";
-		if(isset($_GET['details']) AND is_numeric($_GET['details'])) {
-			$content = $this->loadDetailsContent($_GET['details']);
-		} else if(isset($_GET['add']) AND is_numeric($_GET['add'])) {
-			$content = $this->loadAddContent($_GET['add']);
-		}else if(isset($_GET['export']) AND is_numeric($_GET['export'])) {
-			$content = $this->export($_GET['export']);
+		$action = isset($_GET['action']) ? $_GET['action'] : "";
+		$id     = isset($_GET['id']) ? $_GET['id'] : "";
+
+		if($action == "add_torunament") {
+			$content = $this->loadContentAddTournament($id);
+		} elseif($action == "details" && is_numeric($id)) {
+			$content = $this->loadDetailsContent($id);
+		} else if($action == "add" AND is_numeric($id)) {
+			$content = $this->loadAddContent($id);
+		} else if($action == "export" AND is_numeric($id)) {
+			$content = $this->export($id);
+		} else if($action == "deletePlayer" AND is_numeric($id) AND is_numeric($_GET['tournamentPlayerId'])) {
+			$content = $this->deletePlayerFromTorunament($id, $_GET['tournamentPlayerId']);
 		} else {
 			$content = $this->loadListContent();
 		}
@@ -57,7 +74,22 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
 			'list'    => $this->getAllTournamentDataList(),
 		));
 
-		return $this->smarty->fetch('tournament/list.tpl');
+		return $this->smarty->fetch('tournament/TournamentList.tpl');
+	}
+
+
+	private function loadContentAddTournament() {
+		$this->variable['playerId'] 	= $this->prgElementTournament->getPrefixedName(PrgPatternElementTournament::FORM_INPUT_TOURNAMENT_NAME);
+		$this->variable['partnerId'] 	= $this->prgElementTournament->getPrefixedName(PrgPatternElementTournament::FORM_INPUT_TOURNAMENT_PLACE);
+		$this->variable['disziplin']	= $this->prgElementTournament->getPrefixedName(PrgPatternElementTournament::FORM_INPUT_TOURNAMENT_STARTDATE);
+		$this->variable['disziplin']	= $this->prgElementTournament->getPrefixedName(PrgPatternElementTournament::FORM_INPUT_TOURNAMENT_ENDDATE);
+		$this->variable['disziplin']	= $this->prgElementTournament->getPrefixedName(PrgPatternElementTournament::FORM_INPUT_TOURNAMENT_STARTDATE);
+		$this->variable['disziplin']	= $this->prgElementTournament->getPrefixedName(PrgPatternElementTournament::FORM_INPUT_TOURNAMENT_LINK);
+
+		$this->smarty->assign(array(
+			'vars' => $this->variable,
+		));
+		return $this->smarty->fetch('tournament/TournamentAdd.tpl');
 	}
 
 	/**
@@ -75,33 +107,33 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
 			'userid'      => '',
 		));
 
-		return $this->smarty->fetch('tournament/details.tpl');
+		return $this->smarty->fetch('tournament/TournamentDetails.tpl');
 	}
 
   /**
 		add player to tournament
 	*/
 	private function loadAddContent($id) {
-		if(isset($_POST)) {
-			// check
-			$data = array(
-				'tournamentID' => $id,
-				'playerID'     => $_POST['playerID'],
-				'partnerID'    => isset($_POST['partnerID']) ? $_POST['partnerID'] : NULL,
-				'classID'      => $this->getClassID($_POST['classID']),
-				'reporterID'   => $this->prgPatternElementLogin->getLoggedInUser()->getID(),
-			);
-			if($this->brdb->insetPlayerToTournament($data)) {
-				$this->message['info'] = 'Erfolgreich hinzugefügt';
-			}
-		}
-
 		$this->smarty->assign(array(
 			'tournament'  => $this->brdb->getTournamentData($id)->fetch_assoc(),
-			'players'     => $this->brdb->selectAllPlayer()->fetch_assoc(),
+			'players'     => $this->getAllPlayerDataList(),
 			'disciplines' => $this->getDisciplinesByTournamentId($id),
 		));
-		return $this->smarty->fetch('tournament/add.tpl');
+		return $this->smarty->fetch('tournament/PlayerAdd.tpl');
+	}
+
+	private function getAllPlayerDataList() {
+		$data = array();
+		$res = $this->brdb->selectAllPlayer();
+		if (!$this->brdb->hasError()) {
+			while ($dataSet = $res->fetch_assoc()) {
+				$data[] 		= array(
+					'userId'   => $dataSet['userId'],
+					'fullName' => $dataSet['fullName'],
+				);
+			}
+		}
+		return $data;
 	}
 
 	private function getClassID($id) {
@@ -175,6 +207,10 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
 		}
 
 		return "";
+	}
+
+	private function deletePlayerFromTorunament($tournamentId, $playerId) {
+		$this->prgElementTournament->deletePlayersFromTournamentId($tournamentId, $playerId);
 	}
 }
 ?>

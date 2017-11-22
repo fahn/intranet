@@ -17,43 +17,43 @@ include_once '../inc/logic/http.inc.php';
 include_once '../inc/logic/tools.inc.php';
 
 interface IPrgPatternElement {
-		
+
 	/**
 	 * Method to check if there is a status in the session
 	 * @return boolean true in case there is a sucess or fail status
 	 */
 	public function hasStatus();
-	
+
 	/**
 	 * Use this method to check for a Success status
 	 * @return boolean true in case there is a success status
 	 */
 	public function hasStatusSuccess();
-	
+
 	/**
 	 * Use this method to check for a failed status
 	 * @return boolean true in case there is a failed status in the session
 	 */
 	public function hasStatusFailed();
-	
+
 	/**
 	 * Call this method to return the status message in the session
 	 * @return string the message stored in the session
 	 */
 	public function getStatusMessage();
-	
+
 	/**
 	 * This method shall be used to handle the post action of the
 	 * http request to the PRG pattern
 	 */
 	public function processPost();
-	
+
 	/**
 	 * This method is called to process the get of the http request
 	 * of this prg pattern. Usually this method is not implemented
 	 */
 	public function processGet();
-	
+
 	/**
 	 * This method copies all registered variables from the POST systen
 	 * variable into the SESSION system variable. by this thze values can
@@ -76,12 +76,12 @@ abstract class APrgPatternElement implements IPrgPatternElement {
 	const PRG_METHOD_STATUS = "PostMethodStatus";
 	const PRG_METHOD_MESSAGE = "PostMethodMessage";
 	const PRG_METHOD_STATUS_SUCCESS = "success";
-	const PRG_METHOD_STATUS_FAILED = "failed";
+	const PRG_METHOD_STATUS_FAILED = "danger";
 	const PRG_METHOD_STATUS_NONE = "none";
-	
+
 	private $sessionPrefix;
 	private $variableNameArray;
-	
+
 	/**
 	 * The constructor to set a prefix for the session variables
 	 * @param string $sessionPrefix the prefix to be used for this object
@@ -91,13 +91,17 @@ abstract class APrgPatternElement implements IPrgPatternElement {
 		$this->sessionPrefix = $sessionPrefix;
 		$this->variableNameArray = array();
 	}
-	
+
+	public function getSessionPrefix() {
+		return $this->sessionPrefix;
+	}
+
 	public function __destruct() {
 		if ($_SERVER[Http::SERVER_REQUEST_METHOD] === Http::REQUEST_METHOD_GET) {
 			$this->clearStatus();
 		}
 	}
-	
+
 	/**
 	 * Use this method to set a post method succes status
 	 * @param string $message The message to be placed in the session
@@ -115,7 +119,7 @@ abstract class APrgPatternElement implements IPrgPatternElement {
 		$_SESSION[$this->getPrefixedName(self::PRG_METHOD_STATUS)] = self::PRG_METHOD_STATUS_FAILED;
 		$_SESSION[$this->getPrefixedName(self::PRG_METHOD_MESSAGE)] = $message;
 	}
-	
+
 	/**
 	 * Use this method to clear the session status and message of the last called post method.
 	 * Pay attention to this method. It should usually be called once a page has been rendered to
@@ -125,7 +129,7 @@ abstract class APrgPatternElement implements IPrgPatternElement {
 		$_SESSION[$this->getPrefixedName(self::PRG_METHOD_STATUS)] = self::PRG_METHOD_STATUS_NONE;
 		$_SESSION[$this->getPrefixedName(self::PRG_METHOD_MESSAGE)] = "";
 	}
-	
+
 	/**
 	 * Method to check if there is a status in the session
 	 * @return boolean true in case there is a sucess or fail status
@@ -136,7 +140,7 @@ abstract class APrgPatternElement implements IPrgPatternElement {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Use this method to check for a Success status
 	 * @return boolean true in case there is a success status
@@ -147,7 +151,7 @@ abstract class APrgPatternElement implements IPrgPatternElement {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Use this method to check for a failed status
 	 * @return boolean true in case there is a failed status in the session
@@ -158,42 +162,45 @@ abstract class APrgPatternElement implements IPrgPatternElement {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Call this method to return the status message in the session
 	 * @return string the message stored in the session
 	 */
 	public function getStatusMessage() {
-		return $_SESSION[$this->getPrefixedName(self::PRG_METHOD_MESSAGE)];
+		return array(
+			'type'    => $_SESSION[$this->getPrefixedName(self::PRG_METHOD_STATUS)],
+			'message' => $_SESSION[$this->getPrefixedName(self::PRG_METHOD_MESSAGE)],
+		);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * {@inheritDoc}
 	 * @see IPrgPatternElement::processPost()
 	 */
 	public abstract function processPost();
-	
+
 	/**
-	 * 
+	 *
 	 * {@inheritDoc}
 	 * @see IPrgPatternElement::processGet()
 	 */
 	public function processGet() {
 	}
-	
+
 	public function getPrefixedName($variableName) {
 		$preparedVariableName = ucfirst(trim($variableName));
 		$prefixedVariableName = $this->sessionPrefix . ucfirst(trim($variableName));
 		return lcfirst($prefixedVariableName);
 	}
-	
+
 	protected function registerPostSessionVariable($variableName) {
 		array_push($this->variableNameArray, $variableName);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * {@inheritDoc}
 	 * @see IPrgPatternElement::copyPostToSession()
 	 */
@@ -205,48 +212,51 @@ abstract class APrgPatternElement implements IPrgPatternElement {
 			}
 		}
 	}
-	
+
 	protected function clearSessionVariables() {
 		foreach ($this->variableNameArray as $variableName) {
 			$this->unsetSessionVariable($variableName);
 		}
 	}
-	
+
 	public function issetSessionVariable($variableName) {
 		$prefixedVariableName = $this->getPrefixedName($variableName);
 		return isset($_SESSION[$prefixedVariableName]);
 	}
-	
+
 	public function unsetSessionVariable($variableName) {
 		$prefixedVariableName = $this->getPrefixedName($variableName);
 		unset($_SESSION[$prefixedVariableName]);
 	}
-	
+
 	public function getSessionVariable($variableName) {
 		$prefixedVariableName = $this->getPrefixedName($variableName);
 		return Tools::escapeInput($_SESSION[$prefixedVariableName]);
 	}
-	
+
 	public function setSessionVariable($variableName, $value) {
 		$prefixedVariableName = $this->getPrefixedName($variableName);
 		$_SESSION[$prefixedVariableName] = $value;
 	}
-	
+
 	public function issetPostVariable($variableName) {
+		#print_r($_POST);
+		#echo "<hr>";
 		$prefixedVariableName = $this->getPrefixedName($variableName);
+		#echo "<br>";
 		return isset($_POST[$prefixedVariableName]);
 	}
-	
+
 	public function unsetPostVariable($variableName) {
 		$prefixedVariableName = $this->getPrefixedName($variableName);
 		unset($_POST[$prefixedVariableName]);
 	}
-	
+
 	public function getPostVariable($variableName) {
 		$prefixedVariableName = $this->getPrefixedName($variableName);
 		return Tools::escapeInput($_POST[$prefixedVariableName]);
 	}
-	
+
 	public function safeGetSessionVariable($variableName, $defaultValue = "") {
 		if ($this->issetSessionVariable($variableName)) {
 			return strval($this->getSessionVariable($variableName));
@@ -254,20 +264,24 @@ abstract class APrgPatternElement implements IPrgPatternElement {
 			return $defaultValue;
 		}
 	}
+
+	public function getGetVariable($variableName) {
+		return Tools::escapeInput($_GET[$variableName]);
+	}
 }
 
 class PrgPattern {
-	
+
 	private $registeredPrgElements;
-	
+
 	public function __construct() {
 		$this->registeredPrgElements= array();
 	}
-	
+
 	public function registerPrg(IPrgPatternElement $prgElement) {
 		array_push($this->registeredPrgElements, $prgElement);
 	}
-	
+
 	public function hasStatus() {
 		foreach ($this->registeredPrgElements as $prgElement) {
 			if ($prgElement->hasStatus()) {
@@ -276,11 +290,11 @@ class PrgPattern {
 		}
 		return false;
 	}
-	
+
 	public function getRegisteredPrgElements() {
 		return $this->registeredPrgElements;
 	}
-	
+
 	public function processPRG() {
 		// Decide if the current call is a post, then we have to process it
 		if ($_SERVER[Http::SERVER_REQUEST_METHOD] === Http::REQUEST_METHOD_POST) {
@@ -308,7 +322,7 @@ class PrgPattern {
 			}
 		}
 	}
-	
+
 	/**
 	 * This method is called internally to redirect the http POST
 	 * request to an http get request on the same URL
@@ -316,6 +330,12 @@ class PrgPattern {
 	protected function processRedirect() {
 		header("HTTP/1.1 303 See Other");
 		header("Location: ".$_SERVER[Http::SERVER_REQUEST_URI]);
+		exit("Exit of the PRG pattern...");
+	}
+
+	protected function customRedirect($url) {
+		header("HTTP/1.1 303 See Other");
+		header("Location: ".$url);
 		exit("Exit of the PRG pattern...");
 	}
 }

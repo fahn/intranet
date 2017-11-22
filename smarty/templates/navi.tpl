@@ -6,7 +6,7 @@
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
                 <span class="sr-only">Toggle navigation</span>
             </button>
-            <a class="navbar-brand" href="index.php"><img src="../design/img/badminton.png" width="30" alt="Welcome to Mail App">BC Comet Rangliste</a>
+            <a class="navbar-brand" href="index.php"><img src="../design/img/badminton.png" width="30" alt="Welcome to Mail App">BC Comet BS</a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
@@ -28,35 +28,29 @@
                         <li><a href="statsTeamMixed.php">Double Mixed</a><li>
                     </ul>
                 </li>
-            {if $isAdmin}
-              <li class="dropdown">
-                  <a href="#"  class="dropdown-toggle" data-toggle="dropdown">Turniere <b class="caret"></b></a>
-                  <ul class="dropdown-menu">
-                      <li><a href="rankingTournament.php">Ranglisten</a><li>
-                      <li><a href="rankingTournament.php">Turniere</a><li>
-                  </ul>
-              </li>
-            {/if}
-            <li class="dropdown">
-                <a href="#"  class="dropdown-toggle" data-toggle="dropdown">Report  <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  <li>Ranking</li>
-                  <li><a href="reportInsertGame.php?formAction=NewGame">Add a game</a><li>
-                  <li><a href="reportAllGame.php">List my games</a><li>
-                  <li class="divider"></li>
-                  <li>Rangliste</li>
-                </ul>
-            </li>
+              <li><a href="rankingTournament.php">Tuniere</a><li>
+
+              {if isAdmin}
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Admin <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                      {if isAdmin}
+                        <li><a href="reportAllGame.php"><i class="glyphicon glyphicon-th-list"></i> List my games</a><li>
+                        <li><a href="adminAllUser.php"><i class="glyphicon glyphicon-user"></i> Users</a></li>
+                        <li><a href="myRegistration.php">Registration</a></li>
+                      {/if}
+                    </ul>
+                </li>
+              {/if}
            </ul>
           <ul class="nav navbar-nav navbar-right">
             <li class="dropdown">
-              <a href="#" class="dropdown1-toggle" data-toggle="dropdown">{$currentUserName} <b class="caret"></b></a>
+              <a href="#"" class="dropdown1-toggle" data-toggle="dropdown">{$currentUserName} <b class="caret"></b></a>
               <ul class="dropdown-menu">
-                <li><a href="myAccount.php">my Account</a></li>
-                <li><a href="adminAllUser.php">Users</a></li>
-                <li><a href="myRegistration.php">Registration</a></li>
+                <li><a href="/pages/user.php?id={$userId}"><i class="glyphicon glyphicon-user"></i> My Account</a></li>
+                <li><a href="myAccount.php"><i class="glyphicon glyphicon-pencil"></i> Edit Account</a></li>
                 <li class="divider"></li>
-                <li> <a href="logout.php"> Logout <i class="glyphicon glyphicon-log-out"></i></a></li>
+                <li> <a href="logout.php"><i class="glyphicon glyphicon-log-out"></i> Logout</a></li>
               </ul>
             </li>
           </ul>

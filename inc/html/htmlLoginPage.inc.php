@@ -47,6 +47,8 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
 	public function __construct() {
 		parent::__construct();
 
+
+
         /* SQL CONNECTION */
 		$this->brdb = new BrankDB();
 		$this->brdb->connectAndSelectDB();
@@ -57,20 +59,29 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
 		$this->prgPattern = new PrgPattern();
 		$this->prgPattern->registerPrg($this->prgPatternElementLogin);
 
+		// goto Login
+		$basename = basename($_SERVER['SCRIPT_URL']);
+		if($basename != "index.php" && !$this->prgPatternElementLogin->isUserLoggedIn()) {
+			header("Location: https://rl.weinekind.de/pages/index.php");
+			die();
+		}
 	}
 
 	public function processPage() {
+		$this->getMessages();
+
 		$isUserLoggedIn = $this->prgPatternElementLogin->isUserLoggedIn();
 		if($isUserLoggedIn AND $this->smarty) {
 			$currentUserName = $this->prgPatternElementLogin->getLoggedInUser()->getFullName();
 
 			$user = $this->prgPatternElementLogin->getLoggedInUser();
-			$this->smarty->registerObject('user', $user); 
+			$this->smarty->registerObject('user', $user);
 
 			$this->smarty->assign(array(
 					'currentUserName' => $currentUserName,
 					'isUserLoggedIn'  => $isUserLoggedIn,
 					'isAdmin'         => $this->prgPatternElementLogin->getLoggedInUser()->isAdmin(),
+					'userId'          => $this->prgPatternElementLogin->getLoggedInUser()->getID(),
 			));
 		}
 
@@ -101,29 +112,29 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
 	protected function htmlBody() {
 		$isUserLoggedIn = $this->prgPatternElementLogin->isUserLoggedIn();
 
-		if ($this->prgPattern->hasStatus()) {
-			foreach ($this->prgPattern->getRegisteredPrgElements() as $prg) {
-								$messages[] = $prg->getStatusMessage();
-			}
-			$this->smarty->assign('messages', $messages);
-		}
+		$this->getMessages();
+
 
 		// Now decide the content on if use ris logged in or not
 		if($isUserLoggedIn) {
 			$this->smarty->assign(array(
-					'content'         => $this->smarty->fetch('default.tpl'),
+					'content' => $this->loadContent(),
 			));
+
+
+
+
 			// in case there is a logged in user show the logout dialog
 			// and display the body area with the protected content
 			$this->smarty->display('index.tpl');
 		} else {
 			// if there is no user logged in, then show the content to
 			// to perform a new login
-			$variableNameEmail 			= $this->prgPatternElementLogin->getPrefixedName(PrgPatternElementLogin::FORM_LOGIN_EMAIL);
-			$variableNameEmailValue		= $this->prgPatternElementLogin->safeGetSessionVariable(PrgPatternElementLogin::FORM_LOGIN_EMAIL);
-			$variableNamePassw 			= $this->prgPatternElementLogin->getPrefixedName(PrgPatternElementLogin::FORM_LOGIN_PASSWORD);
-			$variableNameAction 		= $this->prgPatternElementLogin->getPrefixedName(PrgPatternElementLogin::FORM_LOGIN_ACTION);
-			$variableNameActionLogin 	= PrgPatternElementLogin::FORM_LOGIN_ACTION_LOGIN;
+			$variableNameEmail 			 = $this->prgPatternElementLogin->getPrefixedName(PrgPatternElementLogin::FORM_LOGIN_EMAIL);
+			$variableNameEmailValue	 = $this->prgPatternElementLogin->safeGetSessionVariable(PrgPatternElementLogin::FORM_LOGIN_EMAIL);
+			$variableNamePassw 			 = $this->prgPatternElementLogin->getPrefixedName(PrgPatternElementLogin::FORM_LOGIN_PASSWORD);
+			$variableNameAction 		 = $this->prgPatternElementLogin->getPrefixedName(PrgPatternElementLogin::FORM_LOGIN_ACTION);
+			$variableNameActionLogin = PrgPatternElementLogin::FORM_LOGIN_ACTION_LOGIN;
 
 			$this->smarty->assign(array(
 					'variableNameEmail'       => $variableNameEmail,
@@ -134,6 +145,83 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
 			));
 			$this->smarty->display('login.tpl');
 		}
+	}
+
+	protected function getMessages() {
+		if ($this->prgPattern->hasStatus()) {
+			foreach ($this->prgPattern->getRegisteredPrgElements() as $prg) {
+				$messages[] = $prg->getStatusMessage();
+			}
+			$this->smarty->assign('messages', $messages);
+		}
+	}
+
+	private function loadContent() {
+		$this->smarty->assign(array(
+				'games'         => $this->getGamesByUser(),
+				'tournaments'   => $this->getLatestTournament(),
+				'users'         => $this->getAdminsAndReporter(),
+		));
+		return $this->smarty->fetch('default.tpl');
+	}
+
+	private function getAdminsAndReporter() {
+		$data = array();
+		$res = $this->brdb->GetActiveAndReporterOrAdminPlayer();
+		if (!$this->brdb->hasError()) {
+			while ($dataSet = $res->fetch_assoc()) {
+				$data[] 		= array(
+					'userId'   => $dataSet['userId'],
+					'fullName' => $dataSet['firstName'] .' '. $dataSet['lastName'],
+				);
+			}
+		}
+		return $data;
+	}
+
+	private function getLatestTournament() {
+		$data = array();
+		$res = $this->brdb->selectTournamentListMax(5);
+		if (!$this->brdb->hasError()) {
+			while ($dataSet = $res->fetch_assoc()) {
+				$data[] 		= array(
+					'tournamentID' => $dataSet['tournamentID'],
+					'name'         => $dataSet['name'],
+					'startdate'    => $dataSet['startdate'],
+					'enddate'      => $dataSet['enddate'],
+					'deadline'     => $dataSet['deadline'],
+				);
+			}
+		}
+		return $data;
+	}
+
+	private function getGamesByUser() {
+		$data      = array();
+		$user_id   = $this->prgPatternElementLogin->getLoggedInUser()->getID();
+		$user_name = $this->prgPatternElementLogin->getLoggedInUser()->getFullName();
+		$res       = $this->brdb->selectLatestGamesByPlayerId($user_id);
+		if (!$this->brdb->hasError()) {
+			while ($dataSet = $res->fetch_assoc()) {
+				// OPPONENT
+				if(!empty($dataSet['playerA1']) && !empty($dataSet['playerA"']) && strpos($user_name, $dataSet['playerA1']) !== false   && strpos($user_name, $dataSet['playerA2']) !== false) {
+					$opponent = $dataSet['playerA1'] .(strlen($dataSet['playerA2']) > 0 ? ' // '. $dataSet['playerA2'] : '');
+				} else {
+					$opponent = $dataSet['playerB1'] .(strlen($dataSet['playerB2']) > 0  ? ' // '. $dataSet['playerB2'] : '');
+				}
+				// RESULT
+				$result = $dataSet['setA1'] .':'. $dataSet['setB1'] .' '. $dataSet['setA2'] .':'. $dataSet['setB2'];
+				if(isset($dataSet['setA3']) && is_numeric($dataSet['setA3'])) {
+					$result .= ' '. $dataSet['setA3'] .':'. $dataSet['setB3'];
+				}
+				$data[] 		= array(
+					'result' => $result,
+					'opponent' => $opponent,
+					'datetime' => $dataSet['datetime'],
+				);
+			}
+		}
+		return $data;
 	}
 }
 ?>
