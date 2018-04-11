@@ -51,19 +51,33 @@ class BrdbHtmlMyRegistrationPage extends BrdbHtmlPage {
 
 		$content = $this->loadContent();
 		$this->smarty->assign(array(
-			'content' $content,
+			'content' => $content,
 		));
 
-		$this->smarty->fetch('index.tpl');
+		$this->smarty->display('index.tpl');
 
 	}
 
 	private function loadContent() {
 		$this->smarty->assign(array(
-			'variable' => $variable,
+			'variable' => $this->variable,
+			'clubs'    => $this->loadClubList(),
 		));
-		return $this->smarty->display('admin/register.tpl');
+		return $this->smarty->fetch('admin/register.tpl');
 	}
+
+	private function loadClubList() {
+    $res = $this->brdb->selectAllClubs();
+    $loop = array();
+		if (!$this->brdb->hasError()) {
+			while ($dataSet = $res->fetch_assoc()) {
+				$loop[] = $dataSet; //new User($dataSet);
+
+      }
+    }
+
+    return $loop;
+  }
 
 }
 

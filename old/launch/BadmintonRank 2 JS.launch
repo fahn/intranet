@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.wst.jsdt.chromium.debug.ui.LaunchType$Wip">
+<booleanAttribute key="add_network_console" value="true"/>
+<stringAttribute key="debug_host" value="localhost"/>
+<intAttribute key="debug_port" value="9222"/>
+<stringAttribute key="org.eclipse.debug.core.source_locator_id" value="org.eclipse.wst.jsdt.chromium.debug.core.ChromiumSourceDirector"/>
+<stringAttribute key="org.eclipse.debug.core.source_locator_memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;sourceLookupDirector&gt;&#10;&lt;sourceContainers duplicates=&quot;true&quot;&gt;&#10;&lt;container memento=&quot;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot; standalone=&amp;quot;no&amp;quot;?&amp;gt;&amp;#10;&amp;lt;default/&amp;gt;&amp;#10;&quot; typeId=&quot;org.eclipse.debug.core.containerType.default&quot;/&gt;&#10;&lt;/sourceContainers&gt;&#10;&lt;/sourceLookupDirector&gt;&#10;"/>
+<listAttribute key="org.eclipse.debug.ui.favoriteGroups">
+<listEntry value="org.eclipse.debug.ui.launchGroup.debug"/>
+</listAttribute>
+<stringAttribute key="predefined_source_wrapperd_ids" value=""/>
+<stringAttribute key="source_lookup_mode" value="AUTO_DETECT"/>
+<stringAttribute key="wip_backend_id" value="Protocol 1.0"/>
+</launchConfiguration>

@@ -7,7 +7,7 @@
 {/if}
 {if $isAdmin or $isReporter}
   <p class="text-right">
-    <a class="btn btn-success" href="https://rl.weinekind.de/pages/reportInsertGame.php?formAction=NewGame">Spiel eintragen</a>
+    <a class="btn btn-success" href="/pages/reportInsertGame.php?formAction=NewGame">Spiel eintragen</a>
   </p>
 {/if}
 

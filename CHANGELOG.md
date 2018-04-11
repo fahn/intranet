@@ -4,7 +4,22 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-## [1.0.1] - 2017-11-??
+## [1.0.4] - 2018-02-25
+- Fix and add icons to Menu  
+- fixed serveral bugs  
+- Marker in Turnieransicht verändert  
+- Optimierungen, Überprüfung, ob Meldung von Spieler bei Turnieren berechtigt sind  
+- Neue Turniere hinzugefügt & Änderungen am Meldesystem  
+- Kompletter Austausch des Designs  
+- Version für alle Mitglieder frei geschalten.  
+
+## [1.0.3] - 2018-02-09
+- 
+
+## [1.0.2] - 2017-11-23
+- Add Clubs: edit, add a new club
+
+## [1.0.1] - 2017-11-21
 ### Added
 - Add Tournament-system
   - create tournament, subscripte tournament, sign off from tournament

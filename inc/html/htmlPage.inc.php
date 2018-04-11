@@ -13,8 +13,9 @@
  *														*
  ********************************************************/
 
-include_once '../inc/logic/tools.inc.php';
 require_once '../smarty/libs/Smarty.class.php';
+#require_once '../inc/Config.php';
+#require_once '../inc/Route.php';
 
 /**
  * This class helps to build up HTML pages
@@ -33,11 +34,11 @@ abstract class HtmlPageProcessor {
 
     protected $content;
 
-	/**
-	 * Standard constructor which gets called
-	 * by some derived classes
-	 */
-	public function __construct() {
+  /**
+   * Standard constructor which gets called
+   * by some derived classes
+   */
+  public function __construct() {
     $this->smarty = new Smarty;
     //$smarty->force_compile = true;
     #$this->smarty->debugging = true;
@@ -46,22 +47,26 @@ abstract class HtmlPageProcessor {
     $this->smarty->setTemplateDir('./../smarty/templates');
     $this->smarty->setCompileDir('./../smarty/templates_c');
     $this->smarty->setConfigDir('./../smarty/configs');
+
+    // remove notice
+    $this->smarty->error_reporting = E_ALL & ~E_NOTICE;
+
   }
 
-	/**
-	 * Call this method to process / render the complete HTML page
-	 */
-	public function processPage() {
+  /**
+   * Call this method to process / render the complete HTML page
+   */
+  public function processPage() {
     $this->htmlBody();
-	}
+  }
 
 
-	/**
-	 * Override this method to change the body content of the html.
-	 * In most derived classes this method is changed to display the specific
-	 * content of the html.
-	 */
-	protected function htmlBody() {
+  /**
+   * Override this method to change the body content of the html.
+   * In most derived classes this method is changed to display the specific
+   * content of the html.
+   */
+  protected function htmlBody() {
     $this->smarty->display('index.tpl');
   }
 }

@@ -47,6 +47,10 @@ abstract class ABrdbHtmlStatsPlayerPage extends BrdbHtmlPage {
 	protected function htmlBody() {
 		$dataSet = array();
 	  while ($data = $this->prgPatternElementStatsTable->fetchResultViewRow()) {
+      if($data['games'] == 0) {
+        continue;
+      }
+
 	    $dataSet[] = $data;
 	  }
 

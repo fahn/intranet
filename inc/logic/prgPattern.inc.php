@@ -240,10 +240,7 @@ abstract class APrgPatternElement implements IPrgPatternElement {
 	}
 
 	public function issetPostVariable($variableName) {
-		#print_r($_POST);
-		#echo "<hr>";
 		$prefixedVariableName = $this->getPrefixedName($variableName);
-		#echo "<br>";
 		return isset($_POST[$prefixedVariableName]);
 	}
 
@@ -254,7 +251,9 @@ abstract class APrgPatternElement implements IPrgPatternElement {
 
 	public function getPostVariable($variableName) {
 		$prefixedVariableName = $this->getPrefixedName($variableName);
-		return Tools::escapeInput($_POST[$prefixedVariableName]);
+		if(isset($_POST) && isset($_POST[$prefixedVariableName])) {
+			return Tools::escapeInput($_POST[$prefixedVariableName]);
+		}
 	}
 
 	public function safeGetSessionVariable($variableName, $defaultValue = "") {
@@ -268,6 +267,10 @@ abstract class APrgPatternElement implements IPrgPatternElement {
 	public function getGetVariable($variableName) {
 		return Tools::escapeInput($_GET[$variableName]);
 	}
+
+    public function issetGetVariable($variableName) {
+        return isset($_GET[$variableName]);
+    }
 }
 
 class PrgPattern {

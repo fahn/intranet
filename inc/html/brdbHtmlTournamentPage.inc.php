@@ -1,216 +1,419 @@
 <?php
 /********************************************************
- * This file belongs to the Badminton Ranking Project.	*
- *														*
- * Copyright 2017										*
- *														*
- * All Rights Reserved									*
- *														*
- * Copying, distribution, usage in any form is not 		*
- * allowed without  written permit.						*
- *														*
- * Philipp M. Fischer (phil.m.fischer@googlemail.com)	*
- *														*
+ * This file belongs to the Badminton Ranking Project.    *
+ *                                                        *
+ * Copyright 2017                                         *
+ *                                                        *
+ * All Rights Reserved                                    *
+ *                                                        *
+ * Copying, distribution, usage in any form is not        *
+ * allowed without  written permit.                       *
+ *                                                        *
+ * Stefan Metzner (stefan@weinekind.de)                   *
+ *                                                        *
  ********************************************************/
+if(!defined("__PFAD__")) {
+    define("__PFAD__", "/var/www/bc-comet_de/intern/");
+}
 
-include_once '../inc/html/brdbHtmlPage.inc.php';
-include_once '../inc/logic/prgTournament.inc.php';
-include_once '../inc/logic/prgPattern.inc.php';
-include_once '../inc/logic/tools.inc.php';
+include_once __PFAD__ .'/inc/html/brdbHtmlPage.inc.php';
+include_once __PFAD__ .'/inc/logic/prgTournament.inc.php';
+include_once __PFAD__ .'/inc/logic/prgPattern.inc.php';
+include_once __PFAD__ .'/inc/logic/tools.inc.php';
 
-include_once '../inc/src/Spout/Autoloader/autoload.php';
 
-use Box\Spout\Writer\WriterFactory;
-use Box\Spout\Common\Type;
+
+# diff
+require_once __PFAD__ .'/inc/class.Diff.php';
+
 
 class BrdbHtmlTournamentPage extends BrdbHtmlPage {
-	private $prgElementTournament;
-	private $vars;
+    private $prgElementTournament;
+    private $vars;
 
-	public function __construct() {
-		parent::__construct();
-		$this->prgElementTournament = new PrgPatternElementTournament($this->brdb, $this->prgPatternElementLogin);
-		$this->prgPattern->registerPrg($this->prgElementTournament);
+    private $tools;
 
-		$this->variable['playerId'] 	= $this->prgElementTournament->getPrefixedName(PrgPatternElementTournament::FORM_INPUT_PLAYER);
-		$this->variable['partnerId'] 	= $this->prgElementTournament->getPrefixedName(PrgPatternElementTournament::FORM_INPUT_PARTNER);
-		$this->variable['disziplin']	= $this->prgElementTournament->getPrefixedName(PrgPatternElementTournament::FORM_INPUT_DISCIPLIN);
-	}
+    private $tournamentType;
 
-  public function processPage() {
-		parent::processPage();
-  }
-	/**
-	*/
-	protected function htmlBody() {
-		$this->getMessages();
+    public function __construct() {
+        parent::__construct();
 
-		$content = "";
-		$action = isset($_GET['action']) ? $_GET['action'] : "";
-		$id     = isset($_GET['id']) ? $_GET['id'] : "";
+        $this->tools = new Tools();
+        $this->tools->secure_array($_GET);
 
-		if($action == "add_torunament") {
-			$content = $this->loadContentAddTournament($id);
-		} elseif($action == "details" && is_numeric($id)) {
-			$content = $this->loadDetailsContent($id);
-		} else if($action == "add" AND is_numeric($id)) {
-			$content = $this->loadAddContent($id);
-		} else if($action == "export" AND is_numeric($id)) {
-			$content = $this->export($id);
-		} else if($action == "deletePlayer" AND is_numeric($id) AND is_numeric($_GET['tournamentPlayerId'])) {
-			$content = $this->deletePlayerFromTorunament($id, $_GET['tournamentPlayerId']);
-		} else {
-			$content = $this->loadListContent();
-		}
+        $this->tournamentType = array('NBV', 'FUN', 'OTHER');
 
-    $this->smarty->assign(array(
-			'content' => $content,
-		));
-		$this->smarty->display('index.tpl');
-	}
+        $this->prgElementTournament = new PrgPatternElementTournament($this->brdb, $this->prgPatternElementLogin);
+        $this->prgPattern->registerPrg($this->prgElementTournament);
 
-	private function loadListContent() {
-		$this->smarty->assign(array(
-			'list'    => $this->getAllTournamentDataList(),
-		));
+        $this->variable['playerId']  = $this->prgElementTournament->getPrefixedName(PrgPatternElementTournament::FORM_INPUT_PLAYER);
+        $this->variable['partnerId'] = $this->prgElementTournament->getPrefixedName(PrgPatternElementTournament::FORM_INPUT_PARTNER);
+        $this->variable['disziplin'] = $this->prgElementTournament->getPrefixedName(PrgPatternElementTournament::FORM_INPUT_DISCIPLIN);
+    }
 
-		return $this->smarty->fetch('tournament/TournamentList.tpl');
-	}
+    public function processPage() {
+        parent::processPage();
+    }
+    /**
+    */
+    protected function htmlBody() {
+        $this->getMessages();
 
+        $content = "";
+        $action = $this->tools->get("action");
+        $id     = $this->tools->get("id");
 
-	private function loadContentAddTournament() {
-		$this->variable['playerId'] 	= $this->prgElementTournament->getPrefixedName(PrgPatternElementTournament::FORM_INPUT_TOURNAMENT_NAME);
-		$this->variable['partnerId'] 	= $this->prgElementTournament->getPrefixedName(PrgPatternElementTournament::FORM_INPUT_TOURNAMENT_PLACE);
-		$this->variable['disziplin']	= $this->prgElementTournament->getPrefixedName(PrgPatternElementTournament::FORM_INPUT_TOURNAMENT_STARTDATE);
-		$this->variable['disziplin']	= $this->prgElementTournament->getPrefixedName(PrgPatternElementTournament::FORM_INPUT_TOURNAMENT_ENDDATE);
-		$this->variable['disziplin']	= $this->prgElementTournament->getPrefixedName(PrgPatternElementTournament::FORM_INPUT_TOURNAMENT_STARTDATE);
-		$this->variable['disziplin']	= $this->prgElementTournament->getPrefixedName(PrgPatternElementTournament::FORM_INPUT_TOURNAMENT_LINK);
+        switch ($action) {
+          case 'add_tournament':
+            $content = $this->addTournamentTMPL($id);
+            break;
 
-		$this->smarty->assign(array(
-			'vars' => $this->variable,
-		));
-		return $this->smarty->fetch('tournament/TournamentAdd.tpl');
-	}
+          case 'edit_tournament':
+            $content = $this->editTournamentTMPL($id);
+            break;
 
-	/**
-		details of a tournament
-	*/
-	private function loadDetailsContent($id) {
-		if(!isset($id) or !is_numeric($id)) {
-			return "";
+          case 'details':
+            $content = $this->showDetailsTMPL($id);
+            break;
 
-		}
-		$this->smarty->assign(array(
-			'tournament'  => $this->brdb->getTournamentData($id)->fetch_assoc(),
-			'players'     => $this->getPlayersByTournamentId($id),
-			'disciplines' => $this->getDisciplinesByTournamentId($id),
-			'userid'      => '',
-		));
+          case 'add_player':
+            $content = $this->addPlayerToTournamentTMPL($id);
+            break;
 
-		return $this->smarty->fetch('tournament/TournamentDetails.tpl');
-	}
+          case 'backup':
+            $content = $this->TMPL_backup($id);
+            break;
 
-  /**
-		add player to tournament
-	*/
-	private function loadAddContent($id) {
-		$this->smarty->assign(array(
-			'tournament'  => $this->brdb->getTournamentData($id)->fetch_assoc(),
-			'players'     => $this->getAllPlayerDataList(),
-			'disciplines' => $this->getDisciplinesByTournamentId($id),
-		));
-		return $this->smarty->fetch('tournament/PlayerAdd.tpl');
-	}
+          case 'deletePlayer':
+            $content = $this->deletePlayerFromTorunament($id, $this->tools->get("tournamentPlayerId"));
+            break;
 
-	private function getAllPlayerDataList() {
-		$data = array();
-		$res = $this->brdb->selectAllPlayer();
-		if (!$this->brdb->hasError()) {
-			while ($dataSet = $res->fetch_assoc()) {
-				$data[] 		= array(
-					'userId'   => $dataSet['userId'],
-					'fullName' => $dataSet['fullName'],
-				);
-			}
-		}
-		return $data;
-	}
+          default:
+            $content = $this->showTournamentsTMPL();
+            break;
+        }
 
-	private function getClassID($id) {
-		$id = explode(" ", $id);
-		if(count($id) == 2) {
-			return $this->brdb->getClassIdByNameAndModus($name, $modus);
-		}
+        $this->smarty->assign(array(
+            'content' => $content,
+        ));
+        $this->smarty->display('index.tpl');
+    }
 
-		return null;
-	}
+    private function showTournamentsTMPL() {
+        $this->smarty->assign(array(
+            'tournamentList'       => $this->getAllTournamentDataList(),
+            'oldTournamentList'    => $this->getOldTournamentDataList(),
+        ));
 
-	private function export($id) {
-		if ($this->prgPatternElementLogin->getLoggedInUser()->isAdmin()) {
-			ob_end_flush();
-			unset($this->smarty);
+        return $this->smarty->fetch('tournament/TournamentList.tpl');
+    }
 
 
-			$players    = $this->brdb->getPlayersByTournamentId($id)->fetch_arroy();
-			$tournament = $this->brdb->getTournamentData($id)->fetch_assoc();
-			$fileName   = sprintf("%s_%s.xls", $tournament['name'], ""+ date("d.m.Y", $tournament['deadline']));
-			$writer     = WriterFactory::create(Type::XLSX); // for XLSX files
+    private function addTournamentTMPL() {
+        $classificationArr = $this->tools->getAgeClassArray();
+        $disciplineArr     = $this->tools->getModeArr();
 
-			//$writer->openToFile($filePath); // write data to a file or to a PHP stream
-			$writer->openToBrowser($fileName); // stream data directly to the browser
-			$singleRow = array('das', 'das');
-			$writer->addRow($singleRow); // add a row at a time
-			//$writer->addRows($multipleRows); // add multiple rows at a time
+        $this->smarty->assign(array(
+            'task'              => 'add',
+            'hidden'            => 'Insert Tournament',
+            'vars'              => $_POST,
+            'players'           => $this->getAllPlayerDataList(),
+            'classificationArr' => $classificationArr,
+            'disciplineArr'     => $disciplineArr,
+            'tournamentType'    => $this->tournamentType,
+        ));
+        return $this->smarty->fetch('tournament/TournamentAdd.tpl');
+    }
 
-			$writer->close();
 
-		}
-	}
+    private function editTournamentTMPL() {
+        // generell
+        $classificationArr = $this->tools->getAgeClassArray();
+        $disciplineArr     = $this->tools->getModeArr();
 
-	private function getAllTournamentDataList() {
-		$res = $this->brdb->selectTournamentList();
-		if (!$this->brdb->hasError()) {
-			$data = array();
-			while ($dataSet = $res->fetch_assoc()) {
-				$data[] 		= $dataSet;
-			}
+        $id                           = $this->tools->get("id");
+        $res                          = $this->brdb->getTournamentData($id);
+        $tournament                   = $res->fetch_assoc();
+        $tournament['classification'] = unserialize($tournament['classification']);
+        $tournament['discipline']     = unserialize($tournament['discipline']);
+        $tournament['additionalClassification']     = unserialize($tournament['additionalClassification']);
+        if(isset($tournament['additionalClassification'] ) && is_array($tournament['additionalClassification'])) {
+          $tournament['additionalClassification'] = implode(",", $tournament['additionalClassification']);
+        }
+        #die($tournament['additionalClassification'] );
 
-			return $data;
-		}
+        if(!$this->brdb->hasError()) {
+          $res = $this->brdb->getDisciplinesByTournamentId($id);
+          if($this->brdb->hasError()) {
+            return "Fehler";
+          }
+          $rows = array();
+          while ($row = $res->fetch_assoc()) {
+            $rows[] = $row;
+          }
 
-		return "";
-	}
+          $this->smarty->assign(array(
+            'task'   => 'edit',
+            'hidden' => 'Edit Tournament',
+            'vars'   => $tournament,
+            'disc'   => $rows,
+            'players'           => $this->getAllPlayerDataList(),
+            'classificationArr' => $classificationArr,
+            'disciplineArr'     => $disciplineArr,
+            'tournamentType'    => $this->tournamentType,
+          ));
+        }
 
-	private function getPlayersByTournamentId($id) {
-		$res = $this->brdb->getPlayersByTournamentId($id);
-		if (!$this->brdb->hasError()) {
-			$data = array();
-			while ($dataSet = $res->fetch_assoc()) {
-				$data[] 		= $dataSet;
-			}
+        return $this->smarty->fetch('tournament/TournamentAdd.tpl');
+    }
 
-			return $data;
-		}
+    /**
+        details of a tournament
+    */
+    private function showDetailsTMPL($id) {
+        if(!isset($id) or !is_numeric($id)) {
+            return "";
 
-		return "";
-	}
+        }
+        $tournament                   = $this->brdb->getTournamentData($id)->fetch_assoc();
+        $tournament['classification'] = $this->tools->formatClassification($tournament['classification']);
+        $tournament['discipline']     = $this->tools->formatDiscipline($tournament['discipline']);
+        if(isset($tournament['additionalClassification'])) {
+          $tournament['additionalClassification'] = unserialize($tournament['additionalClassification']);
+        }
 
-	private function getDisciplinesByTournamentId($id) {
-		$res = $this->brdb->getDisciplinesByTournamentId($id);
-		if (!$this->brdb->hasError()) {
-			$data = array();
-			while ($dataSet = $res->fetch_assoc()) {
-				$data[] 		= $dataSet;
-			}
+        $this->smarty->assign(array(
+            'tournament'  => $tournament,
+            'players'     => $this->getPlayersByTournamentId($id),
+            'disciplines' => $this->getDisciplinesByTournamentId($id),
+            'userid'      => '',
+        ));
 
-			return $data;
-		}
+        return $this->smarty->fetch('tournament/TournamentDetails.tpl');
+    }
 
-		return "";
-	}
+    /**
+        add player to tournament
+    */
+    private function addPlayerToTournamentTMPL($id) {
+        // load data
+        $tournament = $this->brdb->getTournamentData($id)->fetch_assoc();
+        $disciplines = "";
+        if(isset($tournament['classification']) && isset($tournament['discipline'])) {
+          $classifications = unserialize($tournament['classification']);
+          $disciplines     = unserialize($tournament['discipline']);
+          $additionalClassification     = unserialize($tournament['additionalClassification']);
+          $tmp = array();
+          if(isset($classifications) && count($classifications) == 1 && $classifications[0] == 'O19' && isset($additionalClassification) && is_array($additionalClassification)) {
+            $classifications = $additionalClassification;
+          }
+          foreach ($classifications as $classification) {
+              foreach ($disciplines as $discipline) {
+                  $tmp[] = $discipline ." ". $classification;
+              }
+          }
+          sort($tmp);
+          $disciplines = $tmp;
+        }
+        $linkToSupport = $this->tools->linkTo(array(
+          'page'   => 'support.php',
+          'action' => 'new_player',
+        ));
+        $this->smarty->assign(array(
+            'tournament'     => $tournament,
+            'clubs'          => $this->getAllPlayerDataListAndSortByClub(),
+            'disciplines'    => $disciplines,
+            'linkToSupport'  => $linkToSupport,
+        ));
+        return $this->smarty->fetch('tournament/PlayerAdd.tpl');
+    }
 
-	private function deletePlayerFromTorunament($tournamentId, $playerId) {
-		$this->prgElementTournament->deletePlayersFromTournamentId($tournamentId, $playerId);
-	}
+
+
+    private function TMPL_backup() {
+      $diff = "";
+
+      // compare two strings line by line
+
+      $res = $this->brdb->getTournamentBackup($_GET['id']);
+      while ($row = $res->fetch_assoc()) {
+        $rows[] = $row;
+      }
+      $this->smarty->assign(array(
+        'backup' => $rows,
+        'diff'   => $diff,
+      ));
+
+      if(isset($_GET['id']) && count($rows) > 1) {
+        $first  = $rows[0]['backupId'];
+        $second = $rows[1]['backupId'];
+        $res = $this->brdb->getTournamentBackupDiff($first, $second);
+        if($res) {
+            $rows = array();
+            while ($row = $res->fetch_assoc()) {
+              $rows[] = unserialize($row['data']);
+            }
+            $result = $this->arrayRecursiveDiff($rows[0], $rows[1]);
+            $this->smarty->assign(array(
+              'diffResult'   => $result,
+              'diff'         => $rows,
+            ));
+
+            #$diff = Diff::toTable(Diff::compare($rows[0], $rows[1]));
+        }
+      }
+
+      return $this->smarty->fetch('tournament/backup.tpl');
+    }
+
+
+    private function arrayRecursiveDiff($aArray1, $aArray2) {
+        $aReturn = array();
+
+        foreach ($aArray1 as $mKey => $mValue) {
+          if (array_key_exists($mKey, $aArray2)) {
+            if (is_array($mValue)) {
+              $aRecursiveDiff = $this->arrayRecursiveDiff($mValue, $aArray2[$mKey]);
+              if (count($aRecursiveDiff)) { $aReturn[$mKey] = $aRecursiveDiff; }
+            } else {
+              if ($mValue != $aArray2[$mKey]) {
+                $aReturn[$mKey] = $mValue;
+              }
+            }
+          } else {
+            $aReturn[$mKey] = $mValue;
+          }
+        }
+        return $aReturn;
+    }
+
+    private function getAllPlayerDataList() {
+        $data = array();
+        $res = $this->brdb->selectAllUser(); //SortBy('lastName', 'ASC');
+        if (!$this->brdb->hasError()) {
+            while ($dataSet = $res->fetch_assoc()) {
+                $data[]         = array(
+                    'clubId'   => $dataSet['clubId'],
+                    'userId'   => $dataSet['userId'],
+                    'fullName' => sprintf("%s %s", $dataSet['firstName'], $dataSet['lastName']),
+                );
+            }
+        }
+        return $data;
+    }
+
+    private function getAllPlayerDataListAndSortByClub() {
+        $players = $this->getAllPlayerDataList();
+        $res     = $this->brdb->selectAllClubs(0,0);
+
+        if (!$this->brdb->hasError()) {
+            while ($club = $res->fetch_assoc()) {
+              $club['players'] = array();
+              $clubs[$club['clubId']] = $club;
+            }
+            foreach ($players as $player) {
+              $clubs[$player['clubId']]['players'][] = $player;
+            }
+        }
+        return $clubs;
+    }
+
+    private function getClassID($id) {
+        $id = explode(" ", $id);
+        if(count($id) == 2) {
+            return $this->brdb->getClassIdByNameAndModus($name, $modus);
+        }
+
+        return null;
+    }
+
+
+
+    private function getAllTournamentDataList() {
+        $res = $this->brdb->selectTournamentList();
+        if (!$this->brdb->hasError()) {
+            $data = array();
+            while ($dataSet = $res->fetch_assoc()) {
+                $dataSet['classification'] = $this->tools->formatClassification($dataSet['classification']);
+                $data[] = $dataSet;
+            }
+
+            return $data;
+        }
+
+        return "";
+    }
+
+
+
+    private function getOldTournamentDataList() {
+        $res = $this->brdb->selectOldTournamentList();
+        if (!$this->brdb->hasError()) {
+            $data = array();
+            while ($dataSet = $res->fetch_assoc()) {
+                $dataSet['classification'] = $this->tools->formatClassification($dataSet['classification']);
+                $data[] = $dataSet;
+            }
+
+            return $data;
+        }
+
+        return "";
+    }
+
+    private function getPlayersByTournamentId($id) {
+        $res = $this->brdb->getPlayersByTournamentId($id);
+        if (!$this->brdb->hasError()) {
+            $data = array();
+            while ($dataSet = $res->fetch_assoc()) {
+                if($this->strpos_arr($dataSet['classification'], array('HD', 'DD', 'JD', 'MD', 'GD')) && $dataSet['partnerID'] == 0) {
+                  $dataSet['partnerID']   = 0;
+                  $dataSet['partnerName'] = 'FREI';
+                }
+                $data[]         = $dataSet;
+            }
+
+            return $data;
+        }
+
+        return "";
+    }
+
+    private function strpos_arr($search, $array) {
+      if(is_array($array) && count($array) > 0) {
+        foreach ($array as $value) {
+          $pos = strpos($search, $value);
+          if($pos !== false) {
+            return true;
+          }
+        }
+      }
+
+      return false;
+
+    }
+
+    private function getDisciplinesByTournamentId($id) {
+        $res = $this->brdb->getDisciplinesByTournamentId($id);
+
+        if (!$this->brdb->hasError()) {
+            $data = array();
+            while ($dataSet = $res->fetch_assoc()) {
+                #$data[]         = $dataSet;
+                $data[$dataSet['classID']] = $dataSet['name'] .' '. $dataSet['modus'];
+            }
+
+            return $data;
+        }
+
+        return "";
+    }
+
+    /** DELETE player
+      *
+      */
+    private function deletePlayerFromTorunament($tournamentId, $playerId) {
+        #$this->prgElementTournament->deletePlayersFromTournamentId($tournamentId, $playerId);
+    }
 }
 ?>

@@ -1,25 +1,7 @@
-# rangliste
-Rangliste für BC Comet Braunschweig
+---------
+README.sh
+---------
 
-
-# Aufbau der PHP-Klassen
-```
-HtmlPageProcessor
-|  __construct()
-|  processPage()
-|  htmlBody()
-|
-|- AHtmlLoginPage
-   |  __construct()
-   |  processPage()
-   |  getLoggedInUser()
-   |  htmlContent()
-   |  htmlBody()
-   |
-   |- BrdbHtmlPage
-      |
-      |
-      |- BrdbHtmlParseDownPage
-         |  __construct()
-         |  htmlBody()
-```
+# Programmierer
+Stefan Metzner
+Philip Fischer
