@@ -12,9 +12,7 @@
  * Stefan Metzner (stefan@weinekind.de)                   *
  *                                                        *
  ********************************************************/
-if(!defined("__PFAD__")) {
-    define("__PFAD__", "/var/www/bc-comet_de/intern/");
-}
+
 
 include_once __PFAD__ .'/inc/html/brdbHtmlPage.inc.php';
 include_once __PFAD__ .'/inc/logic/prgTournament.inc.php';

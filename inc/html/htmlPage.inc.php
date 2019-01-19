@@ -13,7 +13,7 @@
  *														*
  ********************************************************/
 
-require_once '../smarty/libs/Smarty.class.php';
+require_once __PFAD__ .'/smarty/libs/Smarty.class.php';
 #require_once '../inc/Config.php';
 #require_once '../inc/Route.php';
 
@@ -40,13 +40,14 @@ abstract class HtmlPageProcessor {
    */
   public function __construct() {
     $this->smarty = new Smarty;
+    // @TODO: set debug bar
     //$smarty->force_compile = true;
     #$this->smarty->debugging = true;
     #$smarty->caching = true;
     #$smarty->cache_lifetime = 120;
-    $this->smarty->setTemplateDir('./../smarty/templates');
-    $this->smarty->setCompileDir('./../smarty/templates_c');
-    $this->smarty->setConfigDir('./../smarty/configs');
+    $this->smarty->setTemplateDir(__PFAD__ .'smarty/templates');
+    $this->smarty->setCompileDir(__PFAD__ .'smarty/templates_c');
+    $this->smarty->setConfigDir(__PFAD__ .'smarty/configs');
 
     // remove notice
     $this->smarty->error_reporting = E_ALL & ~E_NOTICE;

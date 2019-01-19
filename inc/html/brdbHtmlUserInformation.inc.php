@@ -13,8 +13,8 @@
  *														*
  ********************************************************/
 
-include_once '../inc/html/brdbHtmlPage.inc.php';
-include_once '../inc/logic/prgUser.inc.php';
+include_once __PFAD__ .'/inc/html/brdbHtmlPage.inc.php';
+include_once __PFAD__ .'/inc/logic/prgUser.inc.php';
 
 
 class BrdbHtmlUserInformation extends BrdbHtmlPage {

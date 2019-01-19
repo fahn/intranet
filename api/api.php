@@ -12,11 +12,11 @@
 
 // test if __PFAD__ is defined
 if(!defined("__PFAD__")) {
-  define("__PFAD__", "/var/www/bc-comet_de/intern/");
+  define("__PFAD__", dirname(dirname(__FILE__)));
 }
 
-require_once(__PFAD__ ."inc/db/brdb.inc.php");
-require_once(__PFAD__ ."inc/logic/tools.inc.php");
+require_once(__PFAD__ ."/inc/db/brdb.inc.php");
+require_once(__PFAD__ ."/inc/logic/tools.inc.php");
 
 class Api {
   protected $brdb;

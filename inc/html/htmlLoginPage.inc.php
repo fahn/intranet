@@ -14,9 +14,9 @@
  ********************************************************/
 
  // test if __PFAD__ is defined
- if(!defined("__PFAD__")) {
-   define("__PFAD__", "/var/www/bc-comet_de/intern/");
- }
+ //if(!defined("__PFAD__")) {
+//   define("__PFAD__", "/var/www/bc-comet_de/intern/");
+// }
 
 
 include_once __PFAD__ .'inc/html/htmlPage.inc.php';

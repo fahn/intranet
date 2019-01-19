@@ -23,7 +23,7 @@
           </div>
 
           <div class="col-md-6 text-right">
-            <a href="https://int.bc-comet.de/pages/" class="btn btn-warning" role="button">Abbruch</a>
+            <a href="/pages/" class="btn btn-warning" role="button">Abbruch</a>
           </div>
         </div>
     </div>

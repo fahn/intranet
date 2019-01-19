@@ -14,9 +14,9 @@
  ********************************************************/
 
 
-include_once '../inc/logic/tools.inc.php';
-include_once '../inc/logic/prgTable.inc.php';
-include_once '../inc/logic/prgStatsTable.inc.php';
+include_once __PFAD__ .'/inc/logic/tools.inc.php';
+include_once __PFAD__ .'/inc/logic/prgTable.inc.php';
+include_once __PFAD__ .'/inc/logic/prgStatsTable.inc.php';
 
 /**
  * This class implements  some tools that are needed for the player and
@@ -27,7 +27,7 @@ include_once '../inc/logic/prgStatsTable.inc.php';
  *
  */
 class BrdbHtmlStatsTool {
-	
+
 	/**
 	 * Call this method to print a HTML link <a></a> tag into the current page
 	 * the href will be set with the correct settings for sorting the table column
@@ -36,10 +36,10 @@ class BrdbHtmlStatsTool {
 	 */
 	public static function htmlGetSortLinkFor(APrgStatsTablePattern $prgElementTable, $tableColumnName, $viewColumnName) {
 		$phpBaseName = basename($_SERVER[Tools::PHP_SELF]);
-		
+
 		$currentSortedColumn = $prgElementTable->getCurrentSortedColumn();
 		$currentSortedOrder = $prgElementTable->getCurrentSortedOrder();
-		
+
 		// In case the to be displayed column is the one that is currently selected for sorting
 		// the next link shold inverse the order. Standard is Asecending
 		$linkSortOrder = APrgSqlTablePattern::PRG_VARIABLE_VALUE_ORDER_ASC;
@@ -48,7 +48,7 @@ class BrdbHtmlStatsTool {
 				$linkSortOrder = APrgSqlTablePattern::PRG_VARIABLE_VALUE_ORDER_DESC;
 			}
 		}
-		
+
 		$fullLink = $phpBaseName . "?" . $prgElementTable->buildLinkVariables($viewColumnName, $linkSortOrder);
 		?>
 		<a href = "<?php echo $fullLink ;?>"><?php echo $tableColumnName ;?></a>

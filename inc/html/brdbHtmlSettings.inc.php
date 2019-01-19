@@ -13,10 +13,10 @@
  *                                                        *
  ********************************************************/
 
-include_once '../inc/html/brdbHtmlPage.inc.php';
-include_once '../inc/logic/prgTournament.inc.php';
-include_once '../inc/logic/prgPattern.inc.php';
-include_once '../inc/logic/tools.inc.php';
+include_once __PFAD__ .'/inc/html/brdbHtmlPage.inc.php';
+include_once __PFAD__ .'/inc/logic/prgTournament.inc.php';
+include_once __PFAD__ .'/inc/logic/prgPattern.inc.php';
+include_once __PFAD__ .'/inc/logic/tools.inc.php';
 
 class BrdbHtmlSettings extends BrdbHtmlPage {
     private $prgElementTournament;

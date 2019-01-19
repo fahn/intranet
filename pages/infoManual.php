@@ -13,10 +13,10 @@
  *														*
  ********************************************************/
 
-include_once '../inc/html/brdbHtmlParseDownPage.inc.php';
+include_once __PFAD__ .'/inc/html/brdbHtmlParseDownPage.inc.php';
 
 session_start();
 
-$page = new BrdbHtmlParseDownPage('../doc/Manual.md');
+$page = new BrdbHtmlParseDownPage(__PFAD__ .'/doc/Manual.md');
 $page->processPage();
 ?>

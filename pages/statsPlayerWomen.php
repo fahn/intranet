@@ -13,7 +13,7 @@
  *														*
  ********************************************************/
 
-include_once '../inc/html/brdbHtmlStatsPlayerPage.inc.php';
+include_once __PFAD__ .'/inc/html/brdbHtmlStatsPlayerPage.inc.php';
 
 session_start();
 

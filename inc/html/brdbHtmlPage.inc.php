@@ -13,8 +13,8 @@
  *														*
  ********************************************************/
 
-include_once '../inc/html/htmlLoginPage.inc.php';
-include_once '../inc/logic/prgGame.inc.php';
+include_once __PFAD__ .'/inc/html/htmlLoginPage.inc.php';
+include_once __PFAD__ .'/inc/logic/prgGame.inc.php';
 
 
 class BrdbHtmlPage extends AHtmlLoginPage {

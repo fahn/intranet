@@ -13,7 +13,7 @@
  *														*
  ********************************************************/
 
-include_once '../inc/html/brdbHtmlReportAllGamePage.inc.php';
+include_once __PFAD__ .'inc/html/brdbHtmlReportAllGamePage.inc.php';
 
 session_start();
 

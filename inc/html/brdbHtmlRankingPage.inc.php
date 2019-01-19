@@ -13,8 +13,8 @@
  *														*
  ********************************************************/
 
-include_once '../inc/html/brdbHtmlPage.inc.php';
-include_once '../inc/parsedown-1.6.0/Parsedown.php';
+include_once __PFAD__ .'/inc/html/brdbHtmlPage.inc.php';
+include_once __PFAD__ .'/inc/parsedown-1.6.0/Parsedown.php';
 
 
 class BrdbHtmlRankingPage extends BrdbHtmlPage {

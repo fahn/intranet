@@ -13,9 +13,9 @@
  *														*
  ********************************************************/
 
-include_once '../inc/html/brdbHtmlPage.inc.php';
-include_once '../inc/logic/prgClub.inc.php';
-include_once '../inc/logic/tools.inc.php';
+include_once __PFAD__ .'/inc/html/brdbHtmlPage.inc.php';
+include_once __PFAD__ .'/inc/logic/prgClub.inc.php';
+include_once __PFAD__ .'/inc/logic/tools.inc.php';
 
 class BrdbHtmlAdminAllClubPage extends BrdbHtmlPage {
   private $prgPatternElementClub;

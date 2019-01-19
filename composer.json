@@ -1,0 +1,6 @@
+{
+    "require": {
+        "nette/mail": "^2.4",
+         "erusev/parsedown": "1.6.0"
+    }
+}

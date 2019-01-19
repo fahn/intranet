@@ -136,13 +136,13 @@ var map;
            '<div id="bodyContent">'+
            '<p>Von '+ feature.start +' - '+ feature.end +' ('+ feature.deadline +')</p>'+
            '<p>Ort: '+ feature.place +'</p>'+
-           '<p><a href="https://int.bc-comet.de/pages/rankingTournament.php?action=details&id='+ feature.id +'">Details</a></p>'+
+           '<p><a href="/pages/rankingTournament.php?action=details&id='+ feature.id +'">Details</a></p>'+
            '</div>'+
            '</div>';
 
           google.maps.event.addListener(marker, 'click', function(){
                   if (feature.id) {
-                    content = "<div id='infowindow'><a href='https://int.bc-comet.de/pages/rankingTournament.php?action=details&id="+ feature.id +"'>"+ feature.name +" in "+ feature.place +"</a><br></div>";
+                    content = "<div id='infowindow'><a href='pages/rankingTournament.php?action=details&id="+ feature.id +"'>"+ feature.name +" in "+ feature.place +"</a><br></div>";
                   } else {
                     content = "<div id='infowindow'>"+ feature.name +" in "+ feature.place +"</div>";
                   }

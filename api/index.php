@@ -1,7 +1,11 @@
 <?php
 
-require("../inc/db/brdb.inc.php");
-require("../inc/logic/tools.inc.php");
+if(!defined("__PFAD__")) {
+  define("__PFAD__", dirname(dirname(__FILE__)));
+}
+
+require(__PFAD__ ."/inc/db/brdb.inc.php");
+require(__PFAD__ ."/inc/logic/tools.inc.php");
 
 class Api{
   protected $brdb;
@@ -39,7 +43,8 @@ class Api{
       $to = $row['email'];
       $subject = sprintf("Meldeschluss für %s", $row['name']);
       $preheader = $subject;
-      $link = "https://int.bc-comet.de/pages/rankingTournament.php?action=details&id=". $row['tournamentID'];
+      $ini = $this->tools->getini();
+      $link = $ini['baseUrl'] ."pages/rankingTournament.php?action=details&id=". $row['tournamentID'];
       $content = sprintf("Hallo %s,<br>Für das Turnier/Rangliste \"%s\" ist heute Meldeschluss.<br><br>Alle weitern Informationen gibt es <a href=''>hier</a>.", $row['reporterName'], $row['name']);
       if ( $this->tools->sendMail($to, $subject, $preheader, $content)) {
         $row['mail'] = "success";

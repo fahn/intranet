@@ -13,7 +13,7 @@
  *														*
  ********************************************************/
 
-include_once '../inc/html/brdbHtmlAdminAllClubPage.inc.php';
+include_once __PFAD__ .'inc/html/brdbHtmlAdminAllClubPage.inc.php';
 
 session_start();
 

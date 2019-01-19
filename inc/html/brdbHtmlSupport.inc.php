@@ -13,9 +13,9 @@
  *														*
  ********************************************************/
 
-include_once '../inc/html/brdbHtmlPage.inc.php';
-include_once '../inc/logic/prgSupport.inc.php';
-include_once '../inc/logic/tools.inc.php';
+include_once __PFAD__ .'/inc/html/brdbHtmlPage.inc.php';
+include_once __PFAD__ .'/inc/logic/prgSupport.inc.php';
+include_once __PFAD__ .'/inc/logic/tools.inc.php';
 
 
 class brdbHtmlSupport extends BrdbHtmlPage {

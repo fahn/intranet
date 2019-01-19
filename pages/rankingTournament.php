@@ -1,6 +1,6 @@
 <?php
 
-include_once '../inc/html/brdbHtmlTournamentPage.inc.php';
+include_once __PFAD__ .'inc/html/brdbHtmlTournamentPage.inc.php';
 
 session_start();
 

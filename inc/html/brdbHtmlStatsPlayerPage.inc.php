@@ -13,11 +13,11 @@
  *														*
  ********************************************************/
 
-include_once '../inc/html/brdbHtmlPage.inc.php';
-include_once '../inc/html/brdbHtmlStatsTools.inc.php';
-include_once '../inc/logic/prgTable.inc.php';
-include_once '../inc/logic/prgStatsTable.inc.php';
-include_once '../inc/logic/tools.inc.php';
+include_once __PFAD__ .'/inc/html/brdbHtmlPage.inc.php';
+include_once __PFAD__ .'/inc/html/brdbHtmlStatsTools.inc.php';
+include_once __PFAD__ .'/inc/logic/prgTable.inc.php';
+include_once __PFAD__ .'/inc/logic/prgStatsTable.inc.php';
+include_once __PFAD__ .'/inc/logic/tools.inc.php';
 
 /**
  * A General Page for displaying Player / Single Game Results

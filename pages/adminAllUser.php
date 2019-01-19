@@ -13,7 +13,7 @@
  *														*
  ********************************************************/
 
-include_once '../inc/html/brdbHtmlAdminAllUserPage.inc.php';
+include_once __PFAD__ .'inc/html/brdbHtmlAdminAllUserPage.inc.php';
 
 session_start();
 

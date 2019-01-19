@@ -1,6 +1,6 @@
 <?php
 
-include_once __PFAD__ .'inc/logic/tools.inc.php';
+include_once __PFAD__ .'/inc/logic/tools.inc.php';
 /**
  * Common methods for accessing the Badminton Ranking
  * Data Base
@@ -200,14 +200,7 @@ class BrankDB {
 
     public function __construct() {
       $this->tools = new Tools();
-      $stage       = $this->tools->get("stage");
-
-      if(isset($stage) && $stage == "debug") {
-        $this->ini = parse_ini_file(__PFAD__ .'inc/config_debug.ini');
-      } else {
-        $this->ini = parse_ini_file(__PFAD__ .'inc/config.ini');
-      }
-
+      $this->ini = $this->tools->getIni();
 
     }
 

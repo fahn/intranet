@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.0.5] - 2019-01-20
+- remove static paths
+- add new options to config
+- ready for docker
+
 ## [1.0.4] - 2018-02-25
 - Fix and add icons to Menu  
 - fixed serveral bugs  
@@ -14,7 +19,7 @@ All notable changes to this project will be documented in this file.
 - Version für alle Mitglieder frei geschalten.  
 
 ## [1.0.3] - 2018-02-09
-- 
+-
 
 ## [1.0.2] - 2017-11-23
 - Add Clubs: edit, add a new club

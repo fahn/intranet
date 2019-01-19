@@ -13,10 +13,10 @@
  *														*
  ********************************************************/
 
-include_once '../inc/html/brdbHtmlParseDownPage.inc.php';
+include_once __PFAD__ .'inc/html/brdbHtmlParseDownPage.inc.php';
 
 session_start();
 
-$page = new BrdbHtmlParseDownPage('../LICENSE.md');
+$page = new BrdbHtmlParseDownPage(__PFAD__ .'/LICENSE.md');
 $page->processPage();
 ?>

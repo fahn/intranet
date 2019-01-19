@@ -13,7 +13,7 @@
  *														*
  ********************************************************/
 
-include_once '../inc/html/brdbHtmlAdminRanking.inc.php';
+include_once __PFAD__ .'inc/html/brdbHtmlAdminRanking.inc.php';
 
 session_start();
 

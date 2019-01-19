@@ -9,7 +9,7 @@
         <p><strong>Zeitraum:</strong> {$tournament.startdate|date_format:"%d.%m.%Y"} - {$tournament.enddate|date_format:"%d.%m.%Y"}</p>
         <p><strong>Meldeschluss:</strong> <span class="text-{if $tournament.deadline|strtotime < $smarty.now}danger{else}success{/if}">{$tournament.deadline|date_format:"%d.%m.%Y"}</span></p>
         <p><strong>Ausschreibung:</strong> {if $tournament.link}<a href="{$tournament.link}" target="_blank">Link zur Ausschreibung</a>{else}-{/if}</p>
-        <p><strong>Melder:</strong> <a href="https://int.bc-comet.de/pages/user.php?id={$tournament.reporterId}">{$tournament.reporterName}</a><br>
+        <p><strong>Melder:</strong> <a href="/pages/user.php?id={$tournament.reporterId}">{$tournament.reporterName}</a><br>
         {if $tournament.classification}
           <p><strong>Altersklassen:</strong> {$tournament.classification}
           {if $tournament.additionalClassification}{$tournament.additionalClassification|implode:","}{/if}</p>

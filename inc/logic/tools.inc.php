@@ -28,7 +28,8 @@ class Tools {
     private $ageClassArr = array('U9', 'U11', 'U13', 'U15', 'U17', 'U19', 'U22', 'O19', 'O35', 'O40', 'O45', 'O50', 'O55', 'O60', 'O65', 'O70', 'O75');
     private $modeArr     = array('HE', 'JE', 'DE', 'ME', 'HD', 'JD', 'DD', 'MD', 'GD');
 
-    private $baseUrl      = "https://int.bc-comet.de/pages/";
+
+    private $ini         = $this->getIni();
 
     public static function escapeInput($data) {
         if(is_array($data)) {
@@ -62,6 +63,16 @@ class Tools {
             header("Location: ". $url);
             exit("Exit of the PRG pattern...");
         }
+    }
+
+    public function getIni() {
+      if ($this->get("stage") == 'debug') {
+        $file = __PFAD__ .'/inc/config_debug.ini';
+      } else {
+        $file = __PFAD__ .'/inc/config.ini'
+      }
+
+      return parse_ini_file($file);
     }
 
     function secure_array(&$array) {
@@ -149,8 +160,6 @@ class Tools {
     }
 
     private function sendHtmlMail($email, $name, $subject, $preheader,  $content, $assign = false, $template = false) {
-      $fromEmail = "intern@bc-comet.de";
-      $fromName  = "BC Comet Intern";
 
       // message
       $smarty = new Smarty();
@@ -177,7 +186,8 @@ class Tools {
       $txtContent = strip_tags($content);
 
       $mail = new Message;
-      $mail->setFrom('BC Comet Intern <intern@int.bc-comet.de>')
+      $from = sprintf("%s <%s>", $this->ini['senderName'], $this->ini['senderMail']);
+      $mail->setFrom($from)
           ->addTo($email)
           ->setSubject($subject)
           ->setBody($txtContent)
@@ -195,7 +205,7 @@ class Tools {
 
     function getGoogleLatAndLng($address) {
         $prepAddr  = str_replace(' ','+',$address);
-        $geocode   = file_get_contents('https://maps.google.com/maps/api/geocode/json?key=AIzaSyCt9xKhw9W6PJtpAn8CppDFFwPK_RjFetk&address='.$prepAddr.'&sensor=false');
+        $geocode   = file_get_contents('https://maps.google.com/maps/api/geocode/json?key='. $this->ini['GoogleMapsKey'] .'&address='. $prepAddr .'&sensor=false');
         $output    = json_decode($geocode);
         $latitude  = $output->results[0]->geometry->location->lat;
         $longitude = $output->results[0]->geometry->location->lng;
@@ -207,7 +217,7 @@ class Tools {
     */
     function linkTo($data) {
       if(isset($data) && is_array($data) && count($data) > 0) {
-        if(!isset($data['page']) || !file_exists( __PFAD__ .'pages/'. $data['page']) ) {
+        if(!isset($data['page']) || !file_exists( __PFAD__ .'/pages/'. $data['page']) ) {
           return "#";
         }
 
@@ -222,15 +232,18 @@ class Tools {
             $addParams = "?". implode("&", $urlArr);
         }
 
-        return $this->baseUrl . $data['page'] . $addParams;
+        return $this->ini['baseUrl'] . $data['page'] . $addParams;
 
       }
 
       return "#";
     }
 
+    /**
+    * return baseUrl from file
+    */
     public function getBaseUrl() {
-        return $this->baseUrl;
+        return $this->ini['baseUrl'];
     }
 
 /*

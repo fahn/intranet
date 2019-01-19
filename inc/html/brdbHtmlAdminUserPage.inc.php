@@ -13,30 +13,30 @@
  *														*
  ********************************************************/
 
-include_once '../inc/html/brdbHtmlPage.inc.php';
-include_once '../inc/logic/prgUser.inc.php';
-include_once '../inc/logic/tools.inc.php';
+include_once __PFAD__ .'/inc/html/brdbHtmlPage.inc.php';
+include_once __PFAD__ .'/inc/logic/prgUser.inc.php';
+include_once __PFAD__ .'/inc/logic/tools.inc.php';
 
 class BrdbHtmlAdminUserPage extends BrdbHtmlPage {
 	private $prgElementUser;
-	
+
 	public function __construct() {
 		parent::__construct();
-    
+
     if(!showProtectedArea) {
       die("NO ACCESS");
     }
-    
+
 		$this->prgElementUser = new PrgPatternElementUser($this->brdb, $this->prgPatternElementLogin);
 		$this->prgPattern->registerPrg($this->prgElementUser);
 	}
-	
+
 	protected function showProtectedArea() {
 		return $this->prgPatternElementLogin->getLoggedInUser()->isAdmin();
 	}
-	
+
 	const INPUT_RADIO_ATTRIBUTE_CHECKED = 'checked = "checked"';
-	
+
 	protected function htmlBodyProtectedArea() {
 		$variableNameEmail 					= $this->prgElementUser->getPrefixedName(PrgPatternElementUser::FORM_USER_EMAIL);
 		$variableNameFName 					= $this->prgElementUser->getPrefixedName(PrgPatternElementUser::FORM_USER_FNAME);
@@ -48,16 +48,16 @@ class BrdbHtmlAdminUserPage extends BrdbHtmlPage {
 		$variableNamePassw 					= $this->prgElementUser->getPrefixedName(PrgPatternElementUser::FORM_USER_PASSWORD);
 		$variableNamePassw2					= $this->prgElementUser->getPrefixedName(PrgPatternElementUser::FORM_USER_PASSWORD2);
 		$variableNameAction 				= $this->prgElementUser->getPrefixedName(PrgPatternElementUser::FORM_USER_ACTION);
-		
+
 		$variableNameActionUpdateAccount 	= PrgPatternElementUser::FORM_USER_ACTION_UPDATE_ACCOUNT;
 		$variableNameGenderMale				= PrgPatternElementUser::FORM_USER_GENDER_MALE;
 		$variableNameGenderFemale			= PrgPatternElementUser::FORM_USER_GENDER_FEMALE;
-		
+
 		$variableNameIsYes					= PrgPatternElementUser::FORM_USER_IS_YES;
 		$variableNameIsNo					= PrgPatternElementUser::FORM_USER_IS_NO;
-		
+
 		$adminUser = $this->prgElementUser->getAdminUser();
-		
+
 		$variableNameEmailValue		= strval($adminUser->email);
 		$variableNameFNameValue		= strval($adminUser->firstName);
 		$variableNameLNameValue		= strval($adminUser->lastName);
@@ -65,7 +65,7 @@ class BrdbHtmlAdminUserPage extends BrdbHtmlPage {
 		$variableNamePlayerValue	= strval($adminUser->isPlayer());
 		$variableNameAdminValue		= strval($adminUser->isAdmin());
 		$variableNameReporterValue	= strval($adminUser->isReporter());
-		
+
 		$checkedAttributeGenderMale 	= ($variableNameGenderValue === $variableNameGenderMale) 	? self::INPUT_RADIO_ATTRIBUTE_CHECKED : "";
 		$checkedAttributeGenderFemale 	= ($variableNameGenderValue === $variableNameGenderFemale) 	? self::INPUT_RADIO_ATTRIBUTE_CHECKED : "";
 
@@ -74,23 +74,23 @@ class BrdbHtmlAdminUserPage extends BrdbHtmlPage {
 
 		$checkedAttributeIsAdminYes 	= ($variableNameAdminValue == 1) 		? self::INPUT_RADIO_ATTRIBUTE_CHECKED : "";
 		$checkedAttributeIsAdminNo 		= ($variableNameAdminValue == 0) 		? self::INPUT_RADIO_ATTRIBUTE_CHECKED : "";
-		
+
 		$checkedAttributeIsReporterYes 	= ($variableNameReporterValue == 1) 	? self::INPUT_RADIO_ATTRIBUTE_CHECKED : "";
 		$checkedAttributeIsReporterNo 	= ($variableNameReporterValue == 0) 	? self::INPUT_RADIO_ATTRIBUTE_CHECKED : "";
-		
+
 
 	}
-	
+
 	public function htmlBody() {
-    
+
     $this->smarty->assign(array(
       'content' => $this->loadContent(),
     ));
-    
+
     $this->smarty->display('index.tpl');
   }
-  
-  
+
+
   private function loadContent() {
     return $this->smarty->fetch('admin/users.tpl');
   }

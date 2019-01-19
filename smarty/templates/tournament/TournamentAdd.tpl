@@ -150,7 +150,7 @@
       <input type="submit" name="submit" class="btn btn-success btn-wide" value="Turnier {if $task == "add"}hinzufügen{else}editieren{/if}">
     </div>
     <div class="col-md-6 text-right">
-      <a class="btn btn-danger" href="https://int.bc-comet.de/pages/rankingTournament.php">Zurück</a>
+      <a class="btn btn-danger" href="/pages/rankingTournament.php">Zurück</a>
     </div>
   </div>
 </form>
