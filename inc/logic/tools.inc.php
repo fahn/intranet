@@ -15,7 +15,6 @@
 
 include_once __PFAD__ .'smarty/libs/Smarty.class.php';
 
-
 use Nette\Mail\SendmailMailer;
 use Nette\Mail\Message;
 /**
