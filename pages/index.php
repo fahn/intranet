@@ -13,7 +13,7 @@
  *														*
  ********************************************************/
 
- define("__PFAD__", dir(__FILE__));
+ define("__PFAD__", dir(__FILE__) ."/../");
 
 include_once __PFAD__ .'inc/html/brdbHtmlPage.inc.php';
 
@@ -21,4 +21,6 @@ session_start();
 
 $page = new BrdbHtmlPage();
 $page->processPage();
+
+
 ?>
