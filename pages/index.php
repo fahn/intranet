@@ -13,7 +13,7 @@
  *														*
  ********************************************************/
 
- define("__PFAD__", "/var/www/bc-comet_de/intern/");
+ define("__PFAD__", dir(__FILE__));
 
 include_once __PFAD__ .'inc/html/brdbHtmlPage.inc.php';
 
