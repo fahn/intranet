@@ -14,7 +14,7 @@
  ********************************************************/
 
 include_once __PFAD__ .'smarty/libs/Smarty.class.php';
-require __DIR__ . '/../vendor/autoload.php';
+
 
 use Nette\Mail\SendmailMailer;
 use Nette\Mail\Message;
