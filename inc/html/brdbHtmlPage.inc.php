@@ -12,6 +12,9 @@
  * Philipp M. Fischer (phil.m.fischer@googlemail.com)	*
  *														*
  ********************************************************/
+if( ! defined("__PFAD__") ) {
+	define("__PFAD__", dirname(__FILE__) ."/../");
+}
 
 include_once __PFAD__ .'/inc/html/htmlLoginPage.inc.php';
 include_once __PFAD__ .'/inc/logic/prgGame.inc.php';

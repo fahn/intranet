@@ -1,26 +1,21 @@
 <?php
-/********************************************************
- * This file belongs to the Badminton Ranking Project.	*
- *														*
- * Copyright 2017										*
- *														*
- * All Rights Reserved									*
- *														*
- * Copying, distribution, usage in any form is not 		*
- * allowed without  written permit.						*
- *														*
- * Philipp M. Fischer (phil.m.fischer@googlemail.com)	*
- *														*
- ********************************************************/
+/*******************************************************************************
+ * Badminton Intranet System
+ * Copyright 2017-2019
+ * All Rights Reserved
+ *
+ * Copying, distribution, usage in any form is not
+ * allowed without  written permit.
+ *
+ * Stefan Metzner <stefan@weinekind.de>
+ * Philipp M. Fischer <phil.m.fischer@googlemail.com>
+ *
+ ******************************************************************************/
 
-define("__PFAD__", dirname(__FILE__) ."/../");
-
+require_once '_options.php';
 include_once __PFAD__ .'/inc/html/brdbHtmlPage.inc.php';
-
-session_start();
 
 $page = new BrdbHtmlPage();
 $page->processPage();
-
 
 ?>

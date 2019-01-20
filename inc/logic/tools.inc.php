@@ -13,7 +13,10 @@
  *                                                        *
  ********************************************************/
 
-include_once __PFAD__ .'smarty/libs/Smarty.class.php';
+# 
+define("__PFAD__", dirname(__FILE__) ."/../");
+
+include_once __PFAD__ .'/smarty/libs/Smarty.class.php';
 
 use Nette\Mail\SendmailMailer;
 use Nette\Mail\Message;
@@ -29,7 +32,11 @@ class Tools {
     private $modeArr     = array('HE', 'JE', 'DE', 'ME', 'HD', 'JD', 'DD', 'MD', 'GD');
 
 
-    private $ini         = $this->getIni();
+    private $ini;
+
+    public function __construct() {
+      $this->ini = $this->getIni();
+    }
 
     public static function escapeInput($data) {
         if(is_array($data)) {
@@ -69,7 +76,7 @@ class Tools {
       if ($this->get("stage") == 'debug') {
         $file = __PFAD__ .'/inc/config_debug.ini';
       } else {
-        $file = __PFAD__ .'/inc/config.ini'
+        $file = __PFAD__ .'/inc/config.ini';
       }
 
       return parse_ini_file($file);
@@ -232,7 +239,7 @@ class Tools {
             $addParams = "?". implode("&", $urlArr);
         }
 
-        return $this->ini['baseUrl'] . $data['page'] . $addParams;
+        return $this->getBaseUrl() . $data['page'] . $addParams;
 
       }
 

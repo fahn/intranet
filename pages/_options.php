@@ -11,12 +11,12 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
- 
 
-require_once '_options.php';
-include_once __PFAD__ .'/inc/html/brdbHtmlStatsPlayerPage.inc.php';
+if( ! defined("__PFAD__") ) {
+	define("__PFAD__", dirname(__FILE__) ."/../");
+}
 
-$page = new BrdbHtmlStatsPlayerDisciplineSingleMenPage();
-$page->processPage();
+session_start();
+
 
 ?>
