@@ -11,10 +11,9 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
- 
+
 require_once '_options.php';
 include_once __PFAD__ .'/inc/html/brdbHtmlParseDownPage.inc.php';
-
 
 $page = new BrdbHtmlParseDownPage(__PFAD__ .'/doc/Manual.md');
 $page->processPage();
