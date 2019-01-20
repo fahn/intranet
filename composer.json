@@ -1,6 +1,7 @@
 {
     "require": {
+        "erusev/parsedown": "^1.7",
         "nette/mail": "^2.4",
-         "erusev/parsedown": "1.6.0"
+        "box/spout": "^2.7"
     }
 }

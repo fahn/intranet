@@ -1,20 +1,19 @@
 <?php
-/********************************************************
- * This file belongs to the Badminton Ranking Project.	*
- *														*
- * Copyright 2017										*
- *														*
- * All Rights Reserved									*
- *														*
- * Copying, distribution, usage in any form is not 		*
- * allowed without written permit.						*
- *														*
- * Philipp M. Fischer (phil.m.fischer@googlemail.com)	*
- *														*
- ********************************************************/
+/*******************************************************************************
+ * Badminton Intranet System
+ * Copyright 2017-2019
+ * All Rights Reserved
+ *
+ * Copying, distribution, usage in any form is not
+ * allowed without  written permit.
+ *
+ * Stefan Metzner <stefan@weinekind.de>
+ * Philipp M. Fischer <phil.m.fischer@googlemail.com>
+ *
+ ******************************************************************************/
 
-include_once '../inc/db/brdb.inc.php';
-include_once '../inc/logic/prgPattern.inc.php';
+include_once __PFAD__ .'/inc/db/brdb.inc.php';
+include_once __PFAD__ .'/inc/logic/prgPattern.inc.php';
 
 /**
  * This prg pattern ahndles all the post and get actions

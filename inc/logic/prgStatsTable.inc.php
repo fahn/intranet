@@ -1,22 +1,21 @@
 <?php
-/********************************************************
- * This file belongs to the Badminton Ranking Project.	*
- *														*
- * Copyright 2017										*
- *														*
- * All Rights Reserved									*
- *														*
- * Copying, distribution, usage in any form is not 		*
- * allowed without  written permit.						*
- *														*
- * Philipp M. Fischer (phil.m.fischer@googlemail.com)	*
- *														*
- ********************************************************/
+/*******************************************************************************
+ * Badminton Intranet System
+ * Copyright 2017-2019
+ * All Rights Reserved
+ *
+ * Copying, distribution, usage in any form is not
+ * allowed without  written permit.
+ *
+ * Stefan Metzner <stefan@weinekind.de>
+ * Philipp M. Fischer <phil.m.fischer@googlemail.com>
+ *
+ ******************************************************************************/
 
-include_once '../inc/db/brdb.inc.php';
-include_once '../inc/db/user.inc.php';
-include_once '../inc/logic/prgPattern.inc.php';
-include_once '../inc/logic/prgTable.inc.php';
+include_once __PFAD__ .'/inc/db/brdb.inc.php';
+include_once __PFAD__ .'/inc/db/user.inc.php';
+include_once __PFAD__ .'/inc/logic/prgPattern.inc.php';
+include_once __PFAD__ .'/inc/logic/prgTable.inc.php';
 
 /**
  * This class registers the columns of a general result view
@@ -24,7 +23,7 @@ include_once '../inc/logic/prgTable.inc.php';
  *
  */
 abstract class APrgStatsTablePattern extends APrgSqlTablePattern {
-	
+
 	const PRG_TABLE_CLM_POSITION 		= "position";
 	const PRG_TABLE_CLM_RANK_POINTS 	= "rankPoints";
 	const PRG_TABLE_CLM_RANK_TYPE 		= "rankType";
@@ -43,7 +42,7 @@ abstract class APrgStatsTablePattern extends APrgSqlTablePattern {
 
 	public function __construct($viewName, BrankDB $brdb) {
 		parent::__construct($viewName, $brdb);
-		
+
 		$this->registerColumn(self::PRG_TABLE_CLM_POSITION);
 		$this->registerColumn(self::PRG_TABLE_CLM_RANK_POINTS);
 		$this->registerColumn(self::PRG_TABLE_CLM_RANK_TYPE);
@@ -68,14 +67,14 @@ abstract class APrgStatsTablePattern extends APrgSqlTablePattern {
  *
  */
 class PrgPlayerStatsTablePattern extends APrgStatsTablePattern {
-	
+
 	const PRG_TABLE_CLM_USER_ID 	= "userId";
 	const PRG_TABLE_CLM_FIRST_NAME 	= "firstName";
 	const PRG_TABLE_CLM_LAST_NAME	= "lastName";
-	
+
 	public function __construct($viewName, BrankDB $brdb) {
 		parent::__construct($viewName, $brdb);
-		
+
 		$this->registerColumn(self::PRG_TABLE_CLM_USER_ID);
 		$this->registerColumn(self::PRG_TABLE_CLM_FIRST_NAME);
 		$this->registerColumn(self::PRG_TABLE_CLM_LAST_NAME);
@@ -88,7 +87,7 @@ class PrgPlayerStatsTablePattern extends APrgStatsTablePattern {
  *
  */
 class PrgTeamStatsTablePattern extends APrgStatsTablePattern{
-	
+
 	const PRG_TABLE_CLM_TEAM_ID 			= "teamId";
 	const PRG_TABLE_CLM_TEAM_NAME 			= "teamName";
 	const PRG_TABLE_CLM_PLAYER1_ID 			= "player1Id";
@@ -97,10 +96,10 @@ class PrgTeamStatsTablePattern extends APrgStatsTablePattern{
 	const PRG_TABLE_CLM_PLAYER2_ID 			= "player2Id";
 	const PRG_TABLE_CLM_PLAYER2_FIRST_NAME 	= "player2FirstName";
 	const PRG_TABLE_CLM_PLAYER2_LAST_NAME	= "player2LastName";
-	
+
 	public function __construct($viewName, BrankDB $brdb) {
 		parent::__construct($viewName, $brdb);
-		
+
 		$this->registerColumn(self::PRG_TABLE_CLM_TEAM_ID);
 		$this->registerColumn(self::PRG_TABLE_CLM_TEAM_NAME);
 		$this->registerColumn(self::PRG_TABLE_CLM_PLAYER1_ID);

@@ -1,22 +1,20 @@
 <?php
-/********************************************************
- * This file belongs to the Badminton Ranking Project.    *
- *                                                        *
- * Copyright 2017                                        *
- *                                                        *
- * All Rights Reserved                                    *
- *                                                        *
- * Copying, distribution, usage in any form is not         *
- * allowed without  written permit.                        *
- *                                                        *
- * Philipp M. Fischer (phil.m.fischer@googlemail.com)    *
- *                                                        *
- ********************************************************/
-
-# 
-define("__PFAD__", dirname(__FILE__) ."/../");
+/*******************************************************************************
+ * Badminton Intranet System
+ * Copyright 2017-2019
+ * All Rights Reserved
+ *
+ * Copying, distribution, usage in any form is not
+ * allowed without  written permit.
+ *
+ * Stefan Metzner <stefan@weinekind.de>
+ * Philipp M. Fischer <phil.m.fischer@googlemail.com>
+ *
+ ******************************************************************************/
 
 include_once __PFAD__ .'/smarty/libs/Smarty.class.php';
+
+require_once __PFAD__ .'vendor/autoload.php';
 
 use Nette\Mail\SendmailMailer;
 use Nette\Mail\Message;
@@ -251,6 +249,14 @@ class Tools {
     */
     public function getBaseUrl() {
         return $this->ini['baseUrl'];
+    }
+
+
+    public function maintenance() {
+      if ($this->ini['maintenance'] == "off") {
+        return false;
+      }
+      return true;
     }
 
 /*

@@ -23,7 +23,7 @@
         <option>Allgemeines</option>
         <option>Probleme beim Intern</option>
         <option>Vorstand</option>
-        <option>Sosntiges</option>
+        <option>Sonstiges</option>
       </select>
     </div>
     </div>

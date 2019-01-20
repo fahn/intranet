@@ -1,6 +1,5 @@
-{include file="header.tpl"}
+{include file="header.tpl" pageTitle=$pageTitle}
 <body id="page">
-
   <div class="container">
     {include file="navi.tpl"}
     {include file="messages.tpl"}

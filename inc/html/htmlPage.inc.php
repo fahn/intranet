@@ -1,19 +1,19 @@
 <?php
-/********************************************************
- * This file belongs to the Badminton Ranking Project.	*
- *														*
- * Copyright 2017										*
- *														*
- * All Rights Reserved									*
- *														*
- * Copying, distribution, usage in any form is not 		*
- * allowed without  written permit.						*
- *														*
- * Philipp M. Fischer (phil.m.fischer@googlemail.com)	*
- *														*
- ********************************************************/
+/*******************************************************************************
+ * Badminton Intranet System
+ * Copyright 2017-2019
+ * All Rights Reserved
+ *
+ * Copying, distribution, usage in any form is not
+ * allowed without  written permit.
+ *
+ * Stefan Metzner <stefan@weinekind.de>
+ * Philipp M. Fischer <phil.m.fischer@googlemail.com>
+ *
+ ******************************************************************************/
 
 require_once __PFAD__ .'/smarty/libs/Smarty.class.php';
+require_once __PFAD__ .'/inc/logic/tools.inc.php';
 #require_once '../inc/Config.php';
 #require_once '../inc/Route.php';
 
@@ -34,11 +34,15 @@ abstract class HtmlPageProcessor {
 
     protected $content;
 
+    protected $tools;
+
   /**
    * Standard constructor which gets called
    * by some derived classes
    */
   public function __construct() {
+    $this->tools = new Tools;
+
     $this->smarty = new Smarty;
     // @TODO: set debug bar
     //$smarty->force_compile = true;
@@ -51,6 +55,12 @@ abstract class HtmlPageProcessor {
 
     // remove notice
     $this->smarty->error_reporting = E_ALL & ~E_NOTICE;
+
+
+    $ini = $this->tools->getIni();
+    $this->smarty->assign(array(
+        'pageTitle' => $ini['pageTitle'],
+      ));
 
   }
 

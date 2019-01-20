@@ -1,23 +1,16 @@
 <?php
-/********************************************************
- * This file belongs to the Badminton Ranking Project.    *
- *                                                        *
- * Copyright 2017                                        *
- *                                                        *
- * All Rights Reserved                                    *
- *                                                        *
- * Copying, distribution, usage in any form is not         *
- * allowed without  written permit.                        *
- *                                                        *
- * Philipp M. Fischer (phil.m.fischer@googlemail.com)    *
- *                                                        *
- ********************************************************/
-
- // test if __PFAD__ is defined
- //if(!defined("__PFAD__")) {
-//   define("__PFAD__", "/var/www/bc-comet_de/intern/");
-// }
-
+/*******************************************************************************
+ * Badminton Intranet System
+ * Copyright 2017-2019
+ * All Rights Reserved
+ *
+ * Copying, distribution, usage in any form is not
+ * allowed without  written permit.
+ *
+ * Stefan Metzner <stefan@weinekind.de>
+ * Philipp M. Fischer <phil.m.fischer@googlemail.com>
+ *
+ ******************************************************************************/
 
 include_once __PFAD__ .'inc/html/htmlPage.inc.php';
 include_once __PFAD__ .'inc/logic/prgLogin.inc.php';
@@ -42,7 +35,7 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
 
     protected $prgPatternElementLogin;
 
-    private $tools;
+    protected $tools;
 
 
     /**
@@ -57,6 +50,12 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
 
         /* TOOLS */
         $this->tools = new Tools();
+
+        $ini = $this->tools->getIni();
+
+        if ( $this->tools->maintenance()) {
+          $this->tools->customRedirect('maintenance.php');
+        }
 
         /* SQL CONNECTION */
         $this->brdb = new BrankDB();
@@ -174,12 +173,18 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
                 $variableNameAction             = $this->prgPatternElementLogin->getPrefixedName(PrgPatternElementLogin::FORM_LOGIN_ACTION);
                 $variableNameActionLogin        = PrgPatternElementLogin::FORM_LOGIN_ACTION_LOGIN;
 
+                $ini = $this->tools->getIni();
+
                 $this->smarty->assign(array(
                     'variableNameEmail'       => $variableNameEmail,
                     'variableNamePassw'       => $variableNamePassw,
                     'formTO'                  => '',
                     'variableNameAction'      => $variableNameAction,
                     'variableNameActionLogin' => $variableNameActionLogin,
+                    'title'                   => $ini['pageTitle'],
+                    'imprint'                 => $ini['imprint'],
+                    'disclaimer'              => $ini['disclaimer'],
+
                 ));
 
                 $this->content =  $this->smarty->fetch('login/login_form.tpl');

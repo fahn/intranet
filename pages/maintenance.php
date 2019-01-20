@@ -13,9 +13,9 @@
  ******************************************************************************/
 
 require_once '_options.php';
-include_once __PFAD__ .'inc/html/brdbHtmlAdminAllClubPage.inc.php';
+include_once __PFAD__ .'inc/html/brdbHtmlMaintenance.inc.php';
 
-$page = new BrdbHtmlAdminAllClubPage();
+$page = new BrdbHtmlMaintenance();
 $page->processPage();
 
 ?>
