@@ -13,7 +13,7 @@
  ******************************************************************************/
 
 if( ! defined("__PFAD__") ) {
-	define("__PFAD__", dirname(__FILE__) ."/../");
+	define("__PFAD__", dirname(dirname(__FILE__)) ."/");
 }
 
 session_start();

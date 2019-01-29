@@ -12,8 +12,8 @@
  *
  ******************************************************************************/
 
-include_once __PFAD__ .'/inc/logic/http.inc.php';
-include_once __PFAD__ .'/inc/logic/tools.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/logic/http.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
 
 interface IPrgPatternElement {
 
@@ -72,11 +72,11 @@ interface IPrgPatternElement {
  */
 abstract class APrgPatternElement implements IPrgPatternElement {
 
-	const PRG_METHOD_STATUS = "PostMethodStatus";
-	const PRG_METHOD_MESSAGE = "PostMethodMessage";
+	const PRG_METHOD_STATUS         = "PostMethodStatus";
+	const PRG_METHOD_MESSAGE        = "PostMethodMessage";
 	const PRG_METHOD_STATUS_SUCCESS = "success";
-	const PRG_METHOD_STATUS_FAILED = "danger";
-	const PRG_METHOD_STATUS_NONE = "none";
+	const PRG_METHOD_STATUS_FAILED  = "danger";
+	const PRG_METHOD_STATUS_NONE    = "none";
 
 	private $sessionPrefix;
 	private $variableNameArray;

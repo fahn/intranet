@@ -30,10 +30,13 @@ require_once __PFAD__ .'/inc/logic/tools.inc.php';
  */
 abstract class HtmlPageProcessor {
 
+    // smarty
     protected $smarty;
 
+    // content
     protected $content;
 
+    // tools
     protected $tools;
 
   /**
@@ -41,14 +44,19 @@ abstract class HtmlPageProcessor {
    * by some derived classes
    */
   public function __construct() {
+    // load tools
     $this->tools = new Tools;
 
+    // load smarty
     $this->smarty = new Smarty;
-    // @TODO: set debug bar
-    //$smarty->force_compile = true;
-    #$this->smarty->debugging = true;
-    #$smarty->caching = true;
-    #$smarty->cache_lifetime = 120;
+    if ($this->tools->getIniValue('stage') == "deployment") {
+      // @TODO: set debug bar
+      $this->smarty->force_compile = true;
+      $this->smarty->debugging = true;
+      $this->smarty->caching = true;
+      $this->smarty->cache_lifetime = 120;
+    }
+
     $this->smarty->setTemplateDir(__PFAD__ .'smarty/templates');
     $this->smarty->setCompileDir(__PFAD__ .'smarty/templates_c');
     $this->smarty->setConfigDir(__PFAD__ .'smarty/configs');
@@ -56,10 +64,8 @@ abstract class HtmlPageProcessor {
     // remove notice
     $this->smarty->error_reporting = E_ALL & ~E_NOTICE;
 
-
-    $ini = $this->tools->getIni();
     $this->smarty->assign(array(
-        'pageTitle' => $ini['pageTitle'],
+        'pageTitle' => $this->tools->getIniValue('pageTitle'),
       ));
 
   }

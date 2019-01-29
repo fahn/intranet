@@ -51,15 +51,15 @@
 <div class="d-flex flex-row-reverse">
     {if $isAdmin OR $isReporter}
         <div class="p-2">
-        <div class="btn-group">
-            <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Optionen</button>
-            <div class="dropdown-menu">
-                <a class="dropdown-item" href="?action=export&id={$tournament.tournamentID}"><i class="fas fa-bullhorn"></i> Meldung</a>
-                <a class="dropdown-item" href="?action=backup&id={$tournament.tournamentID}"><i class="fas fa-cloud"></i> Sicherungen</a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="?action=edit_tournament&id={$tournament.tournamentID}"><i class="fas fa-edit"></i> Turnier bearbeiten</a>
+            <div class="btn-group">
+                <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Optionen</button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="?action=export&id={$tournament.tournamentID}"><i class="fas fa-bullhorn"></i> Meldung</a>
+                    <a class="dropdown-item" href="?action=backup&id={$tournament.tournamentID}"><i class="fas fa-cloud"></i> Sicherungen</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="?action=edit_tournament&id={$tournament.tournamentID}"><i class="fas fa-edit"></i> Turnier bearbeiten</a>
+                </div>
             </div>
-        </div>
         </div>
     {/if}
 

@@ -11,9 +11,9 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
- 
+
 require_once '_options.php';
-include_once __PFAD__ .'inc/html/brdbHtmlTournamentPage.inc.php';
+include_once __PFAD__ .'/inc/html/brdbHtmlTournamentPage.inc.php';
 
 $page = new BrdbHtmlTournamentPage();
 $page->processPage();

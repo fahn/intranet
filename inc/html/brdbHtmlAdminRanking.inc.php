@@ -20,8 +20,6 @@ class BrdbHtmlAdminRanking extends BrdbHtmlPage {
   private $prgElementGame;
   private $vars;
 
-  private $tools;
-
   public function __construct() {
     parent::__construct();
     $this->prgElementGame = new PrgPatternElementGame($this->brdb, $this->prgPatternElementLogin);

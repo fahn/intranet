@@ -19,7 +19,7 @@ include_once __PFAD__ .'/inc/logic/tools.inc.php';
 
 
 # export
-include_once __PFAD__ .'/inc/src/Spout/Autoloader/autoload.php';
+include_once __PFAD__ .'/vendor/autoload.php';
 use Box\Spout\Writer\WriterFactory;
 use Box\Spout\Common\Type;
 

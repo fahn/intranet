@@ -8,24 +8,31 @@
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="nav mr-auto nav-pills">
+                {if $tournamentEnable == "on"}
+                    <li class="nav-item"><a class="nav-link" href="rankingTournament.php"><i class="fas fa-trophy"></i> Tuniere</a><li>
+                {/if}
 
-                <li class="nav-item"><a class="nav-link" href="rankingTournament.php">Tuniere</a><li></li>
-                <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">int. Rangliste</a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="statsPlayerAlltime.php"><i class="fas fa-list-ol"></i> Alltime</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="statsPlayerOverall.php"><i class="fas fa-user"></i> Singe Overall</a>
-                        <a class="dropdown-item" href="statsPlayerMen.php"><i class="fas fa-mars"></i> Singe Men</a>
-                        <a class="dropdown-item" href="statsPlayerWomen.php"><i class="fas fa-venus"></i> Singe Woman</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="statsTeamOverall.php"><i class="fas fa-users"></i> Double Overall</a>
-                        <a class="dropdown-item" href="statsTeamMen.php"><i class="fas fa-mars-double"></i> Double Men</a>
-                        <a class="dropdown-item" href="statsTeamWomen.php"><i class="fas fa-venus-double"></i> Double Woman</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="statsTeamMixed.php"><i class="fas fa-venus-mars"></i> Double Mixed</a>
-                    </div>
-                </li>
-                <!-- <li class="nav-item"><a class="nav-link" href="#"><i class="fas fa-users"></i> Team</a></li> -->
+                {if $rankingEnable == "on"}
+                  <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">int. Rangliste</a>
+                      <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                          <a class="dropdown-item" href="statsPlayerAlltime.php"><i class="fas fa-list-ol"></i> Alltime</a>
+                          <div class="dropdown-divider"></div>
+                          <a class="dropdown-item" href="statsPlayerOverall.php"><i class="fas fa-user"></i> Singe Overall</a>
+                          <a class="dropdown-item" href="statsPlayerMen.php"><i class="fas fa-mars"></i> Singe Men</a>
+                          <a class="dropdown-item" href="statsPlayerWomen.php"><i class="fas fa-venus"></i> Singe Woman</a>
+                          <div class="dropdown-divider"></div>
+                          <a class="dropdown-item" href="statsTeamOverall.php"><i class="fas fa-users"></i> Double Overall</a>
+                          <a class="dropdown-item" href="statsTeamMen.php"><i class="fas fa-mars-double"></i> Double Men</a>
+                          <a class="dropdown-item" href="statsTeamWomen.php"><i class="fas fa-venus-double"></i> Double Woman</a>
+                          <div class="dropdown-divider"></div>
+                          <a class="dropdown-item" href="statsTeamMixed.php"><i class="fas fa-venus-mars"></i> Double Mixed</a>
+                      </div>
+                  </li>
+                {/if}
+                <li class="nav-item"><a class="nav-link" href="eloRanking.php"><i class="fas fa-list-ol"></i> Ranking</a></li>
+
+                <li class="nav-item"><a class="nav-link" href="team.php"><i class="fas fa-users"></i> Team</a></li>
+
                 {if $isAdmin}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

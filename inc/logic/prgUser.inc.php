@@ -12,16 +12,12 @@
  *
  ******************************************************************************/
 
-include_once __PFAD__ .'/inc/db/brdb.inc.php';
-include_once __PFAD__ .'/inc/db/user.inc.php';
-include_once __PFAD__ .'/inc/logic/prgPattern.inc.php';
-include_once __PFAD__ .'/inc/logic/tools.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/db/brdb.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/db/user.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgPattern.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
 
 class PrgPatternElementUser extends APrgPatternElement {
-    private $tools;
-
-    private $brdb;
-
     const FORM_USER_ADMIN_USER_ID = "accountAdminUserId";
     const FORM_USER_EMAIL         = "accountEmail";
     const FORM_USER_FNAME         = "accountFirstName";
@@ -69,9 +65,14 @@ class PrgPatternElementUser extends APrgPatternElement {
 
     protected $prgElementLogin;
 
-    public function __construct(BrankDB $brdb, PrgPatternElementLogin $prgElementLogin) {
+    public function __construct() {
+
+    }
+
+
+    public function __load(PrgPatternElementLogin $prgElementLogin) {
+
         parent::__construct("userRegister");
-        $this->brdb = $brdb;
         $this->prgElementLogin = $prgElementLogin;
         $this->registerPostSessionVariable(self::FORM_USER_EMAIL);
         $this->registerPostSessionVariable(self::FORM_USER_FNAME);
@@ -82,8 +83,6 @@ class PrgPatternElementUser extends APrgPatternElement {
         $this->registerPostSessionVariable(self::FORM_USER_IS_REPORTER);
         $this->registerPostSessionVariable(self::FORM_USER_ADMIN_USER_ID);
 
-        // tools
-        $this->tools = new Tools();
     }
 
     public function processPost() {
@@ -110,7 +109,7 @@ class PrgPatternElementUser extends APrgPatternElement {
                 break;
 
               case self::FORM_USER_ACTION_UPDATE_ACCOUNT:
-                $id = $this->tools->get("id");
+                $id = Tools::get("id");
                 $this->processPostUpdateUserAccount($id);
                 break;
 
@@ -126,8 +125,8 @@ class PrgPatternElementUser extends APrgPatternElement {
     }
 
     public function processGet() {
-      $isUserLoggedIn = $this->prgElementLogin->isUserLoggedIn();
-      $isUserAdmin     = $this->prgElementLogin->getLoggedInUser()->isAdmin();
+      $isUserLoggedIn  = PrgPatternElementLogin::isUserLoggedIn();
+      $isUserAdmin     = PrgPatternElementLogin::getLoggedInUser()->isAdmin();
       // Don't process the posts if no user is logged in!
       // otherwise well formed post commands could trigger database actions
       // without theoretically having access to it.
@@ -135,11 +134,11 @@ class PrgPatternElementUser extends APrgPatternElement {
           return;
       }
 
-        $action = $this->tools->get("action");
+        $action = Tools::get("action");
 
         switch ($action) {
           case 'delete':
-            $id = $this->tools->get("id");
+            $id = Tools::get("id");
             $this->processGetDeleteUserAccount($id);
             break;
 
@@ -160,7 +159,7 @@ class PrgPatternElementUser extends APrgPatternElement {
           return;
       }
 
-      $res = $this->brdb->insertUserEasyProcess();
+      $res = insertUserEasyProcess();
       if ($this->brdb->hasError()) {
           $this->setFailedMessage($this->brdb->getError());
           return;
@@ -169,7 +168,7 @@ class PrgPatternElementUser extends APrgPatternElement {
 
       if(!$this->processPostUpdateUserAccount($id)) {
           $this->setFailedMessage("Probleme beim anlegen. Bitte editieren Sie den Nutzer!");
-          $this->tools->customRedirect(array(
+          Tools::customRedirect(array(
             'page'   => "adminAllUser.php",
             'action' => 'edit',
             'id'     => $id,
@@ -178,7 +177,7 @@ class PrgPatternElementUser extends APrgPatternElement {
       }
 
       $this->setSuccessMessage("Nutzer wurde angelegt");
-      $this->tools->customRedirect(array(
+      Tools::customRedirect(array(
         'page'   => "adminAllUser.php",
         'action' => 'edit',
         'id'     => $id,
@@ -271,7 +270,7 @@ class PrgPatternElementUser extends APrgPatternElement {
         }
 
         $this->setSuccessMessage(self::SUCCESS_USER_DELETE);
-        $this->tools->customRedirect(array(
+        Tools::customRedirect(array(
           'page' => "adminAllUser.php",
         ));
         return true;
@@ -454,6 +453,21 @@ class PrgPatternElementUser extends APrgPatternElement {
         }
 
         return new User();
+    }
+
+
+    public function getAdminsAndReporter() {
+        $data = array();
+        $res = $this->brdb->GetActiveAndReporterOrAdminPlayer();
+        if (!$this->brdb->hasError()) {
+            while ($dataSet = $res->fetch_assoc()) {
+                $data[]         = array(
+                    'userId'   => $dataSet['userId'],
+                    'fullName' => $dataSet['firstName'] .' '. $dataSet['lastName'],
+                );
+            }
+        }
+        return $data;
     }
 }
 

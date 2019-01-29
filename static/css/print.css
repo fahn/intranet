@@ -1,0 +1,12 @@
+table {
+  width: 100%;
+}
+
+
+table tr {
+  border-bottom: 1px solid #000;
+}
+
+.text-center {
+  text-align: center;
+}

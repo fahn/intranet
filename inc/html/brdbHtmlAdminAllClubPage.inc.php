@@ -21,8 +21,6 @@ class BrdbHtmlAdminAllClubPage extends BrdbHtmlPage {
   private $variable;
   private $countRows;
 
-  private $tools;
-
   const MAX_ENTRIES = 50;
 
   public function __construct() {

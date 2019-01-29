@@ -11,7 +11,7 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
- 
+
 /**
  * This class implements a user object to simplyfy access to the data base
  * @author philipp

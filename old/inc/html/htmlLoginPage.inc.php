@@ -45,8 +45,8 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
 	public function __construct() {
 		parent::__construct();
 		$this->brdb = new BrankDB();
-		$this->brdb->connectAndSelectDB();
-		$this->brdb->prepareCommands();
+		#$this->brdb->connectAndSelectDB();
+		#$this->brdb->prepareCommands();
 		
 		$this->prgPatternElementLogin = new PrgPatternElementLogin($this->brdb);
 		

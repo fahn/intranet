@@ -20,8 +20,6 @@ include_once __PFAD__ .'/inc/logic/tools.inc.php';
 class brdbHtmlSupport extends BrdbHtmlPage {
   private $prgElementSupport;
 
-  private $tools;
-
   public function __construct() {
     parent::__construct();
 

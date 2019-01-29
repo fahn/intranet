@@ -12,11 +12,10 @@
  *
  ******************************************************************************/
 
-
-include_once __PFAD__ .'/inc/html/brdbHtmlPage.inc.php';
-include_once __PFAD__ .'/inc/logic/prgTournament.inc.php';
-include_once __PFAD__ .'/inc/logic/prgPattern.inc.php';
-include_once __PFAD__ .'/inc/logic/tools.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/html/brdbHtmlPage.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgTournament.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgPattern.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
 
 
 
@@ -27,8 +26,6 @@ require_once __PFAD__ .'/inc/class.Diff.php';
 class BrdbHtmlTournamentPage extends BrdbHtmlPage {
     private $prgElementTournament;
     private $vars;
-
-    private $tools;
 
     private $tournamentType;
 

@@ -21,7 +21,13 @@ include_once __PFAD__ .'/smarty/libs/Smarty.class.php';
 
 class PrgPatternElementLogin extends APrgPatternElement {
 
+  // database
   private $brdb;
+
+  // tools
+  private $tools;
+
+  // user
   private $loggedInUser;
 
   const FORM_LOGIN_EMAIL 		      = "formLoginEmail";
@@ -49,12 +55,14 @@ class PrgPatternElementLogin extends APrgPatternElement {
   // Constants for the User table in the database
   const SESSION_LOGIN_USER_ID 	= "sessionUserId";
 
-  // tools
-  private $tools;
 
-  public function __construct($brdb) {
+
+  public function __construct() {
     parent::__construct("login");
-    $this->brdb = $brdb;
+
+    // load db
+    $this->brdb = new BrankDB();
+
     $this->registerPostSessionVariable(self::FORM_LOGIN_ACTION);
     $this->registerPostSessionVariable(self::FORM_LOGIN_EMAIL);
 

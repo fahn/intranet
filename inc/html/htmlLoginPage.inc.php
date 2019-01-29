@@ -12,10 +12,16 @@
  *
  ******************************************************************************/
 
-include_once __PFAD__ .'inc/html/htmlPage.inc.php';
-include_once __PFAD__ .'inc/logic/prgLogin.inc.php';
-include_once __PFAD__ .'inc/logic/tools.inc.php';
-include_once __PFAD__ .'inc/db/brdb.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/html/htmlPage.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgLogin.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/db/brdb.inc.php';
+
+// user
+include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgUser.inc.php';
+
+// elo ranking
+require_once $_SERVER['BASE_DIR'] .'/inc/logic/prgEloRanking.inc.php';
 
 
 /**
@@ -29,14 +35,10 @@ include_once __PFAD__ .'inc/db/brdb.inc.php';
  *
  */
 abstract class AHtmlLoginPage extends HtmlPageProcessor {
-
     protected $brdb;
     protected $prgPattern;
-
     protected $prgPatternElementLogin;
-
     protected $tools;
-
 
     /**
      * Standard Constructor for the HTML Login page. It
@@ -51,7 +53,6 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
         /* TOOLS */
         $this->tools = new Tools();
 
-        $ini = $this->tools->getIni();
 
         if ( $this->tools->maintenance()) {
           $this->tools->customRedirect('maintenance.php');
@@ -59,13 +60,12 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
 
         /* SQL CONNECTION */
         $this->brdb = new BrankDB();
-        $this->brdb->connectAndSelectDB();
-        $this->brdb->prepareCommands();
 
         $this->prgPatternElementLogin = new PrgPatternElementLogin($this->brdb);
 
         $this->prgPattern = new PrgPattern();
         $this->prgPattern->registerPrg($this->prgPatternElementLogin);
+
 
         /* LOAD SETTINGS */
         //$this->settings = $this->loadSettings();
@@ -105,11 +105,13 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
             $this->smarty->registerObject('user', $user);
 
             $this->smarty->assign(array(
-                    'currentUserName' => $currentUserName,
-                    'isUserLoggedIn'  => $isUserLoggedIn,
-                    'isAdmin'         => $this->prgPatternElementLogin->getLoggedInUser()->isAdmin(),
-                    'isReporter'      => $this->prgPatternElementLogin->getLoggedInUser()->isReporter(),
-                    'userId'          => $this->prgPatternElementLogin->getLoggedInUser()->getID(),
+                    'currentUserName'  => $currentUserName,
+                    'isUserLoggedIn'   => $isUserLoggedIn,
+                    'isAdmin'          => $this->prgPatternElementLogin->getLoggedInUser()->isAdmin(),
+                    'isReporter'       => $this->prgPatternElementLogin->getLoggedInUser()->isReporter(),
+                    'userId'           => $this->prgPatternElementLogin->getLoggedInUser()->getId(),
+                    'rankingEnable'    => $this->tools->getIniValue('rankingEnable'),
+                    'tournamentEnable' => $this->tools->getIniValue('tournamentEnable'),
             ));
         }
 
@@ -173,17 +175,15 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
                 $variableNameAction             = $this->prgPatternElementLogin->getPrefixedName(PrgPatternElementLogin::FORM_LOGIN_ACTION);
                 $variableNameActionLogin        = PrgPatternElementLogin::FORM_LOGIN_ACTION_LOGIN;
 
-                $ini = $this->tools->getIni();
-
                 $this->smarty->assign(array(
                     'variableNameEmail'       => $variableNameEmail,
                     'variableNamePassw'       => $variableNamePassw,
                     'formTO'                  => '',
                     'variableNameAction'      => $variableNameAction,
                     'variableNameActionLogin' => $variableNameActionLogin,
-                    'title'                   => $ini['pageTitle'],
-                    'imprint'                 => $ini['imprint'],
-                    'disclaimer'              => $ini['disclaimer'],
+                    'title'                   => $this->tools->getIniValue('pageTitle'), # ["Generell"]
+                    'imprint'                 => $this->tools->getIniValue('imprint'), # ["Links"]
+                    'disclaimer'              => $this->tools->getIniValue('disclaimer'), #["Links"]
 
                 ));
 
@@ -209,31 +209,39 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
     }
 
     private function loadContent() {
+        $user = new PrgPatternElementUser();
+        $userId = $this->prgPatternElementLogin->getLoggedInUser();
+
+        $elo = new PrgPatternElementEloRanking;
+        $games = $elo->widgetShowLatestGames($userId, $this->smarty);
+        die(print_r($elo->calcMatch('1800', '200', false)));
         $this->smarty->assign(array(
-                'games'         => $this->getGamesByUser(),
-                'tournaments'   => $this->getLatestTournament(),
-                'users'         => $this->getAdminsAndReporter(),
+                'games'               => $games,
+                'upcomingTournaments' => $this->getUpcomingTournaments(),
+            #    'users'               => $user->getAdminsAndReporter(),
+            #    'social'              => $this->tools->getIniValue("Social"),
         ));
+
         return $this->smarty->fetch('default.tpl');
     }
 
-    private function getAdminsAndReporter() {
+
+
+    private function getLatestTournament() {
         $data = array();
-        $res = $this->brdb->GetActiveAndReporterOrAdminPlayer();
+        $res = $this->brdb->selectLatestTournamentList(5);
         if (!$this->brdb->hasError()) {
             while ($dataSet = $res->fetch_assoc()) {
-                $data[]         = array(
-                    'userId'   => $dataSet['userId'],
-                    'fullName' => $dataSet['firstName'] .' '. $dataSet['lastName'],
-                );
+                $dataSet['classification'] = $this->tools->formatClassification($dataSet['classification']);
+                $data[]                    = $dataSet;
             }
         }
         return $data;
     }
 
-    private function getLatestTournament() {
+    private function getUpcomingTournaments() {
         $data = array();
-        $res = $this->brdb->selectTournamentListMax(5);
+        $res = $this->brdb->selectUpcomingTournamentList(5);
         if (!$this->brdb->hasError()) {
             while ($dataSet = $res->fetch_assoc()) {
                 $dataSet['classification'] = $this->tools->formatClassification($dataSet['classification']);
@@ -243,41 +251,5 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
         return $data;
     }
 
-    private function getGamesByUser() {
-        $data      = array();
-        $user_id   = $this->prgPatternElementLogin->getLoggedInUser()->getID();
-        $username  = $this->prgPatternElementLogin->getLoggedInUser()->getFullName();
-        $res       = $this->brdb->selectLatestGamesByPlayerId($user_id);
-        if (!$this->brdb->hasError()) {
-            while ($dataSet = $res->fetch_assoc()) {
-                // OPPONENT
-                if(!empty($dataSet['playerA1']) && !empty($dataSet['playerA"']) && strpos($user_name, $dataSet['playerA1']) !== false   && strpos($user_name, $dataSet['playerA2']) !== false) {
-                    $opponent = $dataSet['playerA1'] .(strlen($dataSet['playerA2']) > 0 ? ' // '. $dataSet['playerA2'] : '');
-                } else {
-                    $opponent = $dataSet['playerB1'] .(strlen($dataSet['playerB2']) > 0  ? ' // '. $dataSet['playerB2'] : '');
-                }
-                // RESULT
-                $result = $dataSet['setA1'] .':'. $dataSet['setB1'] .' '. $dataSet['setA2'] .':'. $dataSet['setB2'];
-                if(isset($dataSet['setA3']) && is_numeric($dataSet['setA3'])) {
-                    $result .= ' '. $dataSet['setA3'] .':'. $dataSet['setB3'];
-                }
-
-                // chicken
-                if((strpos($username, $dataSet['playerA1']) === 0 || (isset($dataSet['playerA2']) && strpos($username, $dataSet['playerA2']) === 0)) && $dataSet['side'] == 'Side A') {
-                  $chicken = '<i class="fas fa-arrow-circle-up text-success"></i>';
-                } else {
-                  $chicken = '<i class="fas fa-arrow-circle-down text-danger"></i>';
-                }
-
-                $data[]         = array(
-                    'result'   => $result,
-                    'opponent' => $opponent,
-                    'datetime' => $dataSet['datetime'],
-                    'chicken'  => $chicken,
-                );
-            }
-        }
-        return $data;
-    }
 }
 ?>

@@ -218,6 +218,8 @@ h6 {
   margin-top:0;
 }
 
+
+
 .diffDeleted span{
   border:1px solid rgb(255,192,192);
   background:rgb(255,224,224);
@@ -228,6 +230,18 @@ h6 {
   background:rgb(224,255,224);
 }
 
-#toStringOutput{
-  margin:0 2em 2em;
+.text-color-gold {
+  color: 	#DAA520;
+}
+
+.text-color-silver {
+  color: #C0C0C0;
+}
+
+.text-color-bronce {
+  color: #cd7f32;
+}
+
+#toStringOutput {
+  margin:0 2em 0 2em;
 }

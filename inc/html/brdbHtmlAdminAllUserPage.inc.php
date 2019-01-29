@@ -20,7 +20,6 @@ class BrdbHtmlAdminAllUserPage extends BrdbHtmlPage {
   private $prgPatternElementUser;
   private $countRows;
 
-  private $tools;
   private $info;
 
   const MAX_ENTRIES = 50;

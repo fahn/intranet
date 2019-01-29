@@ -13,32 +13,16 @@
  ******************************************************************************/
 
 include_once __PFAD__ .'/inc/html/brdbHtmlPage.inc.php';
-include_once __PFAD__ .'/inc/logic/prgTournament.inc.php';
 include_once __PFAD__ .'/inc/logic/prgPattern.inc.php';
 include_once __PFAD__ .'/inc/logic/tools.inc.php';
 
 class BrdbHtmlSettings extends BrdbHtmlPage {
-    private $prgElementTournament;
     private $vars;
-
-    private $tools;
-
-    private $tournamentType;
 
     public function __construct() {
         parent::__construct();
 
-        $this->tools = new Tools();
         $this->tools->secure_array($_GET);
-
-        $this->tournamentType = array('NBV', 'FUN', 'OTHER');
-
-        $this->prgElementTournament = new PrgPatternElementTournament($this->brdb, $this->prgPatternElementLogin);
-        $this->prgPattern->registerPrg($this->prgElementTournament);
-
-        $this->variable['playerId']  = $this->prgElementTournament->getPrefixedName(PrgPatternElementTournament::FORM_INPUT_PLAYER);
-        $this->variable['partnerId'] = $this->prgElementTournament->getPrefixedName(PrgPatternElementTournament::FORM_INPUT_PARTNER);
-        $this->variable['disziplin'] = $this->prgElementTournament->getPrefixedName(PrgPatternElementTournament::FORM_INPUT_DISCIPLIN);
     }
 
     public function processPage() {
@@ -83,19 +67,19 @@ class BrdbHtmlSettings extends BrdbHtmlPage {
 
     private function editTournamentTMPL() {
         // generell
-        $classificationArr = $this->tools->getAgeClassArray();
-        $disciplineArr     = $this->tools->getModeArr();
+        $classificationArr                          = $this->tools->getAgeClassArray();
+        $disciplineArr                              = $this->tools->getModeArr();
 
-        $id                           = $this->tools->get("id");
-        $res                          = $this->brdb->getTournamentData($id);
-        $tournament                   = $res->fetch_assoc();
-        $tournament['classification'] = unserialize($tournament['classification']);
-        $tournament['discipline']     = unserialize($tournament['discipline']);
+        $id                                         = $this->tools->get("id");
+        $res                                        = $this->brdb->getTournamentData($id);
+        $tournament                                 = $res->fetch_assoc();
+        $tournament['classification']               = unserialize($tournament['classification']);
+        $tournament['discipline']                   = unserialize($tournament['discipline']);
         $tournament['additionalClassification']     = unserialize($tournament['additionalClassification']);
+
         if(isset($tournament['additionalClassification'] ) && is_array($tournament['additionalClassification'])) {
           $tournament['additionalClassification'] = implode(",", $tournament['additionalClassification']);
         }
-        #die($tournament['additionalClassification'] );
 
         if(!$this->brdb->hasError()) {
           $res = $this->brdb->getDisciplinesByTournamentId($id);

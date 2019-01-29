@@ -25,12 +25,11 @@
  	}
 
   protected function htmlBody() {
-    $ini = $this->tools->getIni();
 
     $this->smarty->assign(array(
-      'headline' => $ini['maintenanceHeadline'],
-      'text'     => $ini['maintenanceText'],
-      'date'     => $ini['maintenanceDate'],
+      'headline' => $this->tools->getIniValue('maintenanceHeadline'), #$ini["Maintenance"]['maintenanceHeadline'],
+      'text'     => $this->tools->getIniValue('maintenanceText'), #$ini["Maintenance"]['maintenanceText'],
+      'date'     => $this->tools->getIniValue('maintenanceDate'),  #$ini["Maintenance"]['maintenanceDate'],
       'link'     => $this->tools->linkTo(array('page' => 'index.php')),
     ));
 

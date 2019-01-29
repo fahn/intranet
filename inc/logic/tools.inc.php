@@ -12,12 +12,13 @@
  *
  ******************************************************************************/
 
-include_once __PFAD__ .'/smarty/libs/Smarty.class.php';
+include_once $_SERVER['BASE_DIR'] .'/smarty/libs/Smarty.class.php';
 
-require_once __PFAD__ .'vendor/autoload.php';
-
+# libary
+require_once $_SERVER['BASE_DIR'] .'/vendor/autoload.php';
 use Nette\Mail\SendmailMailer;
 use Nette\Mail\Message;
+
 /**
  * Anti SQL Injection method. All use rinput should pass this method
  * @param String $data the inupt data as String
@@ -33,7 +34,7 @@ class Tools {
     private $ini;
 
     public function __construct() {
-      $this->ini = $this->getIni();
+      $this->ini = self::getIni();
     }
 
     public static function escapeInput($data) {
@@ -57,12 +58,12 @@ class Tools {
     public function get($key) {
         $value = isset($_GET[$key]) ? $_GET[$key] : '';
 
-        return $this->escapeInput($value);
+        return self::escapeInput($value);
     }
 
     public function customRedirect($url) {
         if(isset($url) && is_array($url)) {
-          $this->customRedirect($this->linkTo($url));
+          self::customRedirect(self::linkTo($url));
         } else {
             header("HTTP/1.1 303 See Other");
             header("Location: ". $url);
@@ -70,14 +71,33 @@ class Tools {
         }
     }
 
-    public function getIni() {
-      if ($this->get("stage") == 'debug') {
-        $file = __PFAD__ .'/inc/config_debug.ini';
+    private function getIni() {
+        $file =  $_SERVER['BASE_DIR'] .'/inc/config.ini';
+      # debug
+      #$backtrace = debug_backtrace();
+      #echo "<pre>";
+      #print_r( $backtrace );
+
+      return parse_ini_file($file, true);
+    }
+
+    public function getIniValue($val = "") {
+      $ini = self::getIni();
+
+      if ($val == false || !is_array($ini) || count($ini) < 1) {
+        return false;
+      }
+      if ( ! empty($ini[$val]) ) {
+          $returnValues = $ini[$val];
       } else {
-        $file = __PFAD__ .'/inc/config.ini';
+          $returnValues = array_column($ini, $val);
       }
 
-      return parse_ini_file($file);
+      if (! is_array($returnValues) || empty($returnValues)) {
+        return false;
+      }
+      return count($returnValues) > 1 ? $returnValues : $returnValues[0];
+
     }
 
     function secure_array(&$array) {
@@ -168,9 +188,9 @@ class Tools {
 
       // message
       $smarty = new Smarty();
-      $smarty->setTemplateDir( __PFAD__ .'smarty/templates');
-      $smarty->setCompileDir( __PFAD__ .'smarty/templates_c');
-      $smarty->setConfigDir( __PFAD__ .'smarty/configs');
+      $smarty->setTemplateDir(  $_SERVER['BASE_DIR'] .'smarty/templates');
+      $smarty->setCompileDir(  $_SERVER['BASE_DIR'] .'smarty/templates_c');
+      $smarty->setConfigDir(  $_SERVER['BASE_DIR'] .'smarty/configs');
       $smarty->assign(array(
         'content'   => $content,
         'preheader' => $preheader,
@@ -191,7 +211,10 @@ class Tools {
       $txtContent = strip_tags($content);
 
       $mail = new Message;
-      $from = sprintf("%s <%s>", $this->ini['senderName'], $this->ini['senderMail']);
+
+      $from = sprintf("%s %s", $this->getIniValue('senderName'), $this->getIniValue('senderMail'));
+      $from =  self::getIniValue('senderMail');
+
       $mail->setFrom($from)
           ->addTo($email)
           ->setSubject($subject)
@@ -203,6 +226,7 @@ class Tools {
         $mailer->send($mail);
         return true;
       } catch (Exception $e) {
+        die($e);
         return false;
       }
 
@@ -222,7 +246,7 @@ class Tools {
     */
     function linkTo($data) {
       if(isset($data) && is_array($data) && count($data) > 0) {
-        if(!isset($data['page']) || !file_exists( __PFAD__ .'/pages/'. $data['page']) ) {
+        if(!isset($data['page']) || !file_exists(  $_SERVER['BASE_DIR'] .'/pages/'. $data['page']) ) {
           return "#";
         }
 
@@ -237,7 +261,7 @@ class Tools {
             $addParams = "?". implode("&", $urlArr);
         }
 
-        return $this->getBaseUrl() . $data['page'] . $addParams;
+        return self::getBaseUrl() . $data['page'] . $addParams;
 
       }
 
@@ -248,27 +272,20 @@ class Tools {
     * return baseUrl from file
     */
     public function getBaseUrl() {
-        return $this->ini['baseUrl'];
+        return self::getIniValue('baseUrl');
     }
 
 
     public function maintenance() {
-      if ($this->ini['maintenance'] == "off") {
-        return false;
+      $status = self::getIniValue("Maintenance");
+
+      if ( ! empty($status)  && $status['maintenance'] == "on") {
+        return true;
       }
-      return true;
+
+      return false;
     }
 
-/*
-    public function getSetting($settings, $value) {
-        $this->settings = $settings;
-        if(isset($this->settings) && isset($value)) {
-            return $this->settings($value);
-        }
-
-        return false;
-    }
-    */
 }
 
 ?>

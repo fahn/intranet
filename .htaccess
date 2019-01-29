@@ -1,4 +1,7 @@
-DirectoryIndex index.php
+
+SetEnv BASE_DIR /var/www/html/
+
+SetEnv LOCAL_DEVELOPMENT true
 
 #enable apache rewrite engine
 RewriteEngine on

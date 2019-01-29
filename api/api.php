@@ -1,22 +1,22 @@
 #!/usr/bin/php
 
 <?php
+/*******************************************************************************
+ * Badminton Intranet System
+ * Copyright 2017-2019
+ * All Rights Reserved
+ *
+ * Copying, distribution, usage in any form is not
+ * allowed without  written permit.
+ *
+ * Stefan Metzner <stefan@weinekind.de>
+ * Philipp M. Fischer <phil.m.fischer@googlemail.com>
+ *
+ ******************************************************************************/
 
-/**
-  Version 1.0
-  @author: Stefan Metzner
-  Description:
 
-*/
-
-
-// test if __PFAD__ is defined
-if(!defined("__PFAD__")) {
-  define("__PFAD__", dirname(dirname(__FILE__)));
-}
-
-require_once(__PFAD__ ."/inc/db/brdb.inc.php");
-require_once(__PFAD__ ."/inc/logic/tools.inc.php");
+require_once $_SERVER['BASE_DIR'] ."/inc/db/brdb.inc.php";
+require_once $_SERVER['BASE_DIR'] ."/inc/logic/tools.inc.php";
 
 class Api {
   protected $brdb;
@@ -33,8 +33,6 @@ class Api {
 
     /* SQL CONNECTION */
     $this->brdb = new BrankDB();
-    $this->brdb->connectAndSelectDB();
-    $this->brdb->prepareCommands();
 
     $this->tools = new Tools();
 
@@ -58,7 +56,6 @@ class Api {
           while($row = $res->fetch_assoc()) {
               if(isset($row) && isset($row['email']) && filter_var($row['email'], FILTER_VALIDATE_EMAIL)) {
                   $subject   = sprintf("Meldeschluss für %s", $row['name']);
-                  $preheader = $subject;
                   // content
                   $to        = $row['email'];
                   $name      = $row['name'];
@@ -68,7 +65,7 @@ class Api {
                       'id'     => $row['tournamentID'],
                   ));
                   $content = sprintf("Hallo %s,<br>Für das Turnier/Rangliste \"%s\" ist heute Meldeschluss.<br><br>Alle weiteren Informationen gibt es <a href='%s'>hier</a>.", $row['reporterName'], $row['name'], $link);
-                  if($this->tools->sendMail($to, $name, $subject, $preheader, $content)) {
+                  if($this->tools->sendMail($to, $name, $subject, $subject, $content)) {
                       $row['mail'] = "success";
                   }
 
