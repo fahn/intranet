@@ -1,4 +1,6 @@
 <h1 class="display-1 mb-5">Ranking {if $print}{$pageTitle}{/if}</h1>
+
+{$message}
 {if $print == false}
     <div class="alert alert-info">
       <p>Dieses Ranking basiert auf dem <a href="https://de.wikipedia.org/wiki/Elo-Zahl" target="_blank">ELO-Prinzip</a></p>
@@ -12,7 +14,7 @@
                     <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Optionen</button>
                     <div class="dropdown-menu">
                         <a class="dropdown-item" href="?action=add_game"><i class="fas fa-reply"></i> Spiel eintragen</a>
-                        <a class="dropdown-item" href="?action=backup&id={$tournament.tournamentID}"><i class="fas fa-retweet"></i> Neu berechnung</a>
+                        <a class="dropdown-item" href="?action=renewRanking"><i class="fas fa-retweet"></i> Neu berechnung</a>
 
                     </div>
                 </div>
@@ -31,13 +33,13 @@
     <th>Serie</th>
     <th>Letztes Spiel</th>
   </tr>
-{foreach item=item from=$ranking}
+{foreach key=rank item=item from=$ranking}
   <tr>
-    <td class="text-center {if $item.rank == "1"}text-color-gold{elseif $item.rank == "2"}text-color-silver{elseif $item.rank == "3"}text-color-bronce{/if}" >{if $item.rank < 4}<i class="fas fa-trophy"></i>{/if} {$item.rank}</td>
+    <td class="text-center {if $rank == "1"}text-color-gold{elseif $rank == "2"}text-color-silver{elseif $rank == "3"}text-color-bronce{/if}" >{if $rank < 4}<i class="fas fa-trophy"></i>{/if} {$rank}</td>
     <td>{$item.name}</td>
     <td>{$item.points}</td>
-    <td>1-0</td>
-    <td>{$item.time}</td>
+    <td>{$item.win}-{$item.loss}</td>
+    <td>{$item.lastMatch|date_format:"%d. %B %Y %H:%M"}</td>
   </tr>
   {/foreach}
 </table>

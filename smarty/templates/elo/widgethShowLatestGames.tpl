@@ -5,10 +5,13 @@
             <table class="table table-striped table-hover">
             {foreach item=game from=$data}
                 <tr>
-                  <td> {$game.datetime|date_format:"d.m.Y"}</td>
-                  <td>{$game.opponent}</td>
+                  <td>{$game.datetime|date_format:"d.m.Y"}</td>
+                  <td>{$game.name}</td>
                   <td>{$game.chicken}</td>
                 </tr>
+                <tr>
+                <td class="text-center small "colspan="3">Score: {$game.sets}</td>
+              </tr>
             {foreachelse}
               Du hast noch keine Spiele gemacht.
             {/foreach}

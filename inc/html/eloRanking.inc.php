@@ -13,17 +13,22 @@
  ******************************************************************************/
 
 include_once $_SERVER['BASE_DIR'] .'/inc/html/brdbHtmlPage.inc.php';
-include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgPattern.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgEloRanking.inc.php';
 include_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
 
 // libary: dompdf
 require_once $_SERVER['BASE_DIR'] .'/vendor/autoload.php';
+
+
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
 
 class EloRanking extends BrdbHtmlPage {
+    private $prgElementEloRanking;
+
     private $vars;
+
     protected $smarty;
 
     private $cssPrint = __PFAD__ .'/static/css/print.css';
@@ -33,6 +38,9 @@ class EloRanking extends BrdbHtmlPage {
         parent::__construct();
 
         $this->tools->secure_array($_GET);
+
+        $this->prgElementEloRanking = new PrgPatternElementEloRanking();
+        $this->prgElementEloRanking->__loadPattern($this->prgPatternElementLogin);
     }
 
     public function processPage() {
@@ -48,6 +56,11 @@ class EloRanking extends BrdbHtmlPage {
           case "download":
               $content = $this->downloadPDF();
               break;
+
+          case "renewRanking":
+          // @TODO: Security
+            $this->newRanking();
+            break;
 
           default:
               $content = $this->TMPL_showRanking();
@@ -78,46 +91,25 @@ class EloRanking extends BrdbHtmlPage {
     }
 
     private function getRanking() {
-        $arr = array('Hubert', 'Theo', 'Spargel', 'Lauch', 'Bomba');
-        $rank = 1;
-        $points = 1000;
-        foreach ( $arr as &$value) {
-          $data[] = array(
-            'rank'   => $rank++,
-            'name'   => $value,
-            'points' => $points,
-            'time'   => date("d.m.Y H:i"),
-          );
-          $points -= 2;
-        }
+        $res  = $this->brdb->statementGetEloRanking();
+        $data = array();
+        if (! $this->brdb->hasError() ) {
+            $rank = 1;
+            while ($dataSet = $res->fetch_assoc()) {
+              $data[$rank++] = $dataSet;
+            }
+          }
 
         return $data;
-
-        $res = $this->brdb->selectStaffList();
-        if (!$this->brdb->hasError()) {
-            $data = array();
-            while ($dataSet = $res->fetch_assoc()) {
-              #error_log(print_r($dataSet));
-                if(isset($dataSet['row']) && $dataSet['row'] > 0) {
-                    $data[$dataSet['row']][] = $dataSet;
-                }
-            }
-
-            return $data;
-        }
-
-        return "";
     }
 
     private function downloadPDF() {
       ob_start();
 
-
+      // load Options
       $options = new Options();
       $options->set('defaultFont', 'Helvetica');
       $dompdf = new Dompdf($options);
-      // instantiate and use the dompdf class
-      $dompdf = new Dompdf();
       // get css
       $css     = file_get_contents($this->cssPrint);
 
@@ -128,8 +120,16 @@ class EloRanking extends BrdbHtmlPage {
       $dompdf->loadHtml($content);
       $dompdf->setPaper('A4', 'portrait');
       $dompdf->render();
+
+      // set name & download file
       $filename = sprintf("%s_%s.pdf", "ranking", date("d.m.y (H:i)"));
       $dompdf->stream($filename, array("Attachment" => false));
+    }
+
+    private function newRanking() {
+      $this->prgElementEloRanking->newRanking();
+
+      $this->tools->customRedirect(array('page' => 'eloRanking.php'));
     }
 }
 ?>

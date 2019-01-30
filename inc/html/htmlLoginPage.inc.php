@@ -214,7 +214,7 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
 
         $elo = new PrgPatternElementEloRanking;
         $games = $elo->widgetShowLatestGames($userId, $this->smarty);
-        die(print_r($elo->calcMatch('1800', '200', false)));
+        #die(print_r($elo->calcMatch('1800', '200', false)));
         $this->smarty->assign(array(
                 'games'               => $games,
                 'upcomingTournaments' => $this->getUpcomingTournaments(),

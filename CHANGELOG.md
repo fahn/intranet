@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.0.6] - 2019-01-26
+- implements elo Ranking system
+
 ## [1.0.5] - 2019-01-20
 - remove static paths
 - add new options to config

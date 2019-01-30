@@ -309,12 +309,6 @@ class BrankDB {
     return $this->executeStatement($cmd);
   }
 
-  public function selectLatestGamesByPlayerId($id) {
-    $cmd = $this->db->prepare("SELECT * FROM eloGames WHERE playerId = ? OR opponentId = ? ORDER BY time DESC LIMIT 5");
-    $cmd->bind_param("ii", $id, $id);
-
-    return $this->executeStatement($cmd);
-  }
 
   public function getTournamentData($tournamentID) {
     $cmd = $this->db->prepare("SELECT Tournament.*, CONCAT_WS(' ', User.firstName, User.lastName) AS reporterName FROM Tournament LEFT JOIN User ON User.userId = Tournament.reporterId WHERE Tournament.tournamentID = ?");
@@ -510,7 +504,9 @@ class BrankDB {
   *******************************************************************************/
 
   public function selectStaffList() {
-      $cmd = $this->db->prepare("SELECT US.*, CONCAT_WS(' ', User.firstName, User.lastName) AS name, User.image, User.gender FROM UserStaff AS US LEFT JOIN User ON User.userId = US.userId ORDER BY US.row ASC, US.sort ASC, User.lastName ASC");
+      $cmd = $this->db->prepare("SELECT US.*, CONCAT_WS(' ', User.firstName, User.lastName) AS name, User.image, User.gender FROM UserStaff AS US
+                                 LEFT JOIN User ON User.userId = US.userId
+                                 ORDER BY US.row ASC, US.sort ASC, User.lastName ASC");
 
       return $this->executeStatement($cmd);
   }
@@ -519,25 +515,68 @@ class BrankDB {
                              API
 *******************************************************************************/
    public function APIGetTournamentFromToday() {
-       $cmd = $this->db->prepare("SELECT Tournament.*, CONCAT_WS(' ', User.firstName, User.lastName) AS reporterName, User.email FROM Tournament LEFT JOIN User ON User.userId = Tournament.reporterId WHERE Tournament.reporterId != '' AND Tournament.visible = 1 AND Tournament.deadline = CURDATE() ");
+       $cmd = $this->db->prepare("SELECT Tournament.*, CONCAT_WS(' ', User.firstName, User.lastName) AS reporterName, User.email FROM Tournament
+                                  LEFT JOIN User ON User.userId = Tournament.reporterId
+                                  WHERE Tournament.reporterId != '' AND Tournament.visible = 1 AND Tournament.deadline = CURDATE() ");
 
        return $this->executeStatement($cmd);
    }
 
 
+   /*******************************************************************************
+                                ELOranking
+   *******************************************************************************/
+   public function statementGetEloRanking() {
+      $cmd = $this->db->prepare("SELECT elo.*, CONCAT_WS(' ', User.firstName, User.lastName) AS name FROM `eloRanking` AS elo
+                                 LEFT JOIN User ON User.userId = elo.userId
+                                 #WHERE elo.win != 0 OR elo.loss != 0
+                                 ORDER BY elo.points DESC");
+
+      return $this->executeStatement($cmd);
+   }
+
+   public function statementGetEloMatches() {
+     $cmd = $this->db->prepare("SELECT * FROM `eloGames`");
+
+     return $this->executeStatement($cmd);
+   }
+
+   public function deleteEloRanking() {
+     $cmd = $this->db->prepare("TRUNCATE `eloRanking`");
+
+     return $this->executeStatement($cmd);
+   }
+
+   public function insertEloMatch($a, $b, $sets, $winner) {
+     $cmd = $this->db->prepare("INSERT INTO `eloGames` (playerId, opponentId, sets, winner) VALUES (?, ?, ?, ?)");
+     $cmd->bind_param("iisi", $a, $b, $sets, $winner);
+
+     return $this->executeStatement($cmd);
+   }
 
    public function selectEloPoints($userId) {
-      $cmd = $this->db->prepare("SELECT IFNULL( (SELECT userId FROM `eloRanking` WHERE userID = ?) ,'-100')");
+      $cmd = $this->db->prepare("SELECT IFNULL( (SELECT points FROM `eloRanking` WHERE userId = ?) , '0')");
       $cmd->bind_param("i", $userId);
 
       return $this->executeStatement($cmd);
    }
 
-   public function updateEloPoints($userId, $points) {
-      $cmd = $this->db->prepare("INSERT INTO table (userId, points) VALUES(?, ?) ON DUPLICATE KEY UPDATE userId=?, points=? ");
-      $cmd->bind_param("iiii", $userId, $points, $userId, $points);
+   public function updateEloPoints($userId, $points, $win, $loss) {
+      $cmd = $this->db->prepare("INSERT INTO `eloRanking` (userId, points) VALUES (?, ?) ON DUPLICATE KEY UPDATE userId= ?, points= ?, win=win+?, loss=loss+?, lastMatch = NOW() ");
+      $cmd->bind_param("iiiiii", $userId, $points, $userId, $points, $win, $loss);
 
       return $this->executeStatement($cmd);
+   }
+
+
+   public function selectEloLatestGamesByPlayerId($id) {
+     $cmd = $this->db->prepare("SELECT elo.*, CONCAT_WS(' ', User.firstName, User.lastName) AS name FROM eloGames AS elo
+                                LEFT JOIN User ON User.userId = elo.opponentId
+                                WHERE elo.playerId = ? OR elo.opponentId = ?
+                                ORDER BY time DESC LIMIT 5");
+     $cmd->bind_param("ii", $id, $id);
+
+     return $this->executeStatement($cmd);
    }
 
 
