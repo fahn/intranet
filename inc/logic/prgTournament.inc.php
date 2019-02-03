@@ -12,14 +12,14 @@
  *
  ******************************************************************************/
 
-include_once __PFAD__ .'/inc/db/brdb.inc.php';
-include_once __PFAD__ .'/inc/db/user.inc.php';
-include_once __PFAD__ .'/inc/logic/prgPattern.inc.php';
-include_once __PFAD__ .'/inc/logic/tools.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/db/brdb.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/db/user.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgPattern.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
 
 
 # export
-include_once __PFAD__ .'/vendor/autoload.php';
+include_once $_SERVER['BASE_DIR'] .'/vendor/autoload.php';
 use Box\Spout\Writer\WriterFactory;
 use Box\Spout\Common\Type;
 

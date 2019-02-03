@@ -12,7 +12,7 @@
  *
  ******************************************************************************/
 
- include_once __PFAD__ .'/inc/html/htmlLoginPage.inc.php';
+ include_once $_SERVER['BASE_DIR'] .'/inc/html/htmlLoginPage.inc.php';
 
 
  class BrdbHtmlMaintenance extends HtmlPageProcessor {

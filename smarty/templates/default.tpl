@@ -82,7 +82,7 @@
     </div>
 
     <div class="card mt-3 last news">
-        <h5 class="card-header">Letzte Neuigkeiten</h5>
+        <h5 class="card-header">Letzte technischen Neuigkeiten</h5>
         <ul class="list-group list-group-flush active">
             <li class="list-group-item">16.03.2018 // Fix Api error and fix sending mails</li>
             <li class="list-group-item">23.02.2018 // Fix and add icons to Menu</li>

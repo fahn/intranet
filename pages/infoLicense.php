@@ -13,9 +13,9 @@
  ******************************************************************************/
  
 require_once '_options.php';
-include_once __PFAD__ .'inc/html/brdbHtmlParseDownPage.inc.php';
+include_once $_SERVER['BASE_DIR'] .'inc/html/brdbHtmlParseDownPage.inc.php';
 
-$page = new BrdbHtmlParseDownPage(__PFAD__ .'/LICENSE.md');
+$page = new BrdbHtmlParseDownPage($_SERVER['BASE_DIR'] .'/LICENSE.md');
 $page->processPage();
 
 ?>

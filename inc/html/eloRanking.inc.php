@@ -31,7 +31,7 @@ class EloRanking extends BrdbHtmlPage {
 
     protected $smarty;
 
-    private $cssPrint = __PFAD__ .'/static/css/print.css';
+    private $cssPrint = $_SERVER['BASE_DIR'] .'/static/css/print.css';
 
 
     public function __construct() {

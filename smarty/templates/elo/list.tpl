@@ -19,7 +19,9 @@
                     </div>
                 </div>
             </div>
-            <p><a class="btn btn-primary" role="button" href="?action=download" target="_blank"><i class="fas fa-download"></i> PDF Download</a></p>
+        <div class="p-2">
+          <a class="btn btn-primary" role="button" href="?action=download" target="_blank"><i class="fas fa-download"></i> PDF Download</a>
+        </div>
         </div>
     </div>
 

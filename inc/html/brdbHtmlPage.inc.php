@@ -11,23 +11,21 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
-if( ! defined("__PFAD__") ) {
-	define("__PFAD__", dirname(__FILE__) .'/../');
-}
 
-include_once __PFAD__ .'/inc/html/htmlLoginPage.inc.php';
-include_once __PFAD__ .'/inc/logic/prgGame.inc.php';
+
+include_once $_SERVER['BASE_DIR'] .'/inc/html/htmlLoginPage.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgGame.inc.php';
 
 
 class BrdbHtmlPage extends AHtmlLoginPage {
-	public function __construct() {
-		parent::__construct();
-	}
+    public function __construct() {
+        parent::__construct();
+    }
 
   public function processPage() {
-		// Call all prgs and process them all
-		$this->prgPattern->processPRG();
-		parent::processPage();
-	}
+        // Call all prgs and process them all
+        $this->prgPattern->processPRG();
+        parent::processPage();
+    }
 
 }

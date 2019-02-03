@@ -13,7 +13,7 @@
  ******************************************************************************/
 
 require_once '_options.php';
-include_once __PFAD__ .'/inc/html/brdbHtmlSupport.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/html/brdbHtmlSupport.inc.php';
 
 $page = new brdbHtmlSupport();
 $page->processPage();

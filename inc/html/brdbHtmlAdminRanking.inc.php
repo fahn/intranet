@@ -12,9 +12,9 @@
  *
  ******************************************************************************/
 
-include_once __PFAD__ .'/inc/html/brdbHtmlPage.inc.php';
-include_once __PFAD__ .'/inc/logic/prgGame.inc.php';
-include_once __PFAD__ .'/inc/logic/tools.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/html/brdbHtmlPage.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgGame.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
 
 class BrdbHtmlAdminRanking extends BrdbHtmlPage {
   private $prgElementGame;

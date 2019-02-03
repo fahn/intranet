@@ -20,7 +20,7 @@ include_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
 
 
 # diff
-require_once __PFAD__ .'/inc/class.Diff.php';
+require_once $_SERVER['BASE_DIR'] .'/inc/class.Diff.php';
 
 
 class BrdbHtmlTournamentPage extends BrdbHtmlPage {

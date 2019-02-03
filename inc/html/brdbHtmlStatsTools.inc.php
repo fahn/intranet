@@ -13,9 +13,9 @@
  ******************************************************************************/
 
 
-include_once __PFAD__ .'/inc/logic/tools.inc.php';
-include_once __PFAD__ .'/inc/logic/prgTable.inc.php';
-include_once __PFAD__ .'/inc/logic/prgStatsTable.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgTable.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgStatsTable.inc.php';
 
 /**
  * This class implements  some tools that are needed for the player and

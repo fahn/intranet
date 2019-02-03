@@ -13,7 +13,7 @@
  ******************************************************************************/
 
 require_once '_options.php';
-include_once __PFAD__ .'inc/html/brdbHtmlParseDownPage.inc.php';
+include_once $_SERVER['BASE_DIR'] .'inc/html/brdbHtmlParseDownPage.inc.php';
 
 $page = new BrdbHtmlParseDownPage('../ThirdParty.md');
 $page->processPage();

@@ -12,8 +12,8 @@
  *
  ******************************************************************************/
 
-include_once __PFAD__ .'/inc/db/brdb.inc.php';
-include_once __PFAD__ .'/inc/logic/prgPattern.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/db/brdb.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgPattern.inc.php';
 
 /**
  * This prg pattern ahndles all the post and get actions

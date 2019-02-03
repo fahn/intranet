@@ -12,8 +12,8 @@
  *
  ******************************************************************************/
 
-require_once __PFAD__ .'/smarty/libs/Smarty.class.php';
-require_once __PFAD__ .'/inc/logic/tools.inc.php';
+require_once $_SERVER['BASE_DIR'] .'/smarty/libs/Smarty.class.php';
+require_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
 #require_once '../inc/Config.php';
 #require_once '../inc/Route.php';
 
@@ -57,9 +57,9 @@ abstract class HtmlPageProcessor {
       $this->smarty->cache_lifetime = 120;
     }
 
-    $this->smarty->setTemplateDir(__PFAD__ .'smarty/templates');
-    $this->smarty->setCompileDir(__PFAD__ .'smarty/templates_c');
-    $this->smarty->setConfigDir(__PFAD__ .'smarty/configs');
+    $this->smarty->setTemplateDir($_SERVER['BASE_DIR'] .'smarty/templates');
+    $this->smarty->setCompileDir($_SERVER['BASE_DIR'] .'smarty/templates_c');
+    $this->smarty->setConfigDir($_SERVER['BASE_DIR'] .'smarty/configs');
 
     // remove notice
     $this->smarty->error_reporting = E_ALL & ~E_NOTICE;

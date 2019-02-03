@@ -12,10 +12,10 @@
  *
  ******************************************************************************/
 
-include_once __PFAD__ .'/inc/db/brdb.inc.php';
-include_once __PFAD__ .'/inc/db/user.inc.php';
-include_once __PFAD__ .'/inc/logic/prgPattern.inc.php';
-include_once __PFAD__ .'/inc/logic/prgTable.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/db/brdb.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/db/user.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgPattern.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgTable.inc.php';
 
 /**
  * This class registers the columns of a general result view

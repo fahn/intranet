@@ -12,11 +12,11 @@
  *
  ******************************************************************************/
 
-include_once __PFAD__ .'/inc/html/brdbHtmlPage.inc.php';
-include_once __PFAD__ .'/inc/html/brdbHtmlStatsTools.inc.php';
-include_once __PFAD__ .'/inc/logic/prgTable.inc.php';
-include_once __PFAD__ .'/inc/logic/prgStatsTable.inc.php';
-include_once __PFAD__ .'/inc/logic/tools.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/html/brdbHtmlPage.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/html/brdbHtmlStatsTools.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgTable.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgStatsTable.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
 
 /**
  * A General Page for displaying Player / Single Game Results
