@@ -31,7 +31,7 @@ class EloRanking extends BrdbHtmlPage {
 
     protected $smarty;
 
-    private $cssPrint = $_SERVER['BASE_DIR'] .'/static/css/print.css';
+    private $cssPrint;
 
 
     public function __construct() {
@@ -39,8 +39,11 @@ class EloRanking extends BrdbHtmlPage {
 
         $this->tools->secure_array($_GET);
 
+        $this->cssPrint = $_SERVER['BASE_DIR'] .'/static/css/print.css';
+
         $this->prgElementEloRanking = new PrgPatternElementEloRanking();
         $this->prgElementEloRanking->__loadPattern($this->prgPatternElementLogin);
+        $this->prgPattern->registerPrg($this->prgElementEloRanking);
     }
 
     public function processPage() {
@@ -57,10 +60,9 @@ class EloRanking extends BrdbHtmlPage {
               $content = $this->downloadPDF();
               break;
 
-          case "renewRanking":
-          // @TODO: Security
-            $this->newRanking();
-            break;
+          case "delete":
+              $content = $this->TMPL_deleteGame();
+              break;
 
           default:
               $content = $this->TMPL_showRanking();
@@ -78,30 +80,109 @@ class EloRanking extends BrdbHtmlPage {
       return $this->smarty->fetch('elo/add.tpl');
     }
 
+    private function add_quotes($str) {
+        return sprintf("'%s'", $str);
+    }
+
     /**
      * Get Ranking
      */
     private function TMPL_showRanking($print=false) {
+        $stats  = $this->getRankingGroupedByDate();
+        $labels = implode(",", array_map(array($this, 'add_quotes'), $stats[0]));
+        print_r($labels);
+
         $this->smarty->assign(array(
-            'ranking'    => $this->getRanking(),
-            'print'      => $print,
+            'ranking'     => $this->getRanking(),
+            'games'       => $this->getGames(),
+            'labels'      => $labels,
+            'options'     => $stats[1],
+            'print'       => $print,
+            'stats'       => $this->tools->getIniValue('eloRanking')['stats'],
         ));
 
         return $this->smarty->fetch('elo/list.tpl');
     }
 
+    /**
+     *  delete a game
+     */
+    private function TMPL_deleteGame() {
+        $id = $this->tools->get('id') > 0 ? $this->tools->get('id') : '';
+        if (! $id) {
+            $this->tools->customRedirect(array('page' => 'eloRanking.php'));
+        }
+
+        $res  = $this->brdb->statementGetEloGameById($id);
+        if (! $this->brdb->hasError() ) {
+            $data = $res->fetch_assoc();
+            $data['sets'] = $this->convertSets($data['sets']);
+            $this->smarty->assign(array(
+                'game'     => $data,
+                'linkBack' => $this->tools->link(array('page' => __FILE__)),
+            ));
+        }
+
+        return $this->smarty->fetch('elo/delete.tpl');
+    }
+
+    /**
+     * get Ranking
+     */
     private function getRanking() {
-        $res  = $this->brdb->statementGetEloRanking();
+      $res  = $this->brdb->statementGetEloRanking();
+      $data = array();
+      if (! $this->brdb->hasError() ) {
+            $rank = 1;
+            while ($dataSet = $res->fetch_assoc()) {
+                $dataSet['playerLink'] = $this->tools->linkTo(array('page' => 'user.php', 'id' => $dataSet['userId']));
+                $data[$rank++] = $dataSet;
+            }
+        }
+
+      return $data;
+    }
+
+    /**
+     *  get Games
+     */
+    private function getGames() {
+        $res  = $this->brdb->statementGetEloMatches();
         $data = array();
         if (! $this->brdb->hasError() ) {
             $rank = 1;
             while ($dataSet = $res->fetch_assoc()) {
-              $data[$rank++] = $dataSet;
+                // sets
+                $dataSet['sets'] = $this->convertSets($dataSet['sets']);
+                // delete link
+                $dataSet['deleteLink'] = $this->tools->linkTo(array('page' => 'eloRanking.php', 'action' => 'delete', 'id' => $dataSet['gameId']));
+                // link user
+                $dataSet['playerLink'] = $this->tools->linkTo(array('page' => 'user.php', 'id' => $dataSet['playerId']));
+                // link oppenent
+                $dataSet['opponentLink'] = $this->tools->linkTo(array('page' => 'user.php', 'id' => $dataSet['opponentId']));
+
+                $data[] = $dataSet;
             }
-          }
+        }
 
         return $data;
     }
+
+    private function getRankingGroupedByDate() {
+      $res   = $this->brdb->statementGetEloMatchesGroupedByDate();
+      $dates = array();
+      $games = array();
+
+      if (! $this->brdb->hasError() ) {
+          while ($dataSet = $res->fetch_assoc()) {
+            $dates[] = $dataSet['gamedate'];
+            $games[] = $dataSet['games'];
+          }
+        }
+
+      return array($dates, $games);
+    }
+
 
     private function downloadPDF() {
       ob_start();
@@ -119,6 +200,7 @@ class EloRanking extends BrdbHtmlPage {
 
       $dompdf->loadHtml($content);
       $dompdf->setPaper('A4', 'portrait');
+      $dompdf->getCanvas()->page_text(72, 18, "Header: {PAGE_NUM} of {PAGE_COUNT}", $font, 10, array(0,0,0));
       $dompdf->render();
 
       // set name & download file
@@ -126,10 +208,13 @@ class EloRanking extends BrdbHtmlPage {
       $dompdf->stream($filename, array("Attachment" => false));
     }
 
-    private function newRanking() {
-      $this->prgElementEloRanking->newRanking();
+    private function convertSets($sets) {
+        return implode(" - ", unserialize($sets));
 
-      $this->tools->customRedirect(array('page' => 'eloRanking.php'));
     }
+
+
+
+
 }
 ?>

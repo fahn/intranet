@@ -11,11 +11,11 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
- 
+
 require_once '_options.php';
 include_once $_SERVER['BASE_DIR'] .'inc/html/brdbHtmlParseDownPage.inc.php';
 
-$page = new BrdbHtmlParseDownPage($_SERVER['BASE_DIR'] .'/LICENSE.md');
+$page = new BrdbHtmlParseDownPage($_SERVER['BASE_DIR'] .'/doc/LICENSE.md');
 $page->processPage();
 
 ?>

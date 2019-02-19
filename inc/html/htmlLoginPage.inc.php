@@ -212,7 +212,7 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
         $user = new PrgPatternElementUser();
         $userId = $this->prgPatternElementLogin->getLoggedInUser();
 
-        $elo = new PrgPatternElementEloRanking;
+        $elo = new PrgPatternElementEloRanking();
         $games = $elo->widgetShowLatestGames($userId, $this->smarty);
         #die(print_r($elo->calcMatch('1800', '200', false)));
         $this->smarty->assign(array(

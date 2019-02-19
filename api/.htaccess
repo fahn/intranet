@@ -1,10 +1,2 @@
-DirectoryIndex api.php
-
-RewriteEngine on
-
-RewriteBase /api
-
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-
-RewriteRule ^(.*)$ index.php [QSA]
+# set base dir
+SetEnv BASE_DIR /var/www/html/

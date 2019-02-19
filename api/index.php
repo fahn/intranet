@@ -1,58 +1,141 @@
+#!/usr/bin/php
+
 <?php
+/*******************************************************************************
+ * Badminton Intranet System
+ * Copyright 2017-2019
+ * All Rights Reserved
+ *
+ * Copying, distribution, usage in any form is not
+ * allowed without  written permit.
+ *
+ * Stefan Metzner <stefan@weinekind.de>
+ * Philipp M. Fischer <phil.m.fischer@googlemail.com>
+ *
+ ******************************************************************************/
 
+$path=dirname(dirname(__FILE__));
+$_SERVER['BASE_DIR'] = $path;
 
-require($_SERVER['BASE_DIR'] ."/inc/db/brdb.inc.php");
-require($_SERVER['BASE_DIR'] ."/inc/logic/tools.inc.php");
+require_once $_SERVER['BASE_DIR'] ."/inc/db/brdb.inc.php";
+require_once $_SERVER['BASE_DIR'] ."/inc/logic/tools.inc.php";
 
-class Api{
-  protected $brdb;
+class Api {
+    protected $brdb;
 
-  private $tools;
+    private $tools;
 
-  private $content = "";
+    private $content = "";
 
-  public function __construct() {
-    /* SQL CONNECTION */
-    $this->brdb = new BrankDB();
+    public function __construct() {
+        global $argv;
+        if (!empty($argv[1])) {
+            parse_str($argv[1], $_GET);
+        }
 
-    $this->tools = new Tools();
+        /* SQL CONNECTION */
+        $this->brdb = new BrankDB();
 
-    $action = $this->tools->get('action');
+        /* load TOOLS */
+        $this->tools = new Tools();
 
-    switch ($action) {
-      case 'tournament':
-        $this->reminderTournament();
-        break;
+        $action = $this->tools->get('action');
+        switch ($action) {
+            case 'tournament':
+                $this->reminderTournament();
+                break;
 
-      default:
-        # code...
-        break;
+            case 'importTournament':
+                $this->importTournament();
+                break;
+
+            default:
+                # code...
+                break;
+        }
+
     }
-  }
 
   private function reminderTournament() {
-    $res = $this->brdb->APIGetTournamentFromToday();
-    while($row = $res->fetch_assoc()) {
-      if(isset($row) && isset($row['email']) && filter_var($row['email'], FILTER_VALIDATE_EMAIL)) {
-          $subject = sprintf("Meldeschluss für %s", $row['name']);
-          $link = $this->tools->linkTo('page' => 'rankingTournament.php', 'action' => 'details', 'id' => $row['tournamentID']) ;
-          $content = sprintf("Hallo %s,<br>Für das Turnier/Rangliste \"%s\" ist heute Meldeschluss.<br><br>Alle weitern Informationen gibt es <a href='%s'>hier</a>.", $row['reporterName'], $row['name'], $link);
-          if ( $this->tools->sendMail($row['email'], $subject, $subject, $content)) {
-                $row['mail'] = "success";
+      $res = $this->brdb->APIGetTournamentFromToday();
+      if($res->num_rows > 0 ) {
+          while($row = $res->fetch_assoc()) {
+              if(isset($row) && isset($row['email']) && filter_var($row['email'], FILTER_VALIDATE_EMAIL)) {
+                  $subject   = sprintf("Meldeschluss für %s", $row['name']);
+                  // content
+                  $to        = $row['email'];
+                  $name      = $row['name'];
+                  $link      = $this->tools->linkTo(array(
+                      'page'   => 'rankingTournament.php',
+                      'action' => 'details',
+                      'id'     => $row['tournamentID'],
+                  ));
+                  $content = sprintf("Hallo %s,<br>Für das Turnier/Rangliste \"%s\" ist heute Meldeschluss.<br><br>Alle weiteren Informationen gibt es <a href='%s'>hier</a>.", $row['reporterName'], $row['name'], $link);
+                  if($this->tools->sendMail($to, $name, $subject, $subject, $content)) {
+                      $row['mail'] = "success";
+                  }
+
+                  if(isset($row) && is_array($row) && count($row) > 0) {
+                      $this->content .= implode(", ", $row);
+                  }
+              }
           }
       }
-      $this->content .= implode(", ", $row);
+  }
 
+    private function importTournament() {
+        // load Tournament
+        $content = exec('../tools/getNbvTournament.py');
+        $xml = simplexml_load_string($content);
+
+        $data = $this->getTournamentData();
+
+        foreach ($xml->entry as $entry) {
+            if (is_array($data) && count($data) > 0) {
+                foreach($data as $tournament) {
+                    $sim = similar_text($entry->title, $tournament['name'], $percent);
+                    if ($percent > 50) {
+                        echo "Skip $entry->title \n";
+                        echo sprintf("\t%s VS %s = %d\n", $entry->title, $tournament['name'], $percent);
+                        continue 2;
+                    }
+                }
+            }
+
+            # form dates()
+            $startdate = $this->changeDate($entry->startdate);
+            $enddate   = $this->changeDate($entry->enddate);
+            $deadline  = $this->changeDate($entry->deadline);
+
+            echo "Insert $entry->title\n";
+            $this->brdb->APIinsertTournament($entry->title, $entry->place, $startdate, $enddate, $deadline, $entry->link, $entry->tournamentType, $entry->description);
+        }
     }
-  }
 
-  function __toString() {
-    return $this->content;
-  }
+    private function getTournamentData() {
+        $data = array();
+        $res = $this->brdb->APIGetTournamentList();
+        while($dataSet = $res->fetch_assoc()) {
+            $data[] = $dataSet;
+        }
+
+        return $data;
+    }
+
+    private function changeDate($date) {
+        return date("Y-m-d", strtotime($date));
+    }
+
+    function __toString() {
+        return $this->content;
+    }
 }
 
 
+/* OUTPUT */
 $api = new Api();
 echo $api;
 echo "\n";
+exit(0);
+
 ?>

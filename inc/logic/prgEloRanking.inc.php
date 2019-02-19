@@ -6,114 +6,217 @@ include_once $_SERVER['BASE_DIR'] .'/inc/db/user.inc.php';
 include_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
 
 class PrgPatternElementEloRanking extends APrgPatternElement {
-  // DB
-  private $db;
+    // DB
+    private $db;
 
-  // tools
-  private $tools;
+    // tools
+    private $tools;
 
-  protected $prgElementLogin;
+    protected $prgElementLogin;
 
-  // generell
-  const FORM_FORM_ACTION  = "formAction";
+    // generell
+    const FORM_FORM_ACTION  = "formAction";
 
-  // Forms
-  const FORM_INSERT_MATCH = "insertEloMatch";
+    // Forms
+    const FORM_INSERT_MATCH = "insertEloMatch";
+    const FORM_DELETE_MATCH = "deleteEloMatch";
 
-  // Fields
+    /**
+     * construct
+     */
+    public function __construct() {
+        parent::__construct("eloRanking");
+        // load DB
+        $this->db = new BrankDB();
 
+        // load Tools
+        $this->tools = new Tools();
 
-  public function __construct() {
-      // load DB
-      $this->db = new BrankDB();
-
-      // load Tools
-      $this->tools = new Tools();
-  }
-
-  public function __loadPattern($prgElementLogin) {
-      $this->prgElementLogin = $prgElementLogin;
-  }
-
-  function processPost() {
-
-    $isUserLoggedIn = $this->prgElementLogin->isUserLoggedIn();
-    $isUserAdmin    = $this->prgElementLogin->getLoggedInUser()->isAdmin();
-    $isUserReporter = $this->prgElementLogin->getLoggedInUser()->isReporter();
-
-    if ( ! $isUserLoggedIn || ! $isAdmin || ! $isReporter) {
-        return;
+        $this->registerPostSessionVariable(self::FORM_FORM_ACTION);
+        $this->registerPostSessionVariable(self::FORM_INSERT_MATCH);
+        #die(print_r($_POST));
     }
 
-    switch ($this->issetPostVariable(self::FORM_INSERT_MATCH)) {
-      case 'insert':
-        #$this->insertMatch();
-        break;
-
-      default:
-        // code...
-        break;
+    public function __loadPattern($prgElementLogin) {
+        $this->prgElementLogin = $prgElementLogin;
     }
 
-  }
+    /******************************************* WIDGET ***********************/
 
-  function processGet() {
-    $isUserLoggedIn = $this->prgElementLogin->isUserLoggedIn();
-    $isUserAdmin    = $this->prgElementLogin->getLoggedInUser()->isAdmin();
-    $isUserReporter = $this->prgElementLogin->getLoggedInUser()->isReporter();
+    function widgetShowLatestGames($userId, $smarty) {
+        $uid = $userId->userId;
 
-    if ( ! $isUserLoggedIn || ! $isAdmin || ! $isReporter) {
-        return;
+        $data = array();
+        $res  = $this->db->selectEloLatestGamesByPlayerId($uid);
+        if (! $this->db->hasError() ) {
+            while ($dataSet = $res->fetch_assoc()) {
+                // chicken
+                if($uid == $dataSet['winner']) {
+                  $chicken = '<i class="fas fa-arrow-circle-up text-success"></i>';
+                } else {
+                  $chicken = '<i class="fas fa-arrow-circle-down text-danger"></i>';
+                }
+
+                $dataSet['chicken'] = $chicken;
+                $dataSet['sets']    = $this->convertSets($dataSet['sets']);
+
+                $data[] = $dataSet;
+            }
+        }
+
+        $smarty->assign(array(
+          'data' => $data,
+          'link' => $this->tools->linkTo(array('page' => 'eloRanking.php')),
+        ));
+
+        return $smarty->fetch('elo/widgethShowLatestGames.tpl');
     }
 
-    $action = $_GET['action'];
-
-    if ( $action == 'test' ) {
+    private function convertSets($sets) {
+        return implode(" - ", unserialize($sets));
 
     }
-  }
+
+    /********************************************* POST ***********************/
+
+    public function processPost() {
+
+        #$isUserLoggedIn = $this->prgElementLogin->isUserLoggedIn();
+        #$isUserAdmin    = $this->prgElementLogin->getLoggedInUser()->isAdmin();
+        #$isUserReporter = $this->prgElementLogin->getLoggedInUser()->isReporter();
+
+        #if ( ! $isUserLoggedIn || ! $isAdmin || ! $isReporter) {
+        #    return;
+        #}
+
+
+        $form = strval(trim($this->getPostVariable(self::FORM_FORM_ACTION)));
+        switch ($form) {
+            case self::FORM_INSERT_MATCH:
+                $this->insertMatch();
+                break;
+            case self::FORM_DELETE_MATCH:
+                $this->deleteMatch();
+                break;
+
+            default:
+                // code...
+                break;
+        }
+
+    }
 
 
 
-  function widgetShowLatestGames($userId, $smarty) {
-      // insert Match
-      #$sets = serialize(array('21:12', '12:21', '21:12'));
-      #$winner = $this->getWinner($sets) == 'true' ? 1 : 2;
-      #$this->insertGame(1, 2, $sets, $winner);
+    private function insertMatch() {
+        $player   = $this->getPostVariable('player');
+        $opponent = $this->getPostVariable('opponent');
+        die($player);
+        // @TODO: Check if users exists
+        $sets = array();
+        for($i=1; $i<=3; $i++) {
+            $fielda = sprintf('set%s%s', 'A', $i);
+            $fieldb = sprintf('set%s%s', 'B', $i);
+            if ($this->getPostVariable($fielda) && $this->getPostVariable($fieldb)) {
+                $sets[] = implode(":", array($this->getPostVariable($fielda), $this->getPostVariable($fieldb)));
+            }
+        }
 
-      $uid = $userId->userId;
 
-      $data = array();
-      $res  = $this->db->selectEloLatestGamesByPlayerId($uid);
-      if (! $this->db->hasError() ) {
-          while ($dataSet = $res->fetch_assoc()) {
-              // chicken
-              if($uid == $dataSet['winner']) {
-                $chicken = '<i class="fas fa-arrow-circle-up text-success"></i>';
-              } else {
-                $chicken = '<i class="fas fa-arrow-circle-down text-danger"></i>';
-              }
+        if (! $player || ! $opponent || count($sets) < 2) {
+            $this->setFailedMessage("Die Angaben stimmen nicht.");
+            return false;
+        }
 
-              $result = "1:0";
-              $opponent = "AA";
+        // INSERT MATCH
+        $res = $this->db->insertEloMatch($player, $opponent, $sets, $winner);
+        if ( $this->db->hasError()) {
+            $this->setFailedMessage($this->brdb->getError());
+            return false;
+        }
 
-              $data[]         = array(
-                  'result'   => $result,
-                  'name'     => $dataSet['name'],
-                  'datetime' => $dataSet['time'],
-                  'chicken'  => $chicken,
-                  'sets'     => implode(", ", unserialize($dataSet['sets'])),
-              );
-          }
-      }
+        // Points
+        $a1 = $this->getPointsByUserId($player);
+        $b1 = $this->getPointsByUserId($b);
 
-      $smarty->assign(array(
-        'data' => $data,
-        'link' => $this->tools->linkTo(array('page' => 'eloRanking.php')),
-      ));
+        // calc Points
+        $points = $this->calcMatch($a1, $b1, $winner);
 
-      return $smarty->fetch('elo/widgethShowLatestGames.tpl');
-  }
+        // update points
+        // player A
+        $win  = ($winner == 1 ? 1 : 0);
+        $this->updateEloPoints($a, $points[0], $win);
+
+        // player B
+        $win  = $win  == 1 ? 0 : 1;
+        $this->updateEloPoints($b, $points[1], $win);
+
+        if ($this->db->hasError() ) {
+          $this->setFailedMessage($this->brdb->getError());
+          return false;
+        }
+
+        $this->setSuccessMessage("Das Spiel wurde eingetragen und die Punkte wurden berechnet.");
+        $this->tools->customRedirect(array('page' => 'eloRanking.php'));
+        return true;
+
+    }
+
+    private function deleteMatch() {
+        $id = $this->tools->get('id') ? $this->tools->get('id') : '';
+        if (! $id) {
+
+
+        }
+
+        $this->db->deleteEloMatch($id);
+        if ($this->db->hasError()) {
+            $this->setFailedMessage("Das Spiel konnte nicht gelöscht werden");
+            $this->tools->customRedirect(array('page' => 'eloRanking.php'));
+        }
+        if (! $this->newRanking() ) {
+            $this->setFailedMessage("Die Rankgliste konnte nicht erstellt werden.");
+            $this->tools->customRedirect(array('page' => 'eloRanking.php'));
+        }
+
+        $this->setSuccessMessage("Das Spiel wurde gelöscht & die Rangliste wurde neu erstellt.");
+        $this->tools->customRedirect(array('page' => 'eloRanking.php'));
+        return true;
+    }
+
+    /********************************************** GET ***********************/
+
+    function processGet() {
+        #$isUserLoggedIn = $this->prgElementLogin->isUserLoggedIn();
+        #$isUserAdmin    = $this->prgElementLogin->getLoggedInUser()->isAdmin();
+        #$isUserReporter = $this->prgElementLogin->getLoggedInUser()->isReporter();
+
+        #if ( ! $isUserLoggedIn || ! $isAdmin || ! $isReporter) {
+                        #return;
+#        }
+
+
+        #$form = strval(trim($this->getGetVariable('action')));
+        $action = $this->tools->get('action');
+        switch ($action) {
+            case 'renewRanking':
+                $this->getNewRanking();
+                break;
+            default:
+                // code...
+                break;
+        }
+    }
+
+    private function getNewRanking() {
+        if ( ! $this->newRanking()) {
+            $this->setFailedMessage("Die Rankgliste konnte nicht erstellt werden.");
+        } else {
+            $this->setSuccessMessage("Die Rangliste wurde neu erstellt.");
+        }
+        $this->tools->customRedirect(array('page' => 'eloRanking.php'));
+        return true;
+    }
 
   private function getWinner($sets) {
     $a = 0;
@@ -134,42 +237,11 @@ class PrgPatternElementEloRanking extends APrgPatternElement {
     }
   }
 
-  private function insertGame($a, $b, $sets, $winner) {
 
-      // INSERT MATCH
-      $res = $this->db->insertEloMatch($a, $b, $sets, $winner);
-      if ( $this->db->hasError()) {
-          $this->setFailedMessage($this->brdb->getError());
-          return false;
-      }
 
-      // Points
-      $a1 = $this->getPointsByUserId($a);
-      $b1 = $this->getPointsByUserId($b);
-
-      // calc Points
-      $points = $this->calcMatch($a1, $b1, $winner);
-
-      // update points
-      // player A
-      $win  = ($winner == 1 ? 1 : 0);
-      $this->updateEloPoints($a, $points[0], $win);
-
-      // player B
-      $win  = $win  == 1 ? 0 : 1;
-      $this->updateEloPoints($b, $points[1], $win);
-
-      if ($this->db->hasError() ) {
-        $this->setFailedMessage($this->brdb->getError());
-        return false;
-      }
-
-      $this->setSuccessMessage("Das Spiel wurde eingetragen.");
-      $this->tools->customRedirect(array('page' => 'eloRanking.php'));
-      return true;
-
-  }
-
+  /**
+   * get points
+   */
   private function getPointsByUserId($userId) {
       // GET POINTS
       $res = $this->db->selectEloPoints($userId);
@@ -177,6 +249,9 @@ class PrgPatternElementEloRanking extends APrgPatternElement {
       return  $row[0] == 0 ? 1000 : $row[0];
   }
 
+  /**
+   * update Points from user
+   */
   private function updateEloPoints($userId, $points, $win) {
       error_log ($userId ." - ". $points ." - ". $win ."<br>");
       $loss = ($win == 1 ? 0 : 1);
@@ -187,65 +262,75 @@ class PrgPatternElementEloRanking extends APrgPatternElement {
       return false;
   }
 
-  public function calcMatch($a, $b, $winnerA = true) {
-      if ($winnerA == false) {
-          return array_reverse($this->calcMatch($b, $a, true));
-      }
-      $pointDiff = $b - $a;
-      $weak = 1 / (1 + pow(10, ($pointDiff/200)));
+  /**
+   * calc Match
+   */
+    public function calcMatch($a, $b, $winnerA = true) {
+        if ($winnerA == false) {
+            return array_reverse($this->calcMatch($b, $a, true));
+        }
+        $pointDiff = $b - $a;
+        $weak = 1 / (1 + pow(10, ($pointDiff/200)));
 
-      // NEW POINTS
-      $a1 = $this->getNewPoints($a, $winnerA, $weak);
-      $b1 = $this->getNewPoints($b, !$winnerA, $weak);
+        // NEW POINTS
+        $a1 = $this->getNewPoints($a, $winnerA, $weak);
+        $b1 = $this->getNewPoints($b, !$winnerA, $weak);
 
-      return array($a1, $b1);
+        return array($a1, $b1);
 
-  }
+    }
 
-  private function getNewPoints($points, $win, $weak) {
+  /**
+   * getNewPoints
+   */
+   private function getNewPoints($points, $win, $weak) {
     return (int) ($points + 15 * (($win == true ? 1 : 0) - $weak));
   }
 
+  /**
+   * generate new Ranking
+   */
   public function newRanking() {
-    // clear Ranking
-    $this->db->deleteEloRanking();
+      // clear Ranking
+      $this->db->deleteEloRanking();
 
-    // get all matches and recalc
-    $res = $this->db->statementGetEloMatches();
-    if ( $this->db->hasError() ) {
-        $this->setFailedMessage("Da ist wohl etwas schief gegangen.");
-        return false;
-    }
+      // get all matches and recalc
+      $res = $this->db->statementGetEloMatches();
+      if ( $this->db->hasError() ) {
+          return false;
+      }
 
-    $games = 0;
+      $games = 0;
+      echo "<pre>";
+      while($dataSet = $res->fetch_assoc()) {
 
-    while($dataSet = $res->fetch_assoc()) {
-      // SET PLAYERS
-      $a = $dataSet['playerId'];
-      $b = $dataSet['opponentId'];
+          print_r($dataSet);
+          // SET PLAYERS
+          $a = $dataSet['playerId'];
+          $b = $dataSet['opponentId'];
 
-      $a1 = $this->getPointsByUserId($a);
-      $b1 = $this->getPointsByUserId($b);
-      $winner = $this->getWinner($dataSet['sets']);
+          $a1 = $this->getPointsByUserId($a);
+          $b1 = $this->getPointsByUserId($b);
 
-      // calc Points
-      $points = $this->calcMatch($a1, $b1, $winner);
+          $winner = $this->getWinner($dataSet['sets']);
 
-      // update points
-      // player A
-      $win  = ($winner == 1 ? 1 : 0);
-      // @TODO: change timestamp if recalc
-      $this->updateEloPoints($a, $points[0], $win);
+          // calc Points
+          $points = $this->calcMatch($a1, $b1, $winner);
 
-      // player B
-      $win  = $win  == 1 ? 0 : 1;
-      $this->updateEloPoints($b, $points[1], $win);
+          // update points
+          // player A
+          $win  = ($winner == 1 ? 1 : 0);
+          // @TODO: change timestamp if recalc
+          $this->updateEloPoints($a, $points[0], $win);
 
-      $games++;
-    }
+          // player B
+          $win  = $win  == 1 ? 0 : 1;
+          $this->updateEloPoints($b, $points[1], $win);
 
-    $this->setSuccessMessage("Das Ranking wurde komplett neu erstellt.");
-    return true;
+          $games++;
+      }
+      die("1");
+      return true;
   }
 
 }

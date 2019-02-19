@@ -63,6 +63,7 @@
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="/pages/support.php"><i class="fas fa-medkit"></i> Support</a>
                         <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="/pages/about.php"><i class="fas fa-bookmark"></i> About</a>
                         <a class="dropdown-item" href="logout.php"><i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout</a>
                     </div>
                 </li>

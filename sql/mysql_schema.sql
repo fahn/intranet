@@ -211,9 +211,10 @@ CREATE TEMPORARY TABLE `EloRanking` (
 */
 
 CREATE TABLE `eloGames` (
-  `gameId`      int(11) NOT NULL,
-  `playerId`    int(11) NOT NULL,
-  `opponentId`  int(11) NOT NULL,
+  `gameId`      INT(11) NOT NULL,
+  `hidden`      INT(1) NOT NULL DEFAULT '0',
+  `playerId`    INT(11) NOT NULL,
+  `opponentId`  INT(11) NOT NULL,
   `sets`        varchar(64) NOT NULL,
   `winnerId`    int(11) NOT NULL,
   `time`        timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
