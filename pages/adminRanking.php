@@ -11,7 +11,7 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
- 
+
 require_once '_options.php';
 include_once $_SERVER['BASE_DIR'] .'inc/html/brdbHtmlAdminRanking.inc.php';
 

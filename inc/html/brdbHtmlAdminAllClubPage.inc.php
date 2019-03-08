@@ -23,62 +23,58 @@ class BrdbHtmlAdminAllClubPage extends BrdbHtmlPage {
 
   const MAX_ENTRIES = 50;
 
-  public function __construct() {
-    parent::__construct();
-    $this->prgPatternElementClub = new PrgPatternElementClub($this->brdb, $this->prgPatternElementLogin);
-    $this->prgPattern->registerPrg($this->prgPatternElementClub);
+    public function __construct() {
+        parent::__construct();
 
-    // load Tools
-    $this->tools = new Tools();
-  }
-
-
-
-  public function htmlBody() {
-
-    $action = $this->tools->get("action");
-    $id     = $this->tools->get("id");
-
-    switch ($action) {
-      case 'add_club':
-        $content = $this->loadContentAddEdit($action, $id);
-        break;
-
-      case 'edit':
-        $content = $this->loadContentAddEdit($action, $id);
-        break;
-
-      default:
-        $content = $this->loadContent();
-        break;
+        $this->prgPatternElementClub = new PrgPatternElementClub($this->brdb, $this->prgPatternElementLogin);
+        $this->prgPattern->registerPrg($this->prgPatternElementClub);
     }
 
-    $this->smarty->assign(array(
-      'content' => $content,
-    ));
 
-    $this->smarty->display('index.tpl');
-  }
+    public function htmlBody() {
+        $action = $this->tools->get("action");
+        $id     = $this->tools->get("id");
+
+        switch ($action) {
+          case 'add_club':
+            $content = $this->loadContentAddEdit($action, $id);
+            break;
+
+          case 'edit':
+            $content = $this->loadContentAddEdit($action, $id);
+            break;
+
+          default:
+            $content = $this->loadContent();
+            break;
+        }
+
+        $this->smarty->assign(array(
+            'content' => $content,
+        ));
+
+        $this->smarty->display('index.tpl');
+    }
 
 
-  private function loadContent() {
-    $page = $this->tools->get("page");
-    $page = isset($page) && is_numeric($page) && $page > 0 ? $page-1 : 0;
-    $this->smarty->assign(array(
-      'clubs'      => $this->loadClubList($page),
-      'pagination' => $this->getPageination(),
-    ));
-    return $this->smarty->fetch('admin/ClubList.tpl');
-  }
+    private function loadContent() {
+        $page = $this->tools->get("page");
+        $page = isset($page) && is_numeric($page) && $page > 0 ? $page-1 : 0;
+        $this->smarty->assign(array(
+            'clubs'      => $this->loadClubList($page),
+            'pagination' => $this->getPageination(),
+        ));
+        return $this->smarty->fetch('admin/ClubList.tpl');
+    }
 
-  private function loadContentAddEdit($action, $id) {
-    $this->smarty->assign(array(
-      'action' => $action,
-      'clubs' => $this->loadClubList(),
-      'variable' => $this->getClubById($id),
-    ));
-    return $this->smarty->fetch('admin/ClubEdit.tpl');
-  }
+    private function loadContentAddEdit($action, $id) {
+      $this->smarty->assign(array(
+          'action'   => $action,
+          'clubs'    => $this->loadClubList(),
+          'variable' => $this->getClubById($id),
+      ));
+      return $this->smarty->fetch('admin/ClubEdit.tpl');
+    }
 
   private function loadClubList($page = 0) {
     $this->countRows = $this->brdb->selectAllClubs()->num_rows;

@@ -17,7 +17,8 @@
 
     <input type="submit" name="{$variableNameAction}" class="btn btn-success btn-block " value="{$variableNameActionLogin}">
 
-    <a href="?action=request_password" class="btn btn-warning btn-block mt-5" role="button">Passwort vergessen ?</a>
+    <a href="?action=request_password" class="btn btn-warning mt-5" role="button">Passwort vergessen ?</a>
+    <a href="?action=register" class="btn btn-outline-warning text-right mt-5" role="button">Registrieren</a>
     <hr>
     <p class="text-center">
       {if $imprint}

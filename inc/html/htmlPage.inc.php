@@ -14,28 +14,12 @@
 
 require_once $_SERVER['BASE_DIR'] .'/smarty/libs/Smarty.class.php';
 require_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
-#require_once '../inc/Config.php';
-#require_once '../inc/Route.php';
 
-/**
- * This class helps to build up HTML pages
- * using object oriented php classes. It
- * is based on HTML 5 and provides a standard
- * layout to show a html page. It also links to a
- * CSS style sheet and provides all relevant information
- * such as the header, meta data (UTF-8), title, etc.
- *
- * @author philipp
- *
- */
 abstract class HtmlPageProcessor {
-
     // smarty
     protected $smarty;
-
     // content
     protected $content;
-
     // tools
     protected $tools;
 
@@ -50,11 +34,11 @@ abstract class HtmlPageProcessor {
     // load smarty
     $this->smarty = new Smarty;
     if ($this->tools->getIniValue('stage') == "development") {
-      // @TODO: set debug bar
-      $this->smarty->force_compile = true;
-      $this->smarty->debugging = true;
-      $this->smarty->caching = true;
-      $this->smarty->cache_lifetime = 120;
+        // @TODO: set debug bar
+        $this->smarty->force_compile = true;
+        $this->smarty->debugging = true;
+        $this->smarty->caching = true;
+        $this->smarty->cache_lifetime = 120;
     }
 
     $this->smarty->setTemplateDir($_SERVER['BASE_DIR'] .'/templates');
@@ -66,8 +50,7 @@ abstract class HtmlPageProcessor {
 
     $this->smarty->assign(array(
         'pageTitle' => $this->tools->getIniValue('pageTitle'),
-      ));
-
+    ));
   }
 
   /**

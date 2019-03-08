@@ -17,11 +17,21 @@ include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgLogin.inc.php';
 include_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
 include_once $_SERVER['BASE_DIR'] .'/inc/db/brdb.inc.php';
 
+include_once $_SERVER['BASE_DIR'] .'/inc/html/htmlPage.inc.php';
+
 // user
 include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgUser.inc.php';
 
-// elo ranking
-require_once $_SERVER['BASE_DIR'] .'/inc/logic/prgEloRanking.inc.php';
+
+// load widgets
+require_once $_SERVER['BASE_DIR'] .'/inc/widget/eloRanking.widget.php';
+require_once $_SERVER['BASE_DIR'] .'/inc/widget/tournament.widget.php';
+require_once $_SERVER['BASE_DIR'] .'/inc/widget/team.widget.php';
+
+
+// notification
+#include_once $_SERVER['BASE_DIR'] .'/inc/html/brdbHtmlNotification.inc.php';
+
 
 
 /**
@@ -104,6 +114,10 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
             $user = $this->prgPatternElementLogin->getLoggedInUser();
             $this->smarty->registerObject('user', $user);
 
+            // Notification
+            #$notification = new Notification();
+
+
             $this->smarty->assign(array(
                     'currentUserName'  => $currentUserName,
                     'isUserLoggedIn'   => $isUserLoggedIn,
@@ -112,6 +126,7 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
                     'userId'           => $this->prgPatternElementLogin->getLoggedInUser()->getId(),
                     'rankingEnable'    => $this->tools->getIniValue('rankingEnable'),
                     'tournamentEnable' => $this->tools->getIniValue('tournamentEnable'),
+                    #'notification'     => $notification->getNotification(),
             ));
         }
 
@@ -144,7 +159,8 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
 
         if($isUserLoggedIn) {
             $this->smarty->assign(array(
-                    'content' => $this->loadContent(),
+                    'content'      => $this->loadContent(),
+                    #'notification' => $this->getNotification(),
             ));
             $this->smarty->display('index.tpl');
         } else {
@@ -164,6 +180,13 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
                   'mail'  => $mail,
                 ));
                 $this->content = $this->smarty->fetch('login/change_password.tpl');
+                break;
+
+              case 'register':
+                require_once $_SERVER['BASE_DIR'] .'/inc/html/brdbHtmlSupport.inc.php';
+                $support = new brdbHtmlSupport();
+                $this->content = $support->register();
+                #die("HI");
                 break;
 
               default:
@@ -190,7 +213,6 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
                 $this->content =  $this->smarty->fetch('login/login_form.tpl');
                 break;
             }
-            #print_R($_SERVER);
 
             $this->smarty->assign(array(
               'content' => $this->content,
@@ -209,47 +231,22 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
     }
 
     private function loadContent() {
-        $user = new PrgPatternElementUser();
+        $user = new PrgPatternElementUser($this->brdb, $this->prgPatternElementLogin);
         $userId = $this->prgPatternElementLogin->getLoggedInUser();
 
-        $elo = new PrgPatternElementEloRanking();
-        $games = $elo->widgetShowLatestGames($userId, $this->smarty);
-        #die(print_r($elo->calcMatch('1800', '200', false)));
+        // load Widgets
+        $tournamentWidget = new tournamentWidget();
+        $eloRankingWidget = new eloRankingWidget();
+        $teamWidget       = new teamWidget();
+
         $this->smarty->assign(array(
-                'games'               => $games,
-                'upcomingTournaments' => $this->getUpcomingTournaments(),
-            #    'users'               => $user->getAdminsAndReporter(),
-            #    'social'              => $this->tools->getIniValue("Social"),
+            'widgetEloRankingLatestGames' => $eloRankingWidget->showWidget('latestGames'),
+            'widgetUpcomingTournaments'   => $tournamentWidget->showWidget('upcomingTournaments'),
+            'widgetShowTeam'              => $teamWidget->showWidget('showTeam'),
+
         ));
 
         return $this->smarty->fetch('default.tpl');
     }
-
-
-
-    private function getLatestTournament() {
-        $data = array();
-        $res = $this->brdb->selectLatestTournamentList(5);
-        if (!$this->brdb->hasError()) {
-            while ($dataSet = $res->fetch_assoc()) {
-                $dataSet['classification'] = $this->tools->formatClassification($dataSet['classification']);
-                $data[]                    = $dataSet;
-            }
-        }
-        return $data;
-    }
-
-    private function getUpcomingTournaments() {
-        $data = array();
-        $res = $this->brdb->selectUpcomingTournamentList(5);
-        if (!$this->brdb->hasError()) {
-            while ($dataSet = $res->fetch_assoc()) {
-                $dataSet['classification'] = $this->tools->formatClassification($dataSet['classification']);
-                $data[]                     = $dataSet;
-            }
-        }
-        return $data;
-    }
-
 }
 ?>

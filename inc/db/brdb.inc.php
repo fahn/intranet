@@ -630,8 +630,42 @@ class BrankDB {
         return  $this->executeStatement($cmd);
     }
 
+    /*******************************************************************************
+                                 NOTIFICATION
+    *******************************************************************************/
+    public function statementGetNotifationByUserId($userId) {
+        $cmd = $this->db->prepare("SELECT * FROM `Notification` WHERE userId = ?");
+        $cmd->bind_param("i", $userId);
 
+        return  $this->executeStatement($cmd);
+    }
 
+    public function statementGetNonReadNotifationByUserId($userId) {
+        $cmd = $this->db->prepare("SELECT * FROM `Notification` WHERE userId = ? and isRead = 0");
+        $cmd->bind_param("i", $userId);
+
+        return  $this->executeStatement($cmd);
+    }
+
+    /**
+     * read Message by UserId & notificationId
+     */
+    public function statementReadMessageById($id, $userId) {
+        $cmd = $this->db->prepare("UPDATE `Notification` set isRead=1 WHERE id = ? AND userId = ?");
+        $cmd->bind_param("ii", $id, $userId);
+
+        return  $this->executeStatement($cmd);
+    }
+
+    /**
+     *  read all messages by User
+     */
+    public function statementAllReadMessageByUserId($userId) {
+        $cmd = $this->db->prepare("UPDATE `Notification` set isRead=1 WHERE userId = ?");
+        $cmd->bind_param("i", $userId);
+
+        return  $this->executeStatement($cmd);
+    }
 
 
  /*******************************************************************************

@@ -10,11 +10,11 @@
     <div class="col-md-6">
       <div class="form-group">
         <label for="supportSubject">Dein Betreff:</label>
-        <input class="form-control"  type="text" id="supportSubject" name="supportSubject" placeholder="Dein Betreff" required>
+        <input class="form-control"  type="text" id="supportSubject" name="supportSubject" placeholder="Dein Betreff" value="{$subject}" required>
       </div>
     </div>
   </div>
-
+{if $action != "register"}
   <div class="row">
     <div class="col-md-12">
       <div class="form-group">
@@ -28,12 +28,13 @@
     </div>
     </div>
   </div>
+{/if}
 
   <div class="row">
     <div class="col-md-12">
       <div class="form-group">
         <label for="supportMessage">Deine Nachricht:</label>
-        <textarea class="form-control" rows="10"  type="text" id="supportMessage" name="supportMessage" placeholder="Deine Nachricht" required>{$text}</textarea>
+        <textarea class="form-control" rows="10"  type="text" id="supportMessage" name="supportMessage" placeholder="Deine Nachricht" required>{if $message}{$message}{/if}</textarea>
       </div>
     </div>
   </div>

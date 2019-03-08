@@ -41,42 +41,6 @@ class PrgPatternElementEloRanking extends APrgPatternElement {
         $this->prgElementLogin = $prgElementLogin;
     }
 
-    /******************************************* WIDGET ***********************/
-
-    function widgetShowLatestGames($userId, $smarty) {
-        $uid = $userId->userId;
-
-        $data = array();
-        $res  = $this->db->selectEloLatestGamesByPlayerId($uid);
-        if (! $this->db->hasError() ) {
-            while ($dataSet = $res->fetch_assoc()) {
-                // chicken
-                if($uid == $dataSet['winner']) {
-                  $chicken = '<i class="fas fa-arrow-circle-up text-success"></i>';
-                } else {
-                  $chicken = '<i class="fas fa-arrow-circle-down text-danger"></i>';
-                }
-
-                $dataSet['chicken'] = $chicken;
-                $dataSet['sets']    = $this->convertSets($dataSet['sets']);
-
-                $data[] = $dataSet;
-            }
-        }
-
-        $smarty->assign(array(
-          'data' => $data,
-          'link' => $this->tools->linkTo(array('page' => 'eloRanking.php')),
-        ));
-
-        return $smarty->fetch('elo/widgethShowLatestGames.tpl');
-    }
-
-    private function convertSets($sets) {
-        return implode(" - ", unserialize($sets));
-
-    }
-
     /********************************************* POST ***********************/
 
     public function processPost() {

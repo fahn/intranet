@@ -39,8 +39,6 @@
                           Admin
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="adminRanking.php"><i class="fas fa-list"></i> Rangliste</a>
-                            <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="adminAllUser.php"><i class="fas fa-users"></i> Users</a>
                             <a class="dropdown-item" href="adminAllClub.php"><i class="fas fa-shield-alt"></i> Vereine</a><!--
                             <div class="dropdown-divider"></div>
@@ -66,6 +64,13 @@
                         <a class="dropdown-item" href="/pages/about.php"><i class="fas fa-bookmark"></i> About</a>
                         <a class="dropdown-item" href="logout.php"><i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout</a>
                     </div>
+                </li>
+                <li class="nav-item">
+                    {if $notification}
+                        {include file="notification.tpl"}
+                    {else}
+                        <i class="fas fa-bell"></i>
+                    {/if}
                 </li>
             </ul>
         </div>

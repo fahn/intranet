@@ -221,8 +221,20 @@ CREATE TABLE `eloGames` (
 )
 
 
+--
+--  Table: Notification
+--
+CREATE TABLE `Notification` (
+  `id` int(11) NOT NULL,
+  `userId` int(11) NOT NULL,
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `text` text NOT NULL,
+  `isRead` bit(1) NOT NULL DEFAULT b'0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+ALTER TABLE `notification` ADD PRIMARY KEY (`id`);
 
+ALTER TABLE `notification` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 --  SETTINGS

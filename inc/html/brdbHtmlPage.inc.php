@@ -12,10 +12,7 @@
  *
  ******************************************************************************/
 
-
 include_once $_SERVER['BASE_DIR'] .'/inc/html/htmlLoginPage.inc.php';
-include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgGame.inc.php';
-
 
 class BrdbHtmlPage extends AHtmlLoginPage {
     public function __construct() {
@@ -29,3 +26,5 @@ class BrdbHtmlPage extends AHtmlLoginPage {
     }
 
 }
+
+?>

@@ -4,8 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-## [1.0.6] - 2019-01-26
+## [1.0.6] - 2019-02-21
 - implements elo Ranking system
+- cookie advice
+
 
 ## [1.0.5] - 2019-01-20
 - remove static paths

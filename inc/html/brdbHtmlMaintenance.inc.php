@@ -14,29 +14,29 @@
 
  include_once $_SERVER['BASE_DIR'] .'/inc/html/htmlLoginPage.inc.php';
 
-
  class BrdbHtmlMaintenance extends HtmlPageProcessor {
- 	public function __construct() {
- 		parent::__construct();
- 	}
+     public function __construct() {
+         parent::__construct();
+     }
 
    public function processPage() {
- 		parent::processPage();
- 	}
+         parent::processPage();
+     }
 
-  protected function htmlBody() {
+    protected function htmlBody() {
 
-    $this->smarty->assign(array(
-      'headline' => $this->tools->getIniValue('maintenanceHeadline'), #$ini["Maintenance"]['maintenanceHeadline'],
-      'text'     => $this->tools->getIniValue('maintenanceText'), #$ini["Maintenance"]['maintenanceText'],
-      'date'     => $this->tools->getIniValue('maintenanceDate'),  #$ini["Maintenance"]['maintenanceDate'],
-      'link'     => $this->tools->linkTo(array('page' => 'index.php')),
-    ));
+        $this->smarty->assign(array(
+            'headline' => $this->tools->getIniValue('maintenanceHeadline'), #$ini["Maintenance"]['maintenanceHeadline'],
+            'text'     => $this->tools->getIniValue('maintenanceText'), #$ini["Maintenance"]['maintenanceText'],
+            'date'     => $this->tools->getIniValue('maintenanceDate'),  #$ini["Maintenance"]['maintenanceDate'],
+            'link'     => $this->tools->linkTo(array('page' => 'index.php')),
+        ));
 
-    $content = $this->smarty->fetch('maintenance.tpl');
-    $this->smarty->assign('content', $content);
+        $content = $this->smarty->fetch('maintenance.tpl');
+        $this->smarty->assign('content', $content);
 
-    $this->smarty->display('index.tpl');
-  }
+        $this->smarty->display('index.tpl');
+    }
 
  }
+?>

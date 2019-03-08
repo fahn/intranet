@@ -5,7 +5,7 @@
             <table class="table table-striped table-hover">
             {foreach item=game from=$data}
                 <tr>
-                  <td>{$game.datetime|date_format:"d.m.Y"}</td>
+                  <td>{$game.time|date_format:"d.m.Y"}</td>
                   <td>{$game.name}</td>
                   <td>{$game.chicken}</td>
                 </tr>

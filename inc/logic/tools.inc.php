@@ -151,6 +151,10 @@ class Tools {
     function formatClassification($data) {
         $tmpArr = unserialize($data);
         $i = 0;
+        if (!is_array($tmpArr) || empty($tmpArr)) {
+            return $data;
+        }
+        
         $tmpArrC = count($tmpArr);
         if ($tmpArrC > 2) {
             foreach($tmpArr as $temp) {
@@ -162,7 +166,11 @@ class Tools {
         if($i == $tmpArrC) {
             $ageGroup = reset($tmpArr) ."-". end($tmpArr);
         } else {
-            $ageGroup= implode(", ", $tmpArr);
+            if (is_array($tmpArr) && !empty($tmpArr)) {
+                $ageGroup= implode(", ", $tmpArr);
+            } else {
+                $ageGroup = $tmpArr;
+            }
         }
 
         return $ageGroup;

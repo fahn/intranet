@@ -90,7 +90,6 @@ class EloRanking extends BrdbHtmlPage {
     private function TMPL_showRanking($print=false) {
         $stats  = $this->getRankingGroupedByDate();
         $labels = implode(",", array_map(array($this, 'add_quotes'), $stats[0]));
-        print_r($labels);
 
         $this->smarty->assign(array(
             'ranking'     => $this->getRanking(),

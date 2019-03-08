@@ -41,8 +41,10 @@ class PrgPatternElementSupport extends APrgPatternElement {
 
   public function __construct(BrankDB $brdb, PrgPatternElementLogin $prgElementLogin) {
     parent::__construct("support");
-    $this->brdb = $brdb;
+
+    $this->brdb            = $brdb;
     $this->prgElementLogin = $prgElementLogin;
+
     $this->registerPostSessionVariable(self::FORM_FIELD_SUBJECT);
     $this->registerPostSessionVariable(self::FORM_FIELD_MESSAGE);
 
@@ -50,19 +52,19 @@ class PrgPatternElementSupport extends APrgPatternElement {
     $this->tools = new Tools();
   }
 
-  public function processPost() {
-    if (!$this->prgElementLogin->isUserLoggedIn()) {
-      return;
-    }
+    public function processPost() {
+        if (!$this->prgElementLogin->isUserLoggedIn()) {
+            $this->setFailedMessage("Sie sind nicht angemeldet");
+            return;
+        }
 
-    if ($this->issetPostVariable(self::FORM_FIELD_ACTION)) {
-
-      $loginAction = strval(trim($this->getPostVariable(self::FORM_FIELD_ACTION)));
-      if (($loginAction === self::FORM_VALUE_ACTION_CONTACT_US)) {
-        $this->processPostContactUs();
-      }
+        if ($this->issetPostVariable(self::FORM_FIELD_ACTION)) {
+            $loginAction = strval(trim($this->getPostVariable(self::FORM_FIELD_ACTION)));
+            if (($loginAction === self::FORM_VALUE_ACTION_CONTACT_US)) {
+                $this->processPostContactUs();
+            }
+        }
     }
-  }
 
     public function processPostContactUs() {
         // Check that all information has been posted
@@ -72,10 +74,13 @@ class PrgPatternElementSupport extends APrgPatternElement {
             return;
         }
 
+        // get ini values
+        $supportIni = $this->tools->getIniValue('Support');
+
         $subject   = "BC Comet Intern: ". strval(trim($this->getPostVariable(self::FORM_FIELD_SUBJECT)));
         $message   = "<p>". strval(trim($this->getPostVariable(self::FORM_FIELD_MESSAGE))) ."</p>";
-        $to        = "stefan@weinekind.de";
-        $name      = "Stefan Metzner";
+        $to        = $supportIni['receiverEmail'];
+        $name      = $supportIni['receiverName'];
         $preheader = "Anfrage über den Support";
 
         $message  .= "<h2>DEBUG:</h2>";

@@ -65,15 +65,11 @@ class PrgPatternElementUser extends APrgPatternElement {
 
     protected $prgElementLogin;
 
-    public function __construct() {
+    protected $brdb;
 
-    }
-
-
-    public function __load(PrgPatternElementLogin $prgElementLogin) {
-
+    public function __construct(BrankDB $brdb, PrgPatternElementLogin $prgElementLogin) {
         parent::__construct("userRegister");
-        $this->prgElementLogin = $prgElementLogin;
+
         $this->registerPostSessionVariable(self::FORM_USER_EMAIL);
         $this->registerPostSessionVariable(self::FORM_USER_FNAME);
         $this->registerPostSessionVariable(self::FORM_USER_LNAME);
@@ -82,6 +78,13 @@ class PrgPatternElementUser extends APrgPatternElement {
         $this->registerPostSessionVariable(self::FORM_USER_IS_ADMIN);
         $this->registerPostSessionVariable(self::FORM_USER_IS_REPORTER);
         $this->registerPostSessionVariable(self::FORM_USER_ADMIN_USER_ID);
+
+        // load DB
+        $this->brdb = $brdb;
+
+        // load User
+        $this->prgElementLogin = $prgElementLogin;
+
 
     }
 
@@ -104,22 +107,22 @@ class PrgPatternElementUser extends APrgPatternElement {
                 $this->processPostDeleteUserAccount();
                 break;
 */
-              case self::FORM_USER_ACTION_INSERT_ACCOUNT:
-                $this->processPostInsertUserAccount();
-                break;
+                case self::FORM_USER_ACTION_INSERT_ACCOUNT:
+                   $this->processPostInsertUserAccount();
+                    break;
 
-              case self::FORM_USER_ACTION_UPDATE_ACCOUNT:
-                $id = Tools::get("id");
-                $this->processPostUpdateUserAccount($id);
-                break;
+                case self::FORM_USER_ACTION_UPDATE_ACCOUNT:
+                    $id = Tools::get("id");
+                    $this->processPostUpdateUserAccount($id);
+                    break;
 
-              case  self::FORM_USER_ACTION_UPDATE_MY_ACCOUNT:
-                $this->processPostUpdateUserMyAccount();
-                break;
+                case  self::FORM_USER_ACTION_UPDATE_MY_ACCOUNT:
+                    $this->processPostUpdateUserMyAccount();
+                    break;
 
-              default:
-                # code...
-                break;
+                default:
+                    # code...
+                    break;
             }
         }
     }
@@ -453,21 +456,6 @@ class PrgPatternElementUser extends APrgPatternElement {
         }
 
         return new User();
-    }
-
-
-    public function getAdminsAndReporter() {
-        $data = array();
-        $res = $this->brdb->GetActiveAndReporterOrAdminPlayer();
-        if (!$this->brdb->hasError()) {
-            while ($dataSet = $res->fetch_assoc()) {
-                $data[]         = array(
-                    'userId'   => $dataSet['userId'],
-                    'fullName' => $dataSet['firstName'] .' '. $dataSet['lastName'],
-                );
-            }
-        }
-        return $data;
     }
 }
 

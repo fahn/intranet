@@ -25,45 +25,45 @@ include_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
  */
 abstract class ABrdbHtmlStatsPlayerPage extends BrdbHtmlPage {
 
-	private $prgPatternElementStatsTable;
-	private $tableTitle;
+    private $prgPatternElementStatsTable;
+    private $tableTitle;
 
-	public function __construct($tableTitle, $tableName) {
-		parent::__construct();
-		$this->prgPatternElementStatsTable= new PrgPlayerStatsTablePattern($tableName, $this->brdb);
-		$this->prgPattern->registerPrg($this->prgPatternElementStatsTable);
-		$this->tableTitle = $tableTitle;
-	}
+    public function __construct($tableTitle, $tableName) {
+        parent::__construct();
+        $this->prgPatternElementStatsTable= new PrgPlayerStatsTablePattern($tableName, $this->brdb);
+        $this->prgPattern->registerPrg($this->prgPatternElementStatsTable);
+        $this->tableTitle = $tableTitle;
+    }
 
   public function processPage() {
-		// Call all prgs and process them all
-		$this->prgPattern->processPRG();
-		parent::processPage();
-	}
+        // Call all prgs and process them all
+        $this->prgPattern->processPRG();
+        parent::processPage();
+    }
 
-	protected function explainTable() {}
+    protected function explainTable() {}
 
-	protected function htmlBody() {
-		$dataSet = array();
-	  while ($data = $this->prgPatternElementStatsTable->fetchResultViewRow()) {
+    protected function htmlBody() {
+        $dataSet = array();
+      while ($data = $this->prgPatternElementStatsTable->fetchResultViewRow()) {
       if($data['games'] == 0) {
         continue;
       }
 
-	    $dataSet[] = $data;
-	  }
+        $dataSet[] = $data;
+      }
 
-		$this->smarty->assign(array(
-			'tableTitle' => $this->tableTitle,
-			'players'    => $dataSet,
-			'explain'    => $this->explainTable(),
-		));
+        $this->smarty->assign(array(
+            'tableTitle' => $this->tableTitle,
+            'players'    => $dataSet,
+            'explain'    => $this->explainTable(),
+        ));
 
     $this->content = $this->smarty->fetch("ranking/StatsSingle.tpl");
     $this->smarty->assign('content', $this->content);
 
-		$this->smarty->display('index.tpl');
-	}
+        $this->smarty->display('index.tpl');
+    }
 }
 
 /**
@@ -72,13 +72,13 @@ abstract class ABrdbHtmlStatsPlayerPage extends BrdbHtmlPage {
  *
  */
 class BrdbHtmlStatsPlayerAlltimePage extends ABrdbHtmlStatsPlayerPage {
-	public function __construct() {
-		parent::__construct("Player Ranking Alltime", "UserStatsPlayerAlltimePos");
-	}
+    public function __construct() {
+        parent::__construct("Player Ranking Alltime", "UserStatsPlayerAlltimePos");
+    }
 
-	protected function explainTable() {
-		return "This is the Alltime Player Ranking. All games ever played account into this table. No matter if it is a Double Men, a Single Women or playing with three persons or a Single Women again Single Men";
-	}
+    protected function explainTable() {
+        return "This is the Alltime Player Ranking. All games ever played account into this table. No matter if it is a Double Men, a Single Women or playing with three persons or a Single Women again Single Men";
+    }
 }
 
 /**
@@ -88,13 +88,13 @@ class BrdbHtmlStatsPlayerAlltimePage extends ABrdbHtmlStatsPlayerPage {
  *
  */
  class BrdbHtmlStatsPlayerOverallPage extends ABrdbHtmlStatsPlayerPage {
-	public function __construct() {
-		parent::__construct("Player Ranking Overall", "UserStatsPlayerOverallPos");
-	}
+    public function __construct() {
+        parent::__construct("Player Ranking Overall", "UserStatsPlayerOverallPos");
+    }
 
-	protected function explainTable() {
-		return "This is the Overall Player Ranking. All Single games played account into this table. Single Men or Women or Men against Women games.";
-	}
+    protected function explainTable() {
+        return "This is the Overall Player Ranking. All Single games played account into this table. Single Men or Women or Men against Women games.";
+    }
 }
 
 /**
@@ -103,13 +103,13 @@ class BrdbHtmlStatsPlayerAlltimePage extends ABrdbHtmlStatsPlayerPage {
  *
  */
 class BrdbHtmlStatsPlayerDisciplineSingleMenPage extends ABrdbHtmlStatsPlayerPage {
-	public function __construct() {
-		parent::__construct("Player Ranking Discipline - Single Men", "UserStatsPlayerDisciplineSingleMenPos");
-	}
+    public function __construct() {
+        parent::__construct("Player Ranking Discipline - Single Men", "UserStatsPlayerDisciplineSingleMenPos");
+    }
 
-	protected function explainTable() {
-		return "This is the Discipline Player Ranking for Single Men games. Only Single Men games acount into this table.";
-	}
+    protected function explainTable() {
+        return "This is the Discipline Player Ranking for Single Men games. Only Single Men games acount into this table.";
+    }
 }
 
 /**
@@ -118,12 +118,12 @@ class BrdbHtmlStatsPlayerDisciplineSingleMenPage extends ABrdbHtmlStatsPlayerPag
  *
  */
  class BrdbHtmlStatsPlayerDisciplineSingleWomenPage extends ABrdbHtmlStatsPlayerPage {
-	public function __construct() {
-		parent::__construct("Player Ranking Discipline - Single Women", "UserStatsPlayerDisciplineSingleWomenPos");
-	}
+    public function __construct() {
+        parent::__construct("Player Ranking Discipline - Single Women", "UserStatsPlayerDisciplineSingleWomenPos");
+    }
 
-	protected function explainTable() {
-		return "This is the Discipline Player Ranking for Single Women games. Only Single Women games acount into this table.";
-	}
+    protected function explainTable() {
+        return "This is the Discipline Player Ranking for Single Women games. Only Single Women games acount into this table.";
+    }
 }
 ?>

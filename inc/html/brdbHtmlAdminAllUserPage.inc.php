@@ -17,117 +17,115 @@ include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgUser.inc.php';
 include_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
 
 class BrdbHtmlAdminAllUserPage extends BrdbHtmlPage {
-  private $prgPatternElementUser;
-  private $countRows;
+    private $prgPatternElementUser;
+    private $countRows;
 
-  private $info;
+    private $info;
 
-  const MAX_ENTRIES = 50;
-
-
-  public function __construct() {
-    parent::__construct();
-    $this->prgPatternElementUser = new PrgPatternElementUser($this->brdb, $this->prgPatternElementLogin);
-    $this->prgPattern->registerPrg($this->prgPatternElementUser);
-
-    $this->tools = new Tools();
-    $this->info  = array('firstName', 'lastName', 'email', 'gender', 'bday', 'phone', 'playerId', 'clubId',);
-  }
-
-  protected function showProtectedArea() {
-    return $this->prgPatternElementLogin->getLoggedInUser()->isAdmin();
-  }
+    const MAX_ENTRIES = 50;
 
 
-  public function htmlBody() {
-      $content = "";
-      // check if Admin
-      if(!$this->prgPatternElementLogin->getLoggedInUser()->isAdmin()) {
-          $content = $this->smarty->fetch('no_access.tpl');
-          return;
-      }
+    public function __construct() {
+        parent::__construct();
+
+        $this->prgPatternElementUser = new PrgPatternElementUser($this->brdb, $this->prgPatternElementLogin);
+        #$this->prgPattern->registerPrg($this->prgPatternElementUser);
+
+        $this->info  = array('firstName', 'lastName', 'email', 'gender', 'bday', 'phone', 'playerId', 'clubId');
+    }
+
+    protected function showProtectedArea() {
+        return $this->prgPatternElementLogin->getLoggedInUser()->isAdmin();
+    }
 
 
-      $action = $this->tools->get('action');
-      switch ($action) {
-        case 'add_player':
-          $content = $this->TMPL_addPlayer();
-          break;
+    public function htmlBody() {
+        $content = "";
+        // check if Admin
+        if(!$this->prgPatternElementLogin->getLoggedInUser()->isAdmin()) {
+            $content = $this->smarty->fetch('no_access.tpl');
+            return;
+        }
 
-        case 'edit':
-          $content = $this->TMPL_editPlayer();
-          break;
+        $action = $this->tools->get('action');
+        switch ($action) {
+            case 'add_player':
+              $content = $this->TMPL_addPlayer();
+              break;
 
-        case 'delete':
-          $content = $this->TMPL_deletePlayer();
-          break;
+            case 'edit':
+              $content = $this->TMPL_editPlayer();
+              break;
 
-        default:
-          $content = $this->TMPL_listPlayer();
-          break;
-      }
+            case 'delete':
+              $content = $this->TMPL_deletePlayer();
+              break;
 
-      $this->smarty->assign(array(
-        'content' => $content,
-      ));
+            default:
+              $content = $this->TMPL_listPlayer();
+              break;
+        }
 
-      $this->smarty->display('index.tpl');
-  }
+        $this->smarty->assign(array(
+            'content' => $content,
+        ));
+
+        $this->smarty->display('index.tpl');
+    }
 
 
-  private function TMPL_listPlayer() {
-      $page = $this->tools->get("page");
-      $page = isset($page) && is_numeric($page) && $page > 0 ? $page-1 : 0;
+    private function TMPL_listPlayer() {
+        $page = $this->tools->get("page");
+        $page = isset($page) && is_numeric($page) && $page > 0 ? $page-1 : 0;
 
-      $this->smarty->assign(array(
-          'users'      => $this->loadUserList($page),
-          'error'      => $this->brdb->getError(),
-          'pagination' => $this->getPageination($page),
-      ));
-      return $this->smarty->fetch('admin/UserList.tpl');
-  }
+        $this->smarty->assign(array(
+            'users'      => $this->loadUserList($page),
+            'error'      => $this->brdb->getError(),
+            'pagination' => $this->getPageination($page),
+        ));
+        return $this->smarty->fetch('admin/UserList.tpl');
+    }
 
-  /**
+    /**
     PAGINATION
-  */
-  private function loadUserList($page = 0) {
-      $this->countRows = $this->brdb->selectAllUser()->num_rows;
-      $max = self::MAX_ENTRIES*(1+$page);
-      $min = $max - self::MAX_ENTRIES;
+    */
+    private function loadUserList($page = 0) {
+        $this->countRows = $this->brdb->selectAllUser()->num_rows;
+        $max = self::MAX_ENTRIES*(1+$page);
+        $min = $max - self::MAX_ENTRIES;
 
-      $res = $this->brdb->selectAllUserPagination($min, $max);
-      $loopUser = array();
-      if (!$this->brdb->hasError()) {
-          while ($dataSet = $res->fetch_assoc()) {
-              $user = new User($dataSet);
-              //$isLoggedInUser = ($this->prgPatternElementLogin->getLoggedInUser()->userId == $loopUser->userId);
-              //$dataSet['isLoggedInUser'] = $isLoggedInUser;
-              $dataSet['isAdmin']    = $user->isAdmin();
-              $dataSet['isReporter'] = $user->isReporter();
-              $dataSet['isPlayer']   = $user->isPlayer();
+        $res = $this->brdb->selectAllUserPagination($min, $max);
+        $loopUser = array();
+        if (!$this->brdb->hasError()) {
+            while ($dataSet = $res->fetch_assoc()) {
+                $user = new User($dataSet);
+                //$isLoggedInUser = ($this->prgPatternElementLogin->getLoggedInUser()->userId == $loopUser->userId);
+                //$dataSet['isLoggedInUser'] = $isLoggedInUser;
+                $dataSet['isAdmin']    = $user->isAdmin();
+                $dataSet['isReporter'] = $user->isReporter();
+                $dataSet['isPlayer']   = $user->isPlayer();
 
-              $loopUser[] = $dataSet; //new User($dataSet);
-          }
-      }
+                $loopUser[] = $dataSet; //new User($dataSet);
+            }
+        }
+        return $loopUser;
+    }
 
-      return $loopUser;
-  }
+    private function getPageination($active = 0) {
+        $tmp = $this->countRows;
+        $key = 0;
+        $page = array();
 
-  private function getPageination($active = 0) {
-    $tmp = $this->countRows;
-    $key = 0;
-    $page = array();
+        do {
+            $page[] = array(
+                'status' => ($key == $active ? 'active' : ''),
+                'id'     => ++$key,
+            );
+            $tmp -= self::MAX_ENTRIES;
+        } while ($tmp > 0);
 
-    do {
-      $page[] = array(
-        'status' => ($key == $active ? 'active' : ''),
-        'id'     => ++$key,
-      );
-      $tmp -= self::MAX_ENTRIES;
-    } while ($tmp > 0);
-
-    return $page;
-  }
+        return $page;
+    }
 
     private function TMPL_addPlayer() {
          $this->smarty->assign(array(
@@ -143,33 +141,32 @@ class BrdbHtmlAdminAllUserPage extends BrdbHtmlPage {
 
     private function TMPL_editPlayer() {
 
-      $id  = $this->tools->get('id');
-      $res = $this->brdb->selectUserById($id);
-      if(!$this->brdb->hasError()) {
-        $this->info = $res->fetch_assoc();
-      }
-      $this->smarty->assign(array(
-        'clubs'  => $this->getClubs(),
-        'info'   => $this->info,
-        'hidden' => "Update User",
-        'task'   => "edit",
-      ));
-
-      return $this->smarty->fetch('admin/UserUpdate.tpl');
+        $id  = $this->tools->get('id');
+        $res = $this->brdb->selectUserById($id);
+        if(!$this->brdb->hasError()) {
+            $this->info = $res->fetch_assoc();
+        }
+        $this->smarty->assign(array(
+            'clubs'  => $this->getClubs(),
+            'info'   => $this->info,
+            'hidden' => "Update User",
+            'task'   => "edit",
+        ));
+        return $this->smarty->fetch('admin/UserUpdate.tpl');
     }
 
     private function TMPL_deletePlayer() {
-      $id  = $this->tools->get('id');
-      $res = $this->brdb->selectUserById($id);
-      if(!$this->brdb->hasError()) {
-        $this->user = $res->fetch_assoc();
-      }
-      $this->smarty->assign(array(
-        'user'   => $this->user,
-        'hidden' => "Delete User",
-      ));
+        $id  = $this->tools->get('id');
+        $res = $this->brdb->selectUserById($id);
+        if(!$this->brdb->hasError()) {
+            $this->user = $res->fetch_assoc();
+        }
+        $this->smarty->assign(array(
+            'user'   => $this->user,
+            'hidden' => "Delete User",
+        ));
 
-      return $this->smarty->fetch('admin/UserDelete.tpl');
+        return $this->smarty->fetch('admin/UserDelete.tpl');
     }
 
     private function getClubs() {
@@ -184,5 +181,4 @@ class BrdbHtmlAdminAllUserPage extends BrdbHtmlPage {
         return $tmp;
     }
 }
-
 ?>

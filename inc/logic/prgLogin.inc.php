@@ -30,38 +30,38 @@ class PrgPatternElementLogin extends APrgPatternElement {
   // user
   private $loggedInUser;
 
-  const FORM_LOGIN_EMAIL 		      = "formLoginEmail";
-  const FORM_LOGIN_PASSWORD 	    = "formLoginPass";
-  const FORM_LOGIN_PASSWORD2 	    = "formLoginPass2";
-  const FORM_LOGIN_TOKEN     	    = "formLoginToken";
-  const FORM_LOGIN_ACTION 	      = "formLoginAction";
-  const FORM_LOGIN_ACTION_LOGIN 	= "Log In";
-  const FORM_LOGIN_ACTION_LOGOUT 	= "Log Out";
+  const FORM_LOGIN_EMAIL         = "formLoginEmail";
+  const FORM_LOGIN_PASSWORD      = "formLoginPass";
+  const FORM_LOGIN_PASSWORD2     = "formLoginPass2";
+  const FORM_LOGIN_TOKEN         = "formLoginToken";
+  const FORM_LOGIN_ACTION        = "formLoginAction";
+  const FORM_LOGIN_ACTION_LOGIN  = "Log In";
+  const FORM_LOGIN_ACTION_LOGOUT = "Log Out";
 
   const FORM_ACTION_REQUEST_PASS  = "request_password";
   const FORM_ACTION_CHANGE_PASS   = "change_password";
 
   // Errors that can be set by methods of this class
-  const ERROR_LOGIN_INVALID_EMAIL 			    = "Please use a valid email!";
-  const ERROR_LOGIN_INVALID_ID 				      = "Could not find a registered user!";
-  const ERROR_LOGIN_UNKNOWN_EMAIL_PASSWORD 	= "Unknown email and/or incorrect password!";
-  const ERROR_LOGIN_NO_SESSION 				      = "You are not logged in!";
-  const SUCCESS_LOGIN 						          = "You are successfully logged in!";
-  const SUCCESS_LOGOUT 						          = "You are successfully logged out!";
+  const ERROR_LOGIN_INVALID_EMAIL           = "Please use a valid email!";
+  const ERROR_LOGIN_INVALID_ID               = "Could not find a registered user!";
+  const ERROR_LOGIN_UNKNOWN_EMAIL_PASSWORD   = "Unknown email and/or incorrect password!";
+  const ERROR_LOGIN_NO_SESSION               = "You are not logged in!";
+  const SUCCESS_LOGIN                       = "You are successfully logged in!";
+  const SUCCESS_LOGOUT                       = "You are successfully logged out!";
 
   // Wait time after incorrect login to prevent brute force attacks
-  const PASSWORD_WAIT_FOR_WRONG 	= 2;
+  const PASSWORD_WAIT_FOR_WRONG   = 2;
 
   // Constants for the User table in the database
-  const SESSION_LOGIN_USER_ID 	= "sessionUserId";
+  const SESSION_LOGIN_USER_ID   = "sessionUserId";
 
 
 
-  public function __construct() {
+  public function __construct($brdb) {
     parent::__construct("login");
 
     // load db
-    $this->brdb = new BrankDB();
+    $this->brdb = $brdb;
 
     $this->registerPostSessionVariable(self::FORM_LOGIN_ACTION);
     $this->registerPostSessionVariable(self::FORM_LOGIN_EMAIL);
@@ -75,38 +75,35 @@ class PrgPatternElementLogin extends APrgPatternElement {
     $this->tools = new Tools();
   }
 
-  public function processPost() {
+    public function processPost() {
+        if ($this->issetPostVariable(self::FORM_LOGIN_ACTION)) {
+            $loginAction = strval(trim($this->getPostVariable(self::FORM_LOGIN_ACTION)));
 
-    if ($this->issetPostVariable(self::FORM_LOGIN_ACTION)) {
-      $loginAction = strval(trim($this->getPostVariable(self::FORM_LOGIN_ACTION)));
+            switch ($loginAction) {
+                case self::FORM_ACTION_REQUEST_PASS:
+                $this->processPostRequestPassword();
+                break;
 
-      switch ($loginAction) {
-        case self::FORM_ACTION_REQUEST_PASS:
-          $this->processPostRequestPassword();
-          break;
+                case self::FORM_ACTION_CHANGE_PASS:
+                $this->processPostChangePassword();
+                break;
 
-        case self::FORM_ACTION_CHANGE_PASS:
-          $this->processPostChangePassword();
-          break;
+                case self::FORM_LOGIN_ACTION_LOGIN:
+                $this->processPostLogin();
+                break;
 
-        case self::FORM_LOGIN_ACTION_LOGIN:
-          $this->processPostLogin();
-          break;
+                case self::FORM_LOGIN_ACTION_LOGOUT:
+                $this->processPostLogout();
+                break;
 
-        case self::FORM_LOGIN_ACTION_LOGOUT:
-          $this->processPostLogout();
-          break;
-
-        default:
-          # code...
-          break;
-      }
+                default:
+                # code...
+                break;
+            }
+        }
     }
-  }
 
-  public function processGet() {
-
-  }
+    public function processGet() {}
 
 
     /** Request Password
@@ -115,7 +112,7 @@ class PrgPatternElementLogin extends APrgPatternElement {
       */
     private function processPostRequestPassword() {
         if ($this->isUserLoggedIn()) {
-          $this->setFailedMessage("Du bist bereits angemeldet.");
+            $this->setFailedMessage("Du bist bereits angemeldet.");
             return;
         }
 
@@ -250,9 +247,9 @@ class PrgPatternElementLogin extends APrgPatternElement {
     // is valid and does not inject wired stuff. (Avoid SQL injection here)
     if ($this->issetPostVariable(self::FORM_LOGIN_EMAIL) &&
       $this->issetPostVariable(self::FORM_LOGIN_PASSWORD)) {
-      $email 		= strval(trim($this->getPostVariable(self::FORM_LOGIN_EMAIL)));
-      $pass 		= strval(trim($this->getPostVariable(self::FORM_LOGIN_PASSWORD)));
-      $email 		= strtolower($email);
+      $email     = strval(trim($this->getPostVariable(self::FORM_LOGIN_EMAIL)));
+      $pass     = strval(trim($this->getPostVariable(self::FORM_LOGIN_PASSWORD)));
+      $email     = strtolower($email);
 
       // filter the email to avoid having other wired stuff being
       // injected to the php code or the database maybe
@@ -313,7 +310,10 @@ class PrgPatternElementLogin extends APrgPatternElement {
   public function isUserLoggedIn() {
     // first unsset the current user to basically clear it
     // and remove all pending informations in case of a logout
-    unset($this->loggedInUser);
+    #die(var_dump($this->loggedInUser));
+    if (isset($this->loggedInUser)) {
+        unset($this->loggedInUser);
+    }
 
     // If there is no post we directly get here and we try to set the class
     // information directly from the stored information in the session

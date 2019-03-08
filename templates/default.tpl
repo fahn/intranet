@@ -7,25 +7,13 @@
 
 <div class="row">
     <div class="col-md-4">
-        {$games}
+        {if $widgetEloRankingLatestGames}
+            {$widgetEloRankingLatestGames}
+        {/if}
 
-
-        <div class="card mt-4 mb-4">
-            <h5 class="card-header">Das Team</h5>
-            <div class="card-body">
-                <p class="card-text">
-                    {foreach item=user from=$users}
-                      <a href="/pages/user.php?id={$user['userId']}">
-                        {$user['fullName']}
-                      </a><br>
-                    {foreachelse}
-                      Fehler. Bitte einen Admin kontaktieren
-                    {/foreach}
-                    <hr>
-                    Bei diesen Personen kannst du dich jederzeit melden.
-                </p>
-            </div>
-        </div>
+        {if $widgetShowTeam}
+            {$team}
+        {/if}
 
         {if !empty($social)}
           <div class="card mt-4 mb-4">
@@ -51,35 +39,9 @@
     </div>
 
   <div class="col-md-8">
-    <div class="card">
-        <h5 class="card-header">Kommende 5 Turniere</h5>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table">
-                    <tr>
-                        <th>Altersklasse</th>
-                        <th>Name</th>
-                        <th>Datum</th>
-                        <th>Ort</th>
-                    </tr>
-                    {foreach item=tournament from=$upcomingTournaments}
-                    <tr>
-                        <td>{$tournament.classification}</td>
-                        <td><a {if $tournament.deadline|strtotime < $smarty.now}class="text-danger"{else}class="text-success"{/if} href="/pages/rankingTournament.php?action=details&id={$tournament.tournamentID}" title="{$tournament.name}: vom {$tournament.startdate|date_format:"d.m.y"} - {$tournament.enddate|date_format:'d.m.y'}">{$tournament.name}</a></td>
-                        <td {if $tournament.deadline|strtotime < $smarty.now}class="text-danger"{else} class="text-success"{/if}>{if $tournament.startdate == $tournament.enddate}{$tournament.startdate|date_format:"d.m.y"}{else}{$tournament.startdate|date_format:"d.m.y"} - {$tournament.enddate|date_format:"d.m.y"}{/if}</td>
-                        <td>{$tournament.place}</td>
-                    </tr>
-                    {foreachelse}
-                    <tr>
-                        <td colspan="4">Leider keine Turniere in der kommenden Zeit.</td>
-                    </tr>
-                    {/foreach}
-                </table>
-            </div>
-            <hr>
-            <a href="/pages/rankingTournament.php" title="Alle Turniere"><i class="fas fa-list-ul"></i> alle Turniere</a>
-        </div>
-    </div>
+    {if $widgetUpcomingTournaments}
+        {$widgetUpcomingTournaments}
+    {/if}
 
     <div class="card mt-3 last news">
         <h5 class="card-header">Letzte technischen Neuigkeiten</h5>

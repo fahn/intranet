@@ -35,5 +35,29 @@
         <!--
           html, body, .login-screen{ height: 100%;}
         -->
-</style>
+    </style>
+
+    <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.0/cookieconsent.min.css" />
+    <script src="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.0/cookieconsent.min.js"></script>
+    <script>
+    window.addEventListener("load", function(){
+    window.cookieconsent.initialise({
+      "palette": {
+        "popup": {
+          "background": "#252e39"
+        },
+        "button": {
+          "background": "#14a7d0"
+        }
+      },
+      "theme": "edgeless",
+      "position": "bottom-right",
+      "content": {
+        "message": "Auf dieser Webseite werden Cookies erfasst. ",
+        "dismiss": "Okay, Verstanden!",
+        "link": "Mehr dazu",
+        "href": "/"
+      }
+    })});
+    </script>
 </head>
