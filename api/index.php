@@ -86,9 +86,15 @@ class Api {
     private function importTournament() {
         // load Tournament
         $content = exec('../tools/getNbvTournament.py');
-        $xml = simplexml_load_string($content);
-
+        try {
+            $xml = simplexml_load_string($content);
+        } catch (Exception $e) {
+            echo "Import failed "+ $e;
+            exit(99);
+        }
         $data = $this->getTournamentData();
+
+        $stats=array('new' => 0, 'skipped' => 0);
 
         foreach ($xml->entry as $entry) {
             if (is_array($data) && count($data) > 0) {
@@ -97,6 +103,7 @@ class Api {
                     if ($percent > 50) {
                         echo "Skip $entry->title \n";
                         echo sprintf("\t%s VS %s = %d\n", $entry->title, $tournament['name'], $percent);
+                        $stats['skipped'] +=1;
                         continue 2;
                     }
                 }
@@ -107,9 +114,40 @@ class Api {
             $enddate   = $this->changeDate($entry->enddate);
             $deadline  = $this->changeDate($entry->deadline);
 
+
+            $classification = strval($entry->classification);
+            $pos = strpos($classification, "-");
+            if($pos) {
+                $arr = explode("-", $classification);
+                $prefix=substr($arr[0], 0, 1);
+                $min=substr($arr[0], 1);
+                $max=substr($arr[1], 1);
+                // @TODO: U - Tourniere
+                for($i=$min; $i<=$max; $i+=5) {
+                    $temp[] =$prefix.$i;
+                }
+                $classification = serialize($temp);
+            } else {
+                $classification = serialize(array($classification));
+            }
+
+            try {
+                $place     = $entry->place;
+                $address   = $place .", Deutschland"; // Google HQ
+                $latlng    = $this->tools->getGoogleLatAndLng($address);
+                $latitude  = $latlng['lat'];
+                $longitude = $latlng['lng'];
+            } catch (Exception $e) {
+                $latitude  = "";
+                $longitude = "";
+            }
+
             echo "Insert $entry->title\n";
-            $this->brdb->APIinsertTournament($entry->title, $entry->place, $startdate, $enddate, $deadline, $entry->link, $entry->tournamentType, $entry->description);
+            $this->brdb->APIinsertTournament($entry->title, $entry->place, $startdate, $enddate, $deadline, $entry->link, $classification, $entry->tournamentType, $entry->description, $latitude, $longitude);
+            $stats['new'] +=1;
+
         }
+        echo sprintf("STATS: NEW: %s SKIPPED: %s", $stats['new'], $stats['skipped']);
     }
 
     private function getTournamentData() {

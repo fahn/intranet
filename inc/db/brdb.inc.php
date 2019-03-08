@@ -527,9 +527,9 @@ class BrankDB {
         return $this->executeStatement($cmd);
     }
 
-    public function APIinsertTournament($name, $place, $startdate, $enddate, $deadline, $link, $tournamentType,$description) {
-        $cmd = $this->db->prepare("INSERT INTO Tournament (name, place, startdate, enddate, deadline, link, tournamentType, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-        $cmd->bind_param("ssssssss", $name, $place, $startdate, $enddate, $deadline, $link, $tournamentType, $description);
+    public function APIinsertTournament($name, $place, $startdate, $enddate, $deadline, $link, $classification, $tournamentType, $description, $latitude, $longitude) {
+        $cmd = $this->db->prepare("INSERT INTO Tournament (name, place, startdate, enddate, deadline, link, classification, tournamentType, description, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $cmd->bind_param("sssssssssss", $name, $place, $startdate, $enddate, $deadline, $link, $classification, $tournamentType, $description, $latitude, $longitude);
 
         return $this->executeStatement($cmd);
     }

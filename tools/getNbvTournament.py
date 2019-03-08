@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 import xml.etree.cElementTree as ET
 
 from io import BytesIO
+from datetime import date
 
 """
     TournamentTypeSwitcher
@@ -39,9 +40,13 @@ else:
         if 'tr_ht1' not in item.attrs['class']:
             entry = ET.SubElement(root, "entry")
 
+            descriptionStr = ""
+
 
             # class
-            klasse = item.find('td', {'class': 'td_klasse'}).contents[0]
+            ClassificationValue      = item.find('td', {'class': 'td_klasse'}).contents[0]
+            ClassificationField      = ET.SubElement(entry, "classification")
+            ClassificationField.text = ClassificationValue
 
             # title
             title = item.find('td', {'class': 'td_titel'})
@@ -65,36 +70,44 @@ else:
             place      = ET.SubElement(entry, "place")
             place.text = ort
 
-            # Meldedatum
-            meldeschluss  = item.find('td', {'class': 'td_meldung'}).contents[0]
-            deadline      = ET.SubElement(entry, "deadline")
-            deadline.text = meldeschluss
 
             # Zeitraum
             zeitraum = item.find('td', {'class': 'td_datum'}).contents[0]
             if "/" in zeitraum:
-                start, ende = zeitraum.split("/")
-                if len(start) < 4:
-                    start += ende[3:]
+                startDateValue, endDateValue = zeitraum.split("/")
+                if len(startDateValue) < 4:
+                    startDateValue += endDateValue[3:]
             else:
-                start = zeitraum
-                ende = start
+                startDateValue = zeitraum
+                endDateValue   = startDateValue
 
-            startdate = ET.SubElement(entry, "startdate")
-            startdate.text = start
-            enddate = ET.SubElement(entry, "enddate")
-            enddate.text = ende
+            startDateField      = ET.SubElement(entry, "startdate")
+            startDateField.text = startDateValue
+            endDateField        = ET.SubElement(entry, "enddate")
+            endDateField.text   = endDateValue
+
+            # Meldedatum
+            try:
+                deadlineValue   = item.find('td', {'class': 'td_meldung'}).contents[0]
+            except Exception as e:
+                deadlineValue   = startDateValue
+                descriptionStr += "Fehler beim Meldeschluss"
+
+            deadlineField      = ET.SubElement(entry, "deadline")
+            deadlineField.text = deadlineValue
+
 
             #description
-            description = ET.SubElement(entry, "description")
-            description.text = "automatic import"
+            descriptionStr       += "<br>Automatic import {0}".format(str(date.today()))
+            descriptionField      = ET.SubElement(entry, "description")
+            descriptionField.text = descriptionStr
 
 
 
             # Art: NBV
             art = item.find('td', {'class': 'td_art'}).contents[0]
-            tournamentType = ET.SubElement(entry, "tournamentType")
-            tournamentType.text = tournamentTypeSwitcher ("FUN")
+            tournamentTypeField = ET.SubElement(entry, "tournamentType")
+            tournamentTypeField.text = tournamentTypeSwitcher (art)
 
             #print("Titel: {:s}".format(link_name))
             #print("URL: {:s}".format(link_url))

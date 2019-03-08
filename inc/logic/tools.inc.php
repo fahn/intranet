@@ -154,7 +154,7 @@ class Tools {
         if (!is_array($tmpArr) || empty($tmpArr)) {
             return $data;
         }
-        
+
         $tmpArrC = count($tmpArr);
         if ($tmpArrC > 2) {
             foreach($tmpArr as $temp) {
@@ -242,7 +242,8 @@ class Tools {
 
     function getGoogleLatAndLng($address) {
         $prepAddr  = str_replace(' ','+',$address);
-        $geocode   = file_get_contents('https://maps.google.com/maps/api/geocode/json?key='. $this->ini['GoogleMapsKey'] .'&address='. $prepAddr .'&sensor=false');
+        $key       = $this->getIniValue('GoogleMapsKey');
+        $geocode   = file_get_contents('https://maps.google.com/maps/api/geocode/json?key='. $key .'&address='. $prepAddr .'&sensor=false');
         $output    = json_decode($geocode);
         $latitude  = $output->results[0]->geometry->location->lat;
         $longitude = $output->results[0]->geometry->location->lng;
