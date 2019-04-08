@@ -240,7 +240,7 @@ class BrdbHtmlSettings extends BrdbHtmlPage {
             $data = array();
             while ($dataSet = $res->fetch_assoc()) {
                 #$data[]         = $dataSet;
-                $data[$dataSet['classID']] = $dataSet['name'] .' '. $dataSet['modus'];
+                $data[$dataSet['classId']] = $dataSet['name'] .' '. $dataSet['modus'];
             }
 
             return $data;

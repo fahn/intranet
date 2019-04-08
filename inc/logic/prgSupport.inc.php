@@ -77,7 +77,7 @@ class PrgPatternElementSupport extends APrgPatternElement {
         // get ini values
         $supportIni = $this->tools->getIniValue('Support');
 
-        $subject   = "BC Comet Intern: ". strval(trim($this->getPostVariable(self::FORM_FIELD_SUBJECT)));
+        $subject   = $this->tools->getIniValue('pageTitle') . strval(trim($this->getPostVariable(self::FORM_FIELD_SUBJECT)));
         $message   = "<p>". strval(trim($this->getPostVariable(self::FORM_FIELD_MESSAGE))) ."</p>";
         $to        = $supportIni['receiverEmail'];
         $name      = $supportIni['receiverName'];

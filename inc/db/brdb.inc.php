@@ -229,6 +229,15 @@ class BrankDB {
     return $this->executeStatement($cmd);
   }
 
+  public function selectNextBirthdays() {
+      $cmd = $this->db->prepare("SELECT userId, CONCAT_WS(' ', firstName, lastName) AS userName, bday
+                                 FROM User
+                                 WHERE DATE_ADD(bday, INTERVAL YEAR(CURDATE())-YEAR(bday) + IF(DAYOFYEAR(CURDATE()) > DAYOFYEAR(bday),1,0) YEAR) BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 14 DAY)
+                                 ORDER BY DAY(bday) ASC");
+
+      return $this->executeStatement($cmd);
+  }
+
   /**
    * This method hands back all active players from the DB
    * @return mysqli_result the result of the mysql statement
@@ -255,7 +264,9 @@ class BrankDB {
    }
 
    public function GetUserPassHash($mail, $token) {
-     $cmd = $this->db->prepare("SELECT * FROM User LEFT JOIN UserPassHash AS PASS ON PASS.userId = User.userId WHERE User.email = ? AND PASS.token = ? AND PASS.valid = 1 AND PASS.createDate > NOW()-86440");
+     $cmd = $this->db->prepare("SELECT * FROM User
+         LEFT JOIN UserPassHash AS PASS ON PASS.userId = User.userId
+         WHERE User.email = ? AND PASS.token = ? AND PASS.valid = 1 AND PASS.createDate > NOW()-86440");
      $cmd->bind_param("ss", $mail, $token);
 
      return $this->executeStatement($cmd);
@@ -285,7 +296,7 @@ class BrankDB {
                                TOURNAMENT
   *******************************************************************************/
   public function selectTournamentList() {
-    $cmd = $this->db->prepare("SELECT T.*, (SELECT count(*) from TournamentPlayer AS TP where TP.visible = 1 AND TP.tournamentID = T.tournamentID) AS userCounter FROM Tournament AS T WHERE T.visible = 1 AND T.enddate > NOW() - INTERVAL 4 DAY ORDER by T.startdate ASC");
+    $cmd = $this->db->prepare("SELECT T.*, (SELECT count(*) from TournamentPlayer AS TP where TP.visible = 1 AND TP.tournamentId = T.tournamentId) AS userCounter FROM Tournament AS T WHERE T.visible = 1 AND T.enddate > NOW() - INTERVAL 4 DAY ORDER by T.startdate ASC");
     return $this->executeStatement($cmd);
   }
 
@@ -310,13 +321,13 @@ class BrankDB {
   }
 
 
-  public function getTournamentData($tournamentID) {
-    $cmd = $this->db->prepare("SELECT Tournament.*, CONCAT_WS(' ', User.firstName, User.lastName) AS reporterName FROM Tournament LEFT JOIN User ON User.userId = Tournament.reporterId WHERE Tournament.tournamentID = ?");
-    $cmd->bind_param("i",$tournamentID);
+  public function getTournamentData($tournamentId) {
+    $cmd = $this->db->prepare("SELECT Tournament.*, CONCAT_WS(' ', User.firstName, User.lastName) AS reporterName FROM Tournament LEFT JOIN User ON User.userId = Tournament.reporterId WHERE Tournament.tournamentId = ?");
+    $cmd->bind_param("i",$tournamentId);
     return $this->executeStatement($cmd);
   }
 
-  public function getPlayersByTournamentId($tournamentID) {
+  public function getPlayersByTournamentId($tournamentId) {
     $cmd = $this->db->prepare(
       "SELECT
       TP.*,
@@ -324,47 +335,47 @@ class BrankDB {
       CONCAT(Partner.firstName, ' ',Partner.lastName) as partnerName,
       CONCAT(Reporter.firstName, ' ',Reporter.lastName) as reporterName
       FROM TournamentPlayer AS TP
-      LEFT JOIN User ON User.userid = TP.playerID
-      LEFT JOIN User as Partner ON TP.partnerID = Partner.userId
-      LEFT JOIN User AS Reporter ON TP.reporterID = Reporter.userId
-      WHERE TP.tournamentID = ? AND TP.visible = 1"
+      LEFT JOIN User ON User.userid = TP.playerId
+      LEFT JOIN User as Partner ON TP.partnerId = Partner.userId
+      LEFT JOIN User AS Reporter ON TP.reporterId = Reporter.userId
+      WHERE TP.tournamentId = ? AND TP.visible = 1"
     );
-    $cmd->bind_param("i", $tournamentID);
+    $cmd->bind_param("i", $tournamentId);
 
     return $this->executeStatement($cmd);
   }
 
-  public function getPlayersByTournamentIdToExport($tournamentID) {
+  public function getPlayersByTournamentIdToExport($tournamentId) {
     $cmd = $this->db->prepare(
       "SELECT
         TP.*,
         User.firstName AS p1FirstName, User.lastName AS p1LastName, User.gender AS p1Gender, User.bday AS p1Bday, User.playerId AS p1PlayerNumber, C1.name as p1ClubName, C1.clubNumber AS p1ClubNumber, C1.association AS p1ClubAssociation,
         Partner.firstName AS p2FirstName, Partner.lastName AS p2LastName, Partner.gender AS p2Gender, Partner.bday AS p2Bday, Partner.playerId AS p2PlayerNumber, C2.name as p2ClubName, C2.clubNumber AS p2ClubNumber, C2.association AS p2ClubAssociation
       FROM TournamentPlayer AS TP
-      LEFT JOIN User ON User.userid = TP.playerID
-      LEFT JOIN User as Partner ON TP.partnerID = Partner.userId
+      LEFT JOIN User ON User.userid = TP.playerId
+      LEFT JOIN User as Partner ON TP.partnerId = Partner.userId
       LEFT JOIN Club AS C1 ON C1.clubID = User.clubId
       LEFT JOIN Club AS C2 ON C2.clubID = Partner.clubId
-      WHERE TP.tournamentID = ? AND TP.visible = 1"
+      WHERE TP.tournamentId = ? AND TP.visible = 1"
     );
-    $cmd->bind_param("i", $tournamentID);
+    $cmd->bind_param("i", $tournamentId);
 
     return $this->executeStatement($cmd);
   }
 
-  public function getDisciplinesByTournamentId($tournamentID) {
-    $cmd =  $this->db->prepare("SELECT * FROM TournamentClass AS TC WHERE TC.tournamentID = ? AND TC.visible = 1");
-    $cmd->bind_param("i", $tournamentID);
+  public function getDisciplinesByTournamentId($tournamentId) {
+    $cmd =  $this->db->prepare("SELECT * FROM TournamentClass AS TC WHERE TC.tournamentId = ? AND TC.visible = 1");
+    $cmd->bind_param("i", $tournamentId);
     return $this->executeStatement($cmd);
   }
 
   public function insetPlayerToTournament($data) {
-    $this->statementInsetPlayerToTournament->bind_param("iiiii", $data['playerID'], $data['partnerID'], $id['tournamentID'], $data['classID'], $data['reporterID'] );
+    $this->statementInsetPlayerToTournament->bind_param("iiiii", $data['playerId'], $data['partnerId'], $id['tournamentId'], $data['classId'], $data['reporterId'] );
     return $this->executeStatement($this->statementInsetPlayerToTournament);
   }
 
   public function insertPlayerToTournament($tournamentId, $playerId, $partnerId, $classification, $reporterId) {
-    $cmd = $this->db->prepare("INSERT INTO TournamentPlayer set tournamentID = ?, playerID = ?, partnerID = ?, classification = ?, reporterID = ?, fillingDate = NOW()");
+    $cmd = $this->db->prepare("INSERT INTO TournamentPlayer set tournamentId = ?, playerId = ?, partnerId = ?, classification = ?, reporterId = ?, fillingDate = NOW()");
     $cmd->bind_param("iiisi", $tournamentId, $playerId, $partnerId, $classification, $reporterId);
 
     return $this->executeStatement($cmd);
@@ -378,60 +389,76 @@ class BrankDB {
         return $this->executeStatement($cmd);
     }
 
+    /**
+     *
+     */
+    public function getPlayerByTerm($term) {
+        #$term = sprintf("%%s%", $term);
+        $term = "%".$term."%";
+        $cmd = $this->db->prepare("SELECT User.firstName, User.lastName, User.playerId, User.clubId, Club.name AS clubName FROM User
+                                   LEFT JOIN Club ON Club.clubId = User.clubId
+                                   WHERE CONCAT_WS(User.firstName, User.lastName) LIKE ?
+                                   ORDER BY User.lastName");
+
+        $cmd->bind_param("s", $term);
+
+        return $this->executeStatement($cmd);
+    }
+
   /** Insert class from Tournament
     *
     */
   public function insertTournamentClass($id, $name, $mode) {
-    $cmd = $this->db->prepare("INSERT INTO TournamentClass set tournamentID = ?, name = ?, modus = ?");
+    $cmd = $this->db->prepare("INSERT INTO TournamentClass set tournamentId = ?, name = ?, modus = ?");
     $cmd->bind_param("iss", $id, $name, $mode);
 
     return $this->executeStatement($cmd);
   }
 
   public function deletePlayersFromTournamentId($tournamentId, $playerId) {
-    $cmd = $this->db->prepare("UPDATE TournamentPlayer set visible = 0 WHERE tournamentID = ? AND tournamentPlayerId = ?");
+    $cmd = $this->db->prepare("UPDATE TournamentPlayer set visible = 0 WHERE tournamentId = ? AND tournamentPlayerId = ?");
     $cmd->bind_param("ii", $tournamentId, $playerId);
 
     return $this->executeStatement($cmd);
   }
 
   public function deleteAllPlayersFromTournamentById($tournamentId) {
-    $cmd = $this->db->prepare("UPDATE TournamentPlayer set visible = 0 WHERE tournamentID = ?");
+    $cmd = $this->db->prepare("UPDATE TournamentPlayer set visible = 0 WHERE tournamentId = ?");
     $cmd->bind_param("i", $tournamentId);
 
     return $this->executeStatement($cmd);
   }
 
   public function deleteClassFromTournamentById($tournamentId) {
-    $cmd = $this->db->prepare("UPDATE TournamentClass set visible = 0 WHERE tournamentID = ?");
+    $cmd = $this->db->prepare("UPDATE TournamentClass set visible = 0 WHERE tournamentId = ?");
     $cmd->bind_param("i", $tournamentId);
 
     return $this->executeStatement($cmd);
   }
 
   public function deleteTournamentById($tournamentId) {
-    $cmd = $this->db->prepare("UPDATE Tournament set visible = 0 WHERE tournamentID = ?");
+    $cmd = $this->db->prepare("UPDATE Tournament set visible = 0 WHERE tournamentId = ?");
     $cmd->bind_param("i", $tournamentId);
 
     return $this->executeStatement($cmd);
   }
 
   public function updateTournamentById($tournamentId, $name, $place, $startdate, $enddate, $deadline, $link, $classification, $additionalClassification, $discipline, $reporterId, $tournamentType, $latitude, $longitude, $description) {
-    $cmd = $this->db->prepare("UPDATE Tournament set name = ?, place= ?, startdate=?, enddate=?, deadline=?, link=?, classification = ?, additionalClassification = ?, discipline = ?, reporterId = ?, tournamentType = ?, latitude = ?, longitude = ?, description = ? WHERE tournamentID = ?");
+    $cmd = $this->db->prepare("UPDATE Tournament set name = ?, place= ?, startdate=?, enddate=?, deadline=?, link=?, classification = ?, additionalClassification = ?, discipline = ?, reporterId = ?, tournamentType = ?, latitude = ?, longitude = ?, description = ? WHERE tournamentId = ?");
     $cmd->bind_param("ssssssssssssssi", $name, $place, $startdate, $enddate, $deadline, $link, $classification, $additionalClassification, $discipline, $reporterId, $tournamentType, $latitude, $longitude, $description, $tournamentId);
 
     return $this->executeStatement($cmd);
   }
 
   public function selectGetLatestTournamentFromUserId($id) {
-    $cmd = $this->db->prepare("SELECT * FROM Tournament WHERE tournamentID IN (SELECT tournamentID FROM TournamentPlayer Where playerID = ? or partnerID = ? GROUP BY tournamentID) ORDER BY enddate DESC LIMIT 10");
+    $cmd = $this->db->prepare("SELECT * FROM Tournament WHERE tournamentId IN (SELECT tournamentId FROM TournamentPlayer Where playerId = ? or partnerId = ? GROUP BY tournamentId) ORDER BY enddate DESC LIMIT 10");
     $cmd->bind_param("ii", $id, $id);
 
     return $this->executeStatement($cmd);
   }
 
   public function getTournamentPlayerByData($tournamentId, $player, $partner, $disziplin) {
-    $cmd = $this->db->prepare("SELECT * FROM TournamentPlayer WHERE tournamentID = ? AND playerID = ? AND partnerID = ? AND classification = ? AND visible = 1");
+    $cmd = $this->db->prepare("SELECT * FROM TournamentPlayer WHERE tournamentId = ? AND playerId = ? AND partnerId = ? AND classification = ? AND visible = 1");
     $cmd->bind_param("iiis", $tournamentId, $player, $partner, $disziplin);
 
     return $this->executeStatement($cmd);
@@ -537,8 +564,8 @@ class BrankDB {
    /*******************************************************************************
                                 ELOranking
    *******************************************************************************/
-   public function statementGetEloRanking() {
-      $cmd = $this->db->prepare("SELECT elo.*, CONCAT_WS(' ', User.firstName, User.lastName) AS name FROM `eloRanking` AS elo
+   public function statementGetRanking() {
+      $cmd = $this->db->prepare("SELECT elo.*, CONCAT_WS(' ', User.firstName, User.lastName) AS name FROM `EloRanking` AS elo
                                  LEFT JOIN User ON User.userId = elo.userId
                                  #WHERE elo.win != 0 OR elo.loss != 0
                                  ORDER BY elo.points DESC");
@@ -549,7 +576,7 @@ class BrankDB {
    /**
     *
     */
-    public function statementGetEloMatches() {
+    public function statementGetMatches() {
         $cmd = $this->db->prepare("SELECT games.*, CONCAT_WS(' ', player.firstName, player.lastName) playerName, CONCAT_WS(' ', opponent.firstName, opponent.lastName) opponentName FROM `eloGames` AS games
                                    LEFT JOIN User AS player ON player.userId = games.playerId
                                    LEFT JOIN User AS opponent ON opponent.userId = games.opponentId
@@ -561,7 +588,7 @@ class BrankDB {
    /**
     * get Games group by Date for stats
     */
-   public function statementGetEloMatchesGroupedByDate() {
+   public function statementGetMatchesGroupedByDate() {
      $cmd = $this->db->prepare("SELECT DATE(time) AS gamedate, COUNT(gameId) AS games
                                 FROM `eloGames`
                                 WHERE hidden = '0'
@@ -573,7 +600,7 @@ class BrankDB {
    /**
     * get Game by ID
     */
-    public function statementGetEloGameById($id) {
+    public function statementGetGameById($id) {
         $cmd = $this->db->prepare("SELECT games.*, CONCAT_WS(' ', player.firstName, player.lastName) playerName, CONCAT_WS(' ', opponent.firstName, opponent.lastName) opponentName FROM `eloGames` AS games
                                    LEFT JOIN User AS player ON player.userId = games.playerId
                                    LEFT JOIN User AS opponent ON opponent.userId = games.opponentId
@@ -582,27 +609,27 @@ class BrankDB {
         return $this->executeStatement($cmd);
     }
 
-   public function deleteEloRanking() {
+   public function deleteRanking() {
      $cmd = $this->db->prepare("TRUNCATE `eloRanking`");
 
      return $this->executeStatement($cmd);
    }
 
-   public function insertEloMatch($a, $b, $sets, $winner) {
+   public function insertMatch($a, $b, $sets, $winner) {
      $cmd = $this->db->prepare("INSERT INTO `eloGames` (playerId, opponentId, sets, winner) VALUES (?, ?, ?, ?)");
      $cmd->bind_param("iisi", $a, $b, $sets, $winner);
 
      return $this->executeStatement($cmd);
    }
 
-   public function selectEloPoints($userId) {
+   public function selectPoints($userId) {
       $cmd = $this->db->prepare("SELECT IFNULL( (SELECT points FROM `eloRanking` WHERE userId = ?) , '0')");
       $cmd->bind_param("i", $userId);
 
       return $this->executeStatement($cmd);
    }
 
-   public function updateEloPoints($userId, $points, $win, $loss) {
+   public function updatePoints($userId, $points, $win, $loss) {
       $cmd = $this->db->prepare("INSERT INTO `eloRanking` (userId, points) VALUES (?, ?) ON DUPLICATE KEY UPDATE userId= ?, points= ?, win=win+?, loss=loss+?, lastMatch = NOW() ");
       $cmd->bind_param("iiiiii", $userId, $points, $userId, $points, $win, $loss);
 
@@ -610,7 +637,7 @@ class BrankDB {
    }
 
 
-   public function selectEloLatestGamesByPlayerId($id) {
+   public function selectLatestRankingGamesByPlayerId($id) {
      $cmd = $this->db->prepare("SELECT games.*, CONCAT_WS(' ', User.firstName, User.lastName) AS name FROM eloGames AS games
                                 LEFT JOIN User ON User.userId = games.opponentId
                                 WHERE (games.playerId = ? OR games.opponentId = ?) AND games.hidden = 0
@@ -623,12 +650,27 @@ class BrankDB {
     /** delete game by ID
      *
      */
-    public function deleteEloMatch($id) {
+    public function deleteMatch($id) {
         $cmd = $this->db->prepare("UPDATE `eloGames` SET hidden='1' WHERE gameId = ?");
         $cmd->bind_param("i", $id);
 
         return  $this->executeStatement($cmd);
     }
+
+    /*******************************************************************************
+                                 FAQ
+    *******************************************************************************/
+    public function statementGetFAQs() {
+        $cmd = $this->db->prepare("SELECT Faq.*, Cat.title as categoryTitle, Cat.categoryId FROM `Faq`
+                                   LEFT JOIN `FaqCategory` AS `Cat` ON Cat.categoryId = Faq.categoryId");
+        return  $this->executeStatement($cmd);
+    }
+
+    public function statementGetFAQCategories() {
+        $cmd = $this->db->prepare("SELECT * FROM `FaqCategory` ORDER BY title");
+        return  $this->executeStatement($cmd);
+    }
+
 
     /*******************************************************************************
                                  NOTIFICATION

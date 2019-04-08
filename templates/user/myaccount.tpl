@@ -40,7 +40,7 @@
       <div class="col-md-6">
         <div class="form-group">
           <label for = "userRegisterAccountEmail">E-Mail-Adresse:</label>
-          <input class="form-control" type="text" id="userRegisterAccountEmail" name="userRegisterAccountEmail" placeholder="your.name@bc-comet.de" value="{$vars['EmailValue']}">
+          <input class="form-control" type="text" id="userRegisterAccountEmail" name="userRegisterAccountEmail" placeholder="your.name@email.com" value="{$vars['EmailValue']}">
         </div>
       </div>
 

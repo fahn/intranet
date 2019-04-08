@@ -36,17 +36,7 @@ $(document).ready(function() {
     /**
       * DATEPICKER
     */
-    $('.date').datepicker({
-        format: 'dd.mm.yyyy',
-        language: 'de-DE',
-        weekStart: 1,
-        autoclose: true,
-        todayHighlight: true,
-    });
 
-    $('.timepicker').datepicker({
-        format: 'LT'
-    });
 
     $('#summernote').summernote({
         placeholder: '',
@@ -145,4 +135,26 @@ $(document).ready(function() {
       }
 
     });
+
+    /* DATE_TIME_PICKER */
+    $(".datetime").flatpickr({
+        weekNumbers: true,
+        enableTime: true,
+        time_24hr: true,
+        dateFormat: "d.m.Y H:i",
+        locale: "de",
+        "locale": {
+            "firstDayOfWeek": 1 // start week on Monday
+        }
+    });
+
+    $(".date").flatpickr({
+        weekNumbers: true,
+        dateFormat: "d.m.Y H:i",
+        locale: "de",
+        "locale": {
+            "firstDayOfWeek": 1 // start week on Monday
+        }
+    });
+
 });

@@ -66,9 +66,9 @@ class Api {
                   $to        = $row['email'];
                   $name      = $row['name'];
                   $link      = $this->tools->linkTo(array(
-                      'page'   => 'rankingTournament.php',
+                      'page'   => 'tournament.php',
                       'action' => 'details',
-                      'id'     => $row['tournamentID'],
+                      'id'     => $row['tournamentId'],
                   ));
                   $content = sprintf("Hallo %s,<br>Für das Turnier/Rangliste \"%s\" ist heute Meldeschluss.<br><br>Alle weiteren Informationen gibt es <a href='%s'>hier</a>.", $row['reporterName'], $row['name'], $link);
                   if($this->tools->sendMail($to, $name, $subject, $subject, $content)) {

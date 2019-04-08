@@ -7,17 +7,21 @@
 
 <div class="row">
     <div class="col-md-4">
-        {if $widgetEloRankingLatestGames}
-            {$widgetEloRankingLatestGames}
+        {if $rankingEnable == "on" and $widgetRankingLatestGames}
+            {$widgetRankingLatestGames}
         {/if}
 
         {if $widgetShowTeam}
             {$team}
         {/if}
 
+        {if $isAdmin}
+            {$widgetShowBdays}
+        {/if}
+
         {if !empty($social)}
           <div class="card mt-4 mb-4">
-              <h5 class="card-header">Social Comet</h5>
+              <h5 class="card-header">Social</h5>
               <div class="card-body">
                   <p class="card-text text-center">
                       {if $social.socialHomepage}
@@ -43,17 +47,20 @@
         {$widgetUpcomingTournaments}
     {/if}
 
-    <div class="card mt-3 last news">
-        <h5 class="card-header">Letzte technischen Neuigkeiten</h5>
-        <ul class="list-group list-group-flush active">
-            <li class="list-group-item">16.03.2018 // Fix Api error and fix sending mails</li>
-            <li class="list-group-item">23.02.2018 // Fix and add icons to Menu</li>
-            <li class="list-group-item">20.02.2018 // fixed serveral bugs</li>
-            <li class="list-group-item">09.02.2018 // Marker in Turnieransicht verändert</li>
-            <li class="list-group-item">08.02.2018 // Optimierungen, Überprüfung, ob Meldung von Spieler bei Turnieren berechtigt sind</li>
-            <li class="list-group-item">07.02.2018 // Neue Turniere hinzugefügt & Änderungen am Meldesystem</li>
-            <li class="list-group-item">31.01.2018 // Kompletter Austausch des Designs</li>
-            <li class="list-group-item">28.01.2018 // Version für alle Mitglieder frei geschalten.</li>
-        </ul>
+    {if $newsEnable == "on"}
+        <div class="card mt-3 last news">
+            <h5 class="card-header">Letzte technischen Neuigkeiten</h5>
+            <ul class="list-group list-group-flush active">
+                <li class="list-group-item">16.03.2018 // Fix Api error and fix sending mails</li>
+                <li class="list-group-item">23.02.2018 // Fix and add icons to Menu</li>
+                <li class="list-group-item">20.02.2018 // fixed serveral bugs</li>
+                <li class="list-group-item">09.02.2018 // Marker in Turnieransicht verändert</li>
+                <li class="list-group-item">08.02.2018 // Optimierungen, Überprüfung, ob Meldung von Spieler bei Turnieren berechtigt sind</li>
+                <li class="list-group-item">07.02.2018 // Neue Turniere hinzugefügt & Änderungen am Meldesystem</li>
+                <li class="list-group-item">31.01.2018 // Kompletter Austausch des Designs</li>
+                <li class="list-group-item">28.01.2018 // Version für alle Mitglieder frei geschalten.</li>
+            </ul>
+        </div>
+    {/if}
 
 </div>

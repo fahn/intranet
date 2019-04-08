@@ -17,6 +17,11 @@ include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgTournament.inc.php';
 include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgPattern.inc.php';
 include_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
 
+# libary
+require_once $_SERVER['BASE_DIR'] .'/vendor/autoload.php';
+#use \Eluceo\iCal\Component\Calendar;
+#use \Eluceo\iCal\Component\Event;
+
 
 
 # diff
@@ -62,6 +67,9 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
             $content = $this->addTournamentTMPL($id);
             break;
 
+          case 'calendar':
+            $content = $this->calendar($id);
+
           case 'edit_tournament':
             $content = $this->editTournamentTMPL($id);
             break;
@@ -97,6 +105,7 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
         $this->smarty->assign(array(
             'tournamentList'       => $this->getAllTournamentDataList(),
             'oldTournamentList'    => $this->getOldTournamentDataList(),
+            'googleMaps'           => $this->tools->getIniValue('Maps'),
         ));
 
         return $this->smarty->fetch('tournament/TournamentList.tpl');
@@ -159,6 +168,28 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
         }
 
         return $this->smarty->fetch('tournament/TournamentAdd.tpl');
+    }
+
+    private function calendar($id) {
+        if(!isset($id) or !is_numeric($id)) {
+            return "";
+
+        }
+        $tournament                   = $this->brdb->getTournamentData($id)->fetch_assoc();
+        extract($tournament);
+
+        $vCalendar = new \Eluceo\iCal\Component\Calendar('Badminton');
+        $vEvent    = new \Eluceo\iCal\Component\Event();
+        $vEvent
+            ->setDtStart(new \DateTime($startdate))
+            ->setDtEnd(new \DateTime($enddate))
+            ->setNoTime(true)
+            ->setLocation($place)
+            ->setSummary($name);
+        $vCalendar->addComponent($vEvent);
+        header('Content-Type: text/calendar; charset=utf-8');
+        header('Content-Disposition: attachment; filename="cal.ics"');
+        echo $vCalendar->render();
     }
 
     /**
@@ -329,6 +360,11 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
             $data = array();
             while ($dataSet = $res->fetch_assoc()) {
                 $dataSet['classification'] = $this->tools->formatClassification($dataSet['classification']);
+                $dataSet['calLink'] = $this->tools->linkTo(array(
+                  'page'   => 'tournament.php',
+                  'action' => 'calendar',
+                  'id'     => $dataSet['tournamentId']));
+
                 $data[] = $dataSet;
             }
 
@@ -360,10 +396,18 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
         if (!$this->brdb->hasError()) {
             $data = array();
             while ($dataSet = $res->fetch_assoc()) {
-                if($this->strpos_arr($dataSet['classification'], array('HD', 'DD', 'JD', 'MD', 'GD')) && $dataSet['partnerID'] == 0) {
-                  $dataSet['partnerID']   = 0;
+                #die(print_r($dataSet));
+                //
+                if($this->strpos_arr($dataSet['classification'], array('HD', 'DD', 'JD', 'MD', 'GD')) && $dataSet['partnerId'] > 0) {
+                    $dataSet['partnerLink'] =  $this->tools->linkTo(array('page' => 'user.php', 'id' => $dataSet['partnerId']));
+                } else {
+                  $dataSet['partnerId']   = 0;
                   $dataSet['partnerName'] = 'FREI';
                 }
+
+                $dataSet['linkPlayer'] = $this->tools->linkTo(array('page' => 'user.php', 'id' => $dataSet['playerId']));
+                $dataSet['linkReporter'] = $this->tools->linkTo(array('page' => 'user.php', 'id' => $dataSet['reporterId']));
+
                 $data[]         = $dataSet;
             }
 
@@ -394,7 +438,7 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
             $data = array();
             while ($dataSet = $res->fetch_assoc()) {
                 #$data[]         = $dataSet;
-                $data[$dataSet['classID']] = $dataSet['name'] .' '. $dataSet['modus'];
+                $data[$dataSet['classId']] = $dataSet['name'] .' '. $dataSet['modus'];
             }
 
             return $data;

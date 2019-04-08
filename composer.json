@@ -3,6 +3,7 @@
         "erusev/parsedown": "^1.7",
         "nette/mail": "^2.4",
         "box/spout": "^2.7",
-        "dompdf/dompdf": "^0.8.3"
+        "dompdf/dompdf": "^0.8.3",
+        "eluceo/ical": "0.15.0"
     }
 }

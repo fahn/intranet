@@ -51,8 +51,10 @@ abstract class HtmlPageProcessor {
 
     $this->smarty->assign(array(
         'pageTitle' => $this->tools->getIniValue('pageTitle'),
+        'logoTitle' => $this->tools->getIniValue('logoTitle'),
     ));
   }
+
 
   /**
    * Call this method to process / render the complete HTML page

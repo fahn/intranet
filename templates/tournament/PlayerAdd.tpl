@@ -8,7 +8,7 @@
 {else if $smarty.now > $tournament.deadline|strtotime}
   <p>Leider ist der Meldeschluss schon vorbei. Versuche es einfach beim nächsten mal!</p>
   <p class="text-right">
-    <a class="btn btn-danger" href="?action=details&id={$tournament.tournamentID}">Zurück</a>
+    <a class="btn btn-danger" href="?action=details&id={$tournament.tournamentId}">Zurück</a>
   </p>
 {else}
   <form action="" method="post">
@@ -69,7 +69,7 @@
         <input type="submit" name="submit" class="btn btn-success btn-wide" value="Melden">
       </div>
       <div class="col-md-6 text-right">
-        <a class="btn btn-danger" href="?action=details&id={$tournament.tournamentID}">Zurück</a>
+        <a class="btn btn-danger" href="?action=details&id={$tournament.tournamentId}">Zurück</a>
       </div>
     </div>
     <!--

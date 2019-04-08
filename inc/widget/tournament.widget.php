@@ -53,6 +53,8 @@ class tournamentWidget extends Widget {
         if (!$this->brdb->hasError()) {
             while ($dataSet = $res->fetch_assoc()) {
                 $dataSet['classification'] = $this->tools->formatClassification($dataSet['classification']);
+                $dataSet['linkTo']         = $this->tools->linkTo(array('page' => 'tournament.php', 'action' => 'details', 'id' => $dataSet['tournamentId']));
+
                 $data[]                    = $dataSet;
             }
         }
@@ -65,6 +67,8 @@ class tournamentWidget extends Widget {
         if (!$this->brdb->hasError()) {
             while ($dataSet = $res->fetch_assoc()) {
                 $dataSet['classification'] = $this->tools->formatClassification($dataSet['classification']);
+                $dataSet['linkTo']         = $this->tools->linkTo(array('page' => 'tournament.php', 'action' => 'details', 'id' => $dataSet['tournamentId']));
+                
                 $data[]                     = $dataSet;
             }
         }

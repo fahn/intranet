@@ -12,21 +12,19 @@
  *
  ******************************************************************************/
 
+include_once $_SERVER['BASE_DIR'] .'/inc/db/brdb.inc.php';
 include_once $_SERVER['BASE_DIR'] .'/inc/html/htmlPage.inc.php';
+
+// Logic
 include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgLogin.inc.php';
 include_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
-include_once $_SERVER['BASE_DIR'] .'/inc/db/brdb.inc.php';
-
-include_once $_SERVER['BASE_DIR'] .'/inc/html/htmlPage.inc.php';
-
-// user
 include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgUser.inc.php';
 
-
 // load widgets
-require_once $_SERVER['BASE_DIR'] .'/inc/widget/eloRanking.widget.php';
+require_once $_SERVER['BASE_DIR'] .'/inc/widget/ranking.widget.php';
 require_once $_SERVER['BASE_DIR'] .'/inc/widget/tournament.widget.php';
 require_once $_SERVER['BASE_DIR'] .'/inc/widget/team.widget.php';
+require_once $_SERVER['BASE_DIR'] .'/inc/widget/bday.widget.php';
 
 
 // notification
@@ -60,13 +58,17 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
     public function __construct() {
         parent::__construct();
 
+
         /* TOOLS */
         $this->tools = new Tools();
+
 
 
         if ( $this->tools->maintenance()) {
           $this->tools->customRedirect('maintenance.php');
         }
+
+
 
         /* SQL CONNECTION */
         $this->brdb = new BrankDB();
@@ -82,8 +84,11 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
 
         /* goto Login */
         $basename = basename($_SERVER['PHP_SELF']);
-        $this->prgPatternElementLogin->isUserLoggedIn() == false ? 1 : 0;
-        if($basename != "index.php" && $this->prgPatternElementLogin->isUserLoggedIn() == false) {
+
+        $isUserLoggedIn = $this->prgPatternElementLogin->isUserLoggedIn();
+        #die(print_r($this->prgPatternElementLogin->getLoggedInUser()));
+        #die(print_r($this->prgPatternElementLogin->isUserLoggedIn()));
+        if($basename != "index.php" && $isUserLoggedIn === false) {
             $_SESSION['ref'] = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
             $this->tools->customRedirect(array(
               'page' => 'index.php',
@@ -119,14 +124,18 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
 
 
             $this->smarty->assign(array(
-                    'currentUserName'  => $currentUserName,
-                    'isUserLoggedIn'   => $isUserLoggedIn,
-                    'isAdmin'          => $this->prgPatternElementLogin->getLoggedInUser()->isAdmin(),
-                    'isReporter'       => $this->prgPatternElementLogin->getLoggedInUser()->isReporter(),
-                    'userId'           => $this->prgPatternElementLogin->getLoggedInUser()->getId(),
-                    'rankingEnable'    => $this->tools->getIniValue('rankingEnable'),
-                    'tournamentEnable' => $this->tools->getIniValue('tournamentEnable'),
-                    #'notification'     => $notification->getNotification(),
+                    'currentUserName'    => $currentUserName,
+                    'isUserLoggedIn'     => $isUserLoggedIn,
+                    'isAdmin'            => $this->prgPatternElementLogin->getLoggedInUser()->isAdmin(),
+                    'isReporter'         => $this->prgPatternElementLogin->getLoggedInUser()->isReporter(),
+                    'userId'             => $this->prgPatternElementLogin->getLoggedInUser()->getId(),
+                    'rankingEnable'      => $this->tools->getIniValue('RankingEnabled'),
+                    'tournamentEnable'   => $this->tools->getIniValue('tournamentEnable'),
+                    'faqEnabled'         => $this->tools->getIniValue('faqEnabled'),
+                    'social'             => $this->tools->getIniValue('Social'),
+                    'notificationEnable' => $this->tools->getIniValue('notificationEnable'),
+                    'newsEnable'         => $this->tools->getIniValue('newsEnable'),
+                    #$notification->getNotification(),
             ));
         }
 
@@ -134,6 +143,8 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
         $this->prgPattern->processPRG();
         parent::processPage();
     }
+
+
 
     /**
      * This method hands back the currently logged in user
@@ -154,7 +165,6 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
      */
     protected function htmlBody() {
         $isUserLoggedIn = $this->prgPatternElementLogin->isUserLoggedIn();
-
         $this->getMessages();
 
         if($isUserLoggedIn) {
@@ -173,21 +183,20 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
                 break;
 
               case 'change_password':
-                $token = $this->tools->get("token");
-                $mail  = $this->tools->get("mail");
-                $this->smarty->assign(array(
-                  'token' => $token,
-                  'mail'  => $mail,
-                ));
-                $this->content = $this->smarty->fetch('login/change_password.tpl');
-                break;
+                  $token = $this->tools->get("token");
+                  $mail  = $this->tools->get("mail");
+                  $this->smarty->assign(array(
+                      'token' => $token,
+                      'mail'  => $mail,
+                  ));
+                  $this->content = $this->smarty->fetch('login/change_password.tpl');
+                  break;
 
               case 'register':
-                require_once $_SERVER['BASE_DIR'] .'/inc/html/brdbHtmlSupport.inc.php';
-                $support = new brdbHtmlSupport();
-                $this->content = $support->register();
-                #die("HI");
-                break;
+                  require_once $_SERVER['BASE_DIR'] .'/inc/html/brdbHtmlSupport.inc.php';
+                  $support = new brdbHtmlSupport();
+                  $this->content = $support->register();
+                  break;
 
               default:
                 // if there is no user logged in, then show the content to
@@ -204,9 +213,9 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
                     'formTO'                  => '',
                     'variableNameAction'      => $variableNameAction,
                     'variableNameActionLogin' => $variableNameActionLogin,
-                    'title'                   => $this->tools->getIniValue('pageTitle'), # ["Generell"]
                     'imprint'                 => $this->tools->getIniValue('imprint'), # ["Links"]
                     'disclaimer'              => $this->tools->getIniValue('disclaimer'), #["Links"]
+                    'registerEnabled'         => $this->tools->getIniValue('registerEnabled') == 'on' ? true : false,
 
                 ));
 
@@ -231,18 +240,20 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
     }
 
     private function loadContent() {
-        $user = new PrgPatternElementUser($this->brdb, $this->prgPatternElementLogin);
+        $user   = new PrgPatternElementUser($this->brdb, $this->prgPatternElementLogin);
         $userId = $this->prgPatternElementLogin->getLoggedInUser();
 
         // load Widgets
         $tournamentWidget = new tournamentWidget();
-        $eloRankingWidget = new eloRankingWidget();
+        $rankingWidget    = new rankingWidget();
         $teamWidget       = new teamWidget();
+        $bdayWidget       = new bdayWidget();
 
         $this->smarty->assign(array(
-            'widgetEloRankingLatestGames' => $eloRankingWidget->showWidget('latestGames'),
+            'widgetRankingLatestGames'    => $rankingWidget->showWidget('latestGames'),
             'widgetUpcomingTournaments'   => $tournamentWidget->showWidget('upcomingTournaments'),
             'widgetShowTeam'              => $teamWidget->showWidget('showTeam'),
+            'widgetShowBdays'             => $bdayWidget->showWidget('nextBdays'),
 
         ));
 

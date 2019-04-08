@@ -6,8 +6,8 @@
         <h5 class="card-header">Informationen</h5>
         <div class="card-body">
         <p><strong>Ort:</strong> {$tournament.place}</p>
-        <p><strong>Zeitraum:</strong> {$tournament.startdate|date_format:"%d.%m.%Y"} - {$tournament.enddate|date_format:"%d.%m.%Y"}</p>
-        <p><strong>Meldeschluss:</strong> <span class="text-{if $tournament.deadline|strtotime < $smarty.now}danger{else}success{/if}">{$tournament.deadline|date_format:"%d.%m.%Y"}</span></p>
+        <p><strong>Zeitraum:</strong> {$tournament.startdate|date_format:"%d.%m.%Y %H:%M"} - {$tournament.enddate|date_format:"%d.%m.%Y"}</p>
+        <p><strong>Meldeschluss:</strong> <span class="text-{if $tournament.deadline|strtotime < $smarty.now}danger{else}success{/if}">{$tournament.deadline|date_format:"%d.%m.%Y %H:%M"}</span></p>
         <p><strong>Ausschreibung:</strong> {if $tournament.link}<a href="{$tournament.link}" target="_blank">Link zur Ausschreibung</a>{else}-{/if}</p>
         <p><strong>Melder:</strong> <a href="/pages/user.php?id={$tournament.reporterId}">{$tournament.reporterName}</a><br>
         {if $tournament.classification}
@@ -54,10 +54,10 @@
             <div class="btn-group">
                 <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Optionen</button>
                 <div class="dropdown-menu">
-                    <a class="dropdown-item" href="?action=export&id={$tournament.tournamentID}"><i class="fas fa-bullhorn"></i> Meldung</a>
-                    <a class="dropdown-item" href="?action=backup&id={$tournament.tournamentID}"><i class="fas fa-cloud"></i> Sicherungen</a>
+                    <a class="dropdown-item" href="?action=export&id={$tournament.tournamentId}"><i class="fas fa-bullhorn"></i> Meldung</a>
+                    <a class="dropdown-item" href="?action=backup&id={$tournament.tournamentId}"><i class="fas fa-cloud"></i> Sicherungen</a>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="?action=edit_tournament&id={$tournament.tournamentID}"><i class="fas fa-edit"></i> Turnier bearbeiten</a>
+                    <a class="dropdown-item" href="?action=edit_tournament&id={$tournament.tournamentId}"><i class="fas fa-edit"></i> Turnier bearbeiten</a>
                 </div>
             </div>
         </div>
@@ -65,7 +65,7 @@
 
     {if $tournament.openSubscription == 1 && $smarty.now < $tournament.deadline|strtotime}
         <div class="p-2">
-            <a class="btn btn-success" href="?action=add_player&id={$tournament.tournamentID}">Spieler melden</a>
+            <a class="btn btn-success" href="?action=add_player&id={$tournament.tournamentId}">Spieler melden</a>
         </div>
     {/if}
 </div>
@@ -83,14 +83,14 @@
     {foreach item=player from=$players}
       {if $player.visible == 1}
         <tr>
-          <td><a href="/pages/user.php?id={$player.playerID}" title="Profil von {$player.playerName}">{$player.playerName}</a> {if $player.partnerName}// {if $player.partnerName == 'FREI'}<span class="text-danger font-weight-bold">{$player.partnerName}</span> {else} <a href="/pages/user.php?id={$player.partnerID}" title="Profil von {$player.partnerName}">{$player.partnerName}</a>{/if}{/if}</td>
+          <td><a href="{$player.linkPlayer}" title="Profil von {$player.playerName}">{$player.playerName}</a> {if $player.partnerId}// {if $player.partnerName == 'FREI'}<span class="text-danger font-weight-bold">{$player.partnerName}</span> {else} <a href="{$player.partnerLink}" title="Profil von {$player.partnerName}">{$player.partnerName}</a>{/if}{/if}</td>
           <td>{$player.classification}</td>
           {if $isAdmin || $isReporter}
-            <td><a href="/pages/user.php?id={$player.reporterID}" title="gemeldet von {$player.reporterName} am {$player.fillingDate|date_format:"d.m.Y H:i"}">{$player.reporterName}</a> ({$player.fillingDate|date_format:"d.m.Y"})</td>
+            <td><a href="{$player.linkReporter}" title="gemeldet von {$player.reporterName} am {$player.fillingDate|date_format:"d.m.Y H:i"}">{$player.reporterName}</a> ({$player.fillingDate|date_format:"d.m.Y"})</td>
           {/if}
           <td class="text-center">
-            {if $isAdmin or $isReporter or $player.playerID == $userId or $player.partnerId == $userId}
-              <a class="btn btn-danger" href="?action=deletePlayer&id={$tournament.tournamentID}&tournamentPlayerId={$player.tournamentPlayerId}" onclick="return confirm('Möchtest du wirklich den Spieler abmelden ?');">Abmelden</a>
+            {if $isAdmin or $isReporter or $player.playerId == $userId or $player.partnerId == $userId}
+              <a class="btn btn-danger" href="?action=deletePlayer&id={$tournament.tournamentId}&tournamentPlayerId={$player.tournamentPlayerId}" onclick="return confirm('Möchtest du wirklich den Spieler abmelden ?');">Abmelden</a>
             {/if}
           </td>
         </tr>

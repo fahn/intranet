@@ -12,7 +12,7 @@
               Wartungsarbeiten! Es kann zu Störungen kommen!
             </div>
           -->
-            <img id="profile-img" class="profile-img-card" src="/static/img/badminton.png" />
+            <img id="profile-img" class="profile-img-card" src="/static/img/logo.png" />
             <p id="profile-name" class="profile-name-card"></p>
             {$content}
 

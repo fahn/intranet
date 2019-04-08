@@ -1,72 +1,48 @@
 <h1 class="display-1 mb-5">Turniere / Ranglisten</h1>
 
-<div id="map" class="mb-5" style="width: 100%; height: 400px !important"></div>
+<ul class="nav nav-tabs" style="margin-bottom: 20px;">
+  <li class="nav-item">
+      <a class="nav-link active" data-toggle="tab" href="#home">Aktuelle</a>
+  </li>
+  <li class="nav-item">
+      <a class="nav-link" data-toggle="tab" href="#menu1">Alte</a>
+  </li>
+</ul>
+
+<div class="tab-content">
+  <div id="home" class="tab-pane container active">
+
+    <div id="map" class="mb-5" style="width: 100%; height: 400px !important"></div>
 
 
-<div class="row">
-  <div class="col-md-6">
-    <div class="form-group">
-        <select class="form-control"  id="mySelector">
-          <option value="">Filterung der Turniere: Bitte wählen</option>
-          <option value='U'>Jugend (Bis U19)</option>
-          <option value='O19'>Erwachsene (O19)</option>
-          <option value='O'>Alters (Ab O35)</option>
-        </select>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="form-group">
+            <select class="form-control"  id="mySelector">
+              <option value="">Filterung der Turniere: Bitte wählen</option>
+              <option value='U'>Jugend (Bis U19)</option>
+              <option value='O19'>Erwachsene (O19)</option>
+              <option value='O'>Alters (Ab O35)</option>
+            </select>
+        </div>
+      </div>
+
+      {if $isAdmin or $isReporter}
+      <div class="col-md-6 text-right">
+            <a class="btn btn-success" href="?action=add_tournament">Turnier hinzufügen</a>
+      </div>
+      {/if}
     </div>
+    {include file="tournament/table.tpl" data=$tournamentList}
+
+
+
   </div>
-
-  {if $isAdmin or $isReporter}
-  <div class="col-md-6 text-right">
-        <a class="btn btn-success" href="?action=add_tournament">Turnier hinzufügen</a>
+  <div id="menu1" class="tab-pane container">
+      <h2 class="display-2 mt-5">Alte Turniere</h2>
+      {include file="tournament/table.tpl" data=$oldTournamentList}
   </div>
-  {/if}
 </div>
-
-<div class="table-responsive">
-  <table id="myTable" class="table table-striped table-hover">
-    <thead>
-      <tr>
-        <th>Altersklasse</th>
-        <th>Name</th>
-        <th>Ort</th>
-        <th>Datum</th>
-        <th>Meldeschluss</th>
-        <th>Ausschreibung</th>
-        <th>Teilnehmer</th>
-        <th>Optionen</th>
-      </tr>
-    </thead>
-    <tbody>
-      {foreach item=tournament from=$tournamentList}
-        <tr>
-          <td>{$tournament.classification}</td>
-          <td><a  class="text-{if $smarty.now < $tournament.deadline|strtotime}success{else}danger{/if}" href="?action=details&id={$tournament.tournamentID}">{$tournament.name}</a></td>
-          <td>{$tournament.place}</td>
-          <td>{$tournament.startdate|date_format:"%d.%m.%Y"}{if $tournament.startdate != $tournament.enddate} - {$tournament.enddate|date_format:"%d.%m.%Y"}{/if}</td>
-          <td class="text-{if $smarty.now < $tournament.deadline|strtotime}success{else}danger{/if}">{$tournament.deadline|date_format:"%d.%m.%Y"}</td>
-          <td class="text-center">{if $tournament.link}<a href="{$tournament.link}" target="_blank">Link</a>{else}-{/if}</td>
-          <td class="text-center">{$tournament.userCounter} <i class="fas fa-users"></i></td>
-          <td>
-            {if $tournament.openSubscription == 1 && $smarty.now < $tournament.deadline|strtotime}
-                <a class="btn btn-success" href="?action=add_player&id={$tournament.tournamentID}">Eintragen</a></td>
-            {else}
-                <a class="btn btn-primary btn-block" href="?action=details&id={$tournament.tournamentID}">Details</a>
-            {/if}
-        </tr>
-      {/foreach}
-    </tbody>
-  </table>
-</div>
-
-{if $isAdmin or $isReporter}
-  <h2 class="display-2 mt-5">Alte Turniere</h2>
-  <ul>
-    {foreach item=tournament from=$oldTournamentList}
-      <li><a href="?action=details&id={$tournament.tournamentID}">{$tournament.name}</a> in {$tournament.place} vom {$tournament.startdate|date_format:"%d.%m.%Y"} - {$tournament.enddate|date_format:"%d.%m.%Y"}</li>
-    {/foreach}
-  </ul>
-{/if}
-
 
 
 <script>
@@ -88,16 +64,16 @@ var map;
             scaledSize: new google.maps.Size(32, 32)
           },
           info: {
-            icon: iconBase + 'bccomet.png',
+            icon: iconBase + 'home.png',
 
           }
         };
 
         var features = [
           {
-            name: 'BC Comet Hauptquatier',
-            place: 'Braunschweig',
-            position: new google.maps.LatLng(52.2448374, 10.477203),
+            name: '{/literal}{$googleMaps.HomeMarkerName}{literal}',
+            place: '{/literal}{$googleMaps.HomeMarkerPlace}{literal}',
+            position: new google.maps.LatLng({/literal}{$googleMaps.HomeMarkerLat}{literal}, {/literal}{$googleMaps.HomeMarkerLng}{literal}),
             type: 'info'
           },
         ];
@@ -106,7 +82,7 @@ var map;
 
         {foreach item=tournament from=$tournamentList}
             features.push({ldelim}
-              id:  '{$tournament.tournamentID}',
+              id:  '{$tournament.tournamentId}',
               name: '{$tournament.name}',
               place: '{$tournament.place}',
               start: '{$tournament.startdate}',

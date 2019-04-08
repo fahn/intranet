@@ -295,7 +295,7 @@ class PrgPatternElementTournament extends APrgPatternElement {
         $actUser = $this->prgElementLogin->getLoggedInUser();
         if (! $actUser->isAdmin() &&
             ! $actUser->isReporter() &&
-            ($tmp['partnerID'] != $actUser->userId && $tmp['playerID'] != $actUser->userId))
+            ($tmp['partnerId'] != $actUser->userId && $tmp['playerId'] != $actUser->userId))
         {
             $this->setFailedMessage("Nicht genug Rechte: Der Spieler konnte nicht gelöscht werden");
             $url = $this->tools->linkTo(array(
@@ -321,8 +321,8 @@ class PrgPatternElementTournament extends APrgPatternElement {
 
 
           // send to partner
-          if(isset($tmp['partnerID']) && $tmp['partnerID'] > 0) {
-            $res       = $this->brdb->selectUserById($tmp['partnerID']);
+          if(isset($tmp['partnerId']) && $tmp['partnerId'] > 0) {
+            $res       = $this->brdb->selectUserById($tmp['partnerId']);
             $partner   = $res->fetch_assoc();
             $mail      = $user['email'];
             $subject   = sprintf("Abmeldung %s nach Deadline", $row['name']);
@@ -334,7 +334,7 @@ class PrgPatternElementTournament extends APrgPatternElement {
             unset($res, $partner, $mail, $subject, $preheader, $content);
           }
 
-          $res    = $this->brdb->selectUserById($tmp['playerID']);
+          $res    = $this->brdb->selectUserById($tmp['playerId']);
           $player = $res->fetch_assoc();
 
           // def. receiver, subject and content

@@ -11,8 +11,12 @@ class teamWidget extends Widget {
 
     public function showWidget($name) {
         switch ($name) {
+            case 'showAdminsAndReporter':
+                return $this->TMPL_AdminsAndReporter();
+                break;
+
             case 'showTeam':
-                return $this->TPML_showTeam();
+                return $this->TMPL_ShowTeam();
                 break;
 
             default:
@@ -22,7 +26,7 @@ class teamWidget extends Widget {
 
     }
 
-    private function TPML_showTeam() {
+    private function TMPL_AdminsAndReporter() {
         $data = $this->getAdminsAndReporter();
 
         $this->smarty->assign(array(
@@ -46,4 +50,31 @@ class teamWidget extends Widget {
         }
         return $data;
     }
+
+
+    private function TMPL_ShowTeam() {
+        $data = $this->getTeam();
+
+        $this->smarty->assign(array(
+          'data' => $data,
+        ));
+
+        return $this->smarty->fetch('team/widgetList.tpl');
+    }
+
+    private function getTeam() {
+        $data = array();
+        $res = $this->brdb->selectStaffList();
+        if (!$this->brdb->hasError()) {
+            while ($dataSet = $res->fetch_assoc()) {
+                $data[]         = array(
+                    'userId'   => $dataSet['userId'],
+                    'fullName' => $dataSet['firstName'] .' '. $dataSet['lastName'],
+                );
+            }
+        }
+        return $data;
+    }
+
+
 }

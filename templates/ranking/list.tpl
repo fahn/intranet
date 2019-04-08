@@ -1,36 +1,73 @@
-<h1 class="display-1">Übersicht</h1>
+<h1 class="display-1 mb-5">Ranking {if $print}{$pageTitle}{/if}</h1>
 
-<p class="text-right">
-	<a class="btn btn-success" href="?action=add">Spiel eintragen</a>
-</p>
-
-<div class="table-responsive">
-	<table class="table table-sm table-striped table-hover">
-		<thead>
-			<tr>
-				<th>Date</th>
-				<th>Time</th>
-				<th>Team A</th>
-				<th>Team B</th>
-				<th>Points</th>
-				<th class="text-center">Optionen</th>
-			</tr>
-		</thead>
-		<tbody>
-	    {foreach item=game from=$games}
-			<tr>
-				<td>{$game.datetime|date_format:"d.m.Y"}</td>
-				<td>{$game.datetime|date_format:"H:i"}</td>
-				<td>{$game.playerA1} {if $game.playerA2}// {$game.playerA2}{/if}</td>
-				<td>{$game.playerB1} {if $game.playerB2}// {$game.playerB2}{/if}</td>
-				<td>{$game.setA1}:{$game.setB1} {$game.setA2}:{$game.setB2} {if $game.setA3}{$game.setA3}:{$game.setB3}{/if}</td>
-				<td class="text-center"><a class="btn btn-info" href="?action=edit&id={$game.matchId}">Editieren</a> <a class="btn btn-danger" href="?action=delete&id={$game.matchId}">Löschen</a></td>
-			</tr>
-	    {foreachelse}
-	      <tr>
-	        <td colspan="9">Failed to get all Games from data base. Reason: {$error} </td>
-	      </tr>
-	    {/foreach}
-		</tbody>
-	</table>
+<div class="alert alert-danger" role="alert">
+  Spinnt noch rum!
 </div>
+
+{$message}
+
+<div class="alert alert-info">
+  <p>Dieses Ranking basiert auf dem <a href="https://de.wikipedia.org/wiki/Elo-Zahl" target="_blank">ELO-Prinzip</a></p>
+</div>
+
+<div class="row">
+    <div class="col-md-12 text-right mb-3">
+        <div class="btn-toolbar pull-right" role="toolbar" aria-label="Toolbar with button groups">
+            {if $isAdmin or $isReporter}
+                <div class="btn-group mr-2 pull-right" role="group" aria-label="First group">
+                    <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Optionen</button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="?action=add_game"><i class="fas fa-reply"></i> Spiel eintragen</a>
+                        <a class="dropdown-item" href="?action=renewRanking"><i class="fas fa-retweet"></i> Neu berechnung</a>
+                    </div>
+                </div>
+            {/if}
+            <div class="btn-group mr-2" role="group" aria-label="Second group">
+                <a class="btn btn-primary" role="button" href="?action=download" target="_blank"><i class="fas fa-download"></i> PDF Download</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ul class="nav nav-tabs" style="margin-bottom: 20px;">
+  <li class="nav-item">
+      <a class="nav-link active" data-toggle="tab" href="#ranking">Ranking</a>
+  </li>
+  <li class="nav-item">
+      <a class="nav-link" data-toggle="tab" href="#games">Letzte Spiele</a>
+  </li>
+  {if $stats == "on"}
+      <li class="nav-item">
+          <a class="nav-link" data-toggle="tab" href="#stats">Statistik</a>
+      </li>
+  {/if}
+</ul>
+
+{if $print == "true"}
+    {$dateFormat = "%d.%m.%y %H:%M"}
+{else}
+    {$dateFormat = "%d. %B %Y %H:%M"}
+
+{/if}
+
+
+<div class="tab-content">
+    <div id="ranking" class="tab-pane container active">
+        {include file="ranking/ranking.tpl" ranking=$ranking}
+    </div>
+    <div id="games" class="tab-pane container">
+        {include file="ranking/lastGames.tpl" games=$games}
+    </div>
+    {if $stats == "on"}
+        <div id="stats" class="tab-pane container">
+            {include file="ranking/stats.tpl" labels=$labels}
+        </div>
+    {/if}
+</div>
+
+
+{if $print}
+    <footer>
+        <div class="pagenum-container">Seite <span class="pagenum"></span></div>
+    </footer>
+{/if}

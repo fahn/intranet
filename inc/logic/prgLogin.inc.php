@@ -14,6 +14,7 @@
 
 include_once $_SERVER['BASE_DIR'] .'/inc/db/brdb.inc.php';
 include_once $_SERVER['BASE_DIR'] .'/inc/db/user.inc.php';
+
 include_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
 include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgPattern.inc.php';
 #include_once $_SERVER['BASE_DIR'] .'/inc/class.simple_mail.php';
@@ -163,7 +164,7 @@ class PrgPatternElementLogin extends APrgPatternElement {
         );
 
         $message   = '';
-        if($this->tools->sendMail($mail, $name, $subject, 'Dein Passwort wurde angefordert', $message, $assign, 'htmlmail/request_password.tpl')) {
+        if(!$this->tools->sendMail($mail, $name, $subject, 'Dein Passwort wurde angefordert', $message, $assign, 'htmlmail/request_password.tpl')) {
             $this->setFailedMessage("Fehler beim E-Mail-Versand.");
             return;
         }
@@ -197,21 +198,20 @@ class PrgPatternElementLogin extends APrgPatternElement {
       }
 
       // check if Password = Password2
-      if(count($pass) == 0) {
+      if(strlen($pass) == 0) {
         $this->setFailedMessage("Bitte gebe ein Passwort ein.");
-        return;
+        return false;
       }
       if ($pass != $pass2) {
         $this->setFailedMessage("Passwörter stimmen nicht überein.");
-        return;
+        return false;
       }
 
       // check if token exists
       $res = $this->brdb->GetUserPassHash($mail, $token);
-      if($this->brdb->hasError() ||
-      $res->num_rows != 1) {
-        $this->setFailedMessage("Bitte bei dem Support melden.");
-        return;
+      if($this->brdb->hasError() || $res->num_rows != 1) {
+          $this->setFailedMessage("Bitte bei dem Support melden.");
+          return false;
       }
 
       $data = $res->fetch_array();
@@ -220,20 +220,20 @@ class PrgPatternElementLogin extends APrgPatternElement {
       // delete token
       $this->brdb->DeleteUserPassHash($data['userId'], $token);
       if($this->brdb->hasError()){
-        $this->setFailedMessage("Bitte bei dem Support melden.");
-        return;
+          $this->setFailedMessage("Bitte bei dem Support melden.");
+          return false;
       }
 
       // set new password
       $this->brdb->updateUserPassword($data['userId'], $passHash);
       if($this->brdb->hasError()){
-        $this->setFailedMessage("Bitte bei dem Support melden.");
-        return;
+          $this->setFailedMessage("Bitte bei dem Support melden.");
+          return false;
       }
 
       $this->setSuccessMessage("Passwort wurde geändert. Bitte nun einloggen");
       $this->tools->customRedirect($this->tools->getBaseUrl());
-      return;
+      return true;
     }
 
 
@@ -275,7 +275,6 @@ class PrgPatternElementLogin extends APrgPatternElement {
             } else {
                 $link = $this->tools->getBaseUrl();
             }
-
             $this->tools->customRedirect($link);
             return;
           }
@@ -317,6 +316,8 @@ class PrgPatternElementLogin extends APrgPatternElement {
 
     // If there is no post we directly get here and we try to set the class
     // information directly from the stored information in the session
+    #echo "das";
+    #die($this->issetSessionVariable(self::SESSION_LOGIN_USER_ID));
     if ($this->issetSessionVariable(self::SESSION_LOGIN_USER_ID)) {
       // Try to get the user by the ID stored in the session
       $userId = intval($this->getSessionVariable(self::SESSION_LOGIN_USER_ID));
@@ -325,14 +326,16 @@ class PrgPatternElementLogin extends APrgPatternElement {
         $this->setFailedMessage($this->brdb->getError());
         return false;
       }
+
       // if the query was succesful try to use the data to init the User object
       if ($res->num_rows == 1) {
-        $dataSet = $res->fetch_assoc();
-        $this->loggedInUser = new User($dataSet);
-        return true;
+
+          $dataSet = $res->fetch_assoc();
+          $this->loggedInUser = new User($dataSet);
+          return true;
       } else {
-        $this->setFailedMessage(self::ERROR_LOGIN_INVALID_ID);
-        return false;
+          $this->setFailedMessage(self::ERROR_LOGIN_INVALID_ID);
+          return false;
       }
     }
 

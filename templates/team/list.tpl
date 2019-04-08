@@ -2,7 +2,6 @@
 <div class="alert alert-info">
   <h2></h2>
   <p>Auf dieser Seite findet ihr alle Personen rund um den Vorstand, weitere Personen und die technischen Ansprechpartner. </p>
-  <p>Diese Informationen findet ihr alternativ auf der <a href="http://www.bc-comet.de/training/vorstand/" target="_blank">BC Comet Webseite</a>.</p>
 </div>
 {foreach key=key item=list from=$row}
   {if $key == 1}

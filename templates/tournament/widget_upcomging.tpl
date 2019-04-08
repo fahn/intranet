@@ -12,7 +12,7 @@
                 {foreach item=tournament from=$data}
                 <tr>
                     <td>{$tournament.classification}</td>
-                    <td><a {if $tournament.deadline|strtotime < $smarty.now}class="text-danger"{else}class="text-success"{/if} href="/pages/rankingTournament.php?action=details&id={$tournament.tournamentID}" title="{$tournament.name}: vom {$tournament.startdate|date_format:"d.m.y"} - {$tournament.enddate|date_format:'d.m.y'}">{$tournament.name}</a></td>
+                    <td><a {if $tournament.deadline|strtotime < $smarty.now}class="text-danger"{else}class="text-success"{/if} href="{$tournament.linkTo}" title="{$tournament.name}: vom {$tournament.startdate|date_format:"d.m.y"} - {$tournament.enddate|date_format:'d.m.y'}">{$tournament.name}</a></td>
                     <td {if $tournament.deadline|strtotime < $smarty.now}class="text-danger"{else} class="text-success"{/if}>{if $tournament.startdate == $tournament.enddate}{$tournament.startdate|date_format:"d.m.y"}{else}{$tournament.startdate|date_format:"d.m.y"} - {$tournament.enddate|date_format:"d.m.y"}{/if}</td>
                     <td>{$tournament.place}</td>
                 </tr>

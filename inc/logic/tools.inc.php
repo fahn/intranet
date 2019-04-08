@@ -65,6 +65,7 @@ class Tools {
         if(isset($url) && is_array($url)) {
           self::customRedirect(self::linkTo($url));
         } else {
+            header_remove(); 
             header("HTTP/1.1 303 See Other");
             header("Location: ". $url);
             exit("Exit of the PRG pattern...");
@@ -136,7 +137,6 @@ class Tools {
         } else if ($aC == "O") {
             return 1;
         }
-
     }
 
 
@@ -187,21 +187,23 @@ class Tools {
         return $this->modeArr;
     }
 
-    //
+    /**
+     * send mail
+     */
     public function sendMail($to, $name, $subject, $preheader, $content, $assign = false, $template = false) {
-      return $this->sendHtmlMail($to, $name, $subject, $preheader, $content, $assign, $template);
+        return $this->sendHtmlMail($to, $name, $subject, $preheader, $content, $assign, $template);
     }
 
     private function sendHtmlMail($email, $name, $subject, $preheader,  $content, $assign = false, $template = false) {
 
       // message
       $smarty = new Smarty();
-      $smarty->setTemplateDir(  $_SERVER['BASE_DIR'] .'smarty/templates');
-      $smarty->setCompileDir(  $_SERVER['BASE_DIR'] .'smarty/templates_c');
-      $smarty->setConfigDir(  $_SERVER['BASE_DIR'] .'smarty/configs');
+      $smarty->setTemplateDir(  $_SERVER['BASE_DIR'] .'templates');
+      $smarty->setCompileDir(  $_SERVER['BASE_DIR'] .'templates_c');
+      $smarty->setConfigDir(  $_SERVER['BASE_DIR'] .'configs');
       $smarty->assign(array(
-        'content'   => $content,
-        'preheader' => $preheader,
+          'content'   => $content,
+          'preheader' => $preheader,
       ));
 
       if(isset($assign)) {
@@ -209,9 +211,9 @@ class Tools {
       }
 
       if(isset($template) && $template == true && file_exists($smarty->getTemplateDir(0) . $template)) {
-        $tmpl = $template;
+          $tmpl = $template;
       } else {
-        $tmpl = 'htmlmail/mail.tpl'; #'htmlmail/request_password.tpl';
+          $tmpl = 'htmlmail/mail.tpl'; #'htmlmail/request_password.tpl';
       }
 
       $mailContent = $smarty->fetch($tmpl);
@@ -221,7 +223,7 @@ class Tools {
       $mail = new Message;
 
       $from = sprintf("%s %s", $this->getIniValue('senderName'), $this->getIniValue('senderMail'));
-      $from =  self::getIniValue('senderMail');
+      $from = self::getIniValue('senderMail');
 
       $mail->setFrom($from)
           ->addTo($email)
@@ -230,11 +232,11 @@ class Tools {
           ->setHtmlBody($mailContent);
 
       $mailer = new SendmailMailer;
+
       try {
         $mailer->send($mail);
         return true;
       } catch (Exception $e) {
-        die($e);
         return false;
       }
 
@@ -261,9 +263,11 @@ class Tools {
 
         $urlArr = array();
         foreach ($data as $key => $value) {
-          if($key != 'page') {
+            if($key == 'page') {
+                continue;
+            }
             $urlArr[] = $key .'='. $value;
-          }
+          
         }
         $addParams = "";
         if(count($urlArr) > 0) {
@@ -273,7 +277,7 @@ class Tools {
         return self::getBaseUrl() . $data['page'] . $addParams;
 
       }
-
+      $this->log(printf("Found no data: %s", var_dump($data)));
       return "#";
     }
 
@@ -293,6 +297,10 @@ class Tools {
       }
 
       return false;
+    }
+
+    public function log($message) {
+        return error_log($message);
     }
 
 }
