@@ -3,7 +3,7 @@
 require_once('default.widget.php');
 
 
-class tournamentWidget extends Widget {
+class TournamentWidget extends Widget {
 
     public function __construct() {
         parent::__construct();
@@ -11,7 +11,7 @@ class tournamentWidget extends Widget {
 
     public function showWidget($name) {
         switch ($name) {
-            case 'latestTournament':
+            case 'latestTournaments':
                 return $this->TPML_latestTournament();
                 break;
 

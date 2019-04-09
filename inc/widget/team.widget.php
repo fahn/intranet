@@ -3,7 +3,7 @@
 
 require_once('default.widget.php');
 
-class teamWidget extends Widget {
+class TeamWidget extends Widget {
 
     public function __construct() {
         parent::__construct();

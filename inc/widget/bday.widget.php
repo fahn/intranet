@@ -3,7 +3,7 @@
 
 require_once('default.widget.php');
 
-class bdayWidget extends Widget {
+class BdayWidget extends Widget {
 
     public function __construct() {
         parent::__construct();

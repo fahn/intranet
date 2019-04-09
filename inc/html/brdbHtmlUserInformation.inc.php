@@ -15,6 +15,10 @@
 include_once $_SERVER['BASE_DIR'] .'/inc/html/brdbHtmlPage.inc.php';
 include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgUser.inc.php';
 
+// load widgets
+include_once $_SERVER['BASE_DIR'] .'/inc/widget/tournament.widget.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/widget/ranking.widget.php';
+
 
 class BrdbHtmlUserInformation extends BrdbHtmlPage {
     private $prgElementUser;
@@ -36,9 +40,15 @@ class BrdbHtmlUserInformation extends BrdbHtmlPage {
     protected function htmlBody() {
         $id = $this->getGetVariable('id');
         $content = $this->loadContent($id);
+        
+        // widget
+        $widgetTournament = new TournamentWidget();
+        $widgetRanking    = new RankingWidget();
 
         $this->smarty->assign(array(
-            'content' => $content,
+            'content'              => $content,
+            'latestTournament'     => $widgetTournament->showWidget('latestTournaments'),
+            'latestGamesInRanking' => $widgetRanking->showWidget('latestGames'),
         ));
 
         $this->smarty->display('index.tpl');

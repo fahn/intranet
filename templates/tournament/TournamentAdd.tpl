@@ -27,8 +27,8 @@
   <div class="row">
     <div class="col-md-4">
       <label for="tournamentStartdate">Start-Datum:</label>
-      <div class="input-group date" data-provide="datepicker">
-        <input class="form-control"  type="text" id="tournamentStartdate" name="tournamentStartdate" placeholder="dd.mm.YYYY" value="{$vars['startdate']|date_format:"d.m.Y"}" required>
+      <div class="input-group">
+        <input class="form-control datetimepicker"  type="text" id="tournamentStartdate" name="tournamentStartdate" placeholder="dd.mm.YYYY" value="{$vars['startdate']|date_format:"d.m.Y"}" data-input required>
         <div class="input-group-addon">
             <span class="glyphicon glyphicon-th"></span>
         </div>
@@ -37,8 +37,8 @@
 
     <div class="col-md-4">
       <label for="tournamentEnddate">Enddatum:</label>
-      <div class="input-group date" data-provide="datepicker">
-        <input class="form-control"  type="text" id="tournamentEnddate" name="tournamentEnddate" placeholder="dd.mm.YYYY" value="{$vars['enddate']|date_format:"d.m.Y"}" required>
+      <div class="input-group">
+        <input class="form-control datepicker"  type="text" id="tournamentEnddate" name="tournamentEnddate" placeholder="dd.mm.YYYY" value="{$vars['enddate']|date_format:"d.m.Y"}" data-input required>
         <div class="input-group-addon">
             <span class="glyphicon glyphicon-th"></span>
         </div>

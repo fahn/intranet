@@ -3,7 +3,7 @@
 
 require_once('default.widget.php');
 
-class rankingWidget extends Widget {
+class RankingWidget extends Widget {
 
     public function __construct() {
         parent::__construct();

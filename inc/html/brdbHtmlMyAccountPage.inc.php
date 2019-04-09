@@ -64,7 +64,7 @@ class BrdbHtmlMyAccountPage extends BrdbHtmlPage {
         $this->smarty->assign(array(
             'vars' => $vars,
         ));
-        return $this->smarty->fetch('user/myaccount.tpl');
+        return $this->smarty->fetch('user/myAccount.tpl');
     }
 
     /**

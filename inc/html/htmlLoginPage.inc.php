@@ -244,10 +244,10 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
         $userId = $this->prgPatternElementLogin->getLoggedInUser();
 
         // load Widgets
-        $tournamentWidget = new tournamentWidget();
-        $rankingWidget    = new rankingWidget();
-        $teamWidget       = new teamWidget();
-        $bdayWidget       = new bdayWidget();
+        $tournamentWidget = new TournamentWidget();
+        $rankingWidget    = new RankingWidget();
+        $teamWidget       = new TeamWidget();
+        $bdayWidget       = new BdayWidget();
 
         $this->smarty->assign(array(
             'widgetRankingLatestGames'    => $rankingWidget->showWidget('latestGames'),

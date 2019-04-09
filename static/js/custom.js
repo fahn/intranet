@@ -33,11 +33,7 @@ $(document).ready(function() {
         $(this).removeClass("show");
     });
 
-    /**
-      * DATEPICKER
-    */
-
-
+    /* html editor */
     $('#summernote').summernote({
         placeholder: '',
         tabsize: 2,
@@ -137,7 +133,7 @@ $(document).ready(function() {
     });
 
     /* DATE_TIME_PICKER */
-    $(".datetime").flatpickr({
+    $(".datetimepicker").flatpickr({
         weekNumbers: true,
         enableTime: true,
         time_24hr: true,
@@ -148,10 +144,9 @@ $(document).ready(function() {
         }
     });
 
-    $(".date").flatpickr({
+    $(".datepicker").flatpickr({
         weekNumbers: true,
-        dateFormat: "d.m.Y H:i",
-        locale: "de",
+        dateFormat: "d.m.Y",
         "locale": {
             "firstDayOfWeek": 1 // start week on Monday
         }

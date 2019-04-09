@@ -33,7 +33,7 @@
                 <p class="card-text">
                     <div class="row">
                         <div class="col-md-6">
-			    {if $isAdmin || $isReported }
+                            {if $isAdmin || $isReported }
                               {if $user.bday|intval != 0}
                                <p><strong>Geburtstag:</strong> {$user.bday|date_format:"d.m.Y"}</p>
                               {/if}
@@ -62,59 +62,27 @@
 </div>
 
 <div class="row">
-    {if $user.clubId == 1}
-        <div class="col-md-6">
-            <div class="card mt-4 mb-4">
-                <h5 class="card-header">Letzte interne Ranglistenspiele</h5>
-                <div class="card-body">
-                    <p class="card-text">
-                      <table class="table table-striped table-hover">
-                        <thead>
-                          <tr>
-                              <th>Datum</th>
-                              <th>Gegner</th>
-                              <th colspan="2" class="text-center">Ergebnis</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                      {foreach item=game from=$games}
-                          <tr>
-                              <td>{$game.datetime|date_format:"d.m.Y"}</td>
-                              <td><a href="#">{$game.opponent}</a></td>
-                              <td>{$game.chicken}</td>
-                              <td>{$game.result}</td>
-                          </tr>
-                      {foreachelse}
-                        <tr>
-                          <td colspan="4">Es wurden noch keine Spiele gemacht.</td>
-                        </tr>
-                      {/foreach}
-                      </tbody>
-                    </table>
-                    </p>
-                </div>
+    {if $latestGamesInRanking}
+    <div class="col-md-6">
+        <div class="card">
+            <h5 class="card-header">Letzten Spiele im Ranking</h5>
+            <div class="card-body">
+                {$latestGamesInRanking}
             </div>
         </div>
+    </div>
     {/if}
+    
+    {if $latestTournament}
     <div class="col-md-6">
         <div class="card">
             <h5 class="card-header">Letzten 10 offizielle Turniere/Ranglisten</h5>
             <div class="card-body">
-                {if $tournament}
-                <div class="table-responsive">
-                  <table class="table table-striped table-hover">
-                    {foreach item=tn from=$tournament}
-                      <tr>
-                        <td><a href="/pages/rankingTournament.php?action=details&id={$tn.tournamentId}">{$tn.name}</td>
-                        <td>{$tn.startdate|date_format:"d.m.y"} - {$tn.enddate|date_format:"d.m.y"} </td>
-                      </tr>
-                    {/foreach}
-                  </table>
-                </div>
-                {/if}
+                {$latestTournament}
             </div>
         </div>
     </div>
+    {/if}
 </div>
 
 <p class="text-right">

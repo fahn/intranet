@@ -4,11 +4,17 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### [1.0.6] - 2019-??-??
+- add FAQ - System
+- add Image-Upload for User
+- add more funktions to ELO Ranking System
+
 ## [1.0.6] - 2019-02-21
 - implements elo Ranking system
 - cookie advice
 - change datepicker
 - remove old ranking system
+- add Widgets for Ranking, Tournament, Bday, Team
 
 ## [1.0.5] - 2019-01-20
 - remove static paths
