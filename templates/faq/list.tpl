@@ -5,15 +5,7 @@
 </div>
 
 <div class="container">
-{if $isAdmin OR $isReporter}
-    <div class="row">
-        <div class="col-lg-12">
-            <h3>Admin</h3>
-            <a class="btn btn-primary" href="{$links.category}" role="button">Kategorien</a>
-            <a class="btn btn-primary" href="{$links.list}" role="button">List FAQ</a>
-        </div>
-    </div>
-{/if}
+
 
 <div class="row">
     <div class="col-lg-3">

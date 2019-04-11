@@ -660,14 +660,20 @@ class BrankDB {
     /*******************************************************************************
                                  FAQ
     *******************************************************************************/
-    public function statementGetFAQs() {
+    public function statementGetFAQs() { 
         $cmd = $this->db->prepare("SELECT Faq.*, Cat.title as categoryTitle, Cat.categoryId FROM `Faq`
                                    LEFT JOIN `FaqCategory` AS `Cat` ON Cat.categoryId = Faq.categoryId");
         return  $this->executeStatement($cmd);
     }
+    
+    public function statementGetFAQById($id) {
+        $cmd = $this->db->prepare("SELECT * FROM `Faq` WHERE faqId = ?");
+        $cmd->bind_param("i", $id);
+        return  $this->executeStatement($cmd);
+    }
 
     public function statementGetFAQCategories() {
-        $cmd = $this->db->prepare("SELECT * FROM `FaqCategory` ORDER BY title");
+        $cmd = $this->db->prepare("SELECT * FROM `FaqCategory` ORDER BY pid, title");
         return  $this->executeStatement($cmd);
     }
 

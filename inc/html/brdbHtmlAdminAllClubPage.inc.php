@@ -62,7 +62,7 @@ class BrdbHtmlAdminAllClubPage extends BrdbHtmlPage {
         $page = isset($page) && is_numeric($page) && $page > 0 ? $page-1 : 0;
         $this->smarty->assign(array(
             'clubs'      => $this->loadClubList($page),
-            'pagination' => $this->getPageination(),
+            'pagination' => $this->tools->getPageination($page, $this->countRows),
         ));
         return $this->smarty->fetch('admin/ClubList.tpl');
     }
@@ -104,18 +104,5 @@ class BrdbHtmlAdminAllClubPage extends BrdbHtmlPage {
       return $this->brdb->selectGetClubById($id)->fetch_assoc();
   }
 
-  private function getPageination($active = 0) {
-    $tmp = $this->countRows;
-    $key = 0;
-    $page = array();
-
-    do {
-      $page[] = array(
-        'status' => ($key == $active ? 'active' : ''),
-        'id'     => ++$key,
-      );
-    } while ($tmp < 0);
-    return $page;
-  }
 }
 ?>

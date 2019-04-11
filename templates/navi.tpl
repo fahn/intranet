@@ -17,7 +17,7 @@
                 {/if}
 
                 {if $faqEnabled == "on"}
-                <li class="nav-item"><a class="nav-link" href="faq.php"><i class="fas fa-question"></i> FAQ</a></li>
+                    <li class="nav-item"><a class="nav-link" href="faq.php"><i class="fas fa-question"></i> FAQ</a></li>
                 {/if}
 
                 <li class="nav-item"><a class="nav-link" href="team.php"><i class="fas fa-users"></i> Team</a></li>
@@ -33,6 +33,9 @@
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="myRegistration.php"><i class="fas fa-registered"></i> Registration</a> -->
                             <div class="dropdown-divider"></div>
+                            {if $faqEnabled == "on" || $userId == 1}
+                                <a class="dropdown-item" href="/pages/adminFaq.inc.php"><i class="fas fa-question-circle"></i> FAQ</a>
+                            {/if}
                             <!-- <a class="dropdown-item" href="settings.php"><i class="fas fa-wrench"></i> Einstellungen</a> -->
                         </div>
                     </li>

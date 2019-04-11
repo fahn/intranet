@@ -302,6 +302,20 @@ class Tools {
     public function log($message) {
         return error_log($message);
     }
+    
+    public function getPageination($active = 0, $maxRows) {
+        $key = 0;
+        $page = array();
+
+        do {
+            $page[] = array(
+              'status' => ($key == $active ? 'active' : ''),
+                'id'     => ++$key,
+            );
+        } while ($maxRows < 0);
+        
+        return $page;
+    }
 
 }
 
