@@ -99,3 +99,55 @@
   ]{rdelim});
 {/foreach}
 </script>
+
+
+
+{literal}
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('.search-box input[type="text"]').on("keyup input", function() {
+            event.preventDefault();
+            /* Get input value on change */
+            //$inputs = $(this);
+
+            var inputVal = $(this).val();
+            var resultDropdown = $(this).siblings(".result");
+            $(this).parent(".result").empty();
+
+            //$inputs.prop("disabled", true);
+            if (inputVal.length) {
+                request = $.ajax({
+                    type: "POST",
+                    dataType: 'text',
+                    contentType: 'application/x-www-form-urlencoded',
+                    url: "/ajax/player.php",
+                    data: $(this).serialize()
+                });
+
+                request.done(function(data) {
+                    console.log(data);
+                    resultDropdown.html(data);
+                });
+
+                request.always(function() {
+                    // Reenable the inputs
+                    //$inputs.prop("disabled", false);
+                });
+            } else {
+                resultDropdown.empty();
+            }
+        });
+
+        // Set search input value on click of result item
+        $(document).on("click", ".result p", function() {
+            $(this).parents(".search-box").find('input[type="text"]').val($(this).text());
+            $(this).parent(".result").empty();
+        });
+    });
+</script>
+{/literal}
+
+<div class="search-box">
+    <input type="text" autocomplete="off" id="playerSearch" name="playerSearch" placeholder="Search country..." />
+    <div class="result"></div>
+</div>

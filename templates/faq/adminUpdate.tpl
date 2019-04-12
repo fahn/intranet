@@ -1,17 +1,21 @@
-<form>
-  <div class="form-group">
-    <label for="exampleInputEmail1">Titel</label>
-    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
-  </div>
-  <div class="form-group">
-    <label for="exampleFormControlSelect1">Kategorie</label>
-    <select class="form-control" id="exampleFormControlSelect1">
-      {html_options options=$FaqCategoryHtmlOptions selected=$customer_id}
-    </select>
-  </div>
-  <div class="form-group">
-    <label for="exampleFormControlTextarea1">Text</label>
-    <textarea id="summernote" class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-  </div>
-  <button type="submit" class="btn btn-primary">Submit</button>
+<form action="" method="post">
+    <input type="hidden" name="faqFormAction" value="{if $action == 'edit'}Update{else}Insert{/if}">
+    {if $action == 'edit'}
+        <input type="hidden" name="faqFaqId" value="{$item.faqId}">
+    {/if}
+    <div class="form-group">
+        <label for="faqTitle">Titel</label>
+        <input type="text" class="form-control" id="faqTitle" name="faqTitle" value={$item.title}>
+    </div>
+    <div class="form-group">
+        <label for="faqCategoryId">Kategorie</label>
+        <select class="form-control" id="faqCategoryId" name="faqCategoryId">
+            {html_options options=$FaqCategoryHtmlOptions selected=$item.categoryId}
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="summernote">Text</label>
+        <textarea id="summernote" class="form-control" name="faqText" rows="3">{$item.text}</textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">{if $action == 'edit'}Editieren{else}Submit{/if}</button>
 </form>

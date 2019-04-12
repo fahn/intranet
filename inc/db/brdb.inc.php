@@ -660,17 +660,46 @@ class BrankDB {
     /*******************************************************************************
                                  FAQ
     *******************************************************************************/
-    public function statementGetFAQs() { 
+    public function statementGetFAQs() {
         $cmd = $this->db->prepare("SELECT Faq.*, Cat.title as categoryTitle, Cat.categoryId FROM `Faq`
                                    LEFT JOIN `FaqCategory` AS `Cat` ON Cat.categoryId = Faq.categoryId");
+
         return  $this->executeStatement($cmd);
     }
-    
+
     public function statementGetFAQById($id) {
         $cmd = $this->db->prepare("SELECT * FROM `Faq` WHERE faqId = ?");
         $cmd->bind_param("i", $id);
+
         return  $this->executeStatement($cmd);
     }
+
+    public function insertFaq($title, $categoryId, $text) {
+        $cmd = $this->db->prepare("INSERT INTO `Faq` (title, categoryId, text) VALUES (?, ?, ?)");
+        $cmd->bind_param("sis", $title, $categoryId, $text);
+
+        return  $this->executeStatement($cmd);
+    }
+
+    public function updateFaqById($id, $title, $categoryId, $text) {
+        $cmd = $this->db->prepare("UPDATE `Faq` set title = ?, categoryId = ?, text = ?, lastEdited = NOW() WHERE faqId = ?");
+        $cmd->bind_param("sisi", $title, $categoryId, $text, $id);
+
+
+        return  $this->executeStatement($cmd);
+    }
+
+
+
+    public function deleteFaq($id) {
+        $cmd = $this->db->prepare("DELETE FROM `Faq` WHERE faqId = ?");
+        $cmd->bind_param("i", $id);
+
+        return  $this->executeStatement($cmd);
+    }
+
+
+
 
     public function statementGetFAQCategories() {
         $cmd = $this->db->prepare("SELECT * FROM `FaqCategory` ORDER BY pid, title");

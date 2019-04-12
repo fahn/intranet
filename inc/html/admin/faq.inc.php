@@ -13,36 +13,36 @@
  ******************************************************************************/
 
 include_once $_SERVER['BASE_DIR'] .'/inc/html/brdbHtmlPage.inc.php';
-include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgClub.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgFaq.inc.php';
 include_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
 
 class BrdbHtmlAdminFaqPage extends BrdbHtmlPage {
-  private $prgPatternElementClub;
+  private $prgPatternElementFaq;
   private $variable;
   private $countRows;
-  
-  // 
+
+  //
   private $_page = "";
 
   const MAX_ENTRIES = 50;
 
     public function __construct($page = null) {
         parent::__construct();
-        
+
         if ($page != null) {
              $this->_page = $page;
         }
-        
+
         # load links
         $links = array(
             'add' => $this->tools->linkTo(array('page' => $this->_page, 'action' => 'add')),
             'list' => $this->tools->linkTo(array('page' => $this->_page, 'action' => 'add')),
         );
-        
+
         $this->smarty->assign('links', $links);
 
-        #$this->prgPatternElementClub = new PrgPatternElementClub($this->brdb, $this->prgPatternElementLogin);
-        #$this->prgPattern->registerPrg($this->prgPatternElementClub);
+        $this->prgPatternElementFaq = new PrgPatternElementFaq($this->brdb, $this->prgPatternElementLogin);
+        $this->prgPattern->registerPrg($this->prgPatternElementFaq);
     }
 
 
@@ -51,13 +51,17 @@ class BrdbHtmlAdminFaqPage extends BrdbHtmlPage {
         $id     = $this->tools->get("id");
 
         switch ($action) {
-          case 'add':
-            $content = $this->loadContentAddEdit($action, $id);
-            break;
+            case 'add':
+                $content = $this->loadContentAddEdit($action, $id);
+                break;
 
-          case 'edit':
-            $content = $this->loadContentAddEdit($action, $id);
-            break;
+            case 'edit':
+                $content = $this->loadContentAddEdit($action, $id);
+                break;
+
+            case 'delete':
+                $content = $this->TMPL_delete($id);
+                break;
 
           default:
             $content = $this->loadContent();
@@ -76,7 +80,7 @@ class BrdbHtmlAdminFaqPage extends BrdbHtmlPage {
         #$page = $this->tools->get("page");
         #$page = isset($page) && is_numeric($page) && $page > 0 ? $page-1 : 0;
         $this->smarty->assign(array(
-            'clubs'      => $this->loadList(),
+            'FaqList'      => $this->loadList(),
             #'pagination' => $this->getPageination(),
         ));
         return $this->smarty->fetch('faq/adminList.tpl');
@@ -92,19 +96,23 @@ class BrdbHtmlAdminFaqPage extends BrdbHtmlPage {
         $res = $this->brdb->statementGetFAQs(); #($min, $max);
         if (!$this->brdb->hasError()) {
           while ($dataSet = $res->fetch_assoc()) {
+            // links
+            $dataSet['editLink']   = $this->tools->linkTo(array('page' => $this->_page, 'action' => 'edit', 'id' => $dataSet['faqId']));
+            $dataSet['deleteLink'] = $this->tools->linkTo(array('page' => $this->_page, 'action' => 'delete', 'id' => $dataSet['faqId']));
+
             $data[] = $dataSet; //new User($dataSet);
-            die(print_r($data));
+
+
           }
         }
-
         return $data;
     }
-  
+
   private function loadContentAddEdit($action, $id) {
     $this->smarty->assign(array(
-        'action'   => $action,
-        'category'               => $this->getFaqById($id),
+        'action'                 => $action,
         'FaqCategoryHtmlOptions' => $this->getCategories(),
+        'item'                   => $this->getFaqById($id),
     ));
     return $this->smarty->fetch('faq/adminUpdate.tpl');
   }
@@ -119,7 +127,7 @@ class BrdbHtmlAdminFaqPage extends BrdbHtmlPage {
 
         return $this->brdb->statementGetFAQById($id)->fetch_assoc();
     }
-  
+
     private function getCategories() {
         $data = array();
         $res = $this->brdb->statementGetFAQCategories();
@@ -136,38 +144,41 @@ class BrdbHtmlAdminFaqPage extends BrdbHtmlPage {
 
             }
         }
-        
+
         return $this->reformHtmlOptions($data);
     }
-    
+
     private function reformHtmlOptions($dataArr, $rec = 0) {
         if (!is_array($dataArr) || count($dataArr) == 0) {
-            return false;
+            return;
         }
         $data = array();
-        foreach ($dataArr as $key => $value) {
 
+        foreach ($dataArr as $key => $value) {
             $pre = str_repeat("-", $rec);
-            echo $pre .= strlen($pre) > 0 ? ">" : "";
-            if ($rec >0) {
-            echo $rec;
-            die(str_repeat("-", $rec));
-        }
+            $pre .= strlen($pre) > 0 ? ">" : "";
             $title = $pre . $value['title'];
-            $data[$key] = $value['title'];
+            $data[$key] = $title;
             if (is_array($value['records']) && count($value['records']) > 0) {
-                $tmp = $this->reformHtmlOptions($value['records'], ++$rec);
+                $tmp = $this->reformHtmlOptions($value['records'], $rec+1);
                 if(is_array($tmp)) {
-                    #echo "<pre>";
-                    #print_r($data);
-                    #print_r($tmp);
-                    #die();
-                    $data = array_merge($data, $tmp);
+                    $data += $tmp;
                 }
             }
         }
-        
+
         return $data;
+    }
+
+    /* DELETE */
+    private function TMPL_delete($id) {
+
+        $this->smarty->assign(array(
+            'item' => $this->getFaqById($id),
+        ));
+
+        return $this->smarty->fetch('faq/adminDelete.tpl');
+
     }
 }
 ?>
