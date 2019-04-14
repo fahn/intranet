@@ -13,11 +13,11 @@
  ******************************************************************************/
 
 include_once $_SERVER['BASE_DIR'] .'/inc/html/brdbHtmlPage.inc.php';
-include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgFaq.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgNews.inc.php';
 include_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
 
-class BrdbHtmlAdminFaqPage extends BrdbHtmlPage {
-  private $prgPatternElementFaq;
+class BrdbHtmlAdminNewsPage extends BrdbHtmlPage {
+  private $prgPatternElementNews;
   private $variable;
   private $countRows;
 
@@ -37,12 +37,13 @@ class BrdbHtmlAdminFaqPage extends BrdbHtmlPage {
         $links = array(
             'add' => $this->tools->linkTo(array('page' => $this->_page, 'action' => 'add')),
             'list' => $this->tools->linkTo(array('page' => $this->_page, 'action' => 'add')),
+            'home' => $this->tools->linkTo(array('page' => $this->_page)),
         );
 
         $this->smarty->assign('links', $links);
 
-        $this->prgPatternElementFaq = new PrgPatternElementFaq($this->brdb, $this->prgPatternElementLogin);
-        $this->prgPattern->registerPrg($this->prgPatternElementFaq);
+        $this->prgPatternElementNews = new prgPatternElementNews($this->brdb, $this->prgPatternElementLogin);
+        $this->prgPattern->registerPrg($this->prgPatternElementNews);
     }
 
 
@@ -52,20 +53,20 @@ class BrdbHtmlAdminFaqPage extends BrdbHtmlPage {
 
         switch ($action) {
             case 'add':
-                $content = $this->loadContentAddEdit($action, $id);
+                $content = $this->TMPL_update($action, $id);
                 break;
 
             case 'edit':
-                $content = $this->loadContentAddEdit($action, $id);
+                $content = $this->TMPL_update($action, $id);
                 break;
 
             case 'delete':
                 $content = $this->TMPL_delete($id);
                 break;
 
-          default:
-            $content = $this->loadContent();
-            break;
+            default:
+                $content = $this->TMPL_list();
+                break;
         }
 
         $this->smarty->assign(array(
@@ -76,29 +77,22 @@ class BrdbHtmlAdminFaqPage extends BrdbHtmlPage {
     }
 
 
-    private function loadContent() {
-        #$page = $this->tools->get("page");
-        #$page = isset($page) && is_numeric($page) && $page > 0 ? $page-1 : 0;
+    private function TMPL_list() {
         $this->smarty->assign(array(
-            'FaqList'      => $this->loadList(),
-            #'pagination' => $this->getPageination(),
+            'NewsList'      => $this->loadList(), 
         ));
-        return $this->smarty->fetch('faq/adminList.tpl');
+        return $this->smarty->fetch('news/adminList.tpl');
     }
 
 
     private function loadList() {
-        #$this->countRows = $this->brdb->statementGetAllFaq()->num_rows;
-        #$max = self::MAX_ENTRIES*(1+$page);
-        #$min = $max - self::MAX_ENTRIES;
-
         $data = array();
-        $res = $this->brdb->statementGetAllFaq(); #($min, $max);
+        $res = $this->brdb->statementGetAllNews(); #($min, $max);
         if (!$this->brdb->hasError()) {
           while ($dataSet = $res->fetch_assoc()) {
             // links
-            $dataSet['editLink']   = $this->tools->linkTo(array('page' => $this->_page, 'action' => 'edit', 'id' => $dataSet['faqId']));
-            $dataSet['deleteLink'] = $this->tools->linkTo(array('page' => $this->_page, 'action' => 'delete', 'id' => $dataSet['faqId']));
+            $dataSet['editLink']   = $this->tools->linkTo(array('page' => $this->_page, 'action' => 'edit', 'id' => $dataSet['newsId']));
+            $dataSet['deleteLink'] = $this->tools->linkTo(array('page' => $this->_page, 'action' => 'delete', 'id' => $dataSet['newsId']));
 
             $data[] = $dataSet; //new User($dataSet);
 
@@ -108,24 +102,24 @@ class BrdbHtmlAdminFaqPage extends BrdbHtmlPage {
         return $data;
     }
 
-  private function loadContentAddEdit($action, $id) {
+  private function TMPL_update($action, $id) {
     $this->smarty->assign(array(
         'action'                 => $action,
-        'FaqCategoryHtmlOptions' => $this->getCategories(),
-        'item'                   => $this->getFaqById($id),
+        'categoryHtmlOptions'    => $this->getCategories(),
+        'item'                   => $this->getNewsById($id),
     ));
-    return $this->smarty->fetch('faq/adminUpdate.tpl');
+    return $this->smarty->fetch('news/adminUpdate.tpl');
   }
 
   /** GET CLUB BY ID
     *
     */
-    private function getFaqById($id) {
+    private function getNewsById($id) {
       if(!is_numeric($id)) {
         return;
       }
 
-        return $this->brdb->statementGetFAQById($id)->fetch_assoc();
+        return $this->brdb->statementGetNewsById($id)->fetch_assoc();
     }
 
     private function getCategories() {
@@ -174,10 +168,10 @@ class BrdbHtmlAdminFaqPage extends BrdbHtmlPage {
     private function TMPL_delete($id) {
 
         $this->smarty->assign(array(
-            'item' => $this->getFaqById($id),
+            'item' => $this->getNewsById($id),
         ));
 
-        return $this->smarty->fetch('faq/adminDelete.tpl');
+        return $this->smarty->fetch('news/adminDelete.tpl');
 
     }
 }

@@ -10,7 +10,7 @@
     <div class="form-group">
         <label for="faqCategoryId">Kategorie</label>
         <select class="form-control" id="faqCategoryId" name="faqCategoryId">
-            {html_options options=$FaqCategoryHtmlOptions selected=$item.categoryId}
+            {html_options options=$CategoryHtmlOptions selected=$item.categoryId}
         </select>
     </div>
     <div class="form-group">

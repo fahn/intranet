@@ -48,17 +48,18 @@ class BrdbHtmlFaq extends BrdbHtmlPage {
 
     private function TMPL_showFAQ() {
         $this->smarty->assign(array(
-            'FaqGroupedByCategory'   => $this->getFaqGroupedByCategory(),
-            'FaqList'                => $this->getFaqList(),
-            'FaqCategory'            => $this->getFaqCategory(),
-            'FaqCategoryHtmlOptions' => $this->getFaqCategoryHtmlOptions(),
+            'FaqGroupedByCategory' => $this->getFaqGroupedByCategory(),
+            'FaqList'              => $this->getFaqList(),
+            'Category'             => $this->getCategory(),
+            'CategoryHtmlOptions'  => $this->getCategoryHtmlOptions(),
         ));
 
         return $this->smarty->fetch('faq/list.tpl');
     }
 
-    private function getFaqGroupedByCategory() {
-        $res = $this->brdb->statementGetFAQs();
+    private function getFaqGroupedByCategory() { 
+        return array(); 
+        $res = $this->brdb->statementGetAllFaq();
         if (!$this->brdb->hasError()) {
             $data = array();
             while ($dataSet = $res->fetch_assoc()) {
@@ -91,8 +92,8 @@ class BrdbHtmlFaq extends BrdbHtmlPage {
         return "";
     }
 
-    private function getFaqCategory() {
-        $res = $this->brdb->statementGetFAQCategories();
+    private function getCategory() {
+        $res = $this->brdb->statementGetAllCategories();
         if (!$this->brdb->hasError()) {
             $data = array();
             while ($dataSet = $res->fetch_assoc()) {
@@ -106,9 +107,9 @@ class BrdbHtmlFaq extends BrdbHtmlPage {
         return "";
     }
 
-    private function getFaqCategoryHtmlOptions() {
+    private function getCategoryHtmlOptions() {
         $data = array();
-        $tmp = $this->getFaqCategory;
+        $tmp = $this->getCategory;
         while($dataSet = $tmp) {
             $data[$dataSet['categoryId']] = $dataSet['title'];
         }

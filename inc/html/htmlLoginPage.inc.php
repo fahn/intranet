@@ -25,7 +25,7 @@ require_once $_SERVER['BASE_DIR'] .'/inc/widget/ranking.widget.php';
 require_once $_SERVER['BASE_DIR'] .'/inc/widget/tournament.widget.php';
 require_once $_SERVER['BASE_DIR'] .'/inc/widget/team.widget.php';
 require_once $_SERVER['BASE_DIR'] .'/inc/widget/bday.widget.php';
-
+require_once $_SERVER['BASE_DIR'] .'/inc/widget/news.widget.php';
 
 // notification
 #include_once $_SERVER['BASE_DIR'] .'/inc/html/brdbHtmlNotification.inc.php';
@@ -248,12 +248,14 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
         $rankingWidget    = new RankingWidget();
         $teamWidget       = new TeamWidget();
         $bdayWidget       = new BdayWidget();
+        $newsWidget       = new NewsWidget();
 
         $this->smarty->assign(array(
             'widgetRankingLatestGames'    => $rankingWidget->showWidget('latestGames'),
             'widgetUpcomingTournaments'   => $tournamentWidget->showWidget('upcomingTournaments'),
             'widgetShowTeam'              => $teamWidget->showWidget('showTeam'),
             'widgetShowBdays'             => $bdayWidget->showWidget('nextBdays'),
+            'widgetLatestNews'            => $newsWidget->showWidget('latestNews'),
 
         ));
 

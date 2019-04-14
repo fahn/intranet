@@ -257,14 +257,30 @@ ALTER TABLE `Faq` ADD PRIMARY KEY (`faqId`);
 ALTER TABLE `Faq` MODIFY `faqId` int(11) NOT NULL AUTO_INCREMENT;
 
 --
---  Table: FaqCategory
+--  Table: Category
 --
 
-CREATE TABLE `FaqCategory` (
+CREATE TABLE `Category` (
   `categoryId` int(11) NOT NULL,
   `pid` int(11) NOT NULL,
   `title` varchar(200) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-ALTER TABLE `FaqCategory` ADD PRIMARY KEY (`categoryId`);
-ALTER TABLE `FaqCategory` MODIFY `categoryId` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `Category` ADD PRIMARY KEY (`categoryId`);
+ALTER TABLE `Category` MODIFY `categoryId` int(11) NOT NULL AUTO_INCREMENT;
+
+
+--
+--  Table: News
+--
+CREATE TABLE `News` (
+  `newsId` int(11) NOT NULL,
+  `categoryId` INT NOT NULL,
+  `title` varchar(200) NOT NULL,
+  `text` text NOT NULL,
+  `createdBy` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `lastEdited` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+ALTER TABLE `News` ADD PRIMARY KEY (`newsId`);
+ALTER TABLE `News` MODIFY `newsId` int(11) NOT NULL AUTO_INCREMENT;

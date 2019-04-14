@@ -33,9 +33,10 @@
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="myRegistration.php"><i class="fas fa-registered"></i> Registration</a> -->
                             <div class="dropdown-divider"></div>
-                            {if $faqEnabled == "on" || $userId == 1}
-                                <a class="dropdown-item" href="/pages/adminFaq.inc.php"><i class="fas fa-question-circle"></i> FAQ</a>
-                            {/if}
+                            <a class="dropdown-item" href="/pages/adminFaq.inc.php"><i class="fas fa-question-circle"></i> FAQ</a>
+                            <a class="dropdown-item" href="/pages/adminNews.inc.php"><i class="fas fa-newspaper"></i> News</a>
+                            <a class="dropdown-item" href="/pages/adminFaq.inc.php"><i class="far fa-list-alt"></i> Kategorien</a>
+                            <div class="dropdown-divider"></div>
                             <!-- <a class="dropdown-item" href="settings.php"><i class="fas fa-wrench"></i> Einstellungen</a> -->
                         </div>
                     </li>
