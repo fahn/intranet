@@ -121,6 +121,7 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
             'hidden'            => 'Insert Tournament',
             'vars'              => $_POST,
             'players'           => $this->getAllPlayerDataList(),
+            'reporterArr'       => $this->getReporterList($this->getAllPlayerDataList()),
             'classificationArr' => $classificationArr,
             'disciplineArr'     => $disciplineArr,
             'tournamentType'    => $this->tournamentType,
@@ -325,6 +326,15 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
             }
         }
         return $data;
+    }
+
+    private function getReporterList($data) {
+        $tmp = array();
+        foreach ($data as $item) {
+            $tmp[$item['userId']] = $item['fullName'];
+        }
+
+        return $tmp;
     }
 
     private function getAllPlayerDataListAndSortByClub() {

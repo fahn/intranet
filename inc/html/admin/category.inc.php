@@ -13,11 +13,11 @@
  ******************************************************************************/
 
 include_once $_SERVER['BASE_DIR'] .'/inc/html/brdbHtmlPage.inc.php';
-include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgNews.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgCategory.inc.php';
 include_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
 
-class BrdbHtmlAdminNewsPage extends BrdbHtmlPage {
-  private $prgPatternElementNews;
+class BrdbHtmlAdminCategoryPage extends BrdbHtmlPage {
+  private $prgPatternElementCategory;
   private $variable;
   private $countRows;
 
@@ -42,8 +42,8 @@ class BrdbHtmlAdminNewsPage extends BrdbHtmlPage {
 
         $this->smarty->assign('links', $links);
 
-        $this->prgPatternElementNews = new prgPatternElementNews($this->brdb, $this->prgPatternElementLogin);
-        $this->prgPattern->registerPrg($this->prgPatternElementNews);
+        $this->prgPatternElementCategory = new prgPatternElementCategory($this->brdb, $this->prgPatternElementLogin);
+        $this->prgPattern->registerPrg($this->prgPatternElementCategory);
     }
 
 
@@ -79,20 +79,20 @@ class BrdbHtmlAdminNewsPage extends BrdbHtmlPage {
 
     private function TMPL_list() {
         $this->smarty->assign(array(
-            'NewsList'      => $this->loadList(),
+            'list'      => $this->loadList(),
         ));
-        return $this->smarty->fetch('news/adminList.tpl');
+        return $this->smarty->fetch('category/adminList.tpl');
     }
 
 
     private function loadList() {
         $data = array();
-        $res = $this->brdb->statementGetAllNews(); #($min, $max);
+        $res = $this->brdb->adminStatementGetAllCategories(); #($min, $max);
         if (!$this->brdb->hasError()) {
           while ($dataSet = $res->fetch_assoc()) {
             // links
-            $dataSet['editLink']   = $this->tools->linkTo(array('page' => $this->_page, 'action' => 'edit', 'id' => $dataSet['newsId']));
-            $dataSet['deleteLink'] = $this->tools->linkTo(array('page' => $this->_page, 'action' => 'delete', 'id' => $dataSet['newsId']));
+            $dataSet['editLink']   = $this->tools->linkTo(array('page' => $this->_page, 'action' => 'edit',   'id' => $dataSet['categoryId']));
+            $dataSet['deleteLink'] = $this->tools->linkTo(array('page' => $this->_page, 'action' => 'delete', 'id' => $dataSet['categoryId']));
 
             $data[] = $dataSet; //new User($dataSet);
 
@@ -108,7 +108,7 @@ class BrdbHtmlAdminNewsPage extends BrdbHtmlPage {
         'categoryHtmlOptions'    => $this->getCategories(),
         'item'                   => $this->getNewsById($id),
     ));
-    return $this->smarty->fetch('news/adminUpdate.tpl');
+    return $this->smarty->fetch('category/adminUpdate.tpl');
   }
 
   /** GET CLUB BY ID
@@ -171,7 +171,7 @@ class BrdbHtmlAdminNewsPage extends BrdbHtmlPage {
             'item' => $this->getNewsById($id),
         ));
 
-        return $this->smarty->fetch('news/adminDelete.tpl');
+        return $this->smarty->fetch('category/adminDelete.tpl');
 
     }
 }

@@ -49,16 +49,16 @@ class BrdbHtmlFaq extends BrdbHtmlPage {
     private function TMPL_showFAQ() {
         $this->smarty->assign(array(
             'FaqGroupedByCategory' => $this->getFaqGroupedByCategory(),
-            'FaqList'              => $this->getFaqList(),
+            'FaqList'              => $this->getFaqGroupedByCategory(),
             'Category'             => $this->getCategory(),
-            'CategoryHtmlOptions'  => $this->getCategoryHtmlOptions(),
+            //'CategoryHtmlOptions'  => $this->getCategoryHtmlOptions(),
         ));
+
 
         return $this->smarty->fetch('faq/list.tpl');
     }
 
-    private function getFaqGroupedByCategory() { 
-        return array(); 
+    private function getFaqGroupedByCategory() {
         $res = $this->brdb->statementGetAllFaq();
         if (!$this->brdb->hasError()) {
             $data = array();
@@ -76,13 +76,13 @@ class BrdbHtmlFaq extends BrdbHtmlPage {
     }
 
     private function getFaqList() {
-        $res = $this->brdb->statementGetFAQs();
+        $res = $this->brdb->statementGetAllFaq();
         if (!$this->brdb->hasError()) {
             $data = array();
             while ($dataSet = $res->fetch_assoc()) {
                 // edit Link
-                $dataSet['editLink'] = "#". $dataSet['faqId'];
-                $dataSet['deleteLink'] = "#". $dataSet['faqId'];
+                #$dataSet['editLink'] = "#". $dataSet['faqId'];
+                #$dataSet['deleteLink'] = "#". $dataSet['faqId'];
                 $data[] = $dataSet;
             }
 

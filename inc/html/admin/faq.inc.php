@@ -149,7 +149,7 @@ class BrdbHtmlAdminFaqPage extends BrdbHtmlPage {
     }
 
     private function reformHtmlOptions($dataArr, $rec = 0) {
-        if (!is_array($dataArr) || count($dataArr) == 0) {
+        if (!is_array($dataArr) || count($dataArr) == 0 || $rec >= 99) {
             return;
         }
         $data = array();

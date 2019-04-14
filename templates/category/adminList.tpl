@@ -1,8 +1,8 @@
-<h1>Kategorien</h1>
+<h1 class="display-1 mb-5">Kategorien</h1>
 <div class="alert alert-warning fade in alert-dismissible show">
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true" style="font-size:20px">×</span>
-    </button> 
+    </button>
     <strong>Info!</strong> Diese Kategorien gelten für den FAQ- und News-Bereich.
 </div>
 
@@ -10,14 +10,16 @@
     <thead>
         <tr>
             <th scope="col">Titel</th>
-            <th scope="col">Option</th>
+            <th scope="col">PID</th>
+            <th scope="col" width="300" class="text-center">Option</th>
         </tr>
     </thead>
     <tbody>
-        {foreach item=cat from=$FaqCategory}
+        {foreach item=item from=$list}
         <tr>
-            <th scope="row">{$cat.title}</th>
-            <td><a href="#">editieren</a> <a href="#">Löschen</a></td>
+            <td scope="row">{$item.title}</td>
+            <td>{if $item.pidName}{$item.pidName}{else}--{/if}</td>
+            <td class="text-center"><a class="btn btn-info" href="{$item.editLink}">editieren</a> <a class="btn btn-danger" href="{$item.deleteLink}">Löschen</a></td>
         </tr>
         {/foreach}
     </tbody>
