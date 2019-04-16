@@ -63,16 +63,17 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
         $id     = $this->tools->get("id");
 
         switch ($action) {
-          case 'add_tournament':
-            $content = $this->addTournamentTMPL($id);
-            break;
+            case 'add_tournament':
+                $content = $this->updateTournamentTMPL($id);
+                break;
 
-          case 'calendar':
-            $content = $this->calendar($id);
+            case 'edit_tournament':
+                $content = $this->updateTournamentTMPL($id, 'edit');
+                break;
 
-          case 'edit_tournament':
-            $content = $this->editTournamentTMPL($id);
-            break;
+            case 'calendar':
+                $content = $this->calendar($id);
+                break;
 
           case 'details':
             $content = $this->showDetailsTMPL($id);
@@ -113,63 +114,55 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
     }
 
 
-    private function addTournamentTMPL() {
-        $classificationArr = $this->tools->getAgeClassArray();
-        $disciplineArr     = $this->tools->getModeArr();
+    private function updateTournamentTMPL($id, $action = 'add') {
+        $classificationArr = $this->valueIsKey($this->tools->getAgeClassArray());
+        $disciplineArr     = $this->valueIsKey($this->tools->getModeArr());
+        $reportArr         = $this->getAllUser();
+        $rows              = array();
 
+
+        if ($action == 'edit') {
+            $id                           = $this->tools->get("id");
+            $res                          = $this->brdb->getTournamentData($id);
+            $tournament                   = $res->fetch_assoc();
+            $tournament['classification'] = unserialize($tournament['classification']);
+            $tournament['discipline']     = unserialize($tournament['discipline']);
+
+            $tournament['additionalClassification']     = unserialize($tournament['additionalClassification']);
+            if (isset($tournament['additionalClassification'] ) && is_array($tournament['additionalClassification'])) {
+              $tournament['additionalClassification'] = implode(",", $tournament['additionalClassification']);
+            }
+
+            if (!$this->brdb->hasError()) {
+                $res = $this->brdb->getDisciplinesByTournamentId($id);
+                if($this->brdb->hasError()) {
+                    return "Fehler";
+                }
+                $rows = array();
+                while ($row = $res->fetch_assoc()) {
+                    $rows[] = $row;
+                }
+            }
+        }
         $this->smarty->assign(array(
-            'task'              => 'add',
-            'hidden'            => 'Insert Tournament',
-            'vars'              => $_POST,
+            'task'              => $action,
+            'hidden'            => $action == 'add' ? 'Insert Tournament' : 'Edit Tournament',
+            'vars'              => $action == 'add' ? $_POST : $tournament,
+            'disc'              => $rows,
             'players'           => $this->getAllPlayerDataList(),
-            'reporterArr'       => $this->getReporterList($this->getAllPlayerDataList()),
+            'reporterArr'       => $reportArr,
             'classificationArr' => $classificationArr,
             'disciplineArr'     => $disciplineArr,
             'tournamentType'    => $this->tournamentType,
         ));
-        return $this->smarty->fetch('tournament/TournamentAdd.tpl');
+        return $this->smarty->fetch('tournament/TournamentUpdate.tpl');
     }
 
-
-    private function editTournamentTMPL() {
-        // generell
-        $classificationArr = $this->tools->getAgeClassArray();
-        $disciplineArr     = $this->tools->getModeArr();
-
-        $id                           = $this->tools->get("id");
-        $res                          = $this->brdb->getTournamentData($id);
-        $tournament                   = $res->fetch_assoc();
-        $tournament['classification'] = unserialize($tournament['classification']);
-        $tournament['discipline']     = unserialize($tournament['discipline']);
-        $tournament['additionalClassification']     = unserialize($tournament['additionalClassification']);
-        if(isset($tournament['additionalClassification'] ) && is_array($tournament['additionalClassification'])) {
-          $tournament['additionalClassification'] = implode(",", $tournament['additionalClassification']);
+    private function valueIsKey($arr) {
+        foreach($arr as $key =>$item) {
+            $tmp[$item] = $item;
         }
-        #die($tournament['additionalClassification'] );
-
-        if(!$this->brdb->hasError()) {
-          $res = $this->brdb->getDisciplinesByTournamentId($id);
-          if($this->brdb->hasError()) {
-            return "Fehler";
-          }
-          $rows = array();
-          while ($row = $res->fetch_assoc()) {
-            $rows[] = $row;
-          }
-
-          $this->smarty->assign(array(
-            'task'   => 'edit',
-            'hidden' => 'Edit Tournament',
-            'vars'   => $tournament,
-            'disc'   => $rows,
-            'players'           => $this->getAllPlayerDataList(),
-            'classificationArr' => $classificationArr,
-            'disciplineArr'     => $disciplineArr,
-            'tournamentType'    => $this->tournamentType,
-          ));
-        }
-
-        return $this->smarty->fetch('tournament/TournamentAdd.tpl');
+        return $tmp;
     }
 
     private function calendar($id) {
@@ -329,14 +322,17 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
         return $data;
     }
 
-    private function getReporterList($data) {
-        $tmp = array();
-        foreach ($data as $item) {
-            $tmp[$item['userId']] = $item['fullName'];
+    private function getAllUser() {
+        $data = array();
+        $res = $this->brdb->selectAllUser(); //SortBy('lastName', 'ASC');
+        if (!$this->brdb->hasError()) {
+            while ($dataSet = $res->fetch_assoc()) {
+                $data[$dataSet['userId']] = $dataSet['fullName'];
+            }
         }
-
-        return $tmp;
+        return $data;
     }
+
 
     private function getAllPlayerDataListAndSortByClub() {
         $players = $this->getAllPlayerDataList();

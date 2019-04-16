@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*******************************************************************************
  * Badminton Intranet System
  * Copyright 2017-2019
@@ -12,7 +12,7 @@
  *
  ******************************************************************************/
 
-trait Club {
+trait ClubDB {
     /**
      * get club by clubId
      * @param unknown $id
@@ -23,7 +23,7 @@ trait Club {
         $cmd->bind_param("i", $clubId);
         return $this->executeStatement($cmd);
     }
-    
+
     /**
      * insert club
      * @param unknown $name
@@ -34,10 +34,10 @@ trait Club {
     public function insertClub($name, $number, $association) {
         $cmd = $this->db->prepare("INSERT INTO Club (name, clubNumber, association) VALUES (?, ?, ?)");
         $cmd->bind_param("sss", $name, $number, $association);
-        
+
         return $this->executeStatement($cmd);
     }
-    
+
     /**
      * update club by Id
      * @param unknown $clubId
@@ -49,10 +49,10 @@ trait Club {
     public function updateClubById($clubId, $name, $number, $association) {
         $cmd = $this->db->prepare("UPDATE Club set name = ?, clubNumber = ?, association = ? WHERE clubId = ?");
         $cmd->bind_param("sssi", $name, $number, $association, $clubId);
-        
+
         return $this->executeStatement($cmd);
     }
-    
+
     /**
      * Select all Clubs
      * @param number $min
@@ -66,10 +66,10 @@ trait Club {
         } else {
             $cmd = $this->db->prepare("SELECT * FROM Club ORDER by sort, name ASC ");
         }
-        
+
         return $this->executeStatement($cmd);
     }
-    
+
     /**
      * delete club
      * @param unknown $clubId
@@ -78,9 +78,9 @@ trait Club {
     public function deleteClubById($clubId) {
         $cmd = $this->db->prepare("DELETE Club  WHERE clubId = ?");
         $cmd->bind_param("i", $clubId);
-        
+
         return $this->executeStatement($cmd);
     }
-    
+
 }
 ?>

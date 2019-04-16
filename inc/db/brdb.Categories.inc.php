@@ -12,8 +12,8 @@
  *
  ******************************************************************************/
 
-trait Categories {
-    
+trait CategoryDB {
+
     public function statementGetAllCategories() {
         $cmd = $this->db->prepare("SELECT * FROM `Category` ORDER BY pid, title");
         return  $this->executeStatement($cmd);

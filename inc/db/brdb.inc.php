@@ -11,23 +11,23 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
+
 require_once $_SERVER['BASE_DIR'] . '/inc/logic/tools.inc.php';
 
-require_once 'brdb.Api.inc.php';
-require_once 'brdb.Categories.inc.php';
-require_once 'brdb.Club.inc.php';
-require_once 'brdb.Faq.inc.php';
-require_once 'brdb.News.inc.php';
-require_once 'brdb.Notification.inc.php';
-require_once 'brdb.Player.inc.php';
-require_once 'brdb.Ranking.inc.php';
-require_once 'brdb.Settings.inc.php';
-require_once 'brdb.Staff.inc.php';
-require_once 'brdb.Tournament.inc.php';
-require_once 'brdb.User.inc.php';
+include_once 'brdb.Api.inc.php';
+include_once 'brdb.Categories.inc.php';
+include_once 'brdb.Club.inc.php';
+include_once 'brdb.Faq.inc.php';
+include_once 'brdb.News.inc.php';
+include_once 'brdb.Notification.inc.php';
+include_once 'brdb.Player.inc.php';
+include_once 'brdb.Ranking.inc.php';
+include_once 'brdb.Settings.inc.php';
+include_once 'brdb.Staff.inc.php';
+include_once 'brdb.Tournament.inc.php';
+include_once 'brdb.User.inc.php';
 
-class BrankDB
-{
+class BrankDB {
 
     private $db;
 
@@ -36,41 +36,41 @@ class BrankDB
     private $hasError;
 
     // load User
-    use User;
-    
+    use UserDB;
+
     // load Club
-    use Club;
-    
+    use ClubDB;
+
     // load Player
-    use Player;
-    
+    use PlayerDB;
+
     // load Tournament
-    use Tournament;
+    use TournamentDB;
 
     // load Ranking
-    use Ranking;
-    
+    use RankingDB;
+
     // load News
-    use News;
-    
+    use NewsDB;
+
     // load Notification
-    use Notification;
-    
+    use NotificationDB;
+
     // load Staff
-    use Staff;
-    
+    use StaffDB;
+
     // load Faq
-    use Faq;
-    
+    use FaqDB;
+
     // load Category
-    use Category;
-    
-    
+    use CategoryDB;
+
+
     // load Api
-    use Api;
-    
-    
-    
+    use ApiDB;
+
+
+
     public function __construct()
     {
         // load connection

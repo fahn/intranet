@@ -12,7 +12,7 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
-trait Categories
+trait RankingDB
 {
 
     public function statementGetRanking()

@@ -1,7 +1,5 @@
 <?php
-
-trait User
-{
+trait UserDB {
 
     /**
      * Call this method to hand back the User with the given email from the data base
@@ -55,7 +53,7 @@ trait User
      */
     public function selectAllUser()
     {
-        $cmd = $this->db->prepare("SELECT * FROM User");
+        $cmd = $this->db->prepare("SELECT *, CONCAT_WS(' ', User.firstName, User.lastName) as fullName FROM User");
 
         return $this->executeStatement($cmd);
     }
@@ -121,7 +119,7 @@ trait User
      */
     public function updateUser($userId, $email, $fname, $lName, $gender, $phone, $bday)
     {
-        $cmd = $this->db->prepare("Update User set email = ?, firstName = ?, lastName = ?, gender = ?, phone = ?, bday = ? WHERE userId = ?"); 
+        $cmd = $this->db->prepare("Update User set email = ?, firstName = ?, lastName = ?, gender = ?, phone = ?, bday = ? WHERE userId = ?");
         $cmd->bind_param("ssssssi", $email, $fname, $lName, $gender, $phone, $bday, $userId);
 
         return $this->executeStatement($cmd);

@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*******************************************************************************
 * Badminton Intranet System
 * Copyright 2017-2019
@@ -12,7 +12,7 @@
 *
 ******************************************************************************/
 
-trait Player {
+trait PlayerDB {
     /**
      * get All Player
      * @return unknown
@@ -22,7 +22,7 @@ trait Player {
             LEFT JOIN `Club` ON Club.clubId = Player.clubId
             ORDER BY Player.lastName ASC";
         $cmd = $this->db->prepare($sql);
-        
+
         return $this->executeStatement($cmd);
     }
 }

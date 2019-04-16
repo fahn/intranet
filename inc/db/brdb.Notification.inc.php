@@ -12,8 +12,7 @@
  *
  ******************************************************************************/
 
-trait Noticiation
-{
+trait NotificationDB {
     /**
      *  Get all notification by User
      * @param unknown $userId
@@ -27,7 +26,7 @@ trait Noticiation
         return $this->executeStatement($cmd);
     }
 
-    /** 
+    /**
      * Get all non read notification from User
      * @param unknown $userId
      * @return unknown
@@ -54,7 +53,7 @@ trait Noticiation
         return $this->executeStatement($cmd);
     }
 
-   
+
     /**
      * set all messages as readed by user
      * @param unknown $userId

@@ -7,7 +7,7 @@
         <div class="card-body">
         <p><strong>Ort:</strong> {$tournament.place}</p>
         <p><strong>Zeitraum:</strong> {$tournament.startdate|date_format:"%d.%m.%Y %H:%M"} - {$tournament.enddate|date_format:"%d.%m.%Y"}</p>
-        <p><strong>Meldeschluss:</strong> <span class="text-{if $tournament.deadline|strtotime < $smarty.now}danger{else}success{/if}">{$tournament.deadline|date_format:"%d.%m.%Y %H:%M"}</span></p>
+        <p><strong>Meldeschluss:</strong> <span class="text-{if $tournament.deadline|strtotime < $smarty.now}danger{else}success{/if}">{$tournament.deadline|date_format:"%d.%m.%Y"}</span></p>
         <p><strong>Ausschreibung:</strong> {if $tournament.link}<a href="{$tournament.link}" target="_blank">Link zur Ausschreibung</a>{else}-{/if}</p>
         <p><strong>Melder:</strong> <a href="/pages/user.php?id={$tournament.reporterId}">{$tournament.reporterName}</a><br>
         {if $tournament.classification}

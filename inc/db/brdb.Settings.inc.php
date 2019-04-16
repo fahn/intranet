@@ -11,7 +11,7 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
-trait Settings
+trait SettingsDB
 {
 
     /**
