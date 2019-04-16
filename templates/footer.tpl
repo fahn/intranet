@@ -30,7 +30,7 @@
     <script src="https://npmcdn.com/flatpickr@4.5.7/dist/l10n/de.js"></script>
 
     <!-- font awesome -->
-    <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
 
     <!-- select2 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css" />
@@ -44,7 +44,10 @@
     <!-- image crop -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.2/croppie.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.2/croppie.js"></script>
-
+    
+    <!-- fullcalendar -->
+    <link rel="stylesheet" href="/static/css/fullcalendar.css" />
+    <script src="/static/js/fullcalendar.js"></script>
 
 
     <!-- custom -->

@@ -5,7 +5,10 @@
       <a class="nav-link active" data-toggle="tab" href="#home">Aktuelle</a>
   </li>
   <li class="nav-item">
-      <a class="nav-link" data-toggle="tab" href="#menu1">Alte</a>
+      <a class="nav-link" data-toggle="tab" href="#calendar">Kalender</a>
+  </li>
+  <li class="nav-item">
+      <a class="nav-link" data-toggle="tab" href="#old">Alte</a>
   </li>
 </ul>
 
@@ -36,9 +39,14 @@
     {include file="tournament/table.tpl" data=$tournamentList}
 
 
-
   </div>
-  <div id="menu1" class="tab-pane container">
+  
+   <div id="calendar" class="tab-pane container">
+      <h2 class="display-2 mt-5">Kalender</h2>
+      {include file="tournament/calendar.tpl" data=$calendar}
+  </div>
+  
+  <div id="old" class="tab-pane container">
       <h2 class="display-2 mt-5">Alte Turniere</h2>
       {include file="tournament/table.tpl" data=$oldTournamentList}
   </div>

@@ -54,27 +54,15 @@
       </div>
     </div>
 
-    <div id="containerClone"></div>
-
-    <div class="row mt-5 mb-5" >
-      <div class="col-md-12 text-center">
-        <a href="#" class="clonerow"><i class="glyphicon glyphicon-share-alt"></i> weiteren Spieler hinzufügen</a>
-      </div>
-    </div>
-
-    <p></p>
-
     <div class="row">
       <div class="col-md-6">
-        <input type="submit" name="submit" class="btn btn-success btn-wide" value="Melden">
+        <input type="submit" name="submit" class="btn btn-success btn-wide" value="Melden + Neu">
+        <input type="submit" name="submit" class="btn btn-primary btn-wide" value="Melden">
       </div>
       <div class="col-md-6 text-right">
         <a class="btn btn-danger" href="?action=details&id={$tournament.tournamentId}">Zurück</a>
       </div>
     </div>
-    <!--
-    <input type="submit" name="submitClose" class="btn btn-info btn-wide" value="Melden + Schließen ">
-  -->
   </form>
 
 {/if}
@@ -92,7 +80,7 @@
     "children": [
   {foreach item=player from=$club.players}
     {ldelim}
-      id: {$player.userId},
+      id: {$player.playerId},
       text: '{$player.fullName}'
     {rdelim},
   {/foreach}

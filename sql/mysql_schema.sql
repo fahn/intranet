@@ -22,9 +22,7 @@ CREATE TABLE `User` (
   `dsgvo_timestamp` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-
 ALTER TABLE `User` ADD PRIMARY KEY (`userId`);
-
 ALTER TABLE `User` MODIFY `userId` int(11) NOT NULL AUTO_INCREMENT;
 
 
@@ -40,6 +38,21 @@ CREATE TABLE `UserPassHash` (
   `valid` int(1) DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- PLAYER
+-- 
+CREATE TABLE `Player` (
+  `playerId` int(11) NOT NULL,
+  `playerNr` varchar(64) NULL,
+  `clubId`   int(11) NOT NULL,
+  `firstName` varchar(64) NOT NULL,
+  `lastName` varchar(64) NOT NULL,
+  `gender` enum('Male','Female') NOT NULL DEFAULT 'Male',
+  `bday` date NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+ALTER TABLE `Player` ADD PRIMARY KEY (`playerId`);
+ALTER TABLE `Player` MODIFY `playerId` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 --  CLUBS
@@ -54,11 +67,10 @@ CREATE TABLE `Club` (
   `association` varchar(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-ALTER TABLE `Club`
-  ADD PRIMARY KEY (`clubId`);
+ALTER TABLE `Club` ADD PRIMARY KEY (`clubId`);
+ALTER TABLE `Club` MODIFY `clubId` int(11) NOT NULL AUTO_INCREMENT;
 
-ALTER TABLE `Club`
-  MODIFY `clubId` int(11) NOT NULL AUTO_INCREMENT;
+INSERT `TABLE` (name) VALUES ('FREI');
 
 --
 --  UserStaff
@@ -72,13 +84,8 @@ CREATE TABLE `UserStaff` (
   `sort` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-
-ALTER TABLE `UserStaff`
-  ADD PRIMARY KEY (`staffId`);
-
-
-ALTER TABLE `UserStaff`
-  MODIFY `staffId` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `UserStaff` ADD PRIMARY KEY (`staffId`);
+ALTER TABLE `UserStaff` MODIFY `staffId` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 --  tournament
@@ -103,14 +110,8 @@ CREATE TABLE `Tournament` (
   `description` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-ALTER TABLE `Tournament`
-  ADD PRIMARY KEY (`tournamentId`),
-  ADD UNIQUE KEY `tournamentId` (`tournamentId`),
-  ADD KEY `tournamentId_2` (`tournamentId`);
-
-
-ALTER TABLE `Tournament`
-  MODIFY `tournamentId` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `Tournament` ADD PRIMARY KEY (`tournamentId`);
+ALTER TABLE `Tournament` MODIFY `tournamentId` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 --  TournamentClass
@@ -124,13 +125,8 @@ CREATE TABLE `TournamentClass` (
   `visible` int(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-
-ALTER TABLE `TournamentClass`
-  ADD PRIMARY KEY (`classId`,`tournamentId`);
-
-
-ALTER TABLE `TournamentClass`
-  MODIFY `classId` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `TournamentClass` ADD PRIMARY KEY (`classId`,`tournamentId`);
+ALTER TABLE `TournamentClass` MODIFY `classId` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 --  TournamentPlayer
@@ -142,42 +138,28 @@ CREATE TABLE `TournamentPlayer` (
   `partnerId` int(11) DEFAULT NULL,
   `classification` text NOT NULL,
   `visible` tinyint(1) NOT NULL DEFAULT '1',
-  `fillingDate` datetime NOT NULL,
+  `fillingDate` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `reporterId` int(11) NOT NULL,
   `message` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
-ALTER TABLE `TournamentPlayer`
-  ADD PRIMARY KEY (`tournamentPlayerId`);
-
-
-ALTER TABLE `TournamentPlayer`
-  MODIFY `tournamentPlayerId` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `TournamentPlayer` ADD PRIMARY KEY (`tournamentPlayerId`);
+ALTER TABLE `TournamentPlayer` MODIFY `tournamentPlayerId` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- TournamentBackup
 --
 CREATE TABLE `TournamentBackup` (
   `backupId` int(11) NOT NULL,
-  `TournamentId` int(11) NOT NULL,
+  `tournamentId` int(11) NOT NULL,
   `data` text NOT NULL,
   `date` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-/*
+
 ALTER TABLE `TournamentBackup` ADD PRIMARY KEY (`backupId`);
 ALTER TABLE `TournamentBackup` MODIFY `backupId` int(11) NOT NULL AUTO_INCREMENT;
 
-CREATE VIEW PlayerList AS (
-    SELECT playerId, clubId, lastName, firstName FROM User
-    ORDER BY lastName
-)
-
-CREATE TRIGGER `after_update_User` AFTER UPDATE ON `User` FOR EACH ROW
-BEGIN
-    UPDATE TABLE PlayerList
-END
-*/
 
 
 
@@ -210,7 +192,7 @@ CREATE TABLE `eloGames` (
 --  Table: Notification
 --
 CREATE TABLE `Notification` (
-  `id` int(11) NOT NULL,
+  `notificationId` int(11) NOT NULL,
   `userId` int(11) NOT NULL,
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `text` text NOT NULL,
@@ -218,7 +200,6 @@ CREATE TABLE `Notification` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 ALTER TABLE `Notification` ADD PRIMARY KEY (`id`);
-
 ALTER TABLE `Notification` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --

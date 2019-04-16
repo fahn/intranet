@@ -105,6 +105,7 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
         $this->smarty->assign(array(
             'tournamentList'       => $this->getAllTournamentDataList(),
             'oldTournamentList'    => $this->getOldTournamentDataList(),
+            'calendar'             => $this->getAllTournamentDataList(),
             'googleMaps'           => $this->tools->getIniValue('Maps'),
         ));
 
@@ -315,13 +316,13 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
 
     private function getAllPlayerDataList() {
         $data = array();
-        $res = $this->brdb->selectAllUser(); //SortBy('lastName', 'ASC');
+        $res = $this->brdb->selectGetAllPlayer(); //SortBy('lastName', 'ASC');
         if (!$this->brdb->hasError()) {
             while ($dataSet = $res->fetch_assoc()) {
                 $data[]         = array(
-                    'clubId'   => $dataSet['clubId'],
-                    'userId'   => $dataSet['userId'],
-                    'fullName' => sprintf("%s %s", $dataSet['firstName'], $dataSet['lastName']),
+                    'clubId'    => $dataSet['clubId'],
+                    'playerId'  => $dataSet['playerId'],
+                    'fullName'  => $dataSet['fullName'],
                 );
             }
         }

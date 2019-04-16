@@ -13,7 +13,7 @@
  ******************************************************************************/
 
 include_once $_SERVER['BASE_DIR'] .'/inc/db/brdb.inc.php';
-include_once $_SERVER['BASE_DIR'] .'/inc/db/user.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/model/user.inc.php';
 include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgPattern.inc.php';
 include_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
 
@@ -105,7 +105,6 @@ class PrgPatternElementTournament extends APrgPatternElement {
 
     public function processPost() {
 
-        $isUserLoggedIn = $this->prgElementLogin->isUserLoggedIn();
         $isUserAdmin    = $this->prgElementLogin->getLoggedInUser()->isAdmin();
         $isUserReporter = $this->prgElementLogin->getLoggedInUser()->isReporter();
 
@@ -115,19 +114,36 @@ class PrgPatternElementTournament extends APrgPatternElement {
         if (!$this->prgElementLogin->isUserLoggedIn()) {
             return;
         }
-
-        if ($this->issetPostVariable(self::FORM_FORM_ACTION)) {
-            $loginAction = strval(trim($this->getPostVariable(self::FORM_FORM_ACTION)));
-            if ($loginAction === self::FORM_GAME_ACTION_INSERT_PLAYERS) {
-                $this->processPostInsertPlayerToTournament();
-            } else if ($isUserReporter && ($loginAction === self::FORM_GAME_ACTION_INSERT_TOURNAMENT)) {
-                $this->processPostInsertTournament();
-            } else if ($isUserReporter && ($loginAction === self::FORM_GAME_ACTION_UPDATE_TOURNAMENT)) {
-                $this->processPostUpdateTournament();
-            }
+        
+        if(! $this->issetPostVariable(self::FORM_FORM_ACTION)) {
+            return;
         }
-
-
+        $loginAction = strval(trim($this->getPostVariable(self::FORM_FORM_ACTION)));
+        
+        // INSERT PLAYER TO Tournament
+        if ($loginAction == self::FORM_GAME_ACTION_INSERT_PLAYERS) {
+                $this->processPostInsertPlayerToTournament();
+                return;
+        }
+        
+        
+        if (! $isUserReporter || ! $isUserAdmin) {
+            return;
+        }
+        
+        switch ($loginAction) {
+            case self::FORM_GAME_ACTION_INSERT_TOURNAMENT:
+                $this->processPostInsertTournament();
+                break;
+                
+            case  $loginAction === self::FORM_GAME_ACTION_UPDATE_TOURNAMENT:
+                $this->processPostUpdateTournament();
+                break;
+                
+            default:
+                return;
+                break;
+        }
     }
 
     private function getSerializeArray($var){
@@ -189,86 +205,85 @@ class PrgPatternElementTournament extends APrgPatternElement {
         }
 
         // insert class
-        $this->setSuccessMessage("Turnier \"". $name ."\" wurde hinzugefügt.");
+        $this->setSuccessMessage(sprintf("Turnier %s wurde hinzugefügt.", name));
         $this->tools->customRedirect(array('page' => 'rankingTournament.php'));
-        return;
     }
 
     /** Insert player to Tournament
       *
       */
-    public function processPostInsertPlayerToTournament() {
+    private function processPostInsertPlayerToTournament() {
         // Check that all information has been posted
-        if ($this->issetPostVariable(self::FORM_INPUT_PLAYER) &&
-            $this->issetPostVariable(self::FORM_INPUT_PARTNER) &&
-            $this->issetPostVariable(self::FORM_INPUT_DISCIPLIN)) {
-
-            $id = $this->tools->get("id");
-
-            $player        = $this->getPostVariable(self::FORM_INPUT_PLAYER);
-            $partner       = $this->getPostVariable(self::FORM_INPUT_PARTNER);
-            $disziplin     = $this->getPostVariable(self::FORM_INPUT_DISCIPLIN);
-
-            $reporterId = $this->prgElementLogin->getLoggedInUser()->getID();
-
-            if(empty(array_filter($player))) {
-                $this->setFailedMessage(self::ERROR_GAME_FAILED_TO_ADD_USER);
+        if (! $this->issetPostVariable(self::FORM_INPUT_PLAYER) ||
+            ! $this->issetPostVariable(self::FORM_INPUT_PARTNER) ||
+            ! $this->issetPostVariable(self::FORM_INPUT_DISCIPLIN)) {
+                $this->setFailedMessage(self::ERROR_GAME_MISSING_INFORMATION);
                 return;
             }
 
-            foreach ($player as $key => $value) {
-                $tmp_disziplin = isset($disziplin[$key]) ? $disziplin[$key] : '';
-                $tmp_partner   = isset($partner[$key]) && is_numeric($partner[$key]) ? $partner[$key] : 0;
-                // check if id and partner exists
-                $resData = $this->brdb->getTournamentPlayerByData($id, $value, $tmp_partner, $tmp_disziplin);
-                if ($this->brdb->hasError()) {
-                    $this->setFailedMessage($this->brdb->getError());
-                    return;
-                }
+        $id = $this->tools->get("id");
 
-                if ($resData->num_rows > 0) {
-                  $this->setFailedMessage("Spieler/Paarung schon vorhanden.");
+        $player        = $this->getPostVariable(self::FORM_INPUT_PLAYER);
+        $partner       = $this->getPostVariable(self::FORM_INPUT_PARTNER);
+        $disziplin     = $this->getPostVariable(self::FORM_INPUT_DISCIPLIN);
+
+        $reporterId = $this->prgElementLogin->getLoggedInUser()->getID();
+
+        if(empty(array_filter($player))) {
+            $this->setFailedMessage(self::ERROR_GAME_FAILED_TO_ADD_USER);
+            return;
+        }
+
+        foreach ($player as $key => $value) {
+            $tmp_disziplin = isset($disziplin[$key]) ? $disziplin[$key] : '';
+            $tmp_partner   = isset($partner[$key]) && is_numeric($partner[$key]) ? $partner[$key] : 0;
+            // check if id and partner exists
+            $resData = $this->brdb->getTournamentPlayerByData($id, $value, $tmp_partner, $tmp_disziplin);
+            if ($this->brdb->hasError()) {
+                $this->setFailedMessage($this->brdb->getError());
+                return;
+            }
+
+            if ($resData->num_rows > 0) {
+              $this->setFailedMessage("Spieler/Paarung schon vorhanden.");
+              return;
+            }
+
+            // check player p1
+
+            $resP1 = $this->brdb->selectUserById($value);
+            $p1    = $resP1->fetch_assoc();
+
+            if (! $this->checkPlayerAndDisciplin($p1, $tmp_disziplin, 1)) {
+              $this->setFailedMessage(sprintf("Falsche Diziplin für Spieler %s %s", $p1['firstName'], $p1['lastName']));
+              return;
+            }
+
+            // check player p2
+            if($tmp_partner > 0) {
+                $resP2 = $this->brdb->selectUserById($tmp_partner);
+                $p2    = $resP2->fetch_assoc();
+                if (! $this->checkPlayerAndDisciplin($p2, $tmp_disziplin, 2)) {
+                  $this->setFailedMessage(sprintf("Falsche Diziplin für Spieler %s %s", $p2['firstName'], $p2['lastName']));
                   return;
-                }
-
-                // check player p1
-
-                $resP1 = $this->brdb->selectUserById($value);
-                $p1    = $resP1->fetch_assoc();
-
-                if (! $this->checkPlayerAndDisciplin($p1, $tmp_disziplin, 1)) {
-                  $this->setFailedMessage(sprintf("Falsche Diziplin für Spieler %s %s", $p1['firstName'], $p1['lastName']));
-                  return;
-                }
-
-                // check player p2
-                if($tmp_partner > 0) {
-                    $resP2 = $this->brdb->selectUserById($tmp_partner);
-                    $p2    = $resP2->fetch_assoc();
-                    if (! $this->checkPlayerAndDisciplin($p2, $tmp_disziplin, 2)) {
-                      $this->setFailedMessage(sprintf("Falsche Diziplin für Spieler %s %s", $p2['firstName'], $p2['lastName']));
-                      return;
-                    }
-                }
-
-
-
-                $this->brdb->insertPlayerToTournament($id, $value, $tmp_partner, $tmp_disziplin, $reporterId);
-                if ($this->brdb->hasError()) {
-                    $this->setFailedMessage($this->brdb->getError());
-                    return;
                 }
             }
 
-            $this->setSuccessMessage("Der Spieler/Die Paarung wurde eingetragen");
-            $this->tools->customRedirect(array(
-              'page'   => 'rankingTournament.php',
-              'action' => 'details',
-              'id'     => $id,
-            ));
-        } else {
-            $this->setFailedMessage(self::ERROR_GAME_MISSING_INFORMATION);
+
+
+            $this->brdb->insertPlayerToTournament($id, $value, $tmp_partner, $tmp_disziplin, $reporterId);
+            if ($this->brdb->hasError()) {
+                $this->setFailedMessage($this->brdb->getError());
+                return;
+            }
         }
+
+        $this->setSuccessMessage("Der Spieler/Die Paarung wurde eingetragen");
+        $this->tools->customRedirect(array(
+          'page'   => 'rankingTournament.php',
+          'action' => 'details',
+          'id'     => $id,
+        ));
     }
 
     /**
@@ -308,16 +323,16 @@ class PrgPatternElementTournament extends APrgPatternElement {
     /**
         Delete Player from Tournament
     */
-    public function deletePlayersFromTournamentId($tournamentId, $playerId) {
+    private function deletePlayersFromTournamentId($tournamentId, $playerId) {
         // player data
         $tmp = $this->brdb->getPlayerFromTournamentById($playerId)->fetch_assoc();
         $actUser = $this->prgElementLogin->getLoggedInUser();
         if (! $actUser->isAdmin() &&
             ! $actUser->isReporter() &&
-            ($tmp['partnerId'] != $actUser->userId && $tmp['playerId'] != $actUser->userId))
+            $tmp['reporterId'] != $actUser->userId)
         {
             $this->setFailedMessage("Nicht genug Rechte: Der Spieler konnte nicht gelöscht werden");
-            $url = $this->tools->linkTo(array(
+            $url = $this->customRedirect(array(
               'page'   => 'rankingTournament.php',
               'action' => 'details',
               'id'     => $tournamentId,
@@ -331,64 +346,62 @@ class PrgPatternElementTournament extends APrgPatternElement {
 
         // inform reporterId
         if($this->isPast($row['deadline']) && $row['reporterId'] > 0) {
-          // user mail
-          $res = $this->brdb->selectUserById($row['reporterId']);
-          $user = $res->fetch_assoc();
-
-          // send to partner
+          // SEND MAIL
+          /// reporter
+            $this->informUser($row['reporterId']);
+          /// player
+            $this->informUser($row['playerId']);
+          /// partner  
           if(isset($tmp['partnerId']) && $tmp['partnerId'] > 0) {
-            $res       = $this->brdb->selectUserById($tmp['partnerId']);
-            $partner   = $res->fetch_assoc();
-            $mail      = $user['email'];
-            $subject   = sprintf("Abmeldung %s nach Deadline", $row['name']);
-            $name      = $partner['firstName'] ." ". $partner['lastName'];
-            $content   = sprintf("Der Spieler %s wurde nach Meldeschluss durch %s abgemeldet", $name, $actUser->getFullName());
-            $preehader = $content;
-
-            // send
-            $this->tools->sendMail($mail, $name, $subject, $preheader, $content);
-            unset($res, $partner, $mail, $name, $subject, $preheader, $content);
+              $this->informUser($tmp['partnerId']);
           }
-
-          $res    = $this->brdb->selectUserById($tmp['playerId']);
-          $player = $res->fetch_assoc();
-
-          // def. receiver, subject and content
-          $mail      = $user['email'];
-          $subject   = sprintf("Abmeldung %s nach Deadline", $row['name']);
-          $content   = sprintf("Der Spieler %s %s wurde nach Meldeschluss durch %s abgemeldet abgemeldet", $player['firstName'], $player['lastName'], $actUser->getFullName());
-          $preheader = $content;
-
-          // send
-          $this->tools->sendMail($mail, $row['name'], $subject, $preheader, $content);
         }
-
+        
         $res = $this->brdb->deletePlayersFromTournamentId($tournamentId, $playerId);
         if ($this->brdb->hasError()) {
             $this->setFailedMessage("Der Spieler konnte nicht gelöscht werden");
+        } else {
+            $this->setSuccessMessage("Der Spieler wurde aus dem Turnier gelöscht");
         }
-
-
-
-        $this->setSuccessMessage("Der Spieler wurde aus dem Turnier gelöscht");
 
         $this->tools->customRedirect(array(
           'page'   => 'rankingTournament.php',
           'action' => 'details',
           'id'     => $tournamentId,
         ));
-        return;
+    }
+    
+    private function informUser($userId = null) {
+        if ($userId > 0) {
+            $res       = $this->brdb->selectPlayerById($userId);
+            $partner   = $res->fetch_assoc();
+            $mail      = $user['email'];
+            if (! filter_var($mail, FILTER_VALIDATE_EMAIL)) {
+                return false;
+            }
+            $subject   = sprintf("Abmeldung %s nach Deadline", $row['name']);
+            $name      = $partner['firstName'] ." ". $partner['lastName'];
+            $content   = sprintf("Der Spieler %s wurde nach Meldeschluss durch %s abgemeldet", $name, $actUser->getFullName());
+            $preehader = $content;
+            
+            // send
+            return $this->tools->sendMail($mail, $name, $subject, $preheader, $content);
+        }
+        return false;
     }
 
+    // TODO: move to tools
     private function isToday($time) {
         return (strtotime($time) === strtotime('today'));
     }
 
-    function isPast($time) {
+    // TODO: move to tools
+    private function isPast($time) {
         return (strtotime($time) < time());
     }
 
-    function isFuture($time) {
+    // TODO: move to tools
+    private function isFuture($time) {
         return (strtotime($time) > time());
     }
 
@@ -420,7 +433,7 @@ class PrgPatternElementTournament extends APrgPatternElement {
      * It also stores the game information into the session, hence the
      * insert game page will show the details.
      */
-    public function processPostUpdateTournament() {
+    private function processPostUpdateTournament() {
         $id = $this->tools->get("id");
         $delete = intval(trim($this->getPostVariable(self::FROM_TOURNAMENT_DELETE_STATUS)));
         if (isset($id) && isset($delete) && $delete == 1) {
@@ -481,7 +494,6 @@ class PrgPatternElementTournament extends APrgPatternElement {
 
         $this->setSuccessMessage("Turnier wurde geändert.");
         $this->tools->customRedirect(array('page' => 'rankingTournament.php', 'action' => 'details', 'id' => $id));
-        return;
     }
 
     /**
@@ -492,6 +504,8 @@ class PrgPatternElementTournament extends APrgPatternElement {
     public function processGet() {
         if($this->issetGetVariable("action")) {
             $action = $this->getGetVariable("action");
+            $id = $this->getGetVariable("id");
+            
             switch ($action) {
               case 'deletePlayer':
                 if($this->issetGetVariable("id") && $this->issetGetVariable("tournamentPlayerId")) {
@@ -500,7 +514,7 @@ class PrgPatternElementTournament extends APrgPatternElement {
                 break;
               case 'create_backup':
 
-                if ($this->createBackup($this->getGetVariable("id"))) {
+                if ($this->createBackup($id)) {
                   $this->setFailedMessage("Backup konnte nicht erstellt werden");
                 } else {
                     $this->setSuccessMessage("Backup wurde erstellt");
@@ -519,9 +533,6 @@ class PrgPatternElementTournament extends APrgPatternElement {
                 // create xls
                 $this->export($this->getGetVariable("id"));
                 break;
-
-
-
 
               default:
                 # code...
@@ -543,7 +554,7 @@ class PrgPatternElementTournament extends APrgPatternElement {
           $this->prgElementLogin->getLoggedInUser()->isAdmin() ||
           $this->prgElementLogin->getLoggedInUser()->isReporter()
         ) {
-            #session_write_close();
+
             ob_end_flush();
             if(isset($this->smarty)) {
               unset($this->smarty);
@@ -679,19 +690,14 @@ class PrgPatternElementTournament extends APrgPatternElement {
             $writer->addRow($singleRow); // add a row at a time
 
 
-            if($add == True) {
-                if($row['p2FirstName'] != NULL AND $row['p2LastName'] != NULL) {
+            if($add) {
+                if($row['p2FirstName'] != NULL && $row['p2LastName'] != NULL) {
                     $firstName = $row['p2FirstName'];
                     $lastName  = $row['p2LastName'];
                     $gender    = $row['p2Gender'] == 'Male' ? 'm' : 'w';
 
-                    if(!(int) $row['p2Bday'] != 0) {
-                        $bday = '';
-                    } else {
-                        $due       = strtotime($row['p2Bday']);
-                        $bday      = date("d.m.Y", $due);
-                        $bday      = $bday == "01.01.1970" ? "" : $bday;
-                    }
+                    $bday = $this->getBday();
+                    
                 } else {
                     $firstName = "FREIMELDUNG";
                     $lastName  = "";
@@ -729,6 +735,12 @@ class PrgPatternElementTournament extends APrgPatternElement {
         $writer->close();
 
     }
+    
+    private function getBday($bday) {
+        $due       = strtotime($bday);
+        $bday      = date("d.m.Y", $due);
+        return $bday == "01.01.1970" ? "" : $bday;
+    }
 
 
     private function reportDefault($tournament, $id) {
@@ -746,21 +758,27 @@ class PrgPatternElementTournament extends APrgPatternElement {
         // create sheets
         $einzel = $writer->getCurrentSheet();
         $einzel->setName('Spieler');
+        
+        $counter = 1;
 
         $players    = $this->brdb->getPlayersByTournamentIdToExport($id);
         while($row = $players->fetch_assoc()) {
-          $singleRow = array(
-            $row['p1FirstName'],
-            $row['p1LastName'],
-            $gender,
-            $row['p1ClubName'],
-            $row['p1ClubAssociation'],
-            $row['p1PlayerNumber'],
-            $bday,
-            $row['p1ClubNumber'],
-            $counter,
-          );
-          $writer->addRow($singleRow);
+            $gender    = $row['p2Gender'] == 'Male' ? 'm' : 'w';
+            $bday = $this->getBday();
+            
+            $singleRow = array(
+                $row['p1FirstName'],
+                $row['p1LastName'],
+                $gender,
+                $row['p1ClubName'],
+                $row['p1ClubAssociation'],
+                $row['p1PlayerNumber'],
+                $bday,
+                $row['p1ClubNumber'],
+                $counter++,
+            );
+            
+            $writer->addRow($singleRow);
         }
 
         $writer->close();
