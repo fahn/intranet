@@ -346,8 +346,14 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
             foreach ($players as $player) {
               $clubs[$player['clubId']]['players'][] = $player;
             }
+            $tmp = array();
+            foreach ($clubs as $key => $club) {
+                if (count($club['players']) > 0) {
+                    $tmp[$key] = $club;
+                }
+            }
         }
-        return $clubs;
+        return $tmp;
     }
 
     private function getClassID($id) {

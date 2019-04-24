@@ -25,15 +25,15 @@ class BrdbHtmlMyAccountPage extends BrdbHtmlPage {
         parent::__construct();
 
         $this->prgElementUser = new PrgPatternElementUser($this->brdb, $this->prgPatternElementLogin);
-        #$this->prgPattern->registerPrg($this->prgElementUser);
+        $this->prgPattern->registerPrg($this->prgElementUser);
     }
 
     public function htmlBody() {
         $variableName['Email']          = $this->prgElementUser->getPrefixedName(PrgPatternElementUser::FORM_USER_EMAIL);
         $variableName['FName']          = $this->prgElementUser->getPrefixedName(PrgPatternElementUser::FORM_USER_FNAME);
         $variableName['LName']          = $this->prgElementUser->getPrefixedName(PrgPatternElementUser::FORM_USER_LNAME);
-        $variableName['Passw']          = $this->prgElementUser->getPrefixedName(PrgPatternElementUser::FORM_USER_PASSWORD);
-        $variableName['Passw2']         = $this->prgElementUser->getPrefixedName(PrgPatternElementUser::FORM_USER_PASSWORD2);
+        $variableName['Passw']          = $this->prgElementUser->getPrefixedName(PrgPatternElementUser::FORM_USER_NEW_PASSWORD);
+        $variableName['Passw2']         = $this->prgElementUser->getPrefixedName(PrgPatternElementUser::FORM_USER_REPEAT_NEW_PASSWORD);
         $variableName['Action']         = $this->prgElementUser->getPrefixedName(PrgPatternElementUser::FORM_USER_ACTION);
         $variableName['ActionLogin']    = PrgPatternElementUser::FORM_USER_ACTION_UPDATE_MY_ACCOUNT;
         $variableName['GenderMale']     = PrgPatternElementUser::FORM_USER_GENDER_MALE;

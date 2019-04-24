@@ -42,8 +42,8 @@
     <div class="row">
         <div class="col-md-6">
             <label for="userRegisterAccountBday">Geburtsdatum</label>
-            <div class="input-group date" data-provide="datepicker">
-                <input class="form-control" type="text" id="userRegisterAccountBday" name="userRegisterAccountBday" placeholder="dd.mm.YYYY" value="{$info.bday|date_format:'d.m.Y'}">
+            <div class="input-group date">
+                <input class="form-control datepicker" type="text" id="userRegisterAccountBday" name="userRegisterAccountBday" placeholder="dd.mm.YYYY" value="{$info.bday|date_format:'d.m.Y'}" data-provide>
                 <div class="input-group-addon">
                     <span class="glyphicon glyphicon-th"></span>
                 </div>
@@ -66,17 +66,6 @@
             <div class="form-group">
                 <label for="userRegisterAccountPlayerId">Spielernummer</label>
                 <input class="form-control"  type="text" id="userRegisterAccountPlayerId" name="userRegisterAccountPlayerId" placeholder="" value="{$info.playerId}">
-            </div>
-        </div>
-
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="userRegisterAccountClubId">Verein</label>
-                <select class="form-control" name="userRegisterAccountClubId">
-                    {foreach item=club from=$clubs}
-                        <option value="{$club.clubId}" {if $club.clubId == $info.clubId}selected{/if}>{$club.name}</option>
-                    {/foreach}
-                </select>
             </div>
         </div>
     </div>

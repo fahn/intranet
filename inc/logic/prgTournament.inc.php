@@ -238,6 +238,9 @@ class PrgPatternElementTournament extends APrgPatternElement {
         }
 
         foreach ($player as $key => $value) {
+            $key;
+            $value;
+
             $tmp_disziplin = isset($disziplin[$key]) ? $disziplin[$key] : '';
             $tmp_partner   = isset($partner[$key]) && is_numeric($partner[$key]) ? $partner[$key] : 0;
             // check if id and partner exists
@@ -254,7 +257,7 @@ class PrgPatternElementTournament extends APrgPatternElement {
 
             // check player p1
 
-            $resP1 = $this->brdb->selectUserById($value);
+            $resP1 = $this->brdb->selectPlayerById($value);
             $p1    = $resP1->fetch_assoc();
 
             if (! $this->checkPlayerAndDisciplin($p1, $tmp_disziplin, 1)) {
@@ -264,7 +267,7 @@ class PrgPatternElementTournament extends APrgPatternElement {
 
             // check player p2
             if($tmp_partner > 0) {
-                $resP2 = $this->brdb->selectUserById($tmp_partner);
+                $resP2 = $this->brdb->selectPlayerById($tmp_partner);
                 $p2    = $resP2->fetch_assoc();
                 if (! $this->checkPlayerAndDisciplin($p2, $tmp_disziplin, 2)) {
                   $this->setFailedMessage(sprintf("Falsche Diziplin für Spieler %s %s", $p2['firstName'], $p2['lastName']));
@@ -557,34 +560,34 @@ class PrgPatternElementTournament extends APrgPatternElement {
         }
 
         if (
-          $this->prgElementLogin->getLoggedInUser()->isAdmin() ||
-          $this->prgElementLogin->getLoggedInUser()->isReporter()
+          ! $this->prgElementLogin->getLoggedInUser()->isAdmin() ||
+          ! $this->prgElementLogin->getLoggedInUser()->isReporter()
         ) {
-
-            ob_end_flush();
-            if(isset($this->smarty)) {
-              unset($this->smarty);
-            }
-            header_remove();
-
-            // get tournament data
-            $tournament = $this->brdb->getTournamentData($id)->fetch_assoc();
-
-            switch ($tournament['tournamentType']) {
-              case 'NBV':
-                $this->reportExcelNBV($tournament, $id);
-                break;
-
-              default:
-                $this->reportDefault($tournament, $id);
-                break;
-            }
-
-            // kill it
-            exit(0);
-
-
+          return;
         }
+
+        ob_end_flush();
+        if(isset($this->smarty)) {
+          unset($this->smarty);
+        }
+        header_remove();
+
+        // get tournament data
+        $tournament = $this->brdb->getTournamentData($id)->fetch_assoc();
+
+        switch ($tournament['tournamentType']) {
+          case 'NBV':
+            $this->reportExcelNBV($tournament, $id);
+            break;
+
+          default:
+            $this->exportDefault($tournament, $id);
+            break;
+        }
+
+        // kill it
+        exit(0);
+
       }
 
     private function reportExcelNBV($tournament, $id) {
@@ -702,7 +705,7 @@ class PrgPatternElementTournament extends APrgPatternElement {
                     $lastName  = $row['p2LastName'];
                     $gender    = $row['p2Gender'] == 'Male' ? 'm' : 'w';
 
-                    $bday = $this->getBday();
+                    $bday = $this->getBday($row['bday']);
 
                 } else {
                     $firstName = "FREIMELDUNG";
@@ -743,13 +746,16 @@ class PrgPatternElementTournament extends APrgPatternElement {
     }
 
     private function getBday($bday) {
+        if ($bday == null) {
+            return null;
+        }
         $due       = strtotime($bday);
         $bday      = date("d.m.Y", $due);
         return $bday == "01.01.1970" ? "" : $bday;
     }
 
 
-    private function reportDefault($tournament, $id) {
+    private function exportDefault($tournament, $id) {
         if(isset($tournament['name']) && $tournament['deadline']) {
             $fileName   = sprintf("%s_%d.xlsx", addslashes($tournament['name']), date("d.m.Y", strtotime($tournament['deadline'])));
         } else {
@@ -757,6 +763,7 @@ class PrgPatternElementTournament extends APrgPatternElement {
         }
 
         $writer     = WriterFactory::create(Type::XLSX); // for XLSX files
+        
 
         //$writer->openToFile($filePath); // write data to a file or to a PHP stream
         $writer->openToBrowser($fileName); // stream data directly to the browser
@@ -764,13 +771,28 @@ class PrgPatternElementTournament extends APrgPatternElement {
         // create sheets
         $einzel = $writer->getCurrentSheet();
         $einzel->setName('Spieler');
+        
+        $headerRow = array(
+            'Vorname',
+            'Name',
+            'm/w',
+            'Verein',
+            'Verb',
+            'Disziplin',
+            'SBNr',
+            'GebDat',
+            'VereinsNr',
+            'Rangfolge',
+        );
+        $writer->addRow($headerRow);
+        
 
-        $counter = 1;
+        $counter = 0;
 
         $players    = $this->brdb->getPlayersByTournamentIdToExport($id);
-        while($row = $players->fetch_assoc()) {
-            $gender    = $row['p2Gender'] == 'Male' ? 'm' : 'w';
-            $bday = $this->getBday();
+        while($row  = $players->fetch_assoc()) {
+            $gender = $row['p2Gender'] == 'Male' ? 'm' : 'w';
+            $bday   = $this->getBday($row['p1Bday']);
 
             $singleRow = array(
                 $row['p1FirstName'],
@@ -778,13 +800,30 @@ class PrgPatternElementTournament extends APrgPatternElement {
                 $gender,
                 $row['p1ClubName'],
                 $row['p1ClubAssociation'],
+                $row['classification'],
                 $row['p1PlayerNumber'],
                 $bday,
                 $row['p1ClubNumber'],
-                $counter++,
+                ++$counter,
             );
 
             $writer->addRow($singleRow);
+            
+            if ($row['p2FirstName'] != null) {
+                $singleRow = array(
+                    $row['p2FirstName'],
+                    $row['p2LastName'],
+                    $gender,
+                    $row['p2ClubName'],
+                    $row['p2ClubAssociation'],
+                    $row['classification'],
+                    $row['p2PlayerNumber'],
+                    $this->getBday($row['p2Bday']),
+                    $row['p2ClubNumber'],
+                    $counter,
+                );
+                $writer->addRow($singleRow);
+            }
         }
 
         $writer->close();

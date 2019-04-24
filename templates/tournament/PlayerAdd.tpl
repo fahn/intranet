@@ -56,8 +56,7 @@
 
     <div class="row">
       <div class="col-md-6">
-        <input type="submit" name="submit" class="btn btn-success btn-wide" value="Melden + Neu">
-        <input type="submit" name="submit" class="btn btn-primary btn-wide" value="Melden">
+        <input type="submit" name="submit" class="btn btn-success btn-wide" value="Melden">
       </div>
       <div class="col-md-6 text-right">
         <a class="btn btn-danger" href="?action=details&id={$tournament.tournamentId}">Zurück</a>
@@ -134,8 +133,9 @@
     });
 </script>
 {/literal}
-
+<!--
 <div class="search-box">
     <input type="text" autocomplete="off" id="playerSearch" name="playerSearch" placeholder="Search country..." />
     <div class="result"></div>
 </div>
+-->

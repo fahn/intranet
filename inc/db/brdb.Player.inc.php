@@ -25,6 +25,28 @@ trait PlayerDB {
 
         return $this->executeStatement($cmd);
     }
+
+
+    public function selectPlayerById($playerId) {
+        $sql = "SELECT * FROM Player WHERE playerId = ? ";
+        $cmd = $this->db->prepare($sql);
+        $cmd->bind_param("i", $playerId);
+
+        return $this->executeStatement($cmd);
+    }
+
+    public function insertPlayer($data) {
+        try {
+            extract($data);
+            $sql = "INSERT INTO PLAYER (playerNr, clubId, firstName, lastName, gender, bday) VALUES (?,?,?, ?, ?, ?)";
+            $cmd = $this->db->prepare($sql);
+            $cmd->bind_param("sissss", $playerNr, $clubId, $firstName, $lastName, $gender, $bday);
+
+            return $this->executeStatement($cmd);
+        } catch (Exception $e) {
+            return false;
+        }
+    }
 }
 
 ?>

@@ -23,13 +23,13 @@ class BrdbHtmlAdminAllPlayer extends BrdbHtmlPage {
     private $info;
 
     const MAX_ENTRIES = 50;
-    
+
     private $page;
 
 
     public function __construct($page = null) {
         parent::__construct();
-        
+
         if ($page != null) {
             $this->page = $page;
         }
@@ -56,11 +56,11 @@ class BrdbHtmlAdminAllPlayer extends BrdbHtmlPage {
         $action = $this->tools->get('action');
         switch ($action) {
             case 'add_player':
-              $content = $this->TMPL_addPlayer();
+              $content = $this->TMPL_updatePlayer('add');
               break;
 
             case 'edit':
-              $content = $this->TMPL_editPlayer();
+              $content = $this->TMPL_updatePlayer('edit');
               break;
 
             case 'delete':
@@ -112,33 +112,26 @@ class BrdbHtmlAdminAllPlayer extends BrdbHtmlPage {
         return $data;
     }
 
-    private function TMPL_addPlayer() {
+    private function TMPL_updatePlayer($action = 'add') {
+         $id  = $this->tools->get('id');
+
+         if($id > 0) {
+             $res = $this->brdb->selectUserById($id);
+             if(!$this->brdb->hasError()) {
+                 $this->info = $res->fetch_assoc();
+             }
+         }
+
          $this->smarty->assign(array(
             'clubs'  => $this->getClubs(),
             'info'   => $this->info,
-            'hidden' => "Insert User",
-            'task'   => "add",
+            'hidden' => $action == 'add' ? "Insert Player" : "Update Player",
+            'task'   => $action,
          ));
 
-        return $this->smarty->fetch('admin/UserUpdate.tpl');
+        return $this->smarty->fetch('player/adminUpdate.tpl');
     }
 
-
-    private function TMPL_editPlayer() {
-
-        $id  = $this->tools->get('id');
-        $res = $this->brdb->selectUserById($id);
-        if(!$this->brdb->hasError()) {
-            $this->info = $res->fetch_assoc();
-        }
-        $this->smarty->assign(array(
-            'clubs'  => $this->getClubs(),
-            'info'   => $this->info,
-            'hidden' => "Update User",
-            'task'   => "edit",
-        ));
-        return $this->smarty->fetch('admin/UserUpdate.tpl');
-    }
 
     private function TMPL_deletePlayer() {
         $id  = $this->tools->get('id');

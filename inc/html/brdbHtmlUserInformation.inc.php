@@ -29,7 +29,7 @@ class BrdbHtmlUserInformation extends BrdbHtmlPage {
         parent::__construct();
 
         $this->prgElementUser = new PrgPatternElementUser($this->brdb, $this->prgPatternElementLogin);
-        #$this->prgPattern->registerPrg($this->prgElementUser);
+        $this->prgPattern->registerPrg($this->prgElementUser);
     }
 
     public function processPage() {
@@ -40,7 +40,7 @@ class BrdbHtmlUserInformation extends BrdbHtmlPage {
     protected function htmlBody() {
         $id = $this->getGetVariable('id');
         $content = $this->loadContent($id);
-        
+
         // widget
         $widgetTournament = new TournamentWidget();
         $widgetRanking    = new RankingWidget();

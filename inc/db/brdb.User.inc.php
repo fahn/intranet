@@ -68,7 +68,7 @@ trait UserDB {
 
     public function selectAllUserPagination($min = 0, $max = 50)
     {
-        $cmd = $this->db->prepare("SELECT User.*, Club.name as clubName FROM User LEFT JOIN Club ON Club.clubId = User.ClubId ORDER BY User.lastName LIMIT ?,?");
+        $cmd = $this->db->prepare("SELECT User.* FROM User ORDER BY User.lastName LIMIT ?,?");
         $cmd->bind_param("ii", $min, $max);
 
         return $this->executeStatement($cmd);
@@ -117,18 +117,23 @@ trait UserDB {
      *            the phone to be set
      * @return mysqli_result result of the statement execution
      */
-    public function updateUser($userId, $email, $fname, $lName, $gender, $phone, $bday)
-    {
+    public function updateUser($userId, $email, $fname, $lName, $gender, $phone, $bday) {
         $cmd = $this->db->prepare("Update User set email = ?, firstName = ?, lastName = ?, gender = ?, phone = ?, bday = ? WHERE userId = ?");
         $cmd->bind_param("ssssssi", $email, $fname, $lName, $gender, $phone, $bday, $userId);
 
         return $this->executeStatement($cmd);
     }
 
-    public function updateUserPassword($userId, $pass)
-    {
+    public function updateUserPassword($userId, $pass) {
         $cmd = $this->db->prepare("UPDATE User set password = ? WHERE userId = ?");
         $cmd->bind_param("si", $pass, $userId);
+
+        return $this->executeStatement($cmd);
+    }
+
+    public function checkUserPassword($userId, $hashedPassword) {
+        $cmd = $this->db->prepare("SELECT userId FROM User WHERE userId = ? AND password = ? ");
+        $cmd->bind_param("is", $userId, $hashedPassword);
 
         return $this->executeStatement($cmd);
     }

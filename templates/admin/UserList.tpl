@@ -18,7 +18,6 @@
         <th>Vorname</th>
         <th>Nachname</th>
         <th>E-Mail</th>
-        <th>Verein</th>
         <th>m/w</th>
         <th class="text-center">Reporter</th>
         <th class="text-center">Admin</th>
@@ -31,7 +30,6 @@
           <td>{if not $user.email}<span data-toggle="tooltip" data-placement="top" title="Benutzer kann sicht ohne gültige E-Mail-Adresse nicht einloggen."><i class="text-danger fas fa-exclamation-triangle" ></i></span> {/if}{$user.firstName}</td>
           <td>{$user.lastName}</td>
           <td>{$user.email|truncate:10:"...":true}</td>
-          <td>{$user.clubName}</td>
           <td class="text-center">{if $user.gender == "Male"}<i class="fas fa-male"></i>{else}<i class="fas fa-female"></i>{/if}</td>
           <td class="text-center">{if $user.isReporter}<i class="text-success far fa-check-circle"></i>{else}<i class="text-danger far fa-times-circle"></i>{/if}</td>
           <td class="text-center">{if $user.isAdmin}<i class="text-success far fa-check-circle"></i>{else}<i class="text-danger far fa-times-circle"></i>{/if}</td>

@@ -27,7 +27,8 @@ class PrgPatternElementUser extends APrgPatternElement {
     const FORM_USER_IS_ADMIN      = "accountIsAdmin";
     const FORM_USER_IS_REPORTER   = "accountIsReporter";
     const FORM_USER_PASSWORD      = "accountPassword";
-    const FORM_USER_PASSWORD2     = "accountPassword2";
+    const FORM_USER_NEW_PASSWORD  = "accountNewPassword";
+    const FORM_USER_REPEAT_NEW_PASSWORD     = "accountRepeatNewPassword";
     const FORM_USER_PHONE         = "accountPhone";
     const FORM_USER_BDAY          = "accountBday";
     const FORM_USER_PLAYERID      = "accountPlayerId";
@@ -46,6 +47,7 @@ class PrgPatternElementUser extends APrgPatternElement {
     const FORM_USER_ACTION_UPDATE_ACCOUNT    = "Update User";
     const FORM_USER_ACTION_DELETE_ACCOUNT    = "Delete User";
     const FORM_USER_ACTION_UPDATE_MY_ACCOUNT = "Update My Account";
+    const FORM_USER_ACTION_CHANGE_PASSWORD   = "changePassword";
 
     // Errors that can be set by methods of this class
     const ERROR_USER_DELETE_NO_USERID            = "Please select a user for deleting it!";
@@ -70,6 +72,8 @@ class PrgPatternElementUser extends APrgPatternElement {
     public function __construct(BrankDB $brdb, PrgPatternElementLogin $prgElementLogin) {
         parent::__construct("userRegister");
 
+        #die(print_r($_POST));
+
         $this->registerPostSessionVariable(self::FORM_USER_EMAIL);
         $this->registerPostSessionVariable(self::FORM_USER_FNAME);
         $this->registerPostSessionVariable(self::FORM_USER_LNAME);
@@ -89,47 +93,54 @@ class PrgPatternElementUser extends APrgPatternElement {
     }
 
     public function processPost() {
+
         $isUserLoggedIn = $this->prgElementLogin->isUserLoggedIn();
         $isUserAdmin     = $this->prgElementLogin->getLoggedInUser()->isAdmin();
         // Don't process the posts if no user is logged in!
         // otherwise well formed post commands could trigger database actions
         // without theoretically having access to it.
-        if (!$this->prgElementLogin->isUserLoggedIn() || !$isUserAdmin) {
+        if ( !$this->prgElementLogin->isUserLoggedIn() || !$isUserAdmin ) {
             return;
         }
 
 
-        if ($this->issetPostVariable(self::FORM_USER_ACTION)) {
+        if ( ! $this->issetPostVariable(self::FORM_USER_ACTION) ) {
+            return;
+        }
 
-            $loginAction = strval(trim($this->getPostVariable(self::FORM_USER_ACTION)));
-            switch ($loginAction) {
-              /*case self::FORM_USER_ACTION_REGISTER:
-                $this->processPostDeleteUserAccount();
-                break;
+        $loginAction = strval(trim($this->getPostVariable(self::FORM_USER_ACTION)));
+
+        switch ($loginAction) {
+          /*case self::FORM_USER_ACTION_REGISTER:
+            $this->processPostDeleteUserAccount();
+            break;
 */
-                case self::FORM_USER_ACTION_INSERT_ACCOUNT:
-                   $this->processPostInsertUserAccount();
-                    break;
+            case self::FORM_USER_ACTION_INSERT_ACCOUNT:
+               $this->processPostInsertUserAccount();
+                break;
 
-                case self::FORM_USER_ACTION_UPDATE_ACCOUNT:
-                    $id = Tools::get("id");
-                    $this->processPostUpdateUserAccount($id);
-                    break;
+            case self::FORM_USER_ACTION_UPDATE_ACCOUNT:
+                $this->processPostUpdateUserAccount(Tools::get("id"));
+                break;
 
-                case  self::FORM_USER_ACTION_UPDATE_MY_ACCOUNT:
-                    $this->processPostUpdateUserMyAccount();
-                    break;
+            case self::FORM_USER_ACTION_CHANGE_PASSWORD:
+                $this->processPostUpdateUserPassword();
+                break;
 
-                default:
-                    # code...
-                    break;
-            }
+            case  self::FORM_USER_ACTION_UPDATE_MY_ACCOUNT:
+                $this->processPostUpdateUserMyAccount();
+                break;
+
+            default:
+                # code...
+                break;
         }
     }
 
     public function processGet() {
-      $isUserLoggedIn  = PrgPatternElementLogin::isUserLoggedIn();
-      $isUserAdmin     = PrgPatternElementLogin::getLoggedInUser()->isAdmin();
+        #die("PO");
+        $isUserLoggedIn = $this->prgElementLogin->isUserLoggedIn();
+        $isUserAdmin     = $this->prgElementLogin->getLoggedInUser()->isAdmin();
       // Don't process the posts if no user is logged in!
       // otherwise well formed post commands could trigger database actions
       // without theoretically having access to it.
@@ -196,8 +207,8 @@ class PrgPatternElementUser extends APrgPatternElement {
             !$this->issetPostVariable(self::FORM_USER_FNAME) ||
             !$this->issetPostVariable(self::FORM_USER_LNAME) ||
             !$this->issetPostVariable(self::FORM_USER_GENDER) ||
-            !$this->issetPostVariable(self::FORM_USER_PASSWORD) ||
-            !$this->issetPostVariable(self::FORM_USER_PASSWORD2)) {
+            !$this->issetPostVariable(self::FORM_USER_NEW_PASSWORD) ||
+            !$this->issetPostVariable(self::FORM_USER_REPEAT_NEW_PASSWORD)) {
 
             $this->setFailedMessage(self::ERROR_USER_UPDATE_MISSING_INFORMATION);
             return;
@@ -364,8 +375,8 @@ class PrgPatternElementUser extends APrgPatternElement {
         if (! $this->issetPostVariable(self::FORM_USER_EMAIL) ||
             ! $this->issetPostVariable(self::FORM_USER_FNAME) ||
             ! $this->issetPostVariable(self::FORM_USER_LNAME) ||
-            ! $this->issetPostVariable(self::FORM_USER_PASSWORD) ||
-            ! $this->issetPostVariable(self::FORM_USER_PASSWORD2)) {
+            ! $this->issetPostVariable(self::FORM_USER_NEW_PASSWORD) ||
+            ! $this->issetPostVariable(self::FORM_USER_REPEAT_NEW_PASSWORD)) {
               $this->setFailedMessage(self::ERROR_USER_UPDATE_MISSING_INFORMATION);
         }
 
@@ -373,8 +384,8 @@ class PrgPatternElementUser extends APrgPatternElement {
         $email     = strval(trim($this->getPostVariable(self::FORM_USER_EMAIL)));
         $firstName = strval(trim($this->getPostVariable(self::FORM_USER_FNAME)));
         $lastName  = strval(trim($this->getPostVariable(self::FORM_USER_LNAME)));
-        $pass      = strval(trim($this->getPostVariable(self::FORM_USER_PASSWORD)));
-        $pass2     = strval(trim($this->getPostVariable(self::FORM_USER_PASSWORD2)));
+        $pass      = strval(trim($this->getPostVariable(self::FORM_USER_NEW_PASSWORD)));
+        $pass2     = strval(trim($this->getPostVariable(self::FORM_USER_REPEAT_NEW_PASSWORD)));
         $passHash  = password_hash($pass, PASSWORD_DEFAULT);
         $email     = strtolower($email);
         $phone     = strval(trim($this->getPostVariable(self::FORM_USER_PHONE)));
@@ -431,6 +442,53 @@ class PrgPatternElementUser extends APrgPatternElement {
         }
 
         $this->setSuccessMessage(self::SUCCESS_USER_UPDATE);
+        return;
+    }
+
+    private function processPostUpdateUserPassword() {
+        if (! $this->issetPostVariable(self::FORM_USER_PASSWORD) ||
+            ! $this->issetPostVariable(self::FORM_USER_NEW_PASSWORD) ||
+            ! $this->issetPostVariable(self::FORM_USER_REPEAT_NEW_PASSWORD)
+        ) {
+              $this->setFailedMessage(self::ERROR_USER_UPDATE_MISSING_INFORMATION);
+              return;
+        }
+
+        $userId    = intval($this->prgElementLogin->getLoggedInUser()->userId);
+        // old pass
+        $oldPassword = strval(trim($this->getPostVariable(self::FORM_USER_PASSWORD)));
+        $newPassword = strval(trim($this->getPostVariable(self::FORM_USER_NEW_PASSWORD)));
+        $repeatNewPassword = strval(trim($this->getPostVariable(self::FORM_USER_REPEAT_NEW_PASSWORD)));
+
+        if(empty($oldPassword) || empty($newPassword) || empty($repeatNewPassword)) {
+            $this->setFailedMessage(self::ERROR_USER_UPDATE_MISSING_INFORMATION);
+            return;
+        }
+        $res = $this->brdb->selectUserById($userId);
+        if ($res->num_rows != 1) {
+            $this->setFailedMessage("Missing Information. Go to support");
+            return;
+        }
+
+          // fetch the dataset there is only one and try to verify the passowrd
+        $dataSet = $res->fetch_assoc();
+        if (!password_verify($oldPassword, $dataSet['password'])) {
+            $this->setFailedMessage("Das alte Passwort stimmt nicht.");
+            return;
+        }
+
+        if(strcmp($newPassword, $repeatNewPassword) != 0 ) {
+            $this->setFailedMessage("Das neue und das zu wiederholende Passwort stimmen nicht überein.");
+            return;
+        }
+        $hashNewPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+        $res = $this->brdb->updateUserPassword($userId, $hashNewPassword);
+        if ($this->brdb->hasError()) {
+          $this->setFailedMessage($this->brdb->getError());
+          return;
+        }
+
+        $this->setSuccessMessage("Passwort wurde erfolgreich geändert.");
         return;
     }
 

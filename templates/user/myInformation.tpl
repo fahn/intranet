@@ -72,27 +72,6 @@
         </div>
       </div>
     </div>
-
-
-
-    <!-- Success / Default -->
-    <h2 class="mt-5 mb-2">Passwort</h2>
-    <div class="row">
-      <div class="col-md-6">
-        <div class="form-group">
-          <label for = "userRegisterAccountPassword">Password:</label>
-          <input class="form-control" type="password" id="userRegisterAccountPassword" name="userRegisterAccountPassword" placeholder="" value="">
-        </div>
-      </div>
-
-      <div class="col-md-6">
-        <div class="form-group">
-          <label for = "userRegisterAccountPassword2">Repeat Password:</label>
-          <input class="form-control" type="password" id="userRegisterAccountPassword2" name="userRegisterAccountPassword2" placeholder="" value="">
-        </div>
-      </div>
-    </div>
-
     <input class="btn btn-success" type="submit" name="submit" value="Daten ändern">
   </form>
 </div>

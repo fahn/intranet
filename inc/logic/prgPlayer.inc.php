@@ -20,18 +20,17 @@ include_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
 class PrgPatternElementPlayer extends APrgPatternElement {
     const FORM_PLAYER_PLAYERID    = "playerId";
     const FORM_PLAYER_PLAYERNR    = "playerNr";
+    const FORM_PLAYER_FIRSTNAME   = "firstname";
+    const FORM_PLAYER_LASTNAME    = "lastname";
+    const FORM_PLAYER_BDAY        = "bday";
+    const FORM_PLAYER_CLUBID      = "clubId";
+    const FORM_PLAYER_GENDER      = "gender";
 
-    const FORM_USER_GENDER_MALE   = "Male";
-    const FORM_USER_GENDER_FEMALE = "Female";
-
-
-    const FORM_USER_ACTION                   = "formAction";
-    const FORM_USER_ACTION_REGISTER          = "Register";
-    const FORM_USER_ACTION_SELECT_ACCOUNT    = "Edit User";
-    const FORM_USER_ACTION_INSERT_ACCOUNT    = "Insert User";
-    const FORM_USER_ACTION_UPDATE_ACCOUNT    = "Update User";
-    const FORM_USER_ACTION_DELETE_ACCOUNT    = "Delete User";
-    const FORM_USER_ACTION_UPDATE_MY_ACCOUNT = "Update My Account";
+    const FORM_PLAYER_ACTION        = "formAction";
+    const FORM_PLAYER_ACTION_SELECT = "Edit Player";
+    const FORM_PLAYER_ACTION_INSERT = "Insert Player";
+    const FORM_PLAYER_ACTION_UPDATE = "Update Player";
+    const FORM_PLAYER_ACTION_DELETE = "Delete Player";
 
     // Errors that can be set by methods of this class
     const ERROR_USER_DELETE_NO_USERID            = "Please select a user for deleting it!";
@@ -53,16 +52,15 @@ class PrgPatternElementPlayer extends APrgPatternElement {
     protected $brdb;
 
     public function __construct(BrankDB $brdb, PrgPatternElementLogin $prgElementLogin) {
-        parent::__construct("userRegister");
+        parent::__construct("player");
 
-        $this->registerPostSessionVariable(self::FORM_USER_EMAIL);
-        $this->registerPostSessionVariable(self::FORM_USER_FNAME);
-        $this->registerPostSessionVariable(self::FORM_USER_LNAME);
-        $this->registerPostSessionVariable(self::FORM_USER_GENDER);
-        $this->registerPostSessionVariable(self::FORM_USER_IS_PLAYER);
-        $this->registerPostSessionVariable(self::FORM_USER_IS_ADMIN);
-        $this->registerPostSessionVariable(self::FORM_USER_IS_REPORTER);
-        $this->registerPostSessionVariable(self::FORM_USER_ADMIN_USER_ID);
+        $this->registerPostSessionVariable(self::FORM_PLAYER_PLAYERID);
+        $this->registerPostSessionVariable(self::FORM_PLAYER_PLAYERNR);
+        $this->registerPostSessionVariable(self::FORM_PLAYER_FIRSTNAME);
+        $this->registerPostSessionVariable(self::FORM_PLAYER_LASTNAME);
+        $this->registerPostSessionVariable(self::FORM_PLAYER_BDAY);
+        $this->registerPostSessionVariable(self::FORM_PLAYER_CLUBID);
+        $this->registerPostSessionVariable(self::FORM_PLAYER_GENDER);
 
         // load DB
         $this->brdb = $brdb;
@@ -83,71 +81,54 @@ class PrgPatternElementPlayer extends APrgPatternElement {
             return;
         }
 
+        if (! $this->issetPostVariable(self::FORM_PLAYER_ACTION)) {
+            return;
+        }
 
-        if ($this->issetPostVariable(self::FORM_USER_ACTION)) {
-
-            $loginAction = strval(trim($this->getPostVariable(self::FORM_USER_ACTION)));
-            switch ($loginAction) {
-              /*case self::FORM_USER_ACTION_REGISTER:
-                $this->processPostDeleteUserAccount();
+        $loginAction = strval(trim($this->getPostVariable(self::FORM_PLAYER_ACTION)));
+        switch ($loginAction) {
+            case self::FORM_PLAYER_ACTION_INSERT:
+                $this->processPostInsertPlayer();
                 break;
-*/
-                case self::FORM_USER_ACTION_INSERT_ACCOUNT:
-                   $this->processPostInsertUserAccount();
-                    break;
 
-                case self::FORM_USER_ACTION_UPDATE_ACCOUNT:
-                    $id = Tools::get("id");
-                    $this->processPostUpdateUserAccount($id);
-                    break;
+            case self::FORM_PLAYER_ACTION_UPDATE:
+                $id = Tools::get("id");
+                $this->processPostUpdateUserAccount($id);
+                break;
 
-                case  self::FORM_USER_ACTION_UPDATE_MY_ACCOUNT:
-                    $this->processPostUpdateUserMyAccount();
-                    break;
+            case  self::FORM_PLAYER_ACTION_DELETE:
 
-                default:
-                    # code...
-                    break;
-            }
+                break;
+
+            default:
+                # code...
+                break;
         }
     }
 
-    public function processGet() {
-      $isUserLoggedIn  = PrgPatternElementLogin::isUserLoggedIn();
-      $isUserAdmin     = PrgPatternElementLogin::getLoggedInUser()->isAdmin();
-      // Don't process the posts if no user is logged in!
-      // otherwise well formed post commands could trigger database actions
-      // without theoretically having access to it.
-      if (!$this->prgElementLogin->isUserLoggedIn() || !$isUserAdmin) {
-          return;
-      }
+    public function processGet() {}
 
-        $action = Tools::get("action");
-
-        switch ($action) {
-          case 'delete':
-            $id = Tools::get("id");
-            $this->processGetDeleteUserAccount($id);
-            break;
-
-          default:
-            # code...
-            break;
-        }
-    }
-
-    private function processPostInsertUserAccount() {
+    private function processPostInsertPlayer() {
       // Check that all information has been posted
       if (
-        ! $this->issetPostVariable(self::FORM_USER_FNAME) ||
-        ! $this->issetPostVariable(self::FORM_USER_LNAME) ||
-        ! $this->issetPostVariable(self::FORM_USER_GENDER)
+        ! $this->issetPostVariable(self::FORM_PLAYER_CLUBID) ||
+        ! $this->issetPostVariable(self::FORM_PLAYER_FIRSTNAME) ||
+        ! $this->issetPostVariable(self::FORM_PLAYER_LASTNAME)
       ) {
           $this->setFailedMessage(self::ERROR_USER_UPDATE_MISSING_INFORMATION);
           return;
       }
 
-      $res = insertUserEasyProcess();
+      $data = array(
+          'clubid'    => strval(trim($this->getPostVariable(self::FORM_PLAYER_CLUBID))),
+          'firstName' => strval(trim($this->getPostVariable(self::FORM_PLAYER_FIRSTNAME))),
+          'lastName'  => strval(trim($this->getPostVariable(self::FORM_PLAYER_LASTNAME))),
+          'gender'    => strval(trim($this->getPostVariable(self::FORM_PLAYER_GENDER))),
+          'playerNr'  => strval(trim($this->getPostVariable(self::FORM_PLAYER_PLAYERNR))),
+          'bday'      => strval(trim($this->getPostVariable(self::FORM_PLAYER_BDAY))),
+      );
+
+      $res = $this->brdb->insertPlayer($data);
       if ($this->brdb->hasError()) {
           $this->setFailedMessage($this->brdb->getError());
           return;
