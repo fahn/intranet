@@ -1,3 +1,6 @@
+<div class="alert alert-warning">
+    <p class="text-center">Alte Bilder werden nicht gelöscht, sondern Serverseitig gespeichert.</p>
+</div>
 <div id="formUserRegister">
   <form action="" method="post" enctype="multipart/form-data">
     <input type="hidden" name="userRegisterFormAction" id="userRegisterFormAction" value="changeImage">
