@@ -29,6 +29,7 @@ Folgende Bibliotheken wurde hier eingesetzt:
 | nette/mail      | 2.4     | BSD License | (https://github.com/nette/mail)        |
 | box/spout       | 2.7     | apache      | (https://github.com/box/spout          |
 | dompdf/dompdf   | 0.8.3   | LGPL-2.1    | (https://github.com/dompdf/dompdf)     |
+| eluceo/ical     | 0.15.0   | MIT        | (https://github.com/markuspoerschke/iCal) |
 | Gargron/fileupload | 1.4.0 | MIT        | (https://github.com/Gargron/fileupload) |
 
 # Programmierer

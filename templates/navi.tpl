@@ -16,7 +16,7 @@
                   <li class="nav-item"><a class="nav-link" href="ranking.php"><i class="fas fa-list-ol"></i> Ranking</a></li>
                 {/if}
 
-                {if $faqEnabled == "on" || $userId == 1}
+                {if $faqEnabled == "on"}
                     <li class="nav-item"><a class="nav-link" href="faq.php"><i class="fas fa-question"></i> FAQ</a></li>
                 {/if}
 

@@ -12,38 +12,35 @@
 
 <div class="container mt-5">
     <div class="row">
-        <div class="col-md-3">
-            <ul class="list-group">
-                {foreach item=category from=$FaqGroupedByCategory}
-                <li class="list-group-item"><a href="#">{$category.title}</a> <span class="badge badge-primary">{$category.rows|@count}</span><br></li>
+        <div class="col-3">
+            <div class="list-group" id="list-tab" role="tablist">
+                {foreach item=item from=$Categories}
+                    <a class="list-group-item list-group-item-action" id="list-{$item.title}-list" data-toggle="list" href="#list-{$item.title}" role="tab" aria-controls="{$item.title}">{if $item.pid > 0}--{/if} {$item.title} <span class="badge badge-primary">{$item.items}</span></a>
                 {/foreach}
-            </ul>
-        </div>
-        <div class="col-md-9">
-            <div id="accordion">
-
-
             </div>
-            <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+        </div>
+        <div class="col-9">
+            <div class="tab-content" id="nav-tabContent">
                 {foreach item=category from=$FaqGroupedByCategory}
-                <!-- <h2>{$category.title}</h2> -->
-                {foreach key=itemKey item=item from=$category.rows}
-                <div class="card">
-                    <div class="card-header">
-                        <a class="card-link" data-toggle="collapse" href="#collapse{$itemKey}">
-                            {$item.title}
-                        </a>
-                    </div>
-                    <div id="collapse{$itemKey}" class="collapse show" data-parent="#accordion">
-                        <div class="card-body">
-                            {$item.text|unescape:"htmlall"}
-                            <hr>
-                            Erstellt: {$item.createdBy}<br>
-                            Bearbeitet: {$item.lastEdited}<br>
-                        </div>
-                    </div>
-                </div>
-                {/foreach}
+                  <div class="tab-pane fade show active" id="list-{$category.title}" role="tabpanel" aria-labelledby="list-{$category.title}-list">
+                      <h2 class="display-5 mb-3 mt-3">{$category.title}</h2>
+                      {foreach key=itemKey item=item from=$category.rows}
+                      <div class="card">
+                          <div class="card-header">
+                              <a class="card-link" data-toggle="collapse" href="#collapse{$itemKey}">
+                                  {$item.title}
+                              </a>
+                          </div>
+                          <div id="collapse{$itemKey}" class="collapse show" data-parent="#accordion">
+                              <div class="card-body">
+                                  {$item.text|unescape:"htmlall"}
+                                  <hr>
+                                  <span class="small">Erstellt: {$item.createdBy}; Bearbeitet: {$item.lastEdited}</span>
+                              </div>
+                          </div>
+                      </div>
+                      {/foreach}
+                  </div>
                 {/foreach}
             </div>
         </div>

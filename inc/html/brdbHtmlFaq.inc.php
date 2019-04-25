@@ -17,18 +17,16 @@ include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgPattern.inc.php';
 include_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
 
 class BrdbHtmlFaq extends BrdbHtmlPage {
-    private $vars;
+    private $lcontent;
 
     public function __construct() {
         parent::__construct();
 
-
         $this->tools->secure_array($_GET);
-
+        
         // list
         $links = array(
             'list'     => $this->tools->linkTo(array('page' => 'faq.php', 'action' => 'list')),
-            'category' => '#',
         );
         $this->smarty->assign('links', $links);
     }
@@ -38,24 +36,28 @@ class BrdbHtmlFaq extends BrdbHtmlPage {
     }
 
     protected function htmlBody() {
-        $content = $this->TMPL_showFAQ();
-
+        $this->TMPL_showFAQ();
+        
         $this->smarty->assign(array(
-            'content' => $content,
+            'content' => $this->lcontent,
         ));
         $this->smarty->display('index.tpl');
+    }
+    
+    private function TMPL_showCategory($id) {
+        $this->lcontent = "DAS";
     }
 
     private function TMPL_showFAQ() {
         $this->smarty->assign(array(
             'FaqGroupedByCategory' => $this->getFaqGroupedByCategory(),
             'FaqList'              => $this->getFaqGroupedByCategory(),
-            'Category'             => $this->getCategory(),
+            'Categories'             => $this->getCategory(),
             //'CategoryHtmlOptions'  => $this->getCategoryHtmlOptions(),
         ));
 
 
-        return $this->smarty->fetch('faq/list.tpl');
+        $this->lcontent = $this->smarty->fetch('faq/list.tpl');
     }
 
     private function getFaqGroupedByCategory() {
@@ -63,16 +65,18 @@ class BrdbHtmlFaq extends BrdbHtmlPage {
         if (!$this->brdb->hasError()) {
             $data = array();
             while ($dataSet = $res->fetch_assoc()) {
-                if (isset($dataSet['categoryId']) && !array_key_exists($dataSet['categoryId'], $data)) {
+                if (isset($dataSet['categoryId']) && !array_key_exists($dataSet['categoryId'], $data) ) {
                     $data[$dataSet['categoryId']] = array('title' => $dataSet['categoryTitle'], 'rows' => array());
                 }
                 $data[$dataSet['categoryId']]['rows'][] = $dataSet;
             }
 
-            return $data;
+            
         }
+        #echo "<pre>";
+        #die(print_r($data));
 
-        return "";
+        return $data;
     }
 
     private function getFaqList() {
@@ -81,8 +85,6 @@ class BrdbHtmlFaq extends BrdbHtmlPage {
             $data = array();
             while ($dataSet = $res->fetch_assoc()) {
                 // edit Link
-                #$dataSet['editLink'] = "#". $dataSet['faqId'];
-                #$dataSet['deleteLink'] = "#". $dataSet['faqId'];
                 $data[] = $dataSet;
             }
 
@@ -93,11 +95,10 @@ class BrdbHtmlFaq extends BrdbHtmlPage {
     }
 
     private function getCategory() {
-        $res = $this->brdb->statementGetAllCategories();
+        $res = $this->brdb->statementGetCategoryAndCountItems();
         if (!$this->brdb->hasError()) {
             $data = array();
             while ($dataSet = $res->fetch_assoc()) {
-                #$data[$dataSet['categoryId']] = $dataSet['title'];
                 $data[] = $dataSet;
             }
 
@@ -114,6 +115,17 @@ class BrdbHtmlFaq extends BrdbHtmlPage {
             $data[$dataSet['categoryId']] = $dataSet['title'];
         }
 
+        return $data;
+    }
+    
+    private function getFaqByCategoryId($id) {
+        $res = $this->brdb->statementGetFaqByCategoryId($id);
+        if (!$this->brdb->hasError()) {
+            $data = array();
+            while ($dataSet = $res->fetch_assoc()) {
+                $data[] = $dataSet;
+            }
+        }
         return $data;
     }
 

@@ -404,23 +404,29 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
         return "";
     }
 
+    /** Get players from tournament
+     * 
+     * @param unknown $id
+     * @return unknown[]|string
+     */
     private function getPlayersByTournamentId($id) {
         $res = $this->brdb->getPlayersByTournamentId($id);
         if (!$this->brdb->hasError()) {
             $data = array();
             while ($dataSet = $res->fetch_assoc()) {
-                #die(print_r($dataSet));
-                //
                 if($this->strpos_arr($dataSet['classification'], array('HD', 'DD', 'JD', 'MD', 'GD')) && $dataSet['partnerId'] > 0) {
-                    $dataSet['partnerLink'] =  $this->tools->linkTo(array('page' => 'user.php', 'id' => $dataSet['partnerId']));
+                    $dataSet['partnerLink'] =  $this->tools->linkTo(array('page' => 'player.php', 'id' => $dataSet['partnerId']));
                 } else {
                   $dataSet['partnerId']   = 0;
                   $dataSet['partnerName'] = 'FREI';
                 }
 
-                $dataSet['linkPlayer'] = $this->tools->linkTo(array('page' => 'user.php', 'id' => $dataSet['playerId']));
+                $dataSet['linkPlayer'] = $this->tools->linkTo(array('page' => 'player.php', 'id' => $dataSet['playerId']));
+                
                 $dataSet['linkReporter'] = $this->tools->linkTo(array('page' => 'user.php', 'id' => $dataSet['reporterId']));
-
+                
+                $dataSet['linkDelete'] = $this->tools->linkTo(array('page' => 'tournament.php', 'id' => $dataSet['tournamentId'], 'tournamentPlayerId' => $dataSet['tournamentPlayerId']));
+                
                 $data[]         = $dataSet;
             }
 

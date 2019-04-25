@@ -90,7 +90,7 @@
           {/if}
           <td class="text-center">
             {if $isAdmin or $isReporter or $player.playerId == $userId or $player.partnerId == $userId}
-              <a class="btn btn-danger" href="?action=deletePlayer&id={$tournament.tournamentId}&tournamentPlayerId={$player.tournamentPlayerId}" onclick="return confirm('MÃ¶chtest du wirklich den Spieler abmelden ?');">Abmelden</a>
+              <a class="btn btn-danger" href="{$player.linkDelete}" onclick="return confirm('Möchtest du wirklich den Spieler abmelden ?');">Abmelden</a>
             {/if}
           </td>
         </tr>

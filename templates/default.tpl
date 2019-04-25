@@ -47,7 +47,7 @@
         {$widgetUpcomingTournaments}
     {/if}
 
-    {if $newsEnable == "on" || $userId == 1}
+    {if $newsEnable == "on"}
         {if $widgetLatestNews}
             {$widgetLatestNews}
         {/if}

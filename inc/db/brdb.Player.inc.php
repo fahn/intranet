@@ -28,12 +28,26 @@ trait PlayerDB {
 
 
     public function selectPlayerById($playerId) {
-        $sql = "SELECT * FROM Player WHERE playerId = ? ";
+        $sql = "SELECT Player.*, Club.name AS clubName FROM Player 
+                LEFT JOIN `Club` ON Club.clubId = Player.clubId
+                WHERE playerId = ? ";
         $cmd = $this->db->prepare($sql);
         $cmd->bind_param("i", $playerId);
 
         return $this->executeStatement($cmd);
     }
+    
+    public function selectPlayerByPlayerNr($playerNr) {
+        $sql = "SELECT Player.*, Club.name AS clubName FROM Player 
+                LEFT JOIN `Club` ON Club.clubId = Player.clubId
+                WHERE playerNr = ? ";
+        $cmd = $this->db->prepare($sql);
+        $cmd->bind_param("s", $playerNr);
+
+        return $this->executeStatement($cmd);
+    }
+    
+    
 
     public function insertPlayer($data) {
         try {
@@ -41,6 +55,25 @@ trait PlayerDB {
             $sql = "INSERT INTO PLAYER (playerNr, clubId, firstName, lastName, gender, bday) VALUES (?,?,?, ?, ?, ?)";
             $cmd = $this->db->prepare($sql);
             $cmd->bind_param("sissss", $playerNr, $clubId, $firstName, $lastName, $gender, $bday);
+
+            return $this->executeStatement($cmd);
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+    
+    public function updatePlayer($data) {
+        try {
+            extract($data);
+            $sql = "UPDATE PLAYER set
+                        firstName = ?,
+                        lastName = ?,
+                        gender = ?,
+                        bday = ?,
+                        clubId = ?
+                    WHERE playerNr = ?";
+            $cmd = $this->db->prepare($sql);
+            $cmd->bind_param("ssssis", $firstName, $lastName, $gender, $bday, $clubId, $playerNr);
 
             return $this->executeStatement($cmd);
         } catch (Exception $e) {

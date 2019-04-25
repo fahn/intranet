@@ -56,20 +56,24 @@ class BrdbHtmlAdminAllPlayer extends BrdbHtmlPage {
         $action = $this->tools->get('action');
         switch ($action) {
             case 'add_player':
-              $content = $this->TMPL_updatePlayer('add');
-              break;
+                $content = $this->TMPL_updatePlayer('add');
+                break;
+              
+            case 'sync':
+                $content = $this->TMPL_sync();
+                break;
 
             case 'edit':
-              $content = $this->TMPL_updatePlayer('edit');
-              break;
+                $content = $this->TMPL_updatePlayer('edit');
+                break;
 
             case 'delete':
-              $content = $this->TMPL_deletePlayer();
-              break;
+                $content = $this->TMPL_deletePlayer();
+                break;
 
             default:
-              $content = $this->TMPL_listPlayer();
-              break;
+                $content = $this->TMPL_listPlayer();
+                break;
         }
 
         $this->smarty->assign(array(
@@ -145,6 +149,65 @@ class BrdbHtmlAdminAllPlayer extends BrdbHtmlPage {
         ));
 
         return $this->smarty->fetch('admin/UserDelete.tpl');
+    }
+    
+    private function TMPL_sync() {
+        $this->smarty->assign(array(
+            'statistics'   => $this->syncPlayer(),
+        ));
+        
+        return $this->smarty->fetch('player/adminSync.tpl');
+    }
+    
+    private function syncPlayer() {
+        $statistics = array('new' => 0, 'updated' => 0);
+        $file = file_get_contents('https://api.badtra.de/player/list.php');
+        $data = json_decode($file);
+        unset($file);//prevent memory leaks for large json.
+        //insert data here
+        foreach($data as $item) {
+            if (empty($item['playerNr'])) {
+                continue;
+            }
+            echo $item['playerNr'];
+            if (! $this->findPlayer($item['playerNr'])) {
+                #$this->insertPlayer($item);
+                $statistics['new']++;
+            } else {
+                #$this->updatePlayer($item);
+                $statistics['updated']++;
+            }
+        }
+        die();
+        
+        return $statistics;
+    }
+    
+    private function findPlayer($playerNr) {
+        $res = $this->brdb->selectPlayerByPlayerNr($playerNr);
+        $tmp = array();
+        if ($this->brdb->hasError()) {
+            return false;
+        }
+        die($res->num_rows);
+        
+        return $res->num_rows == 1 ? true : false;
+    }
+    
+    private function insertPlayer($item) {
+        $res = $this->brdb->insertPlayer($item);
+        if ($this->brdb->hasError()) {
+            return false;
+        }
+        return true;
+    }
+    
+    private function updatePlayer($item) {
+        $res = $this->brdb->updatePlayer($item);
+        if ($this->brdb->hasError()) {
+            return false;
+        }
+        return true;
     }
 
     private function getClubs() {

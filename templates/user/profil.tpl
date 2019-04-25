@@ -1,5 +1,5 @@
 {if !$user}
-    <div class="alert alert-danger text-center">Bitte wÃ¤hlen Sie einen gÃ¼ltigen User aus</div>
+    <div class="alert alert-danger text-center">Bitte wählen Sie einen gültigen User aus</div>
 {else}
 
     {if $user.userId == $userId || $isAdmin}
@@ -25,67 +25,67 @@
 
 
 
-<div class="row">
-    <div class="col-md-12">
-        <div class="card mt-4 mb-4">
-            <h5 class="card-header">Informationen</h5>
-            <div class="card-body">
-                <p class="card-text">
-                    <div class="row">
-                        <div class="col-md-6">
-                            {if $isAdmin || $isReported }
-                              {if $user.bday|intval != 0}
-                               <p><strong>Geburtstag:</strong> {$user.bday|date_format:"d.m.Y"}</p>
-                              {/if}
-                              {if $user.email}
-                                <p><strong>E-Mail:</strong> {$user.email}</p>
-                              {/if}
-                              {if $user.phone}
-                                <p><strong>Telefon:</strong> {$user.phone}</p>
-                              {/if}
-                            {/if}
-                        </div>
-                        <div class="col-md-6">
-                            {if $user.playerId}
-                                <p><strong>Spielernummer:</strong> {$user.playerId}</p>
-                            {/if}
-
-                            {if $club.name}
-                                <p><strong>Verein: </strong> {$club.name}</p>
-                            {/if}
-                        </div>
-                    </div>
-                </p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row">
-    {if $latestGamesInRanking}
-    <div class="col-md-6">
-        <div class="card">
-            <h5 class="card-header">Letzten Spiele im Ranking</h5>
-            <div class="card-body">
-                {$latestGamesInRanking}
-            </div>
-        </div>
-    </div>
-    {/if}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card mt-4 mb-4">
+                <h5 class="card-header">Informationen</h5>
+                <div class="card-body">
+                    <p class="card-text">
+                        <div class="row">
+                            <div class="col-md-6">
+                                {if $isAdmin || $isReported }
+                                  {if $user.bday|intval != 0}
+                                   <p><strong>Geburtstag:</strong> {$user.bday|date_format:"d.m.Y"}</p>
+                                  {/if}
+                                  {if $user.email}
+                                    <p><strong>E-Mail:</strong> {$user.email}</p>
+                                  {/if}
+                                  {if $user.phone}
+                                    <p><strong>Telefon:</strong> {$user.phone}</p>
+                                  {/if}
+                                {/if}
+                            </div>
+                            <div class="col-md-6">
+                                {if $user.playerId}
+                                    <p><strong>Spielernummer:</strong> {$user.playerId}</p>
+                                {/if}
     
-    {if $latestTournament}
-    <div class="col-md-6">
-        <div class="card">
-            <h5 class="card-header">Letzten 10 offizielle Turniere/Ranglisten</h5>
-            <div class="card-body">
-                {$latestTournament}
+                                {if $club.name}
+                                    <p><strong>Verein: </strong> {$club.name}</p>
+                                {/if}
+                            </div>
+                        </div>
+                    </p>
+                </div>
             </div>
         </div>
     </div>
-    {/if}
-</div>
-
-<p class="text-right">
-  <a class="btn btn-danger" href="javascript:history.back()">ZurÃ¼ck</a>
-</p>
+    
+    <div class="row">
+        {if $latestGamesInRanking}
+        <div class="col-md-6">
+            <div class="card">
+                <h5 class="card-header">Letzten Spiele im Ranking</h5>
+                <div class="card-body">
+                    {$latestGamesInRanking}
+                </div>
+            </div>
+        </div>
+        {/if}
+        
+        {if $latestTournament}
+        <div class="col-md-6">
+            <div class="card">
+                <h5 class="card-header">Letzten 10 offizielle Turniere/Ranglisten</h5>
+                <div class="card-body">
+                    {$latestTournament}
+                </div>
+            </div>
+        </div>
+        {/if}
+    </div>
+    
+    <p class="text-right">
+      <a class="btn btn-danger" href="javascript:history.back()">Zurück</a>
+    </p>
 {/if}

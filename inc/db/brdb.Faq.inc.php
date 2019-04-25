@@ -27,6 +27,20 @@ trait FaqDB {
 
         return  $this->executeStatement($cmd);
     }
+    
+    public function statementGetFaqByCategoryId($id) {
+        $cmd = $this->db->prepare("SELECT * FROM `Faq`
+                                   WHERE  categoryId = ? ");
+        $cmd->bind_param("i", $id);
+        
+        return  $this->executeStatement($cmd);
+    }
+    
+    public function statementGetCategoryAndCountItems() {
+        $cmd = $this->db->prepare("SELECT *, (SELECT count(*) FROM Faq WHERE Faq.categoryId = Category.categoryId) AS items FROM `Category`");
+
+        return  $this->executeStatement($cmd);
+    }
 
     public function insertFaq($title, $categoryId, $text) {
         $cmd = $this->db->prepare("INSERT INTO `Faq` (title, categoryId, text) VALUES (?, ?, ?)");
