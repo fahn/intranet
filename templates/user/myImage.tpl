@@ -1,49 +1,16 @@
-<div class="alert alert-danger" role="alert">
-  Klappt noch nicht
+<div id="formUserRegister">
+  <form action="" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="userRegisterFormAction" id="userRegisterFormAction" value="changeImage">
+
+    <h2 class="mt-5 mb-2">Profilbild</h2>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="form-group">
+          <label for = "userRegisterAccountImage">Bild (Nur jpg/png-Bilder mit einer max. Größe von 2MB sind erlaubt):</label>
+          <input class="form-control-file border" type="file" id="userRegisterAccountImage" name="userRegisterAccountImage[]" placeholder="" value="">
+        </div>
+      </div>
+    </div>
+    <input class="btn btn-success" type="submit" name="submit" value="Bild hochladen">
+  </form>
 </div>
-
-
-<form id="form1" runat="server">
-  <input type='file' id="imgInp" />
-  <img id="my-image" src="#" />
-</form>
-<button id="use">Upload</button>
-<img id="result" src="">
-
-
-
-<script type="text/javascript">
-
-{literal}
-function readURL(input) {
-  if (input.files && input.files[0]) {
-    var reader = new FileReader();
-    reader.onload = function(e) {
-      $('#my-image').attr('src', e.target.result);
-      var resize = new Croppie($('#my-image')[0], {
-        viewport: { width: 100, height: 100 },
-        boundary: { width: 300, height: 300 },
-        showZoomer: false,
-        enableResize: true,
-        enableOrientation: true
-      });
-      $('#use').fadeIn();
-      $('#use').on('click', function() {
-        resize.result('base64').then(function(dataImg) {
-          var data = [{ image: dataImg }, { name: 'myimgage.jpg' }];
-          // use ajax to send data to php
-          $('#result').attr('src', dataImg);
-        })
-      })
-    }
-    reader.readAsDataURL(input.files[0]);
-  }
-}
-
-$("#imgInp").change(function() {
-  readURL(this);
-});
-
-{/literal}
-
-</script>

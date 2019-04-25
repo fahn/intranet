@@ -38,8 +38,7 @@ trait UserDB {
      *            the id of the user to be deleted
      * @return mysqli_result result of the sql execution
      */
-    public function deleteUserById($userId)
-    {
+    public function deleteUserById($userId) {
         $cmd = $this->db->prepare("Update User set email = '', password = '', reporter = 0, admin = 0 WHERE userId = ?");
         $cmd->bind_param("i", $userId);
 
@@ -225,6 +224,16 @@ trait UserDB {
     {
         $cmd = $this->db->prepare("SELECT userId FROM User WHERE LOWER(_UserFullName(firstName, lastName)) = LOWER(?)");
         $cmd->bind_param("s", $fullUserName);
+
+        return $this->executeStatement($cmd);
+    }
+
+    /**
+     * set image to User
+     */
+    public function updateUserImage($userId, $image) {
+        $cmd = $this->db->prepare("UPDATE User set image = ? WHERE userId = ? ");
+        $cmd->bind_param("si", $image, $userId);
 
         return $this->executeStatement($cmd);
     }

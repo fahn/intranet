@@ -33,6 +33,7 @@ class PrgPatternElementUser extends APrgPatternElement {
     const FORM_USER_BDAY          = "accountBday";
     const FORM_USER_PLAYERID      = "accountPlayerId";
     const FORM_USER_CLUBID        = "accountClubId";
+    const FORM_USER_IMAGE         = "accountImage";
 
     const FORM_USER_GENDER_MALE   = "Male";
     const FORM_USER_GENDER_FEMALE = "Female";
@@ -48,6 +49,7 @@ class PrgPatternElementUser extends APrgPatternElement {
     const FORM_USER_ACTION_DELETE_ACCOUNT    = "Delete User";
     const FORM_USER_ACTION_UPDATE_MY_ACCOUNT = "Update My Account";
     const FORM_USER_ACTION_CHANGE_PASSWORD   = "changePassword";
+    const FORM_USER_ACTION_CHANGE_IMAGE      = "changeImage";
 
     // Errors that can be set by methods of this class
     const ERROR_USER_DELETE_NO_USERID            = "Please select a user for deleting it!";
@@ -125,6 +127,10 @@ class PrgPatternElementUser extends APrgPatternElement {
 
             case self::FORM_USER_ACTION_CHANGE_PASSWORD:
                 $this->processPostUpdateUserPassword();
+                break;
+
+            case self::FORM_USER_ACTION_CHANGE_IMAGE:
+                $this->processPostUploadImage();
                 break;
 
             case  self::FORM_USER_ACTION_UPDATE_MY_ACCOUNT:
@@ -445,6 +451,9 @@ class PrgPatternElementUser extends APrgPatternElement {
         return;
     }
 
+    /**
+     * Change Password from loggedInUser
+     */
     private function processPostUpdateUserPassword() {
         if (! $this->issetPostVariable(self::FORM_USER_PASSWORD) ||
             ! $this->issetPostVariable(self::FORM_USER_NEW_PASSWORD) ||
@@ -490,6 +499,63 @@ class PrgPatternElementUser extends APrgPatternElement {
 
         $this->setSuccessMessage("Passwort wurde erfolgreich geändert.");
         return;
+    }
+
+    private function processPostUploadImage() {
+        $userId    = intval($this->prgElementLogin->getLoggedInUser()->userId);
+        $filename = $this->uploadImage();
+        if ($filename == null) {
+            $this->setFailedMessage("Fehler beim Upload");
+            return;
+        }
+
+        $res = $this->brdb->updateUserImage($userId, $filename);
+        if ($this->brdb->hasError()) {
+          $this->setFailedMessage($this->brdb->getError());
+          return;
+        }
+
+
+        $this->setSuccessMessage("Bild wurde hochgeladen.");
+        return;
+
+    }
+
+    private function uploadImage() {
+        #die(print_r($_FILES));
+        // Simple validation (max file size 2MB and only two allowed mime types)
+        $validator = new FileUpload\Validator\Simple('2M', ['image/png', 'image/jpg']);
+
+        // Simple path resolver, where uploads will be put
+        $path = $_SERVER['BASE_DIR'] .'static/img/user/';
+        $pathresolver = new FileUpload\PathResolver\Simple($path);
+
+        // The machine's filesystem
+        $filesystem = new FileUpload\FileSystem\Simple();
+
+        // set filename to random
+        $filenamegenerator = new FileUpload\FileNameGenerator\Random("123");
+
+        // FileUploader itself
+        $fileupload = new FileUpload\FileUpload($_FILES['userRegisterAccountImage'], $_SERVER);
+
+        // Adding it all together. Note that you can use multiple validators or none at all
+        $fileupload->setPathResolver($pathresolver);
+        $fileupload->setFileSystem($filesystem);
+        $fileupload->addValidator($validator);
+        $fileupload->setFileNameGenerator($filenamegenerator);
+
+        // Doing the deed
+        list($files, $headers) = $fileupload->processAll();
+
+        json_encode(['files' => $files]);
+
+        foreach($files as $file){
+            if ($file->error == 0) {
+                return $file->getFileName();
+            }
+        }
+        return false;
     }
 
     public function getAdminUser() {

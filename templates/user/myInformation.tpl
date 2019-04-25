@@ -38,8 +38,8 @@
     <div class="row">
       <div class="col-md-6">
         <label for="userRegisterAccountBday">Geburtstag:</label>
-        <div class="input-group date" data-provide="datepicker">
-          <input type="text" class="form-control" id="userRegisterAccountBday" name="userRegisterAccountBday" placeholder="" value="{$vars['bdayValue']|date_format:"d.m.Y"}">
+        <div class="input-group">
+          <input type="text" class="form-control datepicker" id="userRegisterAccountBday" name="userRegisterAccountBday" placeholder="" value="{$vars['bdayValue']|date_format:"d.m.Y"}" data-input>
           <div class="input-group-addon">
               <span class="glyphicon glyphicon-th"></span>
           </div>
