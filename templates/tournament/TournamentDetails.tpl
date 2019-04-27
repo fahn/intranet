@@ -71,34 +71,36 @@
 </div>
 
 <div class="table-responsive">
-  <table class="table table-striped table-hover">
-    <tr>
-      <th>Spieler</th>
-      <th>Disziplin</th>
-      {if $isAdmin || $isReporter}
-      <th>Melder</th>
-      {/if}
-        <th class="text-center">Option</th>
-    </tr>
-    {foreach item=player from=$players}
-      {if $player.visible == 1}
-        <tr>
-          <td><a href="{$player.linkPlayer}" title="Profil von {$player.playerName}">{$player.playerName}</a> {if $player.partnerId}// {if $player.partnerName == 'FREI'}<span class="text-danger font-weight-bold">{$player.partnerName}</span> {else} <a href="{$player.partnerLink}" title="Profil von {$player.partnerName}">{$player.partnerName}</a>{/if}{/if}</td>
-          <td>{$player.classification}</td>
-          {if $isAdmin || $isReporter}
-            <td><a href="{$player.linkReporter}" title="gemeldet von {$player.reporterName} am {$player.fillingDate|date_format:"d.m.Y H:i"}">{$player.reporterName}</a> ({$player.fillingDate|date_format:"d.m.Y"})</td>
-          {/if}
-          <td class="text-center">
-            {if $isAdmin or $isReporter or $player.playerId == $userId or $player.partnerId == $userId}
-              <a class="btn btn-danger" href="{$player.linkDelete}" onclick="return confirm('M�chtest du wirklich den Spieler abmelden ?');">Abmelden</a>
-            {/if}
-          </td>
-        </tr>
-      {/if}
-    {foreachelse}
-      <tr>
-        <td colspan="4" class="text-center font-weight-bold">Keine Einträge</td>
-      </tr>
-    {/foreach}
-  </table>
+    <table class="table table-striped table-hover" data-toggle="table" data-pagination="true" data-search="true">
+        <thead>
+            <tr>
+              <th data-sortable="true" data-field="player">Spieler</th>
+              <th data-sortable="true" data-field="classification">Disziplin</th>
+              <th>Melder</th>
+              <th class="text-center">Option</th>
+            </tr>
+        </thead>
+        <tbody>
+            {foreach item=player from=$players}
+                {if $player.visible == 1}
+                    <tr>
+                        <td>
+                            <a href="{$player.linkPlayer}" title="Profil von {$player.playerName}">{$player.playerName}</a> {if $player.partnerId}// {if $player.partnerName == 'FREI'}<span class="text-danger font-weight-bold">{$player.partnerName}</span> {else} <a href="{$player.partnerLink}" title="Profil von {$player.partnerName}">{$player.partnerName}</a>{/if}{/if}
+                        </td>
+                        <td>{$player.classification}</td>
+                        <td><a href="{$player.linkReporter}" title="gemeldet von {$player.reporterName} am {$player.fillingDate|date_format:"d.m.Y H:i"}">{$player.reporterName}</a> ({$player.fillingDate|date_format:"d.m.Y"})</td>
+                        <td class="text-center">
+                            {if $isAdmin or $isReporter or $player.playerId == $userId or $player.partnerId == $userId}
+                                <a class="btn btn-danger" href="{$player.linkDelete}" onclick="return confirm('Möchtest du wirklich den Spieler abmelden ?');">Abmelden</a>
+                            {/if}
+                        </td>
+                    </tr>
+                {/if}
+            {foreachelse}
+                <tr>
+                    <td colspan="4" class="text-center font-weight-bold">Keine Einträge</td>
+                </tr>
+            {/foreach}
+        </tbody>
+    </table>
 </div>

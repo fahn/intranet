@@ -13,8 +13,7 @@
  ******************************************************************************/
 
 include_once $_SERVER['BASE_DIR'] .'/inc/html/brdbHtmlPage.inc.php';
-include_once $_SERVER['BASE_DIR'] .'/inc/parsedown-1.6.0/Parsedown.php';
-
+require_once $_SERVER['BASE_DIR'] .'/vendor/autoload.php';
 
 class BrdbHtmlParseDownPage extends BrdbHtmlPage {
 

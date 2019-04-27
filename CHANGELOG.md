@@ -4,7 +4,14 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-### [1.0.6] - 2019-??-??
+### [1.0.6.2] - 2019-04-27
+- seperate Player and Users
+- fix own account editoring
+- fix markdown view
+- add userimage to profil
+- add sortable tables to tournament
+
+### [1.0.6.1] - 2019-04-01
 - add FAQ - System
 - add Image-Upload for User
 - add more funktions to ELO Ranking System

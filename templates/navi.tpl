@@ -47,14 +47,15 @@
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         {$currentUserName}
                     </a>
-                    <div class="dropdown-menu dropdown-menu-right text-right">
+                    <div class="dropdown-menu dropdown-menu-right">
                         <a class="dropdown-item" href="/pages/user.php?id={$userId}"><i class="fas fa-user-circle" aria-hidden="true"></i> My Account</a>
                         <a class="dropdown-item" href="myAccount.php"><i class="fas fa-edit"></i> Edit Account</a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="/pages/support.php"><i class="fas fa-medkit"></i> Support</a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="/pages/about.php"><i class="fas fa-bookmark"></i> About</a>
-                        <a class="dropdown-item" href="logout.php"><i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="logout.php"><i class="fas fa-power-off"></i> Logout</a>
                     </div>
                 </li>
                 {if $notificationEnable == "on"}

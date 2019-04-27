@@ -46,9 +46,17 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.2/croppie.js"></script>
     
     <!-- fullcalendar -->
+    <!-- 
     <link rel="stylesheet" href="/static/css/fullcalendar.css" />
-    <script src="/static/js/fullcalendar.js"></script>
+    <script src="/static/js/fullcalendar.js"></script> -->
 
+    <!-- sortable tables -->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.14.2/dist/bootstrap-table.min.css">
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://unpkg.com/bootstrap-table@1.14.2/dist/bootstrap-table.min.js"></script>
+    <!-- Latest compiled and minified Locales -->
+    <script src="https://unpkg.com/bootstrap-table@1.14.2/dist/locale/bootstrap-table-de-DE.min.js"></script>
 
     <!-- custom -->
     <script src="/static/js/custom.js"></script>

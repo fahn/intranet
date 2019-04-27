@@ -5,6 +5,7 @@
 		"box/spout" : "^2.7",
 		"dompdf/dompdf" : "^0.8.3",
 		"eluceo/ical" : "0.15.0",
-		"gargron/fileupload" : "~1.4.0"
+		"gargron/fileupload" : "~1.4.0",
+        "erusev/parsedown": "^1.7.3"
 	}
 }
