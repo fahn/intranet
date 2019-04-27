@@ -33,6 +33,11 @@ class User {
     const USER_CLM_CLUBID   = "clubId";
     const USER_CLM_PHONE    = "phone";
     const USER_CLM_BDAY     = "bday";
+    const USER_CLM_IMAGE    = "image";
+    
+    const _USER_IMAGE_PATH_   = "/static/img/user/";
+    const _USER_IMAGE_MALE_   = "default_m.png";
+    const _USER_IMAGE_FEMALE_ = "default_w.png";
 
     public $userId;
     public $email;
@@ -48,6 +53,7 @@ class User {
     public $clubName;
     public $phone;
     public $bday;
+    private $userImage;
 
     /**
      * Conmstructor that knows how to retrieve all fields from a given data set
@@ -69,6 +75,7 @@ class User {
             $this->phone      = strval($dataSet[self::USER_CLM_PHONE]);
             $this->bday       = strval($dataSet[self::USER_CLM_BDAY]);
             $this->clubName   = "";
+            $this->userImage  = strval($dataSet[self::USER_CLM_IMAGE]);
         } else {
             $this->userId     = 0;
             $this->email      = "N/A";
@@ -84,6 +91,7 @@ class User {
             $this->clubName   = "";
             $this->phone      = "";
             $this->bday       = "";
+            $this->userImage  = $this->getDefaultUserImage();
         }
     }
 
@@ -93,6 +101,15 @@ class User {
      */
     public function getFullName() {
         return sprintf("%s %s", $this->firstName, $this->lastName);
+    }
+    
+    
+    public function getUserImage() {
+        return strlen($this->userImage) == 0 ? $this->getDefaultUserImage : self::_USER_IMAGE_PATH_ ."/". $this->userImage;
+    }
+    
+    public function getDefaultUserImage() {
+        return self::_USER_IMAGE_PATH_  . ($this->gender == 'Male' ? self::_USER_IMAGE_MALE_ : self::_USER_IMAGE_FEMALE_);
     }
 
     public function getID() {

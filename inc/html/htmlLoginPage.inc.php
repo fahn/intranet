@@ -115,6 +115,7 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
         $isUserLoggedIn = $this->prgPatternElementLogin->isUserLoggedIn();
         if($isUserLoggedIn AND $this->smarty) {
             $currentUserName = $this->prgPatternElementLogin->getLoggedInUser()->getFullName();
+            $currentUserImage = $this->prgPatternElementLogin->getLoggedInUser()->getUserImage();
 
             $user = $this->prgPatternElementLogin->getLoggedInUser();
             $this->smarty->registerObject('user', $user);
@@ -125,6 +126,7 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
 
             $this->smarty->assign(array(
                     'currentUserName'    => $currentUserName,
+                    'currentUserImage'   => $currentUserImage,
                     'isUserLoggedIn'     => $isUserLoggedIn,
                     'isAdmin'            => $this->prgPatternElementLogin->getLoggedInUser()->isAdmin(),
                     'isReporter'         => $this->prgPatternElementLogin->getLoggedInUser()->isReporter(),

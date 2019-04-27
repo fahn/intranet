@@ -45,9 +45,11 @@
             <ul class="nav navbar-nav navbar-right">
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="avatar avatar-online"><img width="33px" style="border-radius: 1000px" src="{$currentUserImage}" alt="avatar"><i></i></span>
                         {$currentUserName}
                     </a>
                     <div class="dropdown-menu dropdown-menu-right">
+                        
                         <a class="dropdown-item" href="/pages/user.php?id={$userId}"><i class="fas fa-user-circle" aria-hidden="true"></i> My Account</a>
                         <a class="dropdown-item" href="myAccount.php"><i class="fas fa-edit"></i> Edit Account</a>
                         <div class="dropdown-divider"></div>
