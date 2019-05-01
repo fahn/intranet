@@ -20,10 +20,6 @@ include_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
 require_once $_SERVER['BASE_DIR'] .'/vendor/autoload.php';
 
 
-use Dompdf\Dompdf;
-use Dompdf\Options;
-
-
 class Ranking extends BrdbHtmlPage {
     private $prgElementRanking;
 
@@ -77,7 +73,11 @@ class Ranking extends BrdbHtmlPage {
     }
 
     private function TMPL_addGame() {
-      return $this->smarty->fetch('ranking/add.tpl');
+        $this->smarty->assign(array(
+            'task' => "add",
+        ));
+        
+        return $this->smarty->fetch('ranking/insertMatch.tpl');
     }
 
     private function add_quotes($str) {
@@ -90,6 +90,8 @@ class Ranking extends BrdbHtmlPage {
     private function TMPL_showRanking($print=false) {
         $stats  = $this->getRankingGroupedByDate();
         $labels = implode(",", array_map(array($this, 'add_quotes'), $stats[0]));
+        
+        #$this->tools->dump($this->getRanking());
 
         $this->smarty->assign(array(
             'ranking'     => $this->getRanking(),
@@ -115,10 +117,10 @@ class Ranking extends BrdbHtmlPage {
         $res  = $this->brdb->statementGetGameById($id);
         if (! $this->brdb->hasError() ) {
             $data = $res->fetch_assoc();
-            $data['sets'] = $this->convertSets($data['sets']);
+            $data['sets'] = $this->SetUnSerialize($data['sets']);
             $this->smarty->assign(array(
                 'game'     => $data,
-                'linkBack' => $this->tools->link(array('page' => __FILE__)),
+                'linkBack' => $this->tools->linkTo(array('page' => __FILE__)),
             ));
         }
 
@@ -134,7 +136,7 @@ class Ranking extends BrdbHtmlPage {
       if (! $this->brdb->hasError() ) {
             $rank = 1;
             while ($dataSet = $res->fetch_assoc()) {
-                $dataSet['playerLink'] = $this->tools->linkTo(array('page' => 'user.php', 'id' => $dataSet['userId']));
+                $dataSet['playerLink'] = $this->tools->linkTo(array('page' => 'player.php', 'id' => $dataSet['playerId']));
                 $data[$rank++] = $dataSet;
             }
         }
@@ -152,7 +154,7 @@ class Ranking extends BrdbHtmlPage {
             $rank = 1;
             while ($dataSet = $res->fetch_assoc()) {
                 // sets
-                $dataSet['sets'] = $this->convertSets($dataSet['sets']);
+                $dataSet['sets'] = $this->SetUnSerialize($dataSet['sets']);
                 // delete link
                 $dataSet['deleteLink'] = $this->tools->linkTo(array('page' => 'ranking.php', 'action' => 'delete', 'id' => $dataSet['gameId']));
                 // link user
@@ -185,6 +187,9 @@ class Ranking extends BrdbHtmlPage {
 
     private function downloadPDF() {
       ob_start();
+      
+      #use Dompdf\Dompdf;
+      #use Dompdf\Options;
 
       // load Options
       $options = new Options();
@@ -207,13 +212,8 @@ class Ranking extends BrdbHtmlPage {
       $dompdf->stream($filename, array("Attachment" => false));
     }
 
-    private function convertSets($sets) {
+    private function SetUnSerialize($sets) {
         return implode(" - ", unserialize($sets));
-
     }
-
-
-
-
 }
 ?>

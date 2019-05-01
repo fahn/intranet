@@ -16,6 +16,7 @@ include_once $_SERVER['BASE_DIR'] .'/inc/db/brdb.inc.php';
 include_once $_SERVER['BASE_DIR'] .'/inc/model/user.inc.php';
 include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgPattern.inc.php';
 include_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
+require_once $_SERVER['BASE_DIR'] .'/vendor/autoload.php';
 
 class PrgPatternElementUser extends APrgPatternElement {
     const FORM_USER_ADMIN_USER_ID = "accountAdminUserId";
@@ -70,6 +71,10 @@ class PrgPatternElementUser extends APrgPatternElement {
     protected $prgElementLogin;
 
     protected $brdb;
+    
+    
+    private $uploadImageFileName;
+    private $IMAGE_PATH;
 
     public function __construct(BrankDB $brdb, PrgPatternElementLogin $prgElementLogin) {
         parent::__construct("userRegister");
@@ -84,6 +89,9 @@ class PrgPatternElementUser extends APrgPatternElement {
         $this->registerPostSessionVariable(self::FORM_USER_IS_ADMIN);
         $this->registerPostSessionVariable(self::FORM_USER_IS_REPORTER);
         $this->registerPostSessionVariable(self::FORM_USER_ADMIN_USER_ID);
+        
+        // set Image Path
+        $this->IMAGE_PATH = $_SERVER['BASE_DIR'] .'static/img/user/';
 
         // load DB
         $this->brdb = $brdb;
@@ -503,13 +511,11 @@ class PrgPatternElementUser extends APrgPatternElement {
 
     private function processPostUploadImage() {
         $userId    = intval($this->prgElementLogin->getLoggedInUser()->userId);
-        $filename = $this->uploadImage();
-        if ($filename == null) {
-            $this->setFailedMessage("Fehler beim Upload");
+        if (! $this->uploadImage()) {
             return;
         }
 
-        $res = $this->brdb->updateUserImage($userId, $filename);
+        $res = $this->brdb->updateUserImage($userId, $this->uploadImageFileName);
         if ($this->brdb->hasError()) {
           $this->setFailedMessage($this->brdb->getError());
           return;
@@ -523,19 +529,18 @@ class PrgPatternElementUser extends APrgPatternElement {
 
     private function uploadImage() {
         #die(print_r($_FILES));
-        // Simple validation (max file size 2MB and only two allowed mime types)
-        $validator = new FileUpload\Validator\Simple('2M', ['image/png', 'image/jpg']);
+        // Simple validation (max file size 5MB and only two allowed mime types)
+        $validator = new FileUpload\Validator\Simple('10M', ['image/png', 'image/jpg', 'image/jpeg']);
 
         // Simple path resolver, where uploads will be put
-        $path = $_SERVER['BASE_DIR'] .'static/img/user/';
-        $pathresolver = new FileUpload\PathResolver\Simple($path);
+        $pathresolver = new FileUpload\PathResolver\Simple($this->IMAGE_PATH);
 
         // The machine's filesystem
         $filesystem = new FileUpload\FileSystem\Simple();
 
         // set filename to random
         $filenamegenerator = new FileUpload\FileNameGenerator\Random("123");
-
+        
         // FileUploader itself
         $fileupload = new FileUpload\FileUpload($_FILES['userRegisterAccountImage'], $_SERVER);
 
@@ -544,18 +549,56 @@ class PrgPatternElementUser extends APrgPatternElement {
         $fileupload->setFileSystem($filesystem);
         $fileupload->addValidator($validator);
         $fileupload->setFileNameGenerator($filenamegenerator);
-
+        
         // Doing the deed
         list($files, $headers) = $fileupload->processAll();
-
-        json_encode(['files' => $files]);
-
-        foreach($files as $file){
-            if ($file->error == 0) {
-                return $file->getFileName();
-            }
+        #echo "<pre>";
+        #var_dump($fileupload);
+        #die();
+        
+        #json_encode(['files' => $files]);
+        #var_dump($files);
+        #echo count($files);
+        #die();
+        #if (is_array($fileupload->messages())) {
+        #    $messages = implode(", ", $fileupload->getMessages());
+        #    $this->setFailedMessage("Fehler beim Upload: ". $messages);
+        #    return false;
+        #}
+        if (! is_array($files) || count($files) != 1) {
+            $this->setFailedMessage("Fehler beim Upload");
+            #$this->setFailedMessage(var_dump($file));
+            return false;
         }
-        return false;
+        
+        $file = $files[0];
+        if ($file->error > 0) {
+            $this->setFailedMessage("Fehler beim Upload");
+            return false;
+        }
+
+        // resize image
+        $imageFilename = $file->getFileName();
+        if ( ! $this->resizeImage($imageFilename,$imageFilename, 800)) {
+            $this->setFailedMessage("Fehler: Kann das Bild nicht verkleinern.");
+            return false;
+        }
+        
+        // create thumbnail
+        $thumbImageName = 'thumb_'. $file->getFileName();
+        if ( ! $this->resizeImage($imageFilename, $thumbImageName, 80)) {
+            $this->setFailedMessage("Fehler: Thumbnail konnte nicht erstellt werden.");
+            return false;
+        }
+        
+        $this->uploadImageFileName = $file->getFileName();
+        return true;
+    }
+    
+    private function resizeImage($source, $destinaction, $width=800) {
+        $image = new \Gumlet\ImageResize($this->IMAGE_PATH .'/'. $source);
+        $image->resizeToWidth($width);
+        return $image->save($this->IMAGE_PATH .'/'. $destinaction);
     }
 
     public function getAdminUser() {

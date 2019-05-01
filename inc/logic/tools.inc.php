@@ -316,6 +316,12 @@ class Tools {
         
         return $page;
     }
+    
+    public function dump($var) {
+        echo "<pre>";
+        var_dump($var);
+        die();
+    }
 
 }
 

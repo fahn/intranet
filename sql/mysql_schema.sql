@@ -169,23 +169,26 @@ ALTER TABLE `TournamentBackup` MODIFY `backupId` int(11) NOT NULL AUTO_INCREMENT
 --
 
 CREATE TABLE `EloRanking` (
-  `userId` int(11) NOT NULL,
+  `playerId` int(11) NOT NULL,
   `points` INT NOT NULL DEFAULT 1000,
   `serie`  varchar(64) NOT NULL,
+  `win` int(11) NOT NULL DEFAULT '0',
+  `loss` int(11) NOT NULL DEFAULT '0',
   `lastGame` timestamp NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-ALTER TABLE `EloRanking` ADD PRIMARY KEY (`userId`);
+ALTER TABLE `EloRanking` ADD PRIMARY KEY (`playerId`);
 
 
-CREATE TABLE `eloGames` (
+CREATE TABLE `EloGames` (
   `gameId`      INT(11) NOT NULL,
   `hidden`      INT(1) NOT NULL DEFAULT '0',
   `playerId`    INT(11) NOT NULL,
   `opponentId`  INT(11) NOT NULL,
   `sets`        varchar(64) NOT NULL,
   `winnerId`    int(11) NOT NULL,
-  `time`        timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `gameTime`    timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+ALTER TABLE `EloGames` ADD PRIMARY KEY (`gameId`);
 
 
 --

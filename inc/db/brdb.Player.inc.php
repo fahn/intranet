@@ -80,6 +80,20 @@ trait PlayerDB {
             return false;
         }
     }
+    
+    public function getPlayerByTerm($term) {
+        $term = $this->db->real_escape_string($term);
+        $term = "%".$term."%";
+        $cmd  = $this->db->prepare("SELECT Player.*, CONCAT_WS(',', Player.lastName, Player.firstName) AS playerName, Club.name AS clubName FROM Player
+                                   LEFT JOIN Club ON Club.clubId = Player.clubId
+                                   WHERE CONCAT_WS(' ', Player.firstName, Player.lastName) LIKE ?
+                                   ORDER BY Player.lastName");
+
+        $cmd->bind_param("s", $term);
+        #print_r($cmd->__toString());
+
+        return $this->executeStatement($cmd);
+    }
 }
 
 ?>

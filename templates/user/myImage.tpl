@@ -9,7 +9,7 @@
     <div class="row">
       <div class="col-md-12">
         <div class="form-group">
-          <label for = "userRegisterAccountImage">Bild (Nur jpg/png-Bilder mit einer max. Größe von 2MB sind erlaubt):</label>
+          <label for = "userRegisterAccountImage">Bild (Nur jpg/png-Bilder mit einer max. Größe von 5MB sind erlaubt):</label>
           <input class="form-control-file border" type="file" id="userRegisterAccountImage" name="userRegisterAccountImage[]" placeholder="" value="">
         </div>
       </div>

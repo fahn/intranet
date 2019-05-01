@@ -2,34 +2,34 @@ $(document).ready(function() {
     //
     var filename = basename($(location).attr('pathname'));
 
-    $('a[href$="'+ filename +'"]').addClass('active');
+    $('a[href$="' + filename + '"]').addClass('active');
 
     function basename(path) {
-       return path.split('/').reverse()[0];
+        return path.split('/').reverse()[0];
     }
 
     // data
     $('select.js-example-basic-single').select2({
-      placeholder: 'Bitte wählen',
-      allowClear: true,
-      minimumResultsForSearch: 1,
-      hideSelectionInSingle: true,
-     });
+        placeholder: 'Bitte wählen',
+        allowClear: true,
+        minimumResultsForSearch: 1,
+        hideSelectionInSingle: true,
+    });
 
 
     $('select.js-example-basic-multiple').select2();
 
-   if (typeof data !== 'undefined') {
-      $(".js-example-data-array").select2({
-        data: data
-      })
+    if (typeof data !== 'undefined') {
+        $(".js-example-data-array").select2({
+            data: data
+        })
     }
 
 
 
-    $(".dropdown").hover(function(){
+    $(".dropdown").hover(function() {
         $(this).addClass("show");
-    },function(){
+    }, function() {
         $(this).removeClass("show");
     });
 
@@ -40,25 +40,25 @@ $(document).ready(function() {
         height: 150,
         lang: 'de-DE',
         codeview: false,
-      });
+    });
 
     /*
      *
-    */
-    $.fn.mirror = function (selector) {
-        return this.each(function () {
+     */
+    $.fn.mirror = function(selector) {
+        return this.each(function() {
             var $this = $(this);
             var $selector = $(selector);
-            $this.bind('keyup', function () {
-              val = $this.val();
-              newval = 21;
-              if(val >= 19) {
-                if(val == 29) {
-                  newval = 30;
-                } else {
-                  newval = +val + 2;
+            $this.bind('keyup', function() {
+                val = $this.val();
+                newval = 21;
+                if (val >= 19) {
+                    if (val == 29) {
+                        newval = 30;
+                    } else {
+                        newval = +val + 2;
+                    }
                 }
-              }
                 $selector.val((newval));
             });
         });
@@ -70,15 +70,15 @@ $(document).ready(function() {
 
 
     // clone select2
-    $('a.clonerow').click(function(){
-      console.log("START");
-      $("div.initline:first").cloneSelect2().appendTo('#containerClone');
-      $("div.initline select").css('width', '100%');
-      event.preventDefault();
-      event.stopPropagation();
+    $('a.clonerow').click(function() {
+        console.log("START");
+        $("div.initline:first").cloneSelect2().appendTo('#containerClone');
+        $("div.initline select").css('width', '100%');
+        event.preventDefault();
+        event.stopPropagation();
     });
 
-    jQuery.fn.cloneSelect2 = function (withDataAndEvents, deepWithDataAndEvents) {
+    jQuery.fn.cloneSelect2 = function(withDataAndEvents, deepWithDataAndEvents) {
         var $oldSelects2 = this.is('select') ? this : this.find('select');
         $oldSelects2.select2('destroy');
         var $clonedEl = this.clone(withDataAndEvents, deepWithDataAndEvents);
@@ -97,13 +97,13 @@ $(document).ready(function() {
 
     /*  DEBUG.STAGE ] */
     $("a").each(function() {
-      var address = $(location).attr('href')
+        var address = $(location).attr('href')
         if (address.includes("stage=debug")) {
             var $this = $(this);
             var _href = $(this).attr('href');
-            if(_href.includes('?')) {
-               var sep = "&";
-            }else{
+            if (_href.includes('?')) {
+                var sep = "&";
+            } else {
                 var sep = "?";
             }
             $this.attr("href", _href + sep + 'stage=debug');
@@ -113,44 +113,70 @@ $(document).ready(function() {
 
 
 
-    $('#mySelector').change( function(){
-      var selection = $(this).val();
-      console.log(selection);
-      $('table')[selection? 'show' : 'hide']();
+    $('#mySelector').change(function() {
+        var selection = $(this).val();
+        console.log(selection);
+        $('table')[selection ? 'show' : 'hide']();
 
-      if (selection) {
-        $.each($('#myTable tbody tr'), function(index, item) {
-          $(item)[$(item).is(':contains('+ selection  +')')? 'show' : 'hide']();
+        if (selection) {
+            $.each($('#myTable tbody tr'), function(index, item) {
+                $(item)[$(item).is(':contains(' + selection + ')') ? 'show' : 'hide']();
+            });
+        } else {
+            console.log("***");
+            $.each($('#myTable tbody tr'), function(index, item) {
+                /*            console.log(item);
+                            $(this).show(); */
+            });
+        }
+
+    });
+
+    if (typeof flatpickr === "function") {
+        /* DATE_TIME_PICKER */
+        $(".datetimepicker").flatpickr({
+            weekNumbers: true,
+            enableTime: true,
+            time_24hr: true,
+            dateFormat: "d.m.Y H:i",
+            locale: "de",
+            "locale": {
+                "firstDayOfWeek": 1 // start week on Monday
+            }
         });
-      } else {
-        console.log("***");
-          $.each($('#myTable tbody tr'), function(index, item) {
-/*            console.log(item);
-            $(this).show(); */
-          });
-      }
 
-    });
+        $(".datepicker").flatpickr({
+            weekNumbers: true,
+            dateFormat: "d.m.Y",
+            "locale": {
+                "firstDayOfWeek": 1 // start week on Monday
+            }
+        });
+    }
 
-    /* DATE_TIME_PICKER */
-    $(".datetimepicker").flatpickr({
-        weekNumbers: true,
-        enableTime: true,
-        time_24hr: true,
-        dateFormat: "d.m.Y H:i",
-        locale: "de",
-        "locale": {
-            "firstDayOfWeek": 1 // start week on Monday
-        }
-    });
-
-    $(".datepicker").flatpickr({
-        weekNumbers: true,
-        dateFormat: "d.m.Y",
-        "locale": {
-            "firstDayOfWeek": 1 // start week on Monday
-        }
-    });
+    //if (typeof select2 === "function") {
+        $('.js-data-ajax-player').select2({
+                ajax: {
+                    url: '/ajax/player.php',
+                    type: "post",
+                    dataType: 'json'
+                    // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+                },
+                placeholder: 'Search for a player',
+                delay: 250,
+                data: function(params) {
+                    return {
+                        searchTerm: params.term // search term
+                    };
+                },
+                processResults: function(response) {
+                    return {
+                        results: response
+                    };
+                }
+                //cache: true
+        });
+    //}
 
 
 });

@@ -6,13 +6,13 @@
 </p>
 
 <div class="table-responsive">
-    <table class="table table-striped table-hover">
+    <table class="table table-striped table-hover" data-toggle="table" data-pagination="true" data-search="true">
         <thead>
             <tr>
-                <th>Vorname</th>
-                <th>Nachname</th>
-                <th>Spielernummer</th>
-                <th>Verein</th>
+                <th data-sortable="true" data-field="firstName">Vorname</th>
+                <th data-sortable="true" data-field="lastName">Nachname</th>
+                <th data-sortable="true" data-field="playerNr">Spielernummer</th>
+                <th data-sortable="true" data-field="club">Verein</th>
                 <th>Gender</th>
                 <th>Optionen</th>
             </tr>

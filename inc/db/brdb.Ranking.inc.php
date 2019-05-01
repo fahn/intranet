@@ -15,10 +15,9 @@
 trait RankingDB
 {
 
-    public function statementGetRanking()
-    {
-        $cmd = $this->db->prepare("SELECT elo.*, CONCAT_WS(' ', User.firstName, User.lastName) AS name FROM `EloRanking` AS elo
-                                 LEFT JOIN User ON User.userId = elo.userId
+    public function statementGetRanking() {
+        $cmd = $this->db->prepare("SELECT elo.*, CONCAT_WS(' ', Player.firstName, Player.lastName) AS name FROM `EloRanking` AS elo
+                                 LEFT JOIN Player ON Player.playerId = elo.playerId
                                  #WHERE elo.win != 0 OR elo.loss != 0
                                  ORDER BY elo.points DESC");
 
@@ -29,11 +28,11 @@ trait RankingDB
      */
     public function statementGetMatches()
     {
-        $cmd = $this->db->prepare("SELECT games.*, CONCAT_WS(' ', player.firstName, player.lastName) playerName, CONCAT_WS(' ', opponent.firstName, opponent.lastName) opponentName FROM `eloGames` AS games
-                                   LEFT JOIN User AS player ON player.userId = games.playerId
-                                   LEFT JOIN User AS opponent ON opponent.userId = games.opponentId
+        $cmd = $this->db->prepare("SELECT games.*, CONCAT_WS(' ', player.firstName, player.lastName) playerName, CONCAT_WS(' ', opponent.firstName, opponent.lastName) opponentName FROM `EloGames` AS games
+                                   LEFT JOIN Player AS player ON player.playerId = games.playerId
+                                   LEFT JOIN Player AS opponent ON opponent.playerId = games.opponentId
                                    WHERE hidden = '0'
-                                   ORDER BY games.time DESC");
+                                   ORDER BY games.gameTime DESC");
         return $this->executeStatement($cmd);
     }
 
@@ -42,10 +41,10 @@ trait RankingDB
      */
     public function statementGetMatchesGroupedByDate()
     {
-        $cmd = $this->db->prepare("SELECT DATE(time) AS gamedate, COUNT(gameId) AS games
-                                FROM `eloGames`
+        $cmd = $this->db->prepare("SELECT DATE(gameTime) AS gameTime, COUNT(gameId) AS games
+                                FROM `EloGames`
                                 WHERE hidden = '0'
-                                GROUP BY gamedate");
+                                GROUP BY gameTime");
 
         return $this->executeStatement($cmd);
     }
@@ -55,51 +54,52 @@ trait RankingDB
      */
     public function statementGetGameById($id)
     {
-        $cmd = $this->db->prepare("SELECT games.*, CONCAT_WS(' ', player.firstName, player.lastName) playerName, CONCAT_WS(' ', opponent.firstName, opponent.lastName) opponentName FROM `eloGames` AS games
-                                   LEFT JOIN User AS player ON player.userId = games.playerId
-                                   LEFT JOIN User AS opponent ON opponent.userId = games.opponentId
+        $cmd = $this->db->prepare("SELECT games.*, CONCAT_WS(' ', player.firstName, player.lastName) playerName, CONCAT_WS(' ', opponent.firstName, opponent.lastName) opponentName FROM `EloGames` AS games
+                                   LEFT JOIN Player AS player ON player.playerId = games.playerId
+                                   LEFT JOIN Player AS opponent ON opponent.playerId = games.opponentId
                                    WHERE games.gameId = ?");
         $cmd->bind_param("i", $id);
+        
         return $this->executeStatement($cmd);
     }
 
-    public function deleteRanking()
-    {
-        $cmd = $this->db->prepare("TRUNCATE `eloRanking`");
-
-        return $this->executeStatement($cmd);
-    }
-
-    public function insertMatch($a, $b, $sets, $winner)
-    {
-        $cmd = $this->db->prepare("INSERT INTO `eloGames` (playerId, opponentId, sets, winner) VALUES (?, ?, ?, ?)");
-        $cmd->bind_param("iisi", $a, $b, $sets, $winner);
+    public function deleteRanking(){
+        $cmd = $this->db->prepare("TRUNCATE `EloRanking`");
 
         return $this->executeStatement($cmd);
     }
 
-    public function selectPoints($userId)
-    {
-        $cmd = $this->db->prepare("SELECT IFNULL( (SELECT points FROM `eloRanking` WHERE userId = ?) , '0')");
-        $cmd->bind_param("i", $userId);
+    public function insertMatch($a, $b, $sets, $winner, $time = false) {
+        if ($time == false) {
+            $time = strtotime("now");
+        }
+        $cmd = $this->db->prepare("INSERT INTO `EloGames` (playerId, opponentId, sets, winnerId, gameTime) VALUES (?, ?, ?, ?, ?)");
+        $cmd->bind_param("iisis", $a, $b, $sets, $winner, $time);
 
         return $this->executeStatement($cmd);
     }
 
-    public function updatePoints($userId, $points, $win, $loss)
+    public function selectPoints($playerId){
+        $cmd = $this->db->prepare("SELECT IFNULL( (SELECT points FROM `EloRanking` WHERE playerId = ?) , '0')");
+        $cmd->bind_param("i", $playerId);
+
+        return $this->executeStatement($cmd);
+    }
+
+    public function updatePoints($playerId, $points, $win, $loss)
     {
-        $cmd = $this->db->prepare("INSERT INTO `eloRanking` (userId, points) VALUES (?, ?) ON DUPLICATE KEY UPDATE userId= ?, points= ?, win=win+?, loss=loss+?, lastMatch = NOW() ");
-        $cmd->bind_param("iiiiii", $userId, $points, $userId, $points, $win, $loss);
+        $cmd = $this->db->prepare("INSERT INTO `EloRanking` (playerId, points) VALUES (?, ?) ON DUPLICATE KEY UPDATE playerId= ?, points= ?, win=win+?, loss=loss+?, lastGame = NOW() ");
+        $cmd->bind_param("iiiiii", $playerId, $points, $playerId, $points, $win, $loss);
 
         return $this->executeStatement($cmd);
     }
 
     public function selectLatestRankingGamesByPlayerId($id)
     {
-        $cmd = $this->db->prepare("SELECT games.*, CONCAT_WS(' ', User.firstName, User.lastName) AS name FROM eloGames AS games
-                                LEFT JOIN User ON User.userId = games.opponentId
+        $cmd = $this->db->prepare("SELECT games.*, CONCAT_WS(' ', Player.firstName, Player.lastName) AS name FROM EloGames AS games
+                                LEFT JOIN Player ON Player.playerId = games.opponentId
                                 WHERE (games.playerId = ? OR games.opponentId = ?) AND games.hidden = 0
-                                ORDER BY time DESC LIMIT 5");
+                                ORDER BY gameTime DESC LIMIT 5");
         $cmd->bind_param("ii", $id, $id);
 
         return $this->executeStatement($cmd);
@@ -110,10 +110,11 @@ trait RankingDB
      */
     public function deleteMatch($id)
     {
-        $cmd = $this->db->prepare("UPDATE `eloGames` SET hidden='1' WHERE gameId = ?");
+        $cmd = $this->db->prepare("UPDATE `EloGames` SET hidden='1' WHERE gameId = ?");
         $cmd->bind_param("i", $id);
 
         return $this->executeStatement($cmd);
     }
+
 }
 ?>

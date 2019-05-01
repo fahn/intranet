@@ -29,6 +29,9 @@
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <a class="dropdown-item" href="adminAllUser.php"><i class="fas fa-users"></i> Users</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="adminAllImages.php"><i class="fas fa-images"></i> Bilder</a>
+                            <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="adminAllPlayer.php"><i class="fas fa-user-friends"></i> Player</a>
                             <a class="dropdown-item" href="adminAllClub.php"><i class="fas fa-shield-alt"></i> Vereine</a>
                             <div class="dropdown-divider"></div>

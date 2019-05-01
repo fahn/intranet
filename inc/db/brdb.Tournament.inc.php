@@ -104,17 +104,7 @@ trait TournamentDB {
     /**
      *
      */
-    public function getPlayerByTerm($term) {
-        $term = "%".$term."%";
-        $cmd = $this->db->prepare("SELECT User.firstName, User.lastName, User.playerId, User.clubId, Club.name AS clubName FROM User
-                                   LEFT JOIN Club ON Club.clubId = User.clubId
-                                   WHERE CONCAT_WS(User.firstName, User.lastName) LIKE ?
-                                   ORDER BY User.lastName");
-
-        $cmd->bind_param("s", $term);
-
-        return $this->executeStatement($cmd);
-    }
+    
 
     /** Insert class from Tournament
      *

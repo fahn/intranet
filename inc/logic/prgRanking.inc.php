@@ -20,6 +20,16 @@ class PrgPatternElementRanking extends APrgPatternElement {
     // Forms
     const FORM_INSERT_MATCH = "insertMatch";
     const FORM_DELETE_MATCH = "deleteMatch";
+    
+    
+    // Items in FORM
+    const FORM_ITEM_PLAYER   = "player";
+    const FORM_ITEM_OPPONENT = "opponent";
+    const FORM_ITEM_GAMETIME = "gameTime";
+    const FORM_ITEM_SET1     = "set1";
+    const FORM_ITEM_SET2     = "set2";
+    const FORM_ITEM_SET3     = "set3"; // optional
+    
 
     /**
      * construct
@@ -34,7 +44,6 @@ class PrgPatternElementRanking extends APrgPatternElement {
 
         $this->registerPostSessionVariable(self::FORM_FORM_ACTION);
         $this->registerPostSessionVariable(self::FORM_INSERT_MATCH);
-        #die(print_r($_POST));
     }
 
     public function __loadPattern($prgElementLogin) {
@@ -52,9 +61,11 @@ class PrgPatternElementRanking extends APrgPatternElement {
         #if ( ! $isUserLoggedIn || ! $isAdmin || ! $isReporter) {
         #    return;
         #}
+        
 
 
         $form = strval(trim($this->getPostVariable(self::FORM_FORM_ACTION)));
+        
         switch ($form) {
             case self::FORM_INSERT_MATCH:
                 $this->insertMatch();
@@ -73,27 +84,50 @@ class PrgPatternElementRanking extends APrgPatternElement {
 
 
     private function insertMatch() {
-        $player   = $this->getPostVariable('player');
-        $opponent = $this->getPostVariable('opponent');
-        die($player);
-        // @TODO: Check if users exists
-        $sets = array();
-        for($i=1; $i<=3; $i++) {
-            $fielda = sprintf('set%s%s', 'A', $i);
-            $fieldb = sprintf('set%s%s', 'B', $i);
-            if ($this->getPostVariable($fielda) && $this->getPostVariable($fieldb)) {
-                $sets[] = implode(":", array($this->getPostVariable($fielda), $this->getPostVariable($fieldb)));
-            }
+        if (! $this->issetPostVariable(self::FORM_ITEM_PLAYER) ||
+            ! $this->issetPostVariable(self::FORM_ITEM_OPPONENT) ||
+            ! $this->issetPostVariable(self::FORM_ITEM_GAMETIME) ||
+            ! $this->issetPostVariable(self::FORM_ITEM_SET1) ||
+            ! $this->issetPostVariable(self::FORM_ITEM_SET2)) {
+              $this->setFailedMessage("Bitte alle Informationen angeben.");
         }
-
-
-        if (! $player || ! $opponent || count($sets) < 2) {
-            $this->setFailedMessage("Die Angaben stimmen nicht.");
+        
+        $player   = strval(trim($this->getPostVariable(self::FORM_ITEM_PLAYER)));
+        $opponent = strval(trim($this->getPostVariable(self::FORM_ITEM_OPPONENT)));
+        $gameTime = strval(trim($this->getPostVariable(self::FORM_ITEM_GAMETIME)));
+        
+        $sets = array();
+        try {
+            $set1 = strval(trim(implode(":", $this->getPostVariable(self::FORM_ITEM_SET1))));
+            $sets[] = $set1;
+            
+            $set2 = strval(trim(implode(":", $this->getPostVariable(self::FORM_ITEM_SET2))));
+            $sets[] = $set2;
+        } catch (Exception $e) {
             return false;
         }
+        
+        try {
+            $set3Arr = $this->getPostVariable(self::FORM_ITEM_SET3);
+            if (count($set3Arr) != 2 || empty($set3Arr[0]) || empty($set3Arr[1])) {
+                throw new Exception("Value must be 1 or below");
+            }
+            $set3 = strval(trim(implode(":", $set3Arr)));
+            $sets[] = $set3;
+        } catch (Exception $e) {
+            $set3 = "";
+        }
+        // serialize sets
+        $sets = serialize($sets);
+        
+        // set winner
+        $winner = $this->getWinner($sets);
+        
+        // date to timestamp
+        $gameTime = strtotime($gameTime);
 
         // INSERT MATCH
-        $res = $this->db->insertMatch($player, $opponent, $sets, $winner);
+        $res = $this->db->insertMatch($player, $opponent, $sets, $winner, $gameTime);
         if ( $this->db->hasError()) {
             $this->setFailedMessage($this->brdb->getError());
             return false;
@@ -101,7 +135,7 @@ class PrgPatternElementRanking extends APrgPatternElement {
 
         // Points
         $a1 = $this->getPointsByUserId($player);
-        $b1 = $this->getPointsByUserId($b);
+        $b1 = $this->getPointsByUserId($opponent);
 
         // calc Points
         $points = $this->calcMatch($a1, $b1, $winner);
@@ -109,11 +143,11 @@ class PrgPatternElementRanking extends APrgPatternElement {
         // update points
         // player A
         $win  = ($winner == 1 ? 1 : 0);
-        $this->updatePoints($a, $points[0], $win);
+        $this->updatePoints($player, $points[0], $win);
 
         // player B
         $win  = $win  == 1 ? 0 : 1;
-        $this->updatePoints($b, $points[1], $win);
+        $this->updatePoints($opponent, $points[1], $win);
 
         if ($this->db->hasError() ) {
           $this->setFailedMessage($this->brdb->getError());
@@ -127,11 +161,11 @@ class PrgPatternElementRanking extends APrgPatternElement {
     }
 
     private function deleteMatch() {
-        $id = $this->tools->get('id') ? $this->tools->get('id') : '';
+        $id = strval(trim($this->getGetVariable('id')));
         if (! $id) {
-
-
+            return;
         }
+        
 
         $this->db->deleteMatch($id);
         if ($this->db->hasError()) {
@@ -206,20 +240,24 @@ class PrgPatternElementRanking extends APrgPatternElement {
   /**
    * get points
    */
-  private function getPointsByUserId($userId) {
-      // GET POINTS
-      $res = $this->db->selectPoints($userId);
-      $row = $res->fetch_row();
-      return  $row[0] == 0 ? 1000 : $row[0];
-  }
+    private function getPointsByUserId($playerId) {
+        // GET POINTS
+        try {
+            $res = $this->db->selectPoints($playerId);
+            $row = $res->fetch_row();
+            return  $row[0] == 0 ? 1000 : $row[0];
+        } catch(Exception $e) {
+            return 1000;
+        }
+    }
 
   /**
    * update Points from user
    */
-  private function updatePoints($userId, $points, $win) {
-      error_log ($userId ." - ". $points ." - ". $win ."<br>");
+  private function updatePoints($playerId, $points, $win) {
+      error_log ($playerId ." - ". $points ." - ". $win ."<br>");
       $loss = ($win == 1 ? 0 : 1);
-      $upd = $this->db->updatePoints($userId, $points, $win, $loss);
+      $upd = $this->db->updatePoints($playerId, $points, $win, $loss);
       if (! $this->db->hasError() ) {
           return true;
       }
@@ -265,10 +303,9 @@ class PrgPatternElementRanking extends APrgPatternElement {
       }
 
       $games = 0;
-      echo "<pre>";
       while($dataSet = $res->fetch_assoc()) {
 
-          print_r($dataSet);
+          #print_r($dataSet);
           // SET PLAYERS
           $a = $dataSet['playerId'];
           $b = $dataSet['opponentId'];
@@ -293,7 +330,6 @@ class PrgPatternElementRanking extends APrgPatternElement {
 
           $games++;
       }
-      die("1");
       return true;
   }
 

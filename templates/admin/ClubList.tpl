@@ -8,11 +8,11 @@
 {/if}
 
 <div class="table-responsive">
-	<table class="table table-sm table-striped table-hover">
+	<table class="table table-striped table-hover" data-toggle="table" data-pagination="true" data-search="true">
 		<thead>
 			<tr>
-				<th>Name</th>
-				<th>Vereinsnummer</th>
+				<th data-sortable="true" data-field="name">Name</th>
+				<th  data-sortable="true" data-field="clubNr">Vereinsnummer</th>
 				<th>Verband</th>
 				<th class="text-center">Option</th>
 			</tr>
