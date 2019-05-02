@@ -20,8 +20,8 @@ class PrgPatternElementRanking extends APrgPatternElement {
     // Forms
     const FORM_INSERT_MATCH = "insertMatch";
     const FORM_DELETE_MATCH = "deleteMatch";
-    
-    
+
+
     // Items in FORM
     const FORM_ITEM_PLAYER   = "player";
     const FORM_ITEM_OPPONENT = "opponent";
@@ -29,7 +29,7 @@ class PrgPatternElementRanking extends APrgPatternElement {
     const FORM_ITEM_SET1     = "set1";
     const FORM_ITEM_SET2     = "set2";
     const FORM_ITEM_SET3     = "set3"; // optional
-    
+
 
     /**
      * construct
@@ -54,7 +54,7 @@ class PrgPatternElementRanking extends APrgPatternElement {
 
     public function processPost() {
         $this->prgElementLogin->redirectUserIfNotLoggindIn();
-        
+
         // ADMIN AREA
         $this->prgElementLogin->redirectUserIfnoRights(array('reporter', 'admin'), 'or');
 
@@ -65,7 +65,7 @@ class PrgPatternElementRanking extends APrgPatternElement {
 
 
         $form = strval(trim($this->getPostVariable(self::FORM_FORM_ACTION)));
-        
+
         switch ($form) {
             case self::FORM_INSERT_MATCH:
                 $this->insertMatch();
@@ -91,22 +91,22 @@ class PrgPatternElementRanking extends APrgPatternElement {
             ! $this->issetPostVariable(self::FORM_ITEM_SET2)) {
               $this->setFailedMessage("Bitte alle Informationen angeben.");
         }
-        
+
         $player   = strval(trim($this->getPostVariable(self::FORM_ITEM_PLAYER)));
         $opponent = strval(trim($this->getPostVariable(self::FORM_ITEM_OPPONENT)));
         $gameTime = strval(trim($this->getPostVariable(self::FORM_ITEM_GAMETIME)));
-        
+
         $sets = array();
         try {
             $set1 = strval(trim(implode(":", $this->getPostVariable(self::FORM_ITEM_SET1))));
             $sets[] = $set1;
-            
+
             $set2 = strval(trim(implode(":", $this->getPostVariable(self::FORM_ITEM_SET2))));
             $sets[] = $set2;
         } catch (Exception $e) {
             return false;
         }
-        
+
         try {
             $set3Arr = $this->getPostVariable(self::FORM_ITEM_SET3);
             if (count($set3Arr) != 2 || empty($set3Arr[0]) || empty($set3Arr[1])) {
@@ -119,10 +119,10 @@ class PrgPatternElementRanking extends APrgPatternElement {
         }
         // serialize sets
         $sets = serialize($sets);
-        
+
         // set winner
         $winner = $this->getWinner($sets);
-        
+
         // date to timestamp
         $gameTime = strtotime($gameTime);
 
@@ -165,7 +165,7 @@ class PrgPatternElementRanking extends APrgPatternElement {
         if (! $id) {
             return;
         }
-        
+
 
         $this->db->deleteMatch($id);
         if ($this->db->hasError()) {
@@ -185,13 +185,15 @@ class PrgPatternElementRanking extends APrgPatternElement {
     /********************************************** GET ***********************/
     function processGet() {
         $this->prgElementLogin->redirectUserIfNotLoggindIn();
-        
-        // ADMIN AREA
-        $this->prgElementLogin->redirectUserIfnoRights(array('reporter', 'admin'), 'or');
-        
+
+
+
         $action = $this->tools->get('action');
         switch ($action) {
             case 'renewRanking':
+                // ADMIN AREA
+                $this->prgElementLogin->redirectUserIfnoRights(array('reporter', 'admin'), 'or');
+                
                 $this->getNewRanking();
                 break;
             default:

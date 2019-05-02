@@ -76,7 +76,7 @@ class Ranking extends BrdbHtmlPage {
         $this->smarty->assign(array(
             'task' => "add",
         ));
-        
+
         return $this->smarty->fetch('ranking/insertMatch.tpl');
     }
 
@@ -90,7 +90,7 @@ class Ranking extends BrdbHtmlPage {
     private function TMPL_showRanking($print=false) {
         $stats  = $this->getRankingGroupedByDate();
         $labels = implode(",", array_map(array($this, 'add_quotes'), $stats[0]));
-        
+
         #$this->tools->dump($this->getRanking());
 
         $this->smarty->assign(array(
@@ -187,14 +187,11 @@ class Ranking extends BrdbHtmlPage {
 
     private function downloadPDF() {
       ob_start();
-      
-      #use Dompdf\Dompdf;
-      #use Dompdf\Options;
 
       // load Options
-      $options = new Options();
+      $options = new Dompdf\Options();
       $options->set('defaultFont', 'Helvetica');
-      $dompdf = new Dompdf($options);
+      $dompdf = new Dompdf\Dompdf($options);
       // get css
       $css     = file_get_contents($this->cssPrint);
 

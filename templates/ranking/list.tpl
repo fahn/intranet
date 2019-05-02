@@ -1,16 +1,12 @@
 <h1 class="display-1 mb-5">Ranking {if $print}{$pageTitle}{/if}</h1>
 
-<div class="alert alert-danger" role="alert">
-  Spinnt noch rum!
-</div>
-
 {$message}
 
-<div class="alert alert-info">
+<div class="alert alert-info d-print-none">
   <p>Dieses Ranking basiert auf dem <a href="https://de.wikipedia.org/wiki/Elo-Zahl" target="_blank">ELO-Prinzip</a></p>
 </div>
 
-<div class="row">
+<div class="row d-print-none">
     <div class="col-md-12 text-right mb-3">
         <div class="btn-toolbar pull-right" role="toolbar" aria-label="Toolbar with button groups">
             {if $isAdmin or $isReporter}
@@ -29,7 +25,7 @@
     </div>
 </div>
 
-<ul class="nav nav-tabs" style="margin-bottom: 20px;">
+<ul class="nav nav-tabs d-print-none" style="margin-bottom: 20px;">
   <li class="nav-item">
       <a class="nav-link active" data-toggle="tab" href="#ranking">Ranking</a>
   </li>
