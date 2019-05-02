@@ -4,7 +4,7 @@
  </div>
 
 <p class="text-right">
-  <a class="btn btn-success" href="?action=add_player">SpielerInnen hinzufügen</a>
+  <a class="btn btn-success" href="?action=add_player">Benutzer hinzufügen</a>
 </p>
 
 {if $pagination}

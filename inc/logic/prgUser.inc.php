@@ -71,15 +71,13 @@ class PrgPatternElementUser extends APrgPatternElement {
     protected $prgElementLogin;
 
     protected $brdb;
-    
-    
+
+
     private $uploadImageFileName;
     private $IMAGE_PATH;
 
     public function __construct(BrankDB $brdb, PrgPatternElementLogin $prgElementLogin) {
         parent::__construct("userRegister");
-
-        #die(print_r($_POST));
 
         $this->registerPostSessionVariable(self::FORM_USER_EMAIL);
         $this->registerPostSessionVariable(self::FORM_USER_FNAME);
@@ -89,7 +87,7 @@ class PrgPatternElementUser extends APrgPatternElement {
         $this->registerPostSessionVariable(self::FORM_USER_IS_ADMIN);
         $this->registerPostSessionVariable(self::FORM_USER_IS_REPORTER);
         $this->registerPostSessionVariable(self::FORM_USER_ADMIN_USER_ID);
-        
+
         // set Image Path
         $this->IMAGE_PATH = $_SERVER['BASE_DIR'] .'static/img/user/';
 
@@ -98,41 +96,20 @@ class PrgPatternElementUser extends APrgPatternElement {
 
         // load User
         $this->prgElementLogin = $prgElementLogin;
-
-
     }
 
     public function processPost() {
-
-        $isUserLoggedIn = $this->prgElementLogin->isUserLoggedIn();
-        $isUserAdmin     = $this->prgElementLogin->getLoggedInUser()->isAdmin();
-        // Don't process the posts if no user is logged in!
-        // otherwise well formed post commands could trigger database actions
-        // without theoretically having access to it.
-        if ( !$this->prgElementLogin->isUserLoggedIn() || !$isUserAdmin ) {
-            return;
-        }
-
+        // check if user is login
+        $this->prgElementLogin->redirectUserIfNotLoggindIn();
 
         if ( ! $this->issetPostVariable(self::FORM_USER_ACTION) ) {
+            $this->setFailedMessage("Kein Formular gewählt");
             return;
         }
 
+        // default user
         $loginAction = strval(trim($this->getPostVariable(self::FORM_USER_ACTION)));
-
         switch ($loginAction) {
-          /*case self::FORM_USER_ACTION_REGISTER:
-            $this->processPostDeleteUserAccount();
-            break;
-*/
-            case self::FORM_USER_ACTION_INSERT_ACCOUNT:
-               $this->processPostInsertUserAccount();
-                break;
-
-            case self::FORM_USER_ACTION_UPDATE_ACCOUNT:
-                $this->processPostUpdateUserAccount(Tools::get("id"));
-                break;
-
             case self::FORM_USER_ACTION_CHANGE_PASSWORD:
                 $this->processPostUpdateUserPassword();
                 break;
@@ -149,6 +126,25 @@ class PrgPatternElementUser extends APrgPatternElement {
                 # code...
                 break;
         }
+
+        // admin area
+        $this->prgElementLogin->redirectUserIfNonAdmin();
+        switch ($loginAction) {
+
+            case self::FORM_USER_ACTION_INSERT_ACCOUNT:
+                $this->processPostRegisterUser();
+                break;
+
+            case self::FORM_USER_ACTION_UPDATE_ACCOUNT:
+                $this->processPostUpdateUserAccount(Tools::get("id"));
+                break;
+
+            default:
+                # code...
+                break;
+        }
+
+        return;
     }
 
     public function processGet() {
@@ -181,13 +177,24 @@ class PrgPatternElementUser extends APrgPatternElement {
       if (
         ! $this->issetPostVariable(self::FORM_USER_FNAME) ||
         ! $this->issetPostVariable(self::FORM_USER_LNAME) ||
-        ! $this->issetPostVariable(self::FORM_USER_GENDER)
+        ! $this->issetPostVariable(self::FORM_USER_GENDER) ||
+        ! $this->issetPostVariable(self::FORM_USER_EMAIL)
       ) {
           $this->setFailedMessage(self::ERROR_USER_UPDATE_MISSING_INFORMATION);
           return;
       }
 
-      $res = insertUserEasyProcess();
+      $email      = strtolower(strval(trim($this->getPostVariable(self::FORM_USER_EMAIL))));
+      $firstName  = strval(trim($this->getPostVariable(self::FORM_USER_FNAME)));
+      $lastName   = strval(trim($this->getPostVariable(self::FORM_USER_LNAME)));
+      $gender     = strval(trim($this->getPostVariable(self::FORM_USER_GENDER)));
+
+      if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $this->setFailedMessage(self::ERROR_USER_UPDATE_INVALID_EMAIL);
+        return;
+      }
+
+      $res = $this->brdb->insertUser($email, $firstName, $lastName, $gender);
       if ($this->brdb->hasError()) {
           $this->setFailedMessage($this->brdb->getError());
           return;
@@ -220,19 +227,16 @@ class PrgPatternElementUser extends APrgPatternElement {
             !$this->issetPostVariable(self::FORM_USER_EMAIL) ||
             !$this->issetPostVariable(self::FORM_USER_FNAME) ||
             !$this->issetPostVariable(self::FORM_USER_LNAME) ||
-            !$this->issetPostVariable(self::FORM_USER_GENDER) ||
-            !$this->issetPostVariable(self::FORM_USER_NEW_PASSWORD) ||
-            !$this->issetPostVariable(self::FORM_USER_REPEAT_NEW_PASSWORD)) {
+            !$this->issetPostVariable(self::FORM_USER_GENDER)) {
 
             $this->setFailedMessage(self::ERROR_USER_UPDATE_MISSING_INFORMATION);
             return;
         }
 
-        $email      = strval(trim($this->getPostVariable(self::FORM_USER_EMAIL)));
+        $email      = strtolower(strval(trim($this->getPostVariable(self::FORM_USER_EMAIL))));
         $firstName  = strval(trim($this->getPostVariable(self::FORM_USER_FNAME)));
         $lastName   = strval(trim($this->getPostVariable(self::FORM_USER_LNAME)));
         $gender     = strval(trim($this->getPostVariable(self::FORM_USER_GENDER)));
-        $email      = strtolower($email);
 
         // First filter the email before continue
         if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -254,7 +258,7 @@ class PrgPatternElementUser extends APrgPatternElement {
 
         // now everything is checked and the command for adding
         // the user can be called
-        $res = $this->brdb->registerUser($email, $firstName, $lastName, $gender, $phone, $bday, $playerId, $clubId);
+        $res = $this->brdb->registerUser($email, $firstName, $lastName, $gender, $phone, $bday, $playerId);
         if ($this->brdb->hasError()) {
             $this->setFailedMessage($this->brdb->getError());
             return;
@@ -375,7 +379,7 @@ class PrgPatternElementUser extends APrgPatternElement {
 
         // now everything is checked and the command for adding
         // the user can be called
-        $res = $this->brdb->updateAdminUser($userId, $email, $firstName, $lastName, $gender, $phone, $bday, $playerId, $clubId, $isPlayer, $isReporter, $isAdmin);
+        $res = $this->brdb->updateAdminUser($userId, $email, $firstName, $lastName, $gender, $phone, $bday, $playerId, $isPlayer, $isReporter, $isAdmin);
         if ($this->brdb->hasError()) {
             $this->setFailedMessage($this->brdb->getError());
             return;
@@ -540,7 +544,7 @@ class PrgPatternElementUser extends APrgPatternElement {
 
         // set filename to random
         $filenamegenerator = new FileUpload\FileNameGenerator\Random("123");
-        
+
         // FileUploader itself
         $fileupload = new FileUpload\FileUpload($_FILES['userRegisterAccountImage'], $_SERVER);
 
@@ -549,13 +553,13 @@ class PrgPatternElementUser extends APrgPatternElement {
         $fileupload->setFileSystem($filesystem);
         $fileupload->addValidator($validator);
         $fileupload->setFileNameGenerator($filenamegenerator);
-        
+
         // Doing the deed
         list($files, $headers) = $fileupload->processAll();
         #echo "<pre>";
         #var_dump($fileupload);
         #die();
-        
+
         #json_encode(['files' => $files]);
         #var_dump($files);
         #echo count($files);
@@ -570,7 +574,7 @@ class PrgPatternElementUser extends APrgPatternElement {
             #$this->setFailedMessage(var_dump($file));
             return false;
         }
-        
+
         $file = $files[0];
         if ($file->error > 0) {
             $this->setFailedMessage("Fehler beim Upload");
@@ -583,18 +587,18 @@ class PrgPatternElementUser extends APrgPatternElement {
             $this->setFailedMessage("Fehler: Kann das Bild nicht verkleinern.");
             return false;
         }
-        
+
         // create thumbnail
         $thumbImageName = 'thumb_'. $file->getFileName();
         if ( ! $this->resizeImage($imageFilename, $thumbImageName, 80)) {
             $this->setFailedMessage("Fehler: Thumbnail konnte nicht erstellt werden.");
             return false;
         }
-        
+
         $this->uploadImageFileName = $file->getFileName();
         return true;
     }
-    
+
     private function resizeImage($source, $destinaction, $width=800) {
         $image = new \Gumlet\ImageResize($this->IMAGE_PATH .'/'. $source);
         $image->resizeToWidth($width);

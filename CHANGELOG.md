@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file.
 - fix markdown view
 - add userimage to profil
 - add sortable tables to tournament
-- add userImage to navigation
+- add user thumbnail image to navigation
 
 ### [1.0.6.1] - 2019-04-01
 - add FAQ - System

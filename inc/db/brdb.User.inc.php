@@ -93,10 +93,10 @@ trait UserDB {
      *            the password to be used as sha256 hash
      * @return mysqli_result
      */
-    public function registerUser($email, $firstName, $lastName, $gender, $phone, $bday, $playerId, $clubId)
+    public function registerUser($email, $firstName, $lastName, $gender, $phone, $bday, $playerId)
     {
-        $cmd = $this->db->prepare("INSERT INTO User (email, firstName, lastName, gender, phone, bday, playerId, clubId, activePlayer) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)");
-        $cmd->bind_param("ssssssss", $email, $firstName, $lastName, $gender, $phone, $bday, $playerId, $clubId);
+        $cmd = $this->db->prepare("INSERT INTO User (email, firstName, lastName, gender, phone, bday, playerId, activePlayer) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)");
+        $cmd->bind_param("ssssssss", $email, $firstName, $lastName, $gender, $phone, $bday, $playerId);
 
         return $this->executeStatement($cmd);
     }
@@ -133,6 +133,13 @@ trait UserDB {
     public function checkUserPassword($userId, $hashedPassword) {
         $cmd = $this->db->prepare("SELECT userId FROM User WHERE userId = ? AND password = ? ");
         $cmd->bind_param("is", $userId, $hashedPassword);
+
+        return $this->executeStatement($cmd);
+    }
+
+    public function insertUser($email, $firstName, $lastName, $gender){
+        $cmd = $this->db->prepare("INSERT INTO User (email, firstName, lastName, gender) VALUES (?, ?, ?, ? )");
+        $cmd->bind_param("ssss", $email, $firstName, $lastName, $gender);
 
         return $this->executeStatement($cmd);
     }

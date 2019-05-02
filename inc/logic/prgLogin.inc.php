@@ -342,8 +342,40 @@ class PrgPatternElementLogin extends APrgPatternElement {
     return false;
   }
 
-  public function getLoggedInUser() {
-    return $this->loggedInUser;
-  }
+    public function getLoggedInUser() {
+        return $this->loggedInUser;
+    }
+
+    public function redirectUserIfNonAdmin() {
+        if ( ! $this->loggedInUser->isAdmin()) {
+            $this->setFailedMessage("User does not have the expected permissions.");
+            $this->tools->customRedirect(array(
+                'page' => 'index.php',
+            ));
+        }
+    }
+
+    public function redirectUserIfNonReporter() {
+        if ( ! $this->loggedInUser->isReporter()) {
+            $this->setFailedMessage("User does not have the expected permissions.");
+            $this->tools->customRedirect(array(
+                'page' => 'index.php',
+            ));
+        }
+    }
+
+    public function redirectUserIfNotLoggindIn() {
+        if ( ! $this->isUserLoggedIn()) {
+            $this->setFailedMessage("No login. No access.");
+            $this->tools->customRedirect(array(
+                'page' => 'index.php',
+            ));
+        }
+    }
+    /*
+    public function redirectIfUserhasNoRights() {
+
+    } */
+
 }
 ?>

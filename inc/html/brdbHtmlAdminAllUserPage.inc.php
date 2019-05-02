@@ -29,7 +29,7 @@ class BrdbHtmlAdminAllUserPage extends BrdbHtmlPage {
         parent::__construct();
 
         $this->prgPatternElementUser = new PrgPatternElementUser($this->brdb, $this->prgPatternElementLogin);
-        #$this->prgPattern->registerPrg($this->prgPatternElementUser);
+        $this->prgPattern->registerPrg($this->prgPatternElementUser);
 
         $this->info  = array('firstName', 'lastName', 'email', 'gender', 'bday', 'phone', 'playerId', 'clubId');
     }

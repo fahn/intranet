@@ -25,7 +25,7 @@ trait TournamentDB {
     }
 
     public function selectUpcomingTournamentList($max = 5) {
-        $cmd = $this->db->prepare("SELECT * FROM Tournament WHERE visible = 1 AND startdate > NOW() ORDER by startdate ASC LIMIT ?");
+        $cmd = $this->db->prepare("SELECT *, (SELECT COUNT(*) FROM TournamentPlayer AS TP WHERE TP.tournamentId = Tournament.tournamentId ) AS participant FROM Tournament WHERE visible = 1 AND startdate > NOW() ORDER by startdate ASC LIMIT ?");
         $cmd->bind_param("i", $max);
 
         return $this->executeStatement($cmd);
@@ -104,7 +104,7 @@ trait TournamentDB {
     /**
      *
      */
-    
+
 
     /** Insert class from Tournament
      *

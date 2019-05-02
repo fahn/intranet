@@ -56,28 +56,33 @@ class PrgPatternElementClub extends APrgPatternElement {
     }
 
     public function processPost() {
-        $isUserLoggedIn = $this->prgElementLogin->isUserLoggedIn();
-        $isUserAdmin     = $this->prgElementLogin->getLoggedInUser()->isAdmin();
-        $isUserReporter = $this->prgElementLogin->getLoggedInUser()->isReporter();
+        // check rights
+        $this->prgElementLogin->redirectUserIfNotLoggindIn();
+        $this->prgElementLogin->redirectUserIfNonReporter();
+        #$this->prgElementLogin->redirectUserIfNonAdmin();
 
-        // Don't process the posts if no user is logged in!
-        // otherwise well formed post commands could trigger database actions
-        // without theoretically having access to it.
-        if (!$this->prgElementLogin->isUserLoggedIn()) {
+        if (! $this->issetPostVariable(self::FORM_CLUB_ACTION)) {
+            $this->setFailedMessage("Kein Formular gewählt");
             return;
         }
 
-        if ($this->issetPostVariable(self::FORM_CLUB_ACTION)) {
-#die("HARD2");
-            $loginAction = strval(trim($this->getPostVariable(self::FORM_CLUB_ACTION)));
-
-            if ($isUserReporter && ($loginAction === self::FORM_CLUB_ACTION_INSERT_GAME)) {
+        $loginAction = strval(trim($this->getPostVariable(self::FORM_CLUB_ACTION)));
+        switch ($loginAction) {
+            case self::FORM_CLUB_ACTION_INSERT_GAME:
                 $this->processPostInsertClub();
-            } else if ($isUserReporter && ($loginAction === self::FORM_CLUB_ACTION_DELETE_GAME)) {
+                break;
+
+            case self::FORM_CLUB_ACTION_DELETE_GAME:
                 $this->processPostDeleteClub();
-            } else if ($isUserReporter && ($loginAction === self::FORM_CLUB_ACTION_UPDATE_GAME)) {
+                break;
+
+            case self::FORM_CLUB_ACTION_UPDATE_GAME:
                 $this->processPostUpdateClub();
-            }
+                break;
+
+            default:
+                return;
+                break;
         }
     }
 
