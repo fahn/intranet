@@ -72,16 +72,13 @@ class PrgPatternElementPlayer extends APrgPatternElement {
     }
 
     public function processPost() {
-        $isUserLoggedIn = $this->prgElementLogin->isUserLoggedIn();
-        $isUserAdmin     = $this->prgElementLogin->getLoggedInUser()->isAdmin();
-        // Don't process the posts if no user is logged in!
-        // otherwise well formed post commands could trigger database actions
-        // without theoretically having access to it.
-        if (!$this->prgElementLogin->isUserLoggedIn() || !$isUserAdmin) {
-            return;
-        }
+        $this->prgElementLogin->redirectUserIfNotLoggindIn();
+        
+        // ADMIN AREA
+        $this->prgElementLogin->redirectUserIfnoRights(array('reporter', 'admin'), 'or');
 
         if (! $this->issetPostVariable(self::FORM_PLAYER_ACTION)) {
+            $this->setFailedMessage("Kein Formular.");
             return;
         }
 

@@ -53,16 +53,16 @@ class PrgPatternElementSupport extends APrgPatternElement {
   }
 
     public function processPost() {
-        if (!$this->prgElementLogin->isUserLoggedIn()) {
-            $this->setFailedMessage("Sie sind nicht angemeldet");
+        $this->prgElementLogin->redirectUserIfNotLoggindIn();
+
+        if (! $this->issetPostVariable(self::FORM_FIELD_ACTION)) {
+            $this->setFailedMessage("Kein Formular.");
             return;
         }
-
-        if ($this->issetPostVariable(self::FORM_FIELD_ACTION)) {
-            $loginAction = strval(trim($this->getPostVariable(self::FORM_FIELD_ACTION)));
-            if (($loginAction === self::FORM_VALUE_ACTION_CONTACT_US)) {
-                $this->processPostContactUs();
-            }
+        
+        $loginAction = strval(trim($this->getPostVariable(self::FORM_FIELD_ACTION)));
+        if (($loginAction === self::FORM_VALUE_ACTION_CONTACT_US)) {
+            $this->processPostContactUs();
         }
     }
 

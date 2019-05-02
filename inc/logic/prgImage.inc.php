@@ -37,20 +37,10 @@ class PrgPatternElementImage extends APrgPatternElement {
     }
 
     public function processPost() {
-        $isUserLoggedIn = $this->prgElementLogin->isUserLoggedIn();
-        $isUserAdmin    = $this->prgElementLogin->getLoggedInUser()->isAdmin();
-        $isUserReporter = $this->prgElementLogin->getLoggedInUser()->isReporter();
+        $this->prgElementLogin->redirectUserIfNotLoggindIn();
 
-        // Don't process the posts if no user is logged in!
-        // otherwise well formed post commands could trigger database actions
-        // without theoretically having access to it.
-        if (!$this->prgElementLogin->isUserLoggedIn()) {
-            return;
-        }
-
-        if (!$isUserReporter) {
-            return;
-        }
+        // ADMIN AREA
+        $this->prgElementLogin->redirectUserIfnoRights(array('reporter', 'admin'), 'or');
     }
 
 
@@ -60,20 +50,12 @@ class PrgPatternElementImage extends APrgPatternElement {
      * @see IPrgPatternElement::processGet()
      */
     public function processGet() {
-        
-        $isUserLoggedIn = $this->prgElementLogin->isUserLoggedIn();
-        $isUserAdmin     = $this->prgElementLogin->getLoggedInUser()->isAdmin();
-        // Don't process the posts if no user is logged in!
-        // otherwise well formed post commands could trigger database actions
-        // without theoretically having access to it.
-        if ( !$this->prgElementLogin->isUserLoggedIn() || !$isUserAdmin ) {
-            return;
-        }
-        
-        #die("12345");
-        
-        $action = strval(trim($this->getGetVariable('action')));
+        $this->prgElementLogin->redirectUserIfNotLoggindIn();
 
+        // ADMIN AREA
+        $this->prgElementLogin->redirectUserIfnoRights(array('admin'));
+
+        $action = strval(trim($this->getGetVariable('action')));
         switch ($action) {
             case 'delete':
                 $this->processGetDeleteImage($this->getGetVariable('id'));

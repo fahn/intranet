@@ -1,4 +1,8 @@
-<h2>Sync</h2>
+<h1 class="display-1 mb-5">Sync</h1>
+
+<p class="text-center mb-5">
+    <a class="btn btn-danger" href="?action=add_player">Start sync</a>
+</p>
 
 <div class="row">
     <div class="col-xl-3 col-lg-6 col-12">

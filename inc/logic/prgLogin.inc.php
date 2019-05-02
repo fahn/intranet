@@ -363,6 +363,51 @@ class PrgPatternElementLogin extends APrgPatternElement {
             ));
         }
     }
+    
+    public function redirectUserIfnoRights($rights, $relationship = false) {
+        if ( !is_array($rights) && is_string($rights)) {
+            try {
+                $tmp = array();
+                $tmp[]= $rights;
+                $rights = $tmp;
+                unset($tmp);
+            } catch (Exception $e) {
+                $rights = array();
+            }
+        }
+        
+        $status = false;
+        if (is_array($rights)) {
+            foreach($rights as $right) {
+                switch ($right) {
+                    case 'admin':
+                        $status = $this->loggedInUser->isAdmin();
+                        break;
+                        
+                    case 'reporter':
+                        $status = $this->loggedInUser->isReporter();
+                        break;
+                    default:
+                        continue;
+                        break;
+                }
+                
+                if ( $status && $relationship == 'or') {
+                    return true;
+                } else {
+                    break;
+                }
+            }
+        }
+        
+        if (! $status) {
+            $this->setFailedMessage("User does not have the expected permissions.");
+            $this->tools->customRedirect(array(
+                'page' => 'index.php',
+            ));
+        }
+        return $status;
+    }
 
     public function redirectUserIfNotLoggindIn() {
         if ( ! $this->isUserLoggedIn()) {
@@ -372,10 +417,6 @@ class PrgPatternElementLogin extends APrgPatternElement {
             ));
         }
     }
-    /*
-    public function redirectIfUserhasNoRights() {
-
-    } */
 
 }
 ?>

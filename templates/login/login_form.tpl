@@ -1,4 +1,4 @@
-<form action="{$formTO}" method="post">
+<form action="{$formTO}" method="post" class="form-signin">
   <input type="hidden" name="loginFormLoginAction" id="loginFormLoginAction" value="Log In">
   <div class="login-form">
     {include file="messages.tpl"}
@@ -8,7 +8,7 @@
        <p> Möchtest du Zugang zu unserem neuen System haben, dann schicke eine E-Mail an: <a href="mailto:stefan@weinekind.de?subject=Zugang {$pageTitle}&body=Hallo Stefan,%0D%0A%0D%0Aich hätte gerne Zugang zum {$pageTitle} Intranet:%0D%0A%0D%0AMein Vorname:%0D%0AMein Nachname:%0D%0A">Stefan Metzner</a>.<br> Weitere Informationen folgen dann via E-Mail.</p>
     </div>
     <div class="form-group">
-        <input type="email" class="form-control login-field" value="" placeholder="E-Mail-Adresse" id="{$variableNameEmail}" name="{$variableNameEmail}" required>
+        <input type="email" class="form-control login-field" value="" placeholder="E-Mail-Adresse" id="{$variableNameEmail}" name="{$variableNameEmail}" required autofocus>
     </div>
 
     <div class="form-group">
@@ -36,6 +36,7 @@
           <a href="{$disclaimer}">Datenschutz</a>
       {/if}
     </p>
+    <p class="mb-3 text-muted text-center">© 2017-{$smarty.now|date_format:"%Y"}</p>
 
     </div>
   </div>

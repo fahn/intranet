@@ -53,15 +53,15 @@ class PrgPatternElementRanking extends APrgPatternElement {
     /********************************************* POST ***********************/
 
     public function processPost() {
-
-        #$isUserLoggedIn = $this->prgElementLogin->isUserLoggedIn();
-        #$isUserAdmin    = $this->prgElementLogin->getLoggedInUser()->isAdmin();
-        #$isUserReporter = $this->prgElementLogin->getLoggedInUser()->isReporter();
-
-        #if ( ! $isUserLoggedIn || ! $isAdmin || ! $isReporter) {
-        #    return;
-        #}
+        $this->prgElementLogin->redirectUserIfNotLoggindIn();
         
+        // ADMIN AREA
+        $this->prgElementLogin->redirectUserIfnoRights(array('reporter', 'admin'), 'or');
+
+        if (! $this->issetPostVariable(self::FORM_FORM_ACTION)) {
+            $this->setFailedMessage("Kein Formular.");
+            return;
+        }
 
 
         $form = strval(trim($this->getPostVariable(self::FORM_FORM_ACTION)));
@@ -183,18 +183,12 @@ class PrgPatternElementRanking extends APrgPatternElement {
     }
 
     /********************************************** GET ***********************/
-
     function processGet() {
-        #$isUserLoggedIn = $this->prgElementLogin->isUserLoggedIn();
-        #$isUserAdmin    = $this->prgElementLogin->getLoggedInUser()->isAdmin();
-        #$isUserReporter = $this->prgElementLogin->getLoggedInUser()->isReporter();
-
-        #if ( ! $isUserLoggedIn || ! $isAdmin || ! $isReporter) {
-                        #return;
-#        }
-
-
-        #$form = strval(trim($this->getGetVariable('action')));
+        $this->prgElementLogin->redirectUserIfNotLoggindIn();
+        
+        // ADMIN AREA
+        $this->prgElementLogin->redirectUserIfnoRights(array('reporter', 'admin'), 'or');
+        
         $action = $this->tools->get('action');
         switch ($action) {
             case 'renewRanking':

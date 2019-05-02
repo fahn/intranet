@@ -2,6 +2,7 @@
   <form action="" method="post">
     <input type="hidden" name="userRegisterFormAction" id="userRegisterFormAction" value="Update My Account ">
 
+    <h4 class="form-section"><i class="ft-eye"></i> About User</h4>
 
     <div class="row">
       <div class="col-md-6">

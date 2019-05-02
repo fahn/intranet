@@ -107,18 +107,13 @@ class PrgPatternElementTournament extends APrgPatternElement {
 
 
     public function processPost() {
-
-        $isUserAdmin    = $this->prgElementLogin->getLoggedInUser()->isAdmin();
-        $isUserReporter = $this->prgElementLogin->getLoggedInUser()->isReporter();
-
-        // Don't process the posts if no user is logged in!
-        // otherwise well formed post commands could trigger database actions
-        // without theoretically having access to it.
-        if (!$this->prgElementLogin->isUserLoggedIn()) {
-            return;
-        }
+        // check if user is login
+        $this->prgElementLogin->redirectUserIfNotLoggindIn();
+        
+        
 
         if(! $this->issetPostVariable(self::FORM_FORM_ACTION)) {
+            $this->setFailedMessage("no form");
             return;
         }
         $loginAction = strval(trim($this->getPostVariable(self::FORM_FORM_ACTION)));
@@ -128,11 +123,9 @@ class PrgPatternElementTournament extends APrgPatternElement {
                 $this->processPostInsertPlayerToTournament();
                 return;
         }
-
-
-        if (! $isUserReporter || ! $isUserAdmin) {
-            return;
-        }
+        
+        // ADMIN AREA
+        $this->prgElementLogin->redirectUserIfnoRights(array('reporter', 'admin'), 'or');
 
         switch ($loginAction) {
             case self::FORM_GAME_ACTION_INSERT_TOURNAMENT:

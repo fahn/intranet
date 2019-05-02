@@ -112,14 +112,17 @@ class PrgPatternElementUser extends APrgPatternElement {
         switch ($loginAction) {
             case self::FORM_USER_ACTION_CHANGE_PASSWORD:
                 $this->processPostUpdateUserPassword();
+                return;
                 break;
 
             case self::FORM_USER_ACTION_CHANGE_IMAGE:
                 $this->processPostUploadImage();
+                return;
                 break;
 
             case  self::FORM_USER_ACTION_UPDATE_MY_ACCOUNT:
                 $this->processPostUpdateUserMyAccount();
+                return;
                 break;
 
             default:
@@ -148,23 +151,17 @@ class PrgPatternElementUser extends APrgPatternElement {
     }
 
     public function processGet() {
-        #die("PO");
-        $isUserLoggedIn = $this->prgElementLogin->isUserLoggedIn();
-        $isUserAdmin     = $this->prgElementLogin->getLoggedInUser()->isAdmin();
-      // Don't process the posts if no user is logged in!
-      // otherwise well formed post commands could trigger database actions
-      // without theoretically having access to it.
-      if (!$this->prgElementLogin->isUserLoggedIn() || !$isUserAdmin) {
-          return;
-      }
+        // check if user is login
+        $this->prgElementLogin->redirectUserIfNotLoggindIn();
 
         $action = Tools::get("action");
 
         switch ($action) {
-          case 'delete':
-            $id = Tools::get("id");
-            $this->processGetDeleteUserAccount($id);
-            break;
+            case 'delete':
+                $this->prgElementLogin->redirectUserIfnoRights('admin');
+                $id = Tools::get("id");
+                $this->processGetDeleteUserAccount($id);
+                break;
 
           default:
             # code...
@@ -258,7 +255,7 @@ class PrgPatternElementUser extends APrgPatternElement {
 
         // now everything is checked and the command for adding
         // the user can be called
-        $res = $this->brdb->registerUser($email, $firstName, $lastName, $gender, $phone, $bday, $playerId);
+        $res = $this->brdb->registerUser($email, $firstName, $lastName, $gender, $bday, $playerId);
         if ($this->brdb->hasError()) {
             $this->setFailedMessage($this->brdb->getError());
             return;
@@ -425,8 +422,8 @@ class PrgPatternElementUser extends APrgPatternElement {
 
         // First filter the email before continue
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-          $this->setFailedMessage(self::ERROR_USER_UPDATE_INVALID_EMAIL);
-          return;
+            $this->setFailedMessage(self::ERROR_USER_UPDATE_INVALID_EMAIL);
+            return;
         }
 
         // Check if the user is already registered
@@ -525,10 +522,8 @@ class PrgPatternElementUser extends APrgPatternElement {
           return;
         }
 
-
         $this->setSuccessMessage("Bild wurde hochgeladen.");
         return;
-
     }
 
     private function uploadImage() {

@@ -34,6 +34,7 @@
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="adminAllPlayer.php"><i class="fas fa-user-friends"></i> Player</a>
                             <a class="dropdown-item" href="adminAllClub.php"><i class="fas fa-shield-alt"></i> Vereine</a>
+                            <a class="dropdown-item" href="adminSync.php"><i class="fas fa-sync"></i> Sync</a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="/pages/adminFaq.inc.php"><i class="fas fa-question-circle"></i> FAQ</a>
                             <a class="dropdown-item" href="/pages/adminNews.inc.php"><i class="fas fa-newspaper"></i> News</a>

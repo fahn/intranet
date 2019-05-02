@@ -93,10 +93,9 @@ trait UserDB {
      *            the password to be used as sha256 hash
      * @return mysqli_result
      */
-    public function registerUser($email, $firstName, $lastName, $gender, $phone, $bday, $playerId)
-    {
-        $cmd = $this->db->prepare("INSERT INTO User (email, firstName, lastName, gender, phone, bday, playerId, activePlayer) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)");
-        $cmd->bind_param("ssssssss", $email, $firstName, $lastName, $gender, $phone, $bday, $playerId);
+    public function registerUser($email, $firstName, $lastName, $gender, $bday, $playerId) {
+        $cmd = $this->db->prepare("INSERT INTO User (email, firstName, lastName, gender, bday, playerId, activePlayer) VALUES (?, ?, ?, ?, ?, ?, 1)");
+        $cmd->bind_param("ssssss", $email, $firstName, $lastName, $gender, $bday, $playerId);
 
         return $this->executeStatement($cmd);
     }
