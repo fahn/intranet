@@ -28,7 +28,7 @@ trait PlayerDB {
 
 
     public function selectPlayerById($playerId) {
-        $sql = "SELECT Player.*, Club.name AS clubName FROM Player 
+        $sql = "SELECT Player.*, Club.name AS clubName FROM Player
                 LEFT JOIN `Club` ON Club.clubId = Player.clubId
                 WHERE playerId = ? ";
         $cmd = $this->db->prepare($sql);
@@ -36,9 +36,9 @@ trait PlayerDB {
 
         return $this->executeStatement($cmd);
     }
-    
+
     public function selectPlayerByPlayerNr($playerNr) {
-        $sql = "SELECT Player.*, Club.name AS clubName FROM Player 
+        $sql = "SELECT Player.*, Club.name AS clubName FROM Player
                 LEFT JOIN `Club` ON Club.clubId = Player.clubId
                 WHERE playerNr = ? ";
         $cmd = $this->db->prepare($sql);
@@ -46,8 +46,8 @@ trait PlayerDB {
 
         return $this->executeStatement($cmd);
     }
-    
-    
+
+
 
     public function insertPlayer($data) {
         try {
@@ -61,7 +61,7 @@ trait PlayerDB {
             return false;
         }
     }
-    
+
     public function updatePlayer($data) {
         try {
             extract($data);
@@ -80,11 +80,11 @@ trait PlayerDB {
             return false;
         }
     }
-    
+
     public function getPlayerByTerm($term) {
         $term = $this->db->real_escape_string($term);
         $term = "%".$term."%";
-        $cmd  = $this->db->prepare("SELECT Player.*, CONCAT_WS(',', Player.lastName, Player.firstName) AS playerName, Club.name AS clubName FROM Player
+        $cmd  = $this->db->prepare("SELECT Player.*, CONCAT_WS(', ', Player.lastName, Player.firstName) AS playerName, Club.name AS clubName FROM Player
                                    LEFT JOIN Club ON Club.clubId = Player.clubId
                                    WHERE CONCAT_WS(' ', Player.firstName, Player.lastName) LIKE ?
                                    ORDER BY Player.lastName");

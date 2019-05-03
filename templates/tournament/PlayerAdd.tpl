@@ -28,16 +28,13 @@
     <div class="row initline">
       <div class="col-md-4 input-control" data-role="select">
         <label class="d-block font-weight-bold">Spieler</label>
-        <select class="js-example-data-array form-control d-block" name="tournamentPlayerId[]" placeholder="Bitte wählen">
-        </select>
+        <select class="form-control js-data-ajax-player" type="text" id="tournamentPlayerId" name="tournamentPlayerId"></select>
       </div>
 
       <div class="col-md-4">
           <div class="form-group">
               <label class="d-block font-weight-bold">Partner</label>
-              <select class="js-example-data-array form-control d-block" name="tournamentPartnerId[]" placeholder="Bitte wählen">
-                <option value="0">Bitte wählen</option>
-              </select>
+              <select class="form-control js-data-ajax-player" type="text" id="tournamentPartnerId" name="tournamentPartnerId"></select>
           </div>
       </div>
 
@@ -63,79 +60,4 @@
       </div>
     </div>
   </form>
-
 {/if}
-
-<script>
-{literal}
-
-  var data = [{id: 0, text: 'Bitte wählen'}];
-
-  //data.push({id: 1, text: 'da'});
-{/literal}
-{foreach item=club from=$clubs}
-  data.push({ldelim}
-    "text": "{$club.name}",
-    "children": [
-  {foreach item=player from=$club.players}
-    {ldelim}
-      id: {$player.playerId},
-      text: '{$player.fullName}'
-    {rdelim},
-  {/foreach}
-  ]{rdelim});
-{/foreach}
-</script>
-
-
-
-{literal}
-<script type="text/javascript">
-    $(document).ready(function() {
-        $('.search-box input[type="text"]').on("keyup input", function() {
-            event.preventDefault();
-            /* Get input value on change */
-            //$inputs = $(this);
-
-            var inputVal = $(this).val();
-            var resultDropdown = $(this).siblings(".result");
-            $(this).parent(".result").empty();
-
-            //$inputs.prop("disabled", true);
-            if (inputVal.length) {
-                request = $.ajax({
-                    type: "POST",
-                    dataType: 'text',
-                    contentType: 'application/x-www-form-urlencoded',
-                    url: "/ajax/player.php",
-                    data: $(this).serialize()
-                });
-
-                request.done(function(data) {
-                    console.log(data);
-                    resultDropdown.html(data);
-                });
-
-                request.always(function() {
-                    // Reenable the inputs
-                    //$inputs.prop("disabled", false);
-                });
-            } else {
-                resultDropdown.empty();
-            }
-        });
-
-        // Set search input value on click of result item
-        $(document).on("click", ".result p", function() {
-            $(this).parents(".search-box").find('input[type="text"]').val($(this).text());
-            $(this).parent(".result").empty();
-        });
-    });
-</script>
-{/literal}
-<!--
-<div class="search-box">
-    <input type="text" autocomplete="off" id="playerSearch" name="playerSearch" placeholder="Search country..." />
-    <div class="result"></div>
-</div>
--->

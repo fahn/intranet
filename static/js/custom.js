@@ -8,23 +8,6 @@ $(document).ready(function() {
         return path.split('/').reverse()[0];
     }
 
-    // data
-    $('select.js-example-basic-single').select2({
-        placeholder: 'Bitte wählen',
-        allowClear: true,
-        minimumResultsForSearch: 1,
-        hideSelectionInSingle: true,
-    });
-
-
-    $('select.js-example-basic-multiple').select2();
-
-    if (typeof data !== 'undefined') {
-        $(".js-example-data-array").select2({
-            data: data
-        })
-    }
-
 
 
     $(".dropdown").hover(function() {
@@ -33,59 +16,20 @@ $(document).ready(function() {
         $(this).removeClass("show");
     });
 
-    /* html editor */
-    $('#summernote').summernote({
-        placeholder: '',
-        tabsize: 2,
-        height: 150,
-        lang: 'de-DE',
-        codeview: false,
-    });
-
-    /*
-     *
+    /**
+     * wsgyi editor
      */
-    $.fn.mirror = function(selector) {
-        return this.each(function() {
-            var $this = $(this);
-            var $selector = $(selector);
-            $this.bind('keyup', function() {
-                val = $this.val();
-                newval = 21;
-                if (val >= 19) {
-                    if (val == 29) {
-                        newval = 30;
-                    } else {
-                        newval = +val + 2;
-                    }
-                }
-                $selector.val((newval));
-            });
+    if (typeof summernote === "function") {
+        /* html editor */
+        $('#summernote').summernote({
+            placeholder: '',
+            tabsize: 2,
+            height: 150,
+            lang: 'de-DE',
+            codeview: false,
         });
-    };
+    }
 
-    $('#userRegisterGameSetA1Points').mirror('#userRegisterGameSetB1Points');
-    $('#userRegisterGameSetA2Points').mirror('#userRegisterGameSetB2Points');
-    $('#userRegisterGameSetA3Points').mirror('#userRegisterGameSetB3Points');
-
-
-    // clone select2
-    $('a.clonerow').click(function() {
-        console.log("START");
-        $("div.initline:first").cloneSelect2().appendTo('#containerClone');
-        $("div.initline select").css('width', '100%');
-        event.preventDefault();
-        event.stopPropagation();
-    });
-
-    jQuery.fn.cloneSelect2 = function(withDataAndEvents, deepWithDataAndEvents) {
-        var $oldSelects2 = this.is('select') ? this : this.find('select');
-        $oldSelects2.select2('destroy');
-        var $clonedEl = this.clone(withDataAndEvents, deepWithDataAndEvents);
-        $oldSelects2.select2();
-        $clonedEl.is('select') ? $clonedEl.select2() : $clonedEl.find('select').select2();
-        return $clonedEl;
-    };
 
 
     // Tooltipps
@@ -156,27 +100,39 @@ $(document).ready(function() {
 
     //if (typeof select2 === "function") {
         $('.js-data-ajax-player').select2({
-                ajax: {
-                    url: '/ajax/player.php',
-                    type: "post",
-                    dataType: 'json'
-                    // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
-                },
-                placeholder: 'Search for a player',
-                delay: 250,
+            ajax: {
+                url: 'https://schwalbe.badtra.de/ajax/player.php',
+                type: "post",
+                dataType: 'json',
                 data: function(params) {
+                    var query = {
+                        playerSearch: params.term,
+                    }
+                    return query;
+                },
+                processResults: function(data) {
+                    // parse the results into the format expected by Select2.
+                    // since we are using custom formatting functions we do not need to
+                    // alter the remote JSON data
+                    //console.log(data);
                     return {
-                        searchTerm: params.term // search term
+                        results: data.results
                     };
                 },
-                processResults: function(response) {
-                    return {
-                        results: response
-                    };
-                }
                 //cache: true
+
+            },
+            placeholder: 'Search for a player',
+            delay: 250,
+
+            //cache: true
         });
-    //}
 
-
+        // Select
+        $('select.js-example-basic-single').select2({
+            placeholder: 'Bitte wählen',
+            allowClear: true,
+            minimumResultsForSearch: 1,
+            hideSelectionInSingle: true,
+        });
 });

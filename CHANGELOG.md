@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-### [1.0.6.2] - 2019-04-27
+### [1.0.6.2] - 2019-05-03
 - seperate Player and Users
 - fix own account editoring
 - fix markdown view
@@ -12,6 +12,8 @@ All notable changes to this project will be documented in this file.
 - add sortable tables to tournament
 - add user thumbnail image to navigation
 - Add right-managament to system
+- add new playerSearch
+- upgrade js libaries
 
 ### [1.0.6.1] - 2019-04-01
 - add FAQ - System
