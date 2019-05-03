@@ -100,6 +100,12 @@ $(document).ready(function() {
 
     //if (typeof select2 === "function") {
         $('.js-data-ajax-player').select2({
+            language: "de",
+            CloseOnSelect: true,
+            //allowClear: true,
+            //minimumResultsForSearch: 1,
+            //hideSelectionInSingle: true,
+            minimumInputLength: 3,
             ajax: {
                 url: 'https://schwalbe.badtra.de/ajax/player.php',
                 type: "post",
@@ -119,17 +125,15 @@ $(document).ready(function() {
                         results: data.results
                     };
                 },
-                //cache: true
-
             },
             placeholder: 'Search for a player',
             delay: 250,
-
-            //cache: true
+            cache: true
         });
 
         // Select
         $('select.js-example-basic-single').select2({
+            language: "de",
             placeholder: 'Bitte wählen',
             allowClear: true,
             minimumResultsForSearch: 1,

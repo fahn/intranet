@@ -62,7 +62,7 @@ CREATE TABLE `Club` (
   `sort` int(1) NOT NULL DEFAULT '1',
   `visible` int(1) DEFAULT '1',
   `name` text NOT NULL,
-  `clubNumber` text NOT NULL,
+  `clubNr` text NOT NULL,
   `association` varchar(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

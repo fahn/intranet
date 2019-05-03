@@ -14,30 +14,38 @@
 
 
 class Club {
-    private $clubId;
+    private $clubId = 0;
     private $clubName;
-    private $clubNumber;
+    private $clubNr;
+    private $association;
 
 
     public function __construct($dataSet = null) {
-        if ($dataSet == null) {
-            return;
+        if ($dataSet) {
+            foreach($dataSet as $key => $value) {
+                $this->$key = $value;
+            }
         }
 
-        try {
-            extract($row);
-            $this->clubId = $clubId;
-            $this->clubName = $clubName;
-            $this->clubNumber = $clubNumber;
-        } Exception ($e) {
-            return;
-        }
-
+    }
+    
+    public function getClubNr() {
+        return $this->clubNr;
+    }
+    
+    public function getClubName() {
+        return $this->clubName;
+    }
+    
+    public function getAssociation() {
+        return $this->association;
     }
 
     /**
      * Print Club 
      */
     public function __toString() {
-        return sprintf("%s => %s [ID: %i]", $this->clubNumber, $this->clubName, $this->clubId);
+        return sprintf("%s => %s [ID: %i]\n", $this->clubNr, $this->clubName, $this->clubId);
     }
+}
+?>

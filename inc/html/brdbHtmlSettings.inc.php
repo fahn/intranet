@@ -384,7 +384,7 @@ class BrdbHtmlSettings extends BrdbHtmlPage {
                     '',
                     $row['p1PlayerNumber'],
                     $bday,
-                    $row['p1ClubNumber'],
+                    $row['p1ClubNr'],
                     $counter,
                     '',
                     '',
@@ -429,7 +429,7 @@ class BrdbHtmlSettings extends BrdbHtmlPage {
                         '',
                         $sbnr,
                         $bday,
-                        $row['p2ClubNumber'],
+                        $row['p2ClubNr'],
                         $counter,
                         '',
                         '',
@@ -470,7 +470,7 @@ class BrdbHtmlSettings extends BrdbHtmlPage {
           $row['p1ClubAssociation'],
           $row['p1PlayerNumber'],
           $bday,
-          $row['p1ClubNumber'],
+          $row['p1ClubNr'],
           $counter,
         );
         $writer->addRow($singleRow);

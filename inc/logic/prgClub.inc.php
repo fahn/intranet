@@ -26,7 +26,7 @@ class PrgPatternElementClub extends APrgPatternElement {
     private $brdb;
     const FORM_FIELD_ID          = "clubId";
     const FORM_FIELD_NAME        = "name";
-    const FORM_FIELD_NUMBER      = "clubNumber";
+    const FORM_FIELD_NUMBER      = "clubNr";
     const FORM_FIELD_ASSOCIATION = "association";
 
     const FORM_CLUB_ACTION             = "formAction";
@@ -173,6 +173,46 @@ class PrgPatternElementClub extends APrgPatternElement {
                 $this->clearSessionVariables();
             }
         }
+    }
+    
+    
+    
+    
+    
+    public function find($item) {
+        if ($item instanceof Club) {
+            echo "**";
+            $res = $this->brdb->selectClubByClubNr($item->getClubNr());
+            $tmp = array();
+            if ($this->brdb->hasError()) {
+                return false;
+            }
+            
+            return $res->num_rows == 1 ? true : false;
+        }
+        return false;
+    }
+
+    public function insert($item) {
+        if ($item instanceof Club) {
+            $res = $this->brdb->insertClubByModel($item);
+            if ($this->brdb->hasError()) {
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public function update($item) {
+        if ($item instanceof Club) {
+            $res = $this->brdb->updateClubByClubNr($item->getClubNr(), $item->getClubName(), $item->getAssociation());
+            if ($this->brdb->hasError()) {
+                return false;
+            }
+            return true;
+        }
+        return false;
     }
 }
 ?>

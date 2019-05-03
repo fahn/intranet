@@ -16,8 +16,17 @@ include_once $_SERVER['BASE_DIR'] .'/inc/html/brdbHtmlPage.inc.php';
 include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgSync.inc.php';
 include_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
 
+// load models
+include_once $_SERVER['BASE_DIR'] .'/inc/model/club.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/model/player.inc.php';
+
+// load logic
+include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgClub.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgPlayer.inc.php';
+
 class BrdbHtmlAdminSyncPage extends BrdbHtmlPage {
-  private $prgPatternElementSync;
+    private $prgPatternElementSync;
+    private $prgPatternElementClub;
 
     public function __construct($page = null) {
         parent::__construct();
@@ -34,14 +43,24 @@ class BrdbHtmlAdminSyncPage extends BrdbHtmlPage {
 
         $this->smarty->assign('links', $links);
 
-        $this->$prgPatternElementSync = new PrgPatternElementSync($this->brdb, $this->prgPatternElementLogin);
-        $this->prgPattern->registerPrg($this->$prgPatternElementSync);
+        $this->prgPatternElementSync = new PrgPatternElementSync($this->brdb, $this->prgPatternElementLogin);
+        $this->prgPattern->registerPrg($this->prgPatternElementSync);
+        
+        
+        $this->prgPatternElementClub = new PrgPatternElementClub($this->brdb, $this->prgPatternElementLogin);
+        $this->prgPattern->registerPrg($this->prgPatternElementClub);
+        
+        $this->prgPatternElementPlayer = new PrgPatternElementPlayer($this->brdb, $this->prgPatternElementLogin);
+        $this->prgPattern->registerPrg($this->prgPatternElementPlayer);
     }
 
 
     public function htmlBody() {
         $action = $this->tools->get("action");
         $id     = $this->tools->get("id");
+        
+        //$this->syncClubs();
+        $this->syncPlayer();
 
         switch ($action) {
           default:
@@ -62,6 +81,79 @@ class BrdbHtmlAdminSyncPage extends BrdbHtmlPage {
             
         ));
         return $this->smarty->fetch('sync/status.tpl');
+    }
+    
+    
+    private function syncPlayer() {
+        $statistics = array('new' => 0, 'updated' => 0);
+        $arrContextOptions=array(
+            "ssl"=>array(
+                "verify_peer"=>false,
+                "verify_peer_name"=>false,
+            ),
+        ); 
+        $file = file_get_contents('https://service.badtra.de/player', false, stream_context_create($arrContextOptions));
+        $data = json_decode($file);
+        unset($file);//prevent memory leaks for large json.
+        //insert data here
+        print_r($data);
+        die();
+        $records = $data->clubs->records;
+        foreach($records as $item) {
+            if (empty($item['playerNr'])) {
+                continue;
+            }
+            echo $item['playerNr'];
+            if (! $this->findPlayer($item['playerNr'])) {
+                #$this->insertPlayer($item);
+                $statistics['new']++;
+            } else {
+                #$this->updatePlayer($item);
+                $statistics['updated']++;
+            }
+        }
+        die();
+        
+        return $statistics;
+    }
+
+    
+    private function syncClubs() {
+        $statistics = array('new' => 0, 'updated' => 0);
+        $arrContextOptions=array(
+            "ssl"=>array(
+                "verify_peer"=>false,
+                "verify_peer_name"=>false,
+            ),
+        ); 
+        $file = file_get_contents('https://service.badtra.de/clubs', false, stream_context_create($arrContextOptions));
+        $data = json_decode($file);
+        #print_r($data);
+        unset($file);//prevent memory leaks for large json.
+        //insert data here
+        echo "<pre>";
+        $records = $data->clubs->records;
+        foreach($records as $item) {
+            try {
+                $club = new Club($item);
+                if (! $this->prgPatternElementClub->find($club)) {
+                    echo "NOT FOUND:";
+                    echo $club;
+                    #$this->prgPatternElementClub->insert($item);
+                    $statistics['new']++;
+                } else {
+                    echo "FOUND:";
+                    echo $club;
+                    echo "Status: ". ($this->prgPatternElementClub->update($club) ? 'updated' : 'failed') ."<br>";
+                    $statistics['updated']++;
+                }
+            } catch (Exception $e) {
+                
+            }
+        }
+        die();
+        
+        return $statistics;
     }
     
     

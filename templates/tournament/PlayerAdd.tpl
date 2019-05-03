@@ -40,7 +40,7 @@
 
       <div class="col-md-4">
         <label class="d-block font-weight-bold">Diziplin</label>
-        <select class="js-example-basic-single form-control " name="tournamentDiziplin[]" placeholder="Bitte wählen">
+        <select class="js-example-basic-single form-control " name="tournamentDiziplin" placeholder="Bitte wählen">
           <option value="0">Bitte wählen</option>
           {foreach item=discipline from=$disciplines}
             <option value="{$discipline}">{$discipline}</option>

@@ -65,9 +65,9 @@ trait TournamentDB {
             "SELECT
                 TP.*,
                 Player.firstName AS p1FirstName, Player.lastName AS p1LastName, Player.gender AS p1Gender, Player.bday AS p1Bday, Player.playerNr AS p1PlayerNumber,
-                C1.name as p1ClubName, C1.clubNumber AS p1ClubNumber, C1.association AS p1ClubAssociation,
+                C1.name as p1ClubName, C1.clubNr AS p1ClubNr, C1.association AS p1ClubAssociation,
                 Partner.firstName AS p2FirstName, Partner.lastName AS p2LastName, Partner.gender AS p2Gender, Partner.bday AS p2Bday, Partner.playerNr AS p2PlayerNumber,
-                C2.name as p2ClubName, C2.clubNumber AS p2ClubNumber, C2.association AS p2ClubAssociation
+                C2.name as p2ClubName, C2.clubNr AS p2ClubNr, C2.association AS p2ClubAssociation
               FROM TournamentPlayer AS TP
               LEFT JOIN Player ON TP.playerId = Player.playerId
               LEFT JOIN Player as Partner ON TP.partnerId = Partner.playerId
