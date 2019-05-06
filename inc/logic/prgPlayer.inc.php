@@ -73,7 +73,7 @@ class PrgPatternElementPlayer extends APrgPatternElement {
 
     public function processPost() {
         $this->prgElementLogin->redirectUserIfNotLoggindIn();
-        
+
         // ADMIN AREA
         $this->prgElementLogin->redirectUserIfnoRights(array('reporter', 'admin'), 'or');
 
@@ -240,6 +240,42 @@ class PrgPatternElementPlayer extends APrgPatternElement {
           'page' => "adminAllUser.php",
         ));
         return true;
+    }
+
+
+    public function find($item) {
+        if ($item instanceof Player) {
+            $res = $this->brdb->selectPlayerByPlayerNr($item->getPlayerNr());
+            $tmp = array();
+            if ($this->brdb->hasError()) {
+                return false;
+            }
+
+            return $res->num_rows == 1 ? true : false;
+        }
+        return false;
+    }
+
+    public function insert($item) {
+        if ($item instanceof Player) {
+            $res = $this->brdb->insertPlayer($item->getSqlData());
+            if ($this->brdb->hasError()) {
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public function update($item) {
+        if ($item instanceof Player) {
+            $res = $this->brdb->updatePlayer($item->getSqlData());
+            if ($this->brdb->hasError()) {
+                return false;
+            }
+            return true;
+        }
+        return false;
     }
 }
 

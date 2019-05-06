@@ -167,7 +167,7 @@ trait TournamentDB {
     }
 
     public function insertTournamentBackup($id, $data) {
-        $cmd = $this->db->prepare("INSERT INTO TournamentBackup (TournamentId, data, date) VALUES (?, ?, NOW())");
+        $cmd = $this->db->prepare("INSERT INTO TournamentBackup (tournamentId, data, date) VALUES (?, ?, NOW())");
         $cmd->bind_param("is", $id, $data);
 
         return $this->executeStatement($cmd);
@@ -188,8 +188,29 @@ trait TournamentDB {
     }
 
     public function getPlayerFromTournamentById($playerId) {
-        $cmd = $this->db->prepare("SELECT * FROM TournamentPlayer WHERE TournamentPlayerId = ?");
+        $cmd = $this->db->prepare("SELECT * FROM TournamentPlayer WHERE tournamentPlayerId = ?");
         $cmd->bind_param("i", $playerId);
+
+        return $this->executeStatement($cmd);
+    }
+
+    public function unlockPlayerFromTournament($tournamentId, $playerId) {
+        $cmd = $this->db->prepare("UPDATE TournamentPlayer set locked = 0 WHERE tournamentId = ? AND tournamentPlayerId = ? AND visible = 1");
+        $cmd->bind_param("ii", $tournamentId, $playerId);
+
+        return $this->executeStatement($cmd);
+    }
+
+    public function unlockAllPlayerFromTournament($tournamentId) {
+        $cmd = $this->db->prepare("UPDATE TournamentPlayer set locked = 0 WHERE tournamentId = ? AND visible = 1");
+        $cmd->bind_param("i", $tournamentId);
+
+        return $this->executeStatement($cmd);
+    }
+
+    public function lockPlayerFromTournament($tournamentId, $playerId) {
+        $cmd = $this->db->prepare("UPDATE TournamentPlayer set locked = 1 WHERE tournamentId = ? AND tournamentPlayerId = ? AND visible = 1");
+        $cmd->bind_param("ii", $tournamentId, $playerId);
 
         return $this->executeStatement($cmd);
     }

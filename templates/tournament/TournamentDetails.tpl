@@ -56,6 +56,7 @@
                 <div class="dropdown-menu">
                     <a class="dropdown-item" href="?action=export&id={$tournament.tournamentId}"><i class="fas fa-bullhorn"></i> Meldung</a>
                     <a class="dropdown-item" href="?action=backup&id={$tournament.tournamentId}"><i class="fas fa-cloud"></i> Sicherungen</a>
+                    <a class="dropdown-item" href="{$link.linkUnlock}"><i class="fas fa-lock-open"></i> Alle ungemeldet</a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="?action=edit_tournament&id={$tournament.tournamentId}"><i class="fas fa-edit"></i> Turnier bearbeiten</a>
                 </div>
@@ -85,11 +86,21 @@
                 {if $player.visible == 1}
                     <tr>
                         <td>
+                            {if $player.locked == 1}
+                                <i class="fas fa-lock" data-toggle="tooltip" data-placement="bottom" title="Spieler wurde bereits gemeldet"></i>
+                            {/if}
                             <a href="{$player.linkPlayer}" title="Profil von {$player.playerName}">{$player.playerName}</a> {if $player.partnerId}// {if $player.partnerName == 'FREI'}<span class="text-danger font-weight-bold">{$player.partnerName}</span> {else} <a href="{$player.partnerLink}" title="Profil von {$player.partnerName}">{$player.partnerName}</a>{/if}{/if}
                         </td>
                         <td>{$player.classification}</td>
                         <td><a href="{$player.linkReporter}" title="gemeldet von {$player.reporterName} am {$player.fillingDate|date_format:"d.m.Y H:i"}">{$player.reporterName}</a> ({$player.fillingDate|date_format:"d.m.Y"})</td>
                         <td class="text-center">
+                            {if $isAdmin or $isReporter}
+                                {if $player.locked == 1}
+                                    <a class="btn btn-danger" href="{$player.linkUnlock}" data-toggle="tooltip" data-placement="bottom" title="Spieler noch nicht als gemeldet setzen"><i class="fas fa-lock-open"></i></a>
+                                {else}
+                                    <a class="btn btn-danger" href="{$player.linkLock}" data-toggle="tooltip" data-placement="bottom" title="Spieler als gemeldet setzen"><i class="fas fa-lock"></i></a>
+                                {/if}
+                            {/if}
                             {if $isAdmin or $isReporter or $player.playerId == $userId or $player.partnerId == $userId}
                                 <a class="btn btn-danger" href="{$player.linkDelete}" onclick="return confirm('Möchtest du wirklich den Spieler abmelden ?');">Abmelden</a>
                             {/if}

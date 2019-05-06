@@ -23,15 +23,15 @@ trait ClubDB {
         $cmd->bind_param("i", $clubId);
         return $this->executeStatement($cmd);
     }
-     
+
     public function selectClubByClubNr($clubNr) {
         $cmd = $this->db->prepare("SELECT * FROM Club WHERE clubNr = ? LIMIT 1");
         $cmd->bind_param("i", $clubNr);
-        
+
         return $this->executeStatement($cmd);
     }
-    
-    
+
+
 
     /**
      * insert club
@@ -43,14 +43,14 @@ trait ClubDB {
      public function insertClub($name, $number, $association) {
          $cmd = $this->db->prepare("INSERT INTO Club (name, clubNr, association) VALUES (?, ?, ?)");
          $cmd->bind_param("sss", $name, $number, $association);
- 
+
          return $this->executeStatement($cmd);
      }
-     
+
      public function insertClubByModel($club) {
          $cmd = $this->db->prepare("INSERT INTO Club (name, clubNr, association) VALUES (?, ?, ?)");
          $cmd->bind_param("sss", $name, $number, $association);
- 
+
          return $this->executeStatement($cmd);
      }
 
@@ -65,14 +65,14 @@ trait ClubDB {
      public function updateClubById($clubId, $name, $number, $association) {
          $cmd = $this->db->prepare("UPDATE Club set name = ?, clubNr = ?, association = ? WHERE clubId = ?");
          $cmd->bind_param("sssi", $name, $number, $association, $clubId);
- 
+
          return $this->executeStatement($cmd);
      }
-     
+
      public function updateClubByClubNr($clubNr, $name, $association) {
          $cmd = $this->db->prepare("UPDATE Club set name = ?, association = ? WHERE clubNr = ?");
          $cmd->bind_param("sss", $name, $association, $clubNr);
- 
+
          return $this->executeStatement($cmd);
      }
 

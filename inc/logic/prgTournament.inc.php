@@ -121,7 +121,7 @@ class PrgPatternElementTournament extends APrgPatternElement {
                 $this->processPostInsertPlayerToTournament();
                 return;
         }
-        
+
         // ADMIN AREA
         $this->prgElementLogin->redirectUserIfnoRights(array('reporter', 'admin'), 'or');
 
@@ -223,7 +223,7 @@ class PrgPatternElementTournament extends APrgPatternElement {
         $reporterId = $this->prgElementLogin->getLoggedInUser()->getID();
 
         $tmp_disziplin = isset($disziplin) ? $disziplin : '';
-        
+
         $tmp_partner   = isset($partner) && is_numeric($partner) ? $partner : 0;
         // check if id and partner exists
         $resData = $this->brdb->getTournamentPlayerByData($id, $player, $tmp_partner, $tmp_disziplin);
@@ -261,7 +261,7 @@ class PrgPatternElementTournament extends APrgPatternElement {
             $this->setFailedMessage($this->brdb->getError());
             return;
         }
-        
+
 
         $this->setSuccessMessage("Der Spieler/Die Paarung wurde eingetragen");
         $this->tools->customRedirect(array(
@@ -275,7 +275,7 @@ class PrgPatternElementTournament extends APrgPatternElement {
       *
       */
     private function checkPlayerAndDisciplin($player, $discipline, $first = 1) {
-        
+
       if ((!isset($player) && !is_array($player)) || ($first != 1 && $first != 2)) {
         return 0;
       }
@@ -494,39 +494,85 @@ class PrgPatternElementTournament extends APrgPatternElement {
             $id = $this->getGetVariable("id");
 
             switch ($action) {
-              case 'deletePlayer':
-                if($this->issetGetVariable("id") && $this->issetGetVariable("tournamentPlayerId")) {
-                  $this->deletePlayersFromTournamentId($this->getGetVariable("id"), $this->getGetVariable("tournamentPlayerId"));
-                }
-                break;
-              case 'create_backup':
+                case 'deletePlayer':
+                    if($this->issetGetVariable("id") && $this->issetGetVariable("tournamentPlayerId")) {
+                      $this->deletePlayersFromTournamentId($this->getGetVariable("id"), $this->getGetVariable("tournamentPlayerId"));
+                    }
+                    break;
 
-                if ($this->createBackup($id)) {
-                  $this->setFailedMessage("Backup konnte nicht erstellt werden");
-                } else {
-                    $this->setSuccessMessage("Backup wurde erstellt");
-                }
-                $this->tools->customRedirect(array(
-                  'page'   => $this->page,
-                  'action' => 'backup',
-                  'id'     => $id,
-                ));
+                case 'create_backup':
+                    if ($this->createBackup($id)) {
+                      $this->setFailedMessage("Backup konnte nicht erstellt werden");
+                    } else {
+                        $this->setSuccessMessage("Backup wurde erstellt");
+                    }
+                    $this->tools->customRedirect(array(
+                      'page'   => $this->page,
+                      'action' => 'backup',
+                      'id'     => $id,
+                    ));
+                    break;
 
-                break;
+                case 'export':
+                    // create backup
+                    $this->createBackup($this->getGetVariable("id"));
+                    // create xls
+                    $this->export($this->getGetVariable("id"));
+                    break;
 
-              case 'export':
-                // create backup
-                $this->createBackup($this->getGetVariable("id"));
-                // create xls
-                $this->export($this->getGetVariable("id"));
-                break;
+                case 'unlock':
+                    $this->unlockPlayerFromTournament();
+                    break;
 
-              default:
-                # code...
-                break;
+                case 'lock':
+                    $this->lockPlayerFromTournament();
+                    break;
+
+                default:
+                    # code...
+                    break;
             }
         }
+    }
 
+
+    private function unlockPlayerFromTournament() {
+        $id = $this->getGetVariable("id");
+        if (!isset($id) || !is_numeric($id)) {
+            $this->setFailedMessage("Unlocked failed");
+            return false;
+        }
+        $playerId = $this->getGetVariable("tournamentPlayerId");
+        if (!isset($playerId) || !is_numeric($playerId)) {
+            $this->brdb->unlockAllPlayerFromTournament($id);
+        } else {
+            $this->brdb->unlockPlayerFromTournament($id, $playerId);
+        }
+
+        if ($this->brdb->hasError()) {
+          $this->setFailedMessage("Spieler/Spieler konnte/konnten nicht unlocked werden");
+          return;
+        }
+
+        $this->setSuccessMessage("Spieler wurde geunlocked");
+        $this->tools->customRedirect(array('page' => $this->page, 'action' => 'details', 'id' => $id));
+    }
+
+    private function lockPlayerFromTournament() {
+        $id = $this->getGetVariable("id");
+        $playerId = $this->getGetVariable("tournamentPlayerId");
+        if (!isset($id) || !is_numeric($id) || !isset($playerId) || !is_numeric($playerId)) {
+            $this->setFailedMessage("locked failed");
+            return false;
+        }
+        $this->brdb->lockPlayerFromTournament($id, $playerId);
+        if ($this->brdb->hasError()) {
+          $this->setFailedMessage("Spieler/Spieler konnte/konnten nicht locked werden");
+          return;
+        }
+
+        $this->setSuccessMessage("Spieler wurde als gemeldet gesetzt.");
+        $this->tools->customRedirect(array('page' => $this->page, 'action' => 'details', 'id' => $id));
     }
 
     /** Export tool
@@ -654,7 +700,7 @@ class PrgPatternElementTournament extends APrgPatternElement {
             // add Player 1
             $bday   = date("d.m.Y", strtotime($row['p1Bday']));
             $bday   = $bday == "01.01.1970" ? "" : $bday;
-            $gender = $row['p1Gender'] == 'Male' ? 'm' : 'w';
+            $gender = $this->getGenderShortTag($row['p1Gender']);
             $singleRow = array(
                 $row['p1FirstName'],
                 $row['p1LastName'],
@@ -681,7 +727,7 @@ class PrgPatternElementTournament extends APrgPatternElement {
                 if($row['p2FirstName'] != NULL && $row['p2LastName'] != NULL) {
                     $firstName = $row['p2FirstName'];
                     $lastName  = $row['p2LastName'];
-                    $gender    = $row['p2Gender'] == 'Male' ? 'm' : 'w';
+                    $gender    = $this->getGenderShortTag($row['p2Gender']);
 
                     $bday = $this->getBday($row['bday']);
 
@@ -732,6 +778,10 @@ class PrgPatternElementTournament extends APrgPatternElement {
         return $bday == "01.01.1970" ? "" : $bday;
     }
 
+    private function getGenderShortTag($gender) {
+        return $gender == 'Male' ? 'm' : 'w';
+    }
+
 
     private function exportDefault($tournament, $id) {
         if(isset($tournament['name']) && $tournament['deadline']) {
@@ -741,7 +791,7 @@ class PrgPatternElementTournament extends APrgPatternElement {
         }
 
         $writer     = WriterFactory::create(Type::XLSX); // for XLSX files
-        
+
 
         //$writer->openToFile($filePath); // write data to a file or to a PHP stream
         $writer->openToBrowser($fileName); // stream data directly to the browser
@@ -749,7 +799,7 @@ class PrgPatternElementTournament extends APrgPatternElement {
         // create sheets
         $einzel = $writer->getCurrentSheet();
         $einzel->setName('Spieler');
-        
+
         $headerRow = array(
             'Vorname',
             'Name',
@@ -763,13 +813,13 @@ class PrgPatternElementTournament extends APrgPatternElement {
             'Rangfolge',
         );
         $writer->addRow($headerRow);
-        
+
 
         $counter = 0;
 
         $players    = $this->brdb->getPlayersByTournamentIdToExport($id);
         while($row  = $players->fetch_assoc()) {
-            $gender = $row['p2Gender'] == 'Male' ? 'm' : 'w';
+            $gender = $this->getGenderShortTag($row['p1Gender']);
             $bday   = $this->getBday($row['p1Bday']);
 
             $singleRow = array(
@@ -786,12 +836,12 @@ class PrgPatternElementTournament extends APrgPatternElement {
             );
 
             $writer->addRow($singleRow);
-            
+
             if ($row['p2FirstName'] != null) {
                 $singleRow = array(
                     $row['p2FirstName'],
                     $row['p2LastName'],
-                    $gender,
+                    $this->getGenderShortTag($row['p2Gender']),
                     $row['p2ClubName'],
                     $row['p2ClubAssociation'],
                     $row['classification'],

@@ -25,6 +25,7 @@ class Player {
     private $gender;
     private $bday;
     private $clubId;
+    private $clubNr;
 
     /**
      * Conmstructor that knows how to retrieve all fields from a given data set
@@ -33,7 +34,9 @@ class Player {
     public function __construct($dataSet = null) {
         if($dataSet) {
             foreach($dataSet as $key => $value) {
-                $this->$key = $value;
+                if ( property_exists($this,$key) ) {
+                    $this->$key = $value;
+                }
             }
         }
     }
@@ -49,37 +52,24 @@ class Player {
     public function getPlayerId() {
         return $this->playerId;
     }
-    
+
     public function getPlayerNr() {
         return $this->playerNr;
     }
 
-
-    private function findPlayer($playerNr) {
-        $res = $this->brdb->selectPlayerByPlayerNr($playerNr);
-        $tmp = array();
-        if ($this->brdb->hasError()) {
-            return false;
-        }
-        
-        return $res->num_rows == 1 ? true : false;
+    public function getSqlData() {
+        return array(
+            'playerNr'  => $this->playerNr,
+            'clubId'    => $this->clubId,
+            'firstName' => $this->firstName,
+            'lastName'  => $this->lastName,
+            'gender'    => $this->gender,
+            'bday'      => $this->bday,
+        );
     }
 
-    private function insertPlayer($item) {
-        $res = $this->brdb->insertPlayer($item);
-        if ($this->brdb->hasError()) {
-            return false;
-        }
-        return true;
+    public function __toString() {
+        return sprintf("%s %s: Gender %s; SpNr: %s\n", $this->firstName, $this->lastName, $this->gender, $this->playerNr);
     }
-
-    private function updatePlayer($item) {
-        $res = $this->brdb->updatePlayer($item);
-        if ($this->brdb->hasError()) {
-            return false;
-        }
-        return true;
-    }
-
 }
 ?>

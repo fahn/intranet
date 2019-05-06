@@ -45,11 +45,11 @@ class BrdbHtmlAdminSyncPage extends BrdbHtmlPage {
 
         $this->prgPatternElementSync = new PrgPatternElementSync($this->brdb, $this->prgPatternElementLogin);
         $this->prgPattern->registerPrg($this->prgPatternElementSync);
-        
-        
+
+
         $this->prgPatternElementClub = new PrgPatternElementClub($this->brdb, $this->prgPatternElementLogin);
         $this->prgPattern->registerPrg($this->prgPatternElementClub);
-        
+
         $this->prgPatternElementPlayer = new PrgPatternElementPlayer($this->brdb, $this->prgPatternElementLogin);
         $this->prgPattern->registerPrg($this->prgPatternElementPlayer);
     }
@@ -58,7 +58,7 @@ class BrdbHtmlAdminSyncPage extends BrdbHtmlPage {
     public function htmlBody() {
         $action = $this->tools->get("action");
         $id     = $this->tools->get("id");
-        
+
         //$this->syncClubs();
         $this->syncPlayer();
 
@@ -78,54 +78,65 @@ class BrdbHtmlAdminSyncPage extends BrdbHtmlPage {
 
     private function loadContent() {
         $this->smarty->assign(array(
-            
+
         ));
         return $this->smarty->fetch('sync/status.tpl');
     }
-    
-    
+
+
     private function syncPlayer() {
-        $statistics = array('new' => 0, 'updated' => 0);
+        $statistics = array('new' => 0, 'updated' => 0, 'failed' => 0);
         $arrContextOptions=array(
             "ssl"=>array(
                 "verify_peer"=>false,
                 "verify_peer_name"=>false,
             ),
-        ); 
+        );
         $file = file_get_contents('https://service.badtra.de/player', false, stream_context_create($arrContextOptions));
         $data = json_decode($file);
         unset($file);//prevent memory leaks for large json.
         //insert data here
-        print_r($data);
-        die();
-        $records = $data->clubs->records;
+        echo "<pre>";
+
+        $records = $data->player->records;
         foreach($records as $item) {
-            if (empty($item['playerNr'])) {
+            if (empty($item->playerNr)) {
                 continue;
             }
-            echo $item['playerNr'];
-            if (! $this->findPlayer($item['playerNr'])) {
-                #$this->insertPlayer($item);
-                $statistics['new']++;
-            } else {
-                #$this->updatePlayer($item);
-                $statistics['updated']++;
+            try {
+                $clubData = $this->brdb->selectClubByClubNr($item->clubNr)->fetch_assoc();
+                $item->clubId = $clubData['clubId'];
+
+                $player = new Player($item);
+
+                if (! $this->prgPatternElementPlayer->find($player)) {
+                    echo "NOT FOUND: ";
+                    $this->prgPatternElementPlayer->insert($player);
+                    $statistics['new']++;
+                } else {
+                    echo "FOUND ";
+                    echo $this->prgPatternElementPlayer->update($player) ? '#T#' : '#F#';
+                    $statistics['updated']++;
+                }
+                echo $player;
+            } catch (Exception $e) {
+                $statistics['failed']++;
             }
         }
-        die();
-        
+        var_dump($statistics);
+
         return $statistics;
     }
 
-    
+
     private function syncClubs() {
-        $statistics = array('new' => 0, 'updated' => 0);
+        $statistics = array('new' => 0, 'updated' => 0, 'failed' => 0);
         $arrContextOptions=array(
             "ssl"=>array(
                 "verify_peer"=>false,
                 "verify_peer_name"=>false,
             ),
-        ); 
+        );
         $file = file_get_contents('https://service.badtra.de/clubs', false, stream_context_create($arrContextOptions));
         $data = json_decode($file);
         #print_r($data);
@@ -148,15 +159,15 @@ class BrdbHtmlAdminSyncPage extends BrdbHtmlPage {
                     $statistics['updated']++;
                 }
             } catch (Exception $e) {
-                
+                $statistics['failed']++;
             }
         }
         die();
-        
+
         return $statistics;
     }
-    
-    
+
+
 }
 
 ?>

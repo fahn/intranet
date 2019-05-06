@@ -13,7 +13,7 @@ require_once $_SERVER['BASE_DIR'] ."/inc/logic/tools.inc.php";
 try {
     if (isset($_POST["playerSearch"])) {
         $brdb = new BrankDB();
-        $_term = strval(trim($_POST['playerSearch'])); //mysqli_real_escape_string($brdb, );
+        $_term = strval(trim(strip_tags($_POST['playerSearch'])));
         $res = $brdb->getPlayerByTerm($_term);
 
         if (!$brdb->hasError() || $res->num_rows > 0) {

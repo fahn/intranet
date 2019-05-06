@@ -39,7 +39,7 @@ CREATE TABLE `UserPassHash` (
 
 --
 -- PLAYER
--- 
+--
 CREATE TABLE `Player` (
   `playerId` int(11) NOT NULL,
   `playerNr` varchar(64) NULL,
@@ -137,6 +137,7 @@ CREATE TABLE `TournamentPlayer` (
   `partnerId` int(11) DEFAULT NULL,
   `classification` text NOT NULL,
   `visible` tinyint(1) NOT NULL DEFAULT '1',
+  `locked` tinyint(1) NOT NULL DEFAULT '0',
   `fillingDate` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `reporterId` int(11) NOT NULL,
   `message` text NOT NULL

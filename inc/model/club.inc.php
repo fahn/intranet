@@ -23,26 +23,28 @@ class Club {
     public function __construct($dataSet = null) {
         if ($dataSet) {
             foreach($dataSet as $key => $value) {
-                $this->$key = $value;
+                if ( property_exists($this,$key) ) {
+                    $this->$key = $value;
+                }
             }
         }
 
     }
-    
+
     public function getClubNr() {
         return $this->clubNr;
     }
-    
+
     public function getClubName() {
         return $this->clubName;
     }
-    
+
     public function getAssociation() {
         return $this->association;
     }
 
     /**
-     * Print Club 
+     * Print Club
      */
     public function __toString() {
         return sprintf("%s => %s [ID: %i]\n", $this->clubNr, $this->clubName, $this->clubId);

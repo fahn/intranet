@@ -52,7 +52,7 @@ trait PlayerDB {
     public function insertPlayer($data) {
         try {
             extract($data);
-            $sql = "INSERT INTO PLAYER (playerNr, clubId, firstName, lastName, gender, bday) VALUES (?,?,?, ?, ?, ?)";
+            $sql = "INSERT INTO Player (playerNr, clubId, firstName, lastName, gender, bday) VALUES (?,?,?, ?, ?, ?)";
             $cmd = $this->db->prepare($sql);
             $cmd->bind_param("sissss", $playerNr, $clubId, $firstName, $lastName, $gender, $bday);
 
@@ -64,8 +64,9 @@ trait PlayerDB {
 
     public function updatePlayer($data) {
         try {
+            #die(var_dump($data));
             extract($data);
-            $sql = "UPDATE PLAYER set
+            $sql = "UPDATE Player set
                         firstName = ?,
                         lastName = ?,
                         gender = ?,
