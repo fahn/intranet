@@ -215,6 +215,7 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
         // load data
         $tournament = $this->brdb->getTournamentData($id)->fetch_assoc();
         $disciplines = "";
+        
         if(isset($tournament['classification']) && isset($tournament['discipline'])) {
           $classifications = unserialize($tournament['classification']);
           $disciplines     = unserialize($tournament['discipline']);

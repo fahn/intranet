@@ -199,7 +199,7 @@ class PrgPatternElementTournament extends APrgPatternElement {
         }
 
         // insert class
-        $this->setSuccessMessage(sprintf("Turnier %s wurde hinzugefügt.", name));
+        $this->setSuccessMessage(sprintf("Turnier %s wurde hinzugefügt.", $name));
         $this->tools->customRedirect(array('page' => $this->page));
     }
 
@@ -240,7 +240,9 @@ class PrgPatternElementTournament extends APrgPatternElement {
         // check player p1
         $resP1 = $this->brdb->selectPlayerById($player);
         $p1    = $resP1->fetch_assoc();
+        
         if (! $this->checkPlayerAndDisciplin($p1, $tmp_disziplin, 1)) {
+            die(var_dump($p1));
           $this->setFailedMessage(sprintf("Falsche Diziplin für Spieler %s %s", $p1['firstName'], $p1['lastName']));
           return;
         }
@@ -279,24 +281,26 @@ class PrgPatternElementTournament extends APrgPatternElement {
       if ((!isset($player) && !is_array($player)) || ($first != 1 && $first != 2)) {
         return 0;
       }
-
-      switch ($discipline) {
+      
+      $discipline = explode(" ", $discipline);
+      
+      switch ($discipline[0]) {
         case 'HE':
         case 'JE':
         case 'HD':
         case 'JD':
-            return $player['gender'] == 'Male' ? 1 : 0;
+            return $player['gender'] == 'Male' ? true : false;
           break;
 
         case 'DE':
         case 'ME':
         case 'DD':
         case 'MD':
-          return $player['gender'] == 'Female' ? 1 : 0;
+          return $player['gender'] == 'Female' ? true : false;
           break;
 
         case 'GD':
-          return ($first == 1 && $player['gender'] == 'Male') ? 1 : ($first == 2 && $player['gender'] == 'Female' ? 1 : 0);
+          return ($first == 1 && $player['gender'] == 'Male') ? 1 : ($first == 2 && $player['gender'] == 'Female' ? true : false);
 
         default:
           return 0;
