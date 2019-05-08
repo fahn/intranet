@@ -26,6 +26,6 @@
             </table>
         </div>
         <hr>
-        <a href="/pages/rankingTournament.php" title="Alle Turniere"><i class="fas fa-list-ul"></i> alle Turniere</a>
+        <a href="{$linkToTournament}" title="Alle Turniere"><i class="fas fa-list-ul"></i> alle Turniere</a>
     </div>
 </div>

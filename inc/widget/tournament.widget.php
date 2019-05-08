@@ -4,9 +4,15 @@ require_once('default.widget.php');
 
 
 class TournamentWidget extends Widget {
+    private $linkToTournament;
 
     public function __construct() {
         parent::__construct();
+
+        // set link
+        $this->linkToTournament = $this->tools->linkTo(array(
+            'page' => 'tournament.php',
+        ));
     }
 
     public function showWidget($name) {
@@ -40,7 +46,10 @@ class TournamentWidget extends Widget {
     private function TPML_upcomgingTournament() {
         $data = $this->getUpcomingTournaments();
 
-        $this->smarty->assign('data', $data);
+        $this->smarty->assign(array(
+            'linkToTournament' => $this->linkToTournament,
+            'data' => $data
+        ));
 
         return $this->smarty->fetch('tournament/widget_upcomging.tpl');
     }
@@ -68,7 +77,7 @@ class TournamentWidget extends Widget {
             while ($dataSet = $res->fetch_assoc()) {
                 $dataSet['classification'] = $this->tools->formatClassification($dataSet['classification']);
                 $dataSet['linkTo']         = $this->tools->linkTo(array('page' => 'tournament.php', 'action' => 'details', 'id' => $dataSet['tournamentId']));
-                
+
                 $data[]                     = $dataSet;
             }
         }
