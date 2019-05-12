@@ -242,12 +242,12 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
     }
 
     private function loadContent() {
-        $user   = new PrgPatternElementUser($this->brdb, $this->prgPatternElementLogin);
-        $userId = $this->prgPatternElementLogin->getLoggedInUser();
+        $userPattern   = new PrgPatternElementUser($this->brdb, $this->prgPatternElementLogin);
+        $user = $this->prgPatternElementLogin->getLoggedInUser();
 
         // load Widgets
         $tournamentWidget = new TournamentWidget();
-        $rankingWidget    = new RankingWidget();
+        $rankingWidget    = new RankingWidget($user->getID());
         $teamWidget       = new TeamWidget();
         $bdayWidget       = new BdayWidget();
         $newsWidget       = new NewsWidget();

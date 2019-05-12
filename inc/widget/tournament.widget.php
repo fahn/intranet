@@ -77,6 +77,10 @@ class TournamentWidget extends Widget {
             while ($dataSet = $res->fetch_assoc()) {
                 $dataSet['classification'] = $this->tools->formatClassification($dataSet['classification']);
                 $dataSet['linkTo']         = $this->tools->linkTo(array('page' => 'tournament.php', 'action' => 'details', 'id' => $dataSet['tournamentId']));
+                // get unique player
+                $players = $this->brdb->selectUpcomingTournamentPlayer($dataSet['tournamentId']);
+                $dataSet['participant'] = $players->num_rows;
+
 
                 $data[]                     = $dataSet;
             }

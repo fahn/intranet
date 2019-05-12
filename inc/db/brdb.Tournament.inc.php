@@ -25,11 +25,25 @@ trait TournamentDB {
     }
 
     public function selectUpcomingTournamentList($max = 5) {
-        $cmd = $this->db->prepare("SELECT *, (SELECT COUNT(*) FROM TournamentPlayer AS TP WHERE TP.tournamentId = Tournament.tournamentId AND TP.visible = 1  ) AS participant 
-                                   FROM Tournament 
-                                   WHERE visible = 1 AND startdate > NOW() 
+        /*  ?
+                                   SELECT *, (SELECT COUNT(*) FROM ( SELECT DISTINCT playerId FROM TournamentPlayer WHERE tournamentId = 1 GROUP BY playerId UNION SELECT DISTINCT partnerId FROM TournamentPlayer WHERE tournamentId = Tournament.tournamentId and partnerId > 0 GROUP BY partnerId ) AS T ) AS participant
+                                                              FROM Tournament
+                                                              WHERE visible = 1 AND startdate > NOW()
+                                                              ORDER by startdate ASC LIMIT*/
+        $cmd = $this->db->prepare("SELECT *, (SELECT COUNT(*) FROM TournamentPlayer AS TP WHERE TP.tournamentId = Tournament.tournamentId AND TP.visible = 1  ) AS participant
+                                   FROM Tournament
+                                   WHERE visible = 1 AND startdate > NOW()
                                    ORDER by startdate ASC LIMIT ?");
         $cmd->bind_param("i", $max);
+
+        return $this->executeStatement($cmd);
+    }
+
+    public function selectUpcomingTournamentPlayer($tournamentId) {
+        $cmd = $this->db->prepare("SELECT DISTINCT playerId FROM TournamentPlayer WHERE tournamentId = ? AND visible = 1 GROUP BY playerId
+                                   UNION
+                                   SELECT DISTINCT partnerId FROM TournamentPlayer WHERE tournamentId = ? AND visible = 1 AND partnerId > 0 GROUP BY partnerId");
+        $cmd->bind_param("ii", $tournamentId, $tournamentId);
 
         return $this->executeStatement($cmd);
     }

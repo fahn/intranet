@@ -76,7 +76,7 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
                 break;
 
             case 'details':
-                $content = $this->showDetailsTMPL($id);
+                $content = $this->TMPL_showDetails($id);
                 break;
 
             case 'add_player':
@@ -186,7 +186,7 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
     /**
         details of a tournament
     */
-    private function showDetailsTMPL($id) {
+    private function TMPL_showDetails($id) {
         if(!isset($id) or !is_numeric($id)) {
             return "";
 
@@ -215,7 +215,7 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
         // load data
         $tournament = $this->brdb->getTournamentData($id)->fetch_assoc();
         $disciplines = "";
-        
+
         if(isset($tournament['classification']) && isset($tournament['discipline'])) {
           $classifications = unserialize($tournament['classification']);
           $disciplines     = unserialize($tournament['discipline']);
@@ -390,21 +390,24 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
             $data = array();
             while ($dataSet = $res->fetch_assoc()) {
                 // @TODO Change
-                if($this->strpos_arr($dataSet['classification'], array('HD', 'DD', 'JD', 'MD', 'GD')) && $dataSet['partnerId'] > 0) {
-                    $dataSet['partnerLink'] =  $this->tools->linkTo(array('page' => 'player.php', 'id' => $dataSet['partnerId']));
+
+                if($this->isDouble($dataSet['classification'])) {
+                    if($dataSet['partnerId'] > 0) {
+
+                        $dataSet['partnerLink'] =  $this->tools->linkTo(array('page' => 'player.php', 'id' => $dataSet['partnerId']));
+                    } else {
+                      $dataSet['partnerId']   = 0;
+                      $dataSet['partnerName'] = 'FREI';
+                    }
                 } else {
-                  $dataSet['partnerId']   = 0;
-                  $dataSet['partnerName'] = 'FREI';
+                    unset($dataSet['partnerId']);
                 }
 
+                // Links
                 $dataSet['linkPlayer'] = $this->tools->linkTo(array('page' => 'player.php', 'id' => $dataSet['playerId']));
-
                 $dataSet['linkReporter'] = $this->tools->linkTo(array('page' => 'user.php', 'id' => $dataSet['reporterId']));
-
                 $dataSet['linkDelete'] = $this->tools->linkTo(array('page' => 'tournament.php', 'action' => 'deletePlayer', 'id' => $dataSet['tournamentId'], 'tournamentPlayerId' => $dataSet['tournamentPlayerId']));
-
                 $dataSet['linkUnlock'] = $this->tools->linkTo(array('page' => 'tournament.php', 'action' => 'unlock', 'id' => $dataSet['tournamentId'], 'tournamentPlayerId' => $dataSet['tournamentPlayerId']));
-
                 $dataSet['linkLock'] = $this->tools->linkTo(array('page' => 'tournament.php', 'action' => 'lock', 'id' => $dataSet['tournamentId'], 'tournamentPlayerId' => $dataSet['tournamentPlayerId']));
 
                 $data[]         = $dataSet;
@@ -443,6 +446,19 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
         }
 
         return "";
+    }
+
+    private function isDouble($value) {
+        try {
+            $arr = explode(" ", $value);
+        } catch (Exception $e) {
+            $arr = $value;
+        }
+        echo substr($arr[0], -1);
+        if (substr($arr[0], -1) == 'D') {
+            return true;
+        }
+        return false;
     }
 
 }

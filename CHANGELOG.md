@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-### [1.0.6.2] - 2019-05-03
+### [1.0.6.2] - 2019-05-12
 - seperate Player and Users
 - fix own account editoring
 - fix markdown view
@@ -14,6 +14,10 @@ All notable changes to this project will be documented in this file.
 - Add right-managament to system
 - add new playerSearch
 - upgrade js libaries
+- change tournament widget: optimize players count
+- update login without info text
+- update rangking widget: fix userId
+- smaller code optimization
 
 ### [1.0.6.1] - 2019-04-01
 - add FAQ - System

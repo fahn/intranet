@@ -89,7 +89,14 @@
                             {if $player.locked == 1}
                                 <i class="fas fa-lock" data-toggle="tooltip" data-placement="bottom" title="Spieler wurde bereits gemeldet"></i>
                             {/if}
-                            <a href="{$player.linkPlayer}" title="Profil von {$player.playerName}">{$player.playerName}</a> {if $player.partnerId}// {if $player.partnerName == 'FREI'}<span class="text-danger font-weight-bold">{$player.partnerName}</span> {else} <a href="{$player.partnerLink}" title="Profil von {$player.partnerName}">{$player.partnerName}</a>{/if}{/if}
+                            <a href="{$player.linkPlayer}" title="Profil von {$player.playerName}">{$player.playerName}</a>
+                            {if isset($player.partnerId)}//
+                                {if $player.partnerName == 'FREI'}
+                                    <span class="text-danger font-weight-bold">{$player.partnerName}</span>
+                                {else}
+                                <a href="{$player.partnerLink}" title="Profil von {$player.partnerName}">{$player.partnerName}</a>
+                                {/if}
+                            {/if}
                         </td>
                         <td>{$player.classification}</td>
                         <td><a href="{$player.linkReporter}" title="gemeldet von {$player.reporterName} am {$player.fillingDate|date_format:"d.m.Y H:i"}">{$player.reporterName}</a> ({$player.fillingDate|date_format:"d.m.Y"})</td>

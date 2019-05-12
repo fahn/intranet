@@ -4,8 +4,12 @@
 require_once('default.widget.php');
 
 class RankingWidget extends Widget {
+    private $userId;
 
-    public function __construct() {
+    public function __construct($userId = null) {
+        if (isset($userId) && is_numeric($userId)) {
+            $this->userId = $userId;
+        }
         parent::__construct();
     }
 
@@ -33,19 +37,17 @@ class RankingWidget extends Widget {
         return $this->smarty->fetch('ranking/widgetShowLatestGames.tpl');
     }
 
-    private function getLatestGames($userId = null) {
-        if ($userId == null) {
-            $uid = 1;
-        } else {
-            $uid = $userId->userId;
+    private function getLatestGames() {
+        if ($this->userId == null) {
+            return;
         }
 
         $data = array();
-        $res  = $this->brdb->selectLatestRankingGamesByPlayerId($uid);
+        $res  = $this->brdb->selectLatestRankingGamesByPlayerId($this->userId);
         if (! $this->brdb->hasError() ) {
             while ($dataSet = $res->fetch_assoc()) {
                 // chicken
-                if($uid == $dataSet['winner']) {
+                if($this->userId == $dataSet['winnerId']) {
                     $chicken = '<i class="fas fa-arrow-circle-up text-success"></i>';
                 } else {
                     $chicken = '<i class="fas fa-arrow-circle-down text-danger"></i>';

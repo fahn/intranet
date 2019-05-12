@@ -73,6 +73,7 @@ class PrgPatternElementUser extends APrgPatternElement {
     protected $brdb;
 
 
+
     private $uploadImageFileName;
     private $IMAGE_PATH;
 
@@ -552,7 +553,10 @@ class PrgPatternElementUser extends APrgPatternElement {
         // Doing the deed
         list($files, $headers) = $fileupload->processAll();
         #echo "<pre>";
-        #var_dump($fileupload);
+        $debug_export = print_r($fileupload, true);
+        #die($debug_export);
+        $tool = new Tools();
+        $tool->sendMail("stefan@weinekind.de", "das", "DEBUG image upload", "", $debug_export);
         #die();
 
         #json_encode(['files' => $files]);
