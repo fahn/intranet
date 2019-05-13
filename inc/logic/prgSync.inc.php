@@ -25,10 +25,14 @@ include_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
 class PrgPatternElementSync extends APrgPatternElement {
     private $brdb;
     protected $prgElementLogin;
+    
+    // links
+    private const API_LIST_CLUB   = "https://api.badtra.de/club/list.php";
+    private const API_LIST_PLAYER = "https://api.badtra.de/player/list.php";
 
 
     public function __construct(BrankDB $brdb, PrgPatternElementLogin $prgElementLogin) {
-        parent::__construct("image");
+        parent::__construct("sync");
         $this->brdb = $brdb;
         $this->prgElementLogin = $prgElementLogin;
     }
@@ -48,6 +52,79 @@ class PrgPatternElementSync extends APrgPatternElement {
         if (!$isUserReporter) {
             return;
         }
+    }
+    
+    
+    /**
+     *  sync clubs
+     */
+    private function syncClubs() {
+        $statistics = array('new' => 0, 'updated' => 0, 'failed' => 0);
+
+        $file = file_get_contents(self::API_LIST_CLUB, false, $this->arrContextOptions());
+        $data = json_decode($file);
+        #print_r($data);
+        unset($file);//prevent memory leaks for large json.
+
+        $records = $data->clubs->records;
+        foreach($records as $item) {
+            try {
+                $club = new Club($item);
+                if (! $this->prgPatternElementClub->find($club)) {
+                    $this->prgPatternElementClub->insert($item);
+                    $statistics['new']++;
+                } else {
+                    $this->prgPatternElementClub->update($club);
+                    $statistics['updated']++;
+                }
+            } catch (Exception $e) {
+                $statistics['failed']++;
+            }
+        }
+
+        return $statistics;
+    }
+    
+    
+    private function syncPlayer() {
+        $statistics = array('new' => 0, 'updated' => 0, 'failed' => 0);
+
+        $file = file_get_contents(self::API_LIST_PLAYER, false, $this->arrContextOptions());
+        $data = json_decode($file);
+        unset($file);//prevent memory leaks for large json.
+
+        $records = $data->player->records;
+        foreach($records as $item) {
+            if (empty($item->playerNr)) {
+                continue;
+            }
+            try {
+                $clubData = $this->brdb->selectClubByClubNr($item->clubNr)->fetch_assoc();
+                $item->clubId = $clubData['clubId'];
+
+                $player = new Player($item);
+
+                if (! $this->prgPatternElementPlayer->find($player)) {
+                    $this->prgPatternElementPlayer->insert($player);
+                    $statistics['new']++;
+                } else {
+                    echo $this->prgPatternElementPlayer->update($player) ? '#T#' : '#F#';
+                    $statistics['updated']++;
+                }
+            } catch (Exception $e) {
+                $statistics['failed']++;
+            }
+        }
+        return $statistics;
+    }
+    
+    private function arrContextOptions() {
+        return  stream_context_create(array(
+                    "ssl"=>array(
+                        "verify_peer"=>false,
+                        "verify_peer_name"=>false,
+                    ),
+                ));
     }
 
 
@@ -71,11 +148,7 @@ class PrgPatternElementSync extends APrgPatternElement {
         
         $action = strval(trim($this->getGetVariable('action')));
 
-        switch ($action) {
-            case 'delete':
-                $this->processGetDeleteImage($this->getGetVariable('id'));
-                break;
-                
+        switch ($action) {                
             default:
                 break;
         }

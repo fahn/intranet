@@ -84,88 +84,9 @@ class BrdbHtmlAdminSyncPage extends BrdbHtmlPage {
     }
 
 
-    private function syncPlayer() {
-        $statistics = array('new' => 0, 'updated' => 0, 'failed' => 0);
-        $arrContextOptions=array(
-            "ssl"=>array(
-                "verify_peer"=>false,
-                "verify_peer_name"=>false,
-            ),
-        );
-        $file = file_get_contents('https://service.badtra.de/player', false, stream_context_create($arrContextOptions));
-        $data = json_decode($file);
-        unset($file);//prevent memory leaks for large json.
-        //insert data here
-        echo "<pre>";
-
-        $records = $data->player->records;
-        foreach($records as $item) {
-            if (empty($item->playerNr)) {
-                continue;
-            }
-            try {
-                $clubData = $this->brdb->selectClubByClubNr($item->clubNr)->fetch_assoc();
-                $item->clubId = $clubData['clubId'];
-
-                $player = new Player($item);
-
-                if (! $this->prgPatternElementPlayer->find($player)) {
-                    echo "NOT FOUND: ";
-                    $this->prgPatternElementPlayer->insert($player);
-                    $statistics['new']++;
-                } else {
-                    echo "FOUND ";
-                    echo $this->prgPatternElementPlayer->update($player) ? '#T#' : '#F#';
-                    $statistics['updated']++;
-                }
-                echo $player;
-            } catch (Exception $e) {
-                $statistics['failed']++;
-            }
-        }
-        var_dump($statistics);
-
-        return $statistics;
-    }
+    
 
 
-    private function syncClubs() {
-        $statistics = array('new' => 0, 'updated' => 0, 'failed' => 0);
-        $arrContextOptions=array(
-            "ssl"=>array(
-                "verify_peer"=>false,
-                "verify_peer_name"=>false,
-            ),
-        );
-        $file = file_get_contents('https://service.badtra.de/clubs', false, stream_context_create($arrContextOptions));
-        $data = json_decode($file);
-        #print_r($data);
-        unset($file);//prevent memory leaks for large json.
-        //insert data here
-        echo "<pre>";
-        $records = $data->clubs->records;
-        foreach($records as $item) {
-            try {
-                $club = new Club($item);
-                if (! $this->prgPatternElementClub->find($club)) {
-                    echo "NOT FOUND:";
-                    echo $club;
-                    #$this->prgPatternElementClub->insert($item);
-                    $statistics['new']++;
-                } else {
-                    echo "FOUND:";
-                    echo $club;
-                    echo "Status: ". ($this->prgPatternElementClub->update($club) ? 'updated' : 'failed') ."<br>";
-                    $statistics['updated']++;
-                }
-            } catch (Exception $e) {
-                $statistics['failed']++;
-            }
-        }
-        die();
-
-        return $statistics;
-    }
 
 
 }
