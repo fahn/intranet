@@ -289,14 +289,32 @@ class Tools {
     }
 
 
-    public function maintenance() {
+    public function isMaintenance() {
       $status = self::getIniValue("Maintenance");
+      
+      $devIPAddress = $status["devIP"];
+      
+      if ($devIPAddress == $this->getUserIPAdress()) {
+          return false;
+      }
 
       if ( ! empty($status)  && $status['maintenance'] == "on") {
         return true;
       }
 
       return false;
+    }
+    
+    private function getUserIPAdress() {
+        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+            $ip = $_SERVER['HTTP_CLIENT_IP'];
+        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        } else {
+            $ip = $_SERVER['REMOTE_ADDR'];
+        }
+        
+        return $ip;
     }
 
     public function log($message) {

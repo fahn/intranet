@@ -64,7 +64,7 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
 
 
 
-        if ( $this->tools->maintenance()) {
+        if ( $this->tools->isMaintenance()) {
           $this->tools->customRedirect('maintenance.php');
         }
 
