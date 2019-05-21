@@ -26,7 +26,10 @@
     <hr>
     <p class="text-center">
       {if $imprint}
-          <a href="{$imprint}">Impressum</a> //
+          <a href="{$imprint}">Impressum</a>
+      {/if}
+      {if $imprint && $disclaimer}
+        //
       {/if}
       {if $disclaimer}
           <a href="{$disclaimer}">Datenschutz</a>

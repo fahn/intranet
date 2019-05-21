@@ -69,7 +69,7 @@ CREATE TABLE `Club` (
 ALTER TABLE `Club` ADD PRIMARY KEY (`clubId`);
 ALTER TABLE `Club` MODIFY `clubId` int(11) NOT NULL AUTO_INCREMENT;
 
-INSERT `TABLE` (name) VALUES ('FREI');
+INSERT `Club` (name) VALUES ('FREI');
 
 --
 --  UserStaff
@@ -84,6 +84,7 @@ CREATE TABLE `UserStaff` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 ALTER TABLE `UserStaff` ADD PRIMARY KEY (`staffId`);
+ALTER TABLE `UserStaff` ADD UNIQUE(`staffId`);
 ALTER TABLE `UserStaff` MODIFY `staffId` int(11) NOT NULL AUTO_INCREMENT;
 
 --
@@ -202,8 +203,8 @@ CREATE TABLE `Notification` (
   `isRead` bit(1) NOT NULL DEFAULT b'0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-ALTER TABLE `Notification` ADD PRIMARY KEY (`id`);
-ALTER TABLE `Notification` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `Notification` ADD PRIMARY KEY (`notificationId`);
+ALTER TABLE `Notification` MODIFY `notificationId` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 --  SETTINGS
@@ -259,7 +260,8 @@ ALTER TABLE `Category` MODIFY `categoryId` int(11) NOT NULL AUTO_INCREMENT;
 --
 CREATE TABLE `News` (
   `newsId` int(11) NOT NULL,
-  `categoryId` INT NOT NULL,
+  `categoryId` int(11) NOT NULL,
+  `userId` int(11) NOT NULL,
   `title` varchar(200) NOT NULL,
   `text` text NOT NULL,
   `createdBy` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
