@@ -25,16 +25,22 @@ include_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
 class PrgPatternElementSync extends APrgPatternElement {
     private $brdb;
     protected $prgElementLogin;
-    
+
     // links
-    private const API_LIST_CLUB   = "https://api.badtra.de/club/list.php";
-    private const API_LIST_PLAYER = "https://api.badtra.de/player/list.php";
+    private const API_LIST_CLUB       = "https://api.badtra.de/club/list";
+    private const API_LIST_PLAYER     = "https://api.badtra.de/player/list.php";
+    private const API_LIST_TOURNAMENT = "https://api.badtra.de/player/list.php";
+
+    // statistics
+    private $statistics = array('clubs' => '', 'player' => '', 'tournaments' => '');
 
 
     public function __construct(BrankDB $brdb, PrgPatternElementLogin $prgElementLogin) {
         parent::__construct("sync");
         $this->brdb = $brdb;
         $this->prgElementLogin = $prgElementLogin;
+
+        #$this->statistics
     }
 
     public function processPost() {
@@ -53,71 +59,112 @@ class PrgPatternElementSync extends APrgPatternElement {
             return;
         }
     }
-    
-    
+
+    private function getBaseStats() {
+        return array('new' => 0, 'updated' => 0, 'failed' => 0);
+    }
     /**
      *  sync clubs
      */
     private function syncClubs() {
-        $statistics = array('new' => 0, 'updated' => 0, 'failed' => 0);
+        $statistics = $this->getBaseStats();
 
         $file = file_get_contents(self::API_LIST_CLUB, false, $this->arrContextOptions());
         $data = json_decode($file);
-        #print_r($data);
         unset($file);//prevent memory leaks for large json.
 
         $records = $data->clubs->records;
-        foreach($records as $item) {
-            try {
-                $club = new Club($item);
-                if (! $this->prgPatternElementClub->find($club)) {
-                    $this->prgPatternElementClub->insert($item);
-                    $statistics['new']++;
-                } else {
-                    $this->prgPatternElementClub->update($club);
-                    $statistics['updated']++;
+        if ($records) {
+            foreach($records as $item) {
+                try {
+                    $club = new Club($item);
+                    if (! $this->prgPatternElementClub->find($club)) {
+                        $this->prgPatternElementClub->insert($item);
+                        $statistics['new']++;
+                    } else {
+                        $this->prgPatternElementClub->update($club);
+                        $statistics['updated']++;
+                    }
+                } catch (Exception $e) {
+                    $statistics['failed']++;
                 }
-            } catch (Exception $e) {
-                $statistics['failed']++;
             }
+            $this->statistics['clubs'] = $statistics;
         }
-
-        return $statistics;
+        return;
     }
-    
-    
+
+
     private function syncPlayer() {
-        $statistics = array('new' => 0, 'updated' => 0, 'failed' => 0);
+        $statistics = $this->getBaseStats();
 
         $file = file_get_contents(self::API_LIST_PLAYER, false, $this->arrContextOptions());
         $data = json_decode($file);
         unset($file);//prevent memory leaks for large json.
 
         $records = $data->player->records;
-        foreach($records as $item) {
-            if (empty($item->playerNr)) {
-                continue;
-            }
-            try {
-                $clubData = $this->brdb->selectClubByClubNr($item->clubNr)->fetch_assoc();
-                $item->clubId = $clubData['clubId'];
-
-                $player = new Player($item);
-
-                if (! $this->prgPatternElementPlayer->find($player)) {
-                    $this->prgPatternElementPlayer->insert($player);
-                    $statistics['new']++;
-                } else {
-                    echo $this->prgPatternElementPlayer->update($player) ? '#T#' : '#F#';
-                    $statistics['updated']++;
+        if ($records) {
+            foreach($records as $item) {
+                if (empty($item->playerNr)) {
+                    continue;
                 }
-            } catch (Exception $e) {
-                $statistics['failed']++;
+                try {
+                    $clubData = $this->brdb->selectClubByClubNr($item->clubNr)->fetch_assoc();
+                    $item->clubId = $clubData['clubId'];
+
+                    $player = new Player($item);
+
+                    if (! $this->prgPatternElementPlayer->find($player)) {
+                        $this->prgPatternElementPlayer->insert($player);
+                        $statistics['new']++;
+                    } else {
+                        $this->prgPatternElementPlayer->update($player);
+                        $statistics['updated']++;
+                    }
+                } catch (Exception $e) {
+                    $statistics['failed']++;
+                }
             }
+            $this->statistics['player'] = $statistics;
         }
-        return $statistics;
+        return;
     }
-    
+
+    private function syncTournament() {
+        $statistics = $this->getBaseStats();
+
+        $file = file_get_contents(self::API_LIST_TOURNAMENT, false, $this->arrContextOptions());
+        $data = json_decode($file);
+        unset($file);//prevent memory leaks for large json.
+
+        $records = $data->player->records;
+        if ($records) {
+            foreach($records as $item) {
+                if (empty($item->playerNr)) {
+                    continue;
+                }
+                try {
+                    $clubData = $this->brdb->selectClubByClubNr($item->clubNr)->fetch_assoc();
+                    $item->clubId = $clubData['clubId'];
+
+                    $player = new Player($item);
+
+                    if (! $this->prgPatternElementPlayer->find($player)) {
+                        $this->prgPatternElementPlayer->insert($player);
+                        $statistics['new']++;
+                    } else {
+                        echo $this->prgPatternElementPlayer->update($player) ? '#T#' : '#F#';
+                        $statistics['updated']++;
+                    }
+                } catch (Exception $e) {
+                    $statistics['failed']++;
+                }
+            }
+            $this->statistics['tournament'] = $statistics;
+        }
+        return;
+    }
+
     private function arrContextOptions() {
         return  stream_context_create(array(
                     "ssl"=>array(
@@ -134,7 +181,7 @@ class PrgPatternElementSync extends APrgPatternElement {
      * @see IPrgPatternElement::processGet()
      */
     public function processGet() {
-        
+
         $isUserLoggedIn = $this->prgElementLogin->isUserLoggedIn();
         $isUserAdmin     = $this->prgElementLogin->getLoggedInUser()->isAdmin();
         // Don't process the posts if no user is logged in!
@@ -143,16 +190,37 @@ class PrgPatternElementSync extends APrgPatternElement {
         if ( !$this->prgElementLogin->isUserLoggedIn() || !$isUserAdmin ) {
             return;
         }
-        
-        #die("12345");
-        
+
+        if ($this->prgElementLogin->getLoggedInUser()->getUserId() != 1) {
+            return;
+        }
+
         $action = strval(trim($this->getGetVariable('action')));
 
-        switch ($action) {                
+        switch ($action) {
+            case 'sync':
+                $this->startSyncMode();
+                break;
+
             default:
                 break;
         }
         return;
+    }
+
+    private function startSyncMode() {
+        // sync Clubs
+        $this->syncClubs();
+
+        // sync Player
+        $this->syncPlayer();
+
+        // sync Tournmanet
+        // $this->syncTournament();
+    }
+
+    public function getStatistics() {
+        return $this->statistics;
     }
 
 }

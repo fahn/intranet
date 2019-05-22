@@ -1,4 +1,4 @@
-<div class="card mt-4 mb-4">
+<div class="card mb-4">
     <h5 class="card-header"><i class="fas fa-birthday-cake"></i> Geburtstagskalender</h5>
     <div class="card-body">
         {foreach item=$user from=$bdays}

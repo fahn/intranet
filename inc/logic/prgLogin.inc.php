@@ -329,8 +329,8 @@ class PrgPatternElementLogin extends APrgPatternElement {
 
       // if the query was succesful try to use the data to init the User object
       if ($res->num_rows == 1) {
-
           $dataSet = $res->fetch_assoc();
+          
           $this->loggedInUser = new User($dataSet);
           return true;
       } else {
@@ -363,7 +363,7 @@ class PrgPatternElementLogin extends APrgPatternElement {
             ));
         }
     }
-    
+
     public function redirectUserIfnoRights($rights, $relationship = false) {
         if ( !is_array($rights) && is_string($rights)) {
             try {
@@ -375,7 +375,7 @@ class PrgPatternElementLogin extends APrgPatternElement {
                 $rights = array();
             }
         }
-        
+
         $status = false;
         if (is_array($rights)) {
             foreach($rights as $right) {
@@ -383,7 +383,7 @@ class PrgPatternElementLogin extends APrgPatternElement {
                     case 'admin':
                         $status = $this->loggedInUser->isAdmin();
                         break;
-                        
+
                     case 'reporter':
                         $status = $this->loggedInUser->isReporter();
                         break;
@@ -391,7 +391,7 @@ class PrgPatternElementLogin extends APrgPatternElement {
                         continue;
                         break;
                 }
-                
+
                 if ( $status && $relationship == 'or') {
                     return true;
                 } else {
@@ -399,7 +399,7 @@ class PrgPatternElementLogin extends APrgPatternElement {
                 }
             }
         }
-        
+
         if (! $status) {
             $this->setFailedMessage("User does not have the expected permissions.");
             $this->tools->customRedirect(array(

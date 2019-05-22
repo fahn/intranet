@@ -34,7 +34,7 @@ class User {
     const USER_CLM_PHONE    = "phone";
     const USER_CLM_BDAY     = "bday";
     const USER_CLM_IMAGE    = "image";
-    
+
     const USER_IMAGE_PATH   = "/static/img/user/";
     const USER_IMAGE_MALE   = "default_m.png";
     const USER_IMAGE_FEMALE = "default_w.png";
@@ -102,24 +102,31 @@ class User {
     public function getFullName() {
         return sprintf("%s %s", $this->firstName, $this->lastName);
     }
-    
-    
+
+
     public function getUserImage() {
         $file = self::USER_IMAGE_PATH ."/". $this->userImage;
         return strlen($this->userImage) > 0 && file_exists($_SERVER['DOCUMENT_ROOT'] .'/'. $file) ? $file : $this->getDefaultUserImage();
     }
-    
+
     public function getUserThumbnailImage() {
         $file = self::USER_IMAGE_PATH ."/thumb_". $this->userImage;
         return strlen($this->userImage) > 0 && file_exists($_SERVER['DOCUMENT_ROOT'] .'/'. $file) ? $file : $this->getDefaultUserImage();
     }
-    
+
     public function getDefaultUserImage() {
         $file = self::USER_IMAGE_PATH  .'/'. ($this->gender == 'Male' ? self::USER_IMAGE_MALE : self::USER_IMAGE_FEMALE);
         return $file;
     }
 
     public function getID() {
+        return $this->userId;
+    }
+
+    /**
+     * get UserId
+     */
+    public function getUserId() {
         return $this->userId;
     }
 

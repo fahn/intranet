@@ -28,6 +28,8 @@ class BrdbHtmlAdminSyncPage extends BrdbHtmlPage {
     private $prgPatternElementSync;
     private $prgPatternElementClub;
 
+    private $_page;
+
     public function __construct($page = null) {
         parent::__construct();
 
@@ -37,8 +39,7 @@ class BrdbHtmlAdminSyncPage extends BrdbHtmlPage {
 
         # load links
         $links = array(
-            'add' => $this->tools->linkTo(array('page' => $this->_page, 'action' => 'add')),
-            'list' => $this->tools->linkTo(array('page' => $this->_page, 'action' => 'add')),
+            'startSync' => $this->tools->linkTo(array('page' => $this->_page, 'action' => 'sync')),
         );
 
         $this->smarty->assign('links', $links);
@@ -59,13 +60,13 @@ class BrdbHtmlAdminSyncPage extends BrdbHtmlPage {
         $action = $this->tools->get("action");
         $id     = $this->tools->get("id");
 
-        //$this->syncClubs();
-        $this->syncPlayer();
-
         switch ($action) {
-          default:
-            $content = $this->loadContent();
-            break;
+            case 'sync':
+                #die(print_r($this->prgPatternElementSync->getStatistics()));
+
+            default:
+                $content = $this->loadContent();
+                break;
         }
 
         $this->smarty->assign(array(
@@ -84,7 +85,7 @@ class BrdbHtmlAdminSyncPage extends BrdbHtmlPage {
     }
 
 
-    
+
 
 
 
