@@ -258,9 +258,11 @@ class PrgPatternElementLogin extends APrgPatternElement {
         // email and hashed password. Passwords are hashed with php hash functionality
         $res = $this->brdb->selectUserByEmail($email);
         if ($this->brdb->hasError()) {
-          $this->setFailedMessage($this->brdb->getError());
-          return;
+            $this->tools->log('User', 'Login try', $email, 'POST');
+            $this->setFailedMessage($this->brdb->getError());
+            return;
         }
+
         if ($res->num_rows == 1) {
           // fetch the dataset there is only one and try to verify the passowrd
           $dataSet = $res->fetch_assoc();
@@ -279,12 +281,14 @@ class PrgPatternElementLogin extends APrgPatternElement {
             return;
           }
           // Make an potential attacker wait for us
-          error_log("BrankDB: Invalid Login Attempt for User: " . $email);
+          $this->tools->log('User', 'Login try', $email, 'POST');
           sleep(self::PASSWORD_WAIT_FOR_WRONG);
         }
       } else {
         $this->setFailedMessage(self::ERROR_LOGIN_INVALID_EMAIL);
+        return;
       }
+      $this->tools->log('User', 'Login try', $email, 'POST');
       $this->setFailedMessage(self::ERROR_LOGIN_UNKNOWN_EMAIL_PASSWORD);
     }
     return;
@@ -330,7 +334,7 @@ class PrgPatternElementLogin extends APrgPatternElement {
       // if the query was succesful try to use the data to init the User object
       if ($res->num_rows == 1) {
           $dataSet = $res->fetch_assoc();
-          
+
           $this->loggedInUser = new User($dataSet);
           return true;
       } else {

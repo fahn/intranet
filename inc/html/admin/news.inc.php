@@ -16,6 +16,8 @@ include_once $_SERVER['BASE_DIR'] .'/inc/html/brdbHtmlPage.inc.php';
 include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgNews.inc.php';
 include_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
 
+include_once $_SERVER['BASE_DIR'] .'/inc/html/admin/category.inc.php';
+
 class BrdbHtmlAdminNewsPage extends BrdbHtmlPage {
   private $prgPatternElementNews;
   private $variable;
@@ -102,14 +104,17 @@ class BrdbHtmlAdminNewsPage extends BrdbHtmlPage {
         return $data;
     }
 
-  private function TMPL_update($action, $id) {
-    $this->smarty->assign(array(
-        'action'                 => $action,
-        'categoryHtmlOptions'    => $this->getCategories(),
-        'item'                   => $this->getNewsById($id),
-    ));
-    return $this->smarty->fetch('news/adminUpdate.tpl');
-  }
+    private function TMPL_update($action, $id) {
+        // load categories
+        $cats = new BrdbHtmlAdminCategoryPage();
+
+        $this->smarty->assign(array(
+            'action'                 => $action,
+            'categoryHtmlOptions'    => $cats->getCategories(),
+            'item'                   => $this->getNewsById($id),
+        ));
+        return $this->smarty->fetch('news/adminUpdate.tpl');
+    }
 
   /** GET CLUB BY ID
     *
@@ -120,48 +125,6 @@ class BrdbHtmlAdminNewsPage extends BrdbHtmlPage {
       }
 
         return $this->brdb->statementGetNewsById($id)->fetch_assoc();
-    }
-
-    private function getCategories() {
-        $data = array();
-        $res = $this->brdb->statementGetAllCategories();
-        if (!$this->brdb->hasError()) {
-            while ($dataSet = $res->fetch_assoc()) {
-                if ($dataSet['pid'] > 0) {
-                    if (!array_key_exists($dataSet['pid'], $data)) {
-                        $data[$dataSet['pid']]['records'] = array();
-                    }
-                    $data[$dataSet['pid']]['records'][$dataSet['categoryId']] =  array('title' => $dataSet['title'], 'records' => array());
-                } else {
-                    $data[$dataSet['categoryId']] = array('title' =>$dataSet['title']);
-                }
-
-            }
-        }
-
-        return $this->reformHtmlOptions($data);
-    }
-
-    private function reformHtmlOptions($dataArr, $rec = 0) {
-        if (!is_array($dataArr) || count($dataArr) == 0 || $rec >= 99) {
-            return;
-        }
-        $data = array();
-
-        foreach ($dataArr as $key => $value) {
-            $pre = str_repeat("-", $rec);
-            $pre .= strlen($pre) > 0 ? ">" : "";
-            $title = $pre . $value['title'];
-            $data[$key] = $title;
-            if (is_array($value['records']) && count($value['records']) > 0) {
-                $tmp = $this->reformHtmlOptions($value['records'], $rec+1);
-                if(is_array($tmp)) {
-                    $data += $tmp;
-                }
-            }
-        }
-
-        return $data;
     }
 
     /* DELETE */

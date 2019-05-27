@@ -270,3 +270,22 @@ CREATE TABLE `News` (
 
 ALTER TABLE `News` ADD PRIMARY KEY (`newsId`);
 ALTER TABLE `News` MODIFY `newsId` int(11) NOT NULL AUTO_INCREMENT;
+
+
+--
+--  Table: log
+--
+CREATE TABLE `Log` (
+  `uid` int(11) NOT NULL,
+  `userId` int(11) DEFAULT NULL,
+  `action` varchar(200) CHARACTER SET latin1 NOT NULL,
+  `fromTable` varchar(200) CHARACTER SET latin1 DEFAULT NULL,
+  `tstamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `details` varchar(200) CHARACTER SET latin1 DEFAULT NULL,
+  `logdata` text CHARACTER SET latin1 NOT NULL,
+  `ip` varchar(15) CHARACTER SET latin1 NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+ALTER TABLE `Log` ADD PRIMARY KEY (`uid`);
+ALTER TABLE `Log` MODIFY `uid` int(11) NOT NULL AUTO_INCREMENT;

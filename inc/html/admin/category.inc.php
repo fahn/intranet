@@ -22,7 +22,8 @@ class BrdbHtmlAdminCategoryPage extends BrdbHtmlPage {
   private $countRows;
 
   //
-  private $_page = "";
+  private $_page  = "";
+  private $_table = "Category";
 
   const MAX_ENTRIES = 50;
 
@@ -122,10 +123,12 @@ class BrdbHtmlAdminCategoryPage extends BrdbHtmlPage {
         return $this->brdb->statementGetNewsById($id)->fetch_assoc();
     }
 
-    private function getCategories() {
+    public function getCategories() {
         $data = array();
         $res = $this->brdb->statementGetAllCategories();
-        if (!$this->brdb->hasError()) {
+        if ($this->brdb->hasError()) {
+            $this->tools->log('getCategories', $this->_table, 'Get Categories', $this->brdb->error(), 'GET', $userId);
+        } else {
             while ($dataSet = $res->fetch_assoc()) {
                 if ($dataSet['pid'] > 0) {
                     if (!array_key_exists($dataSet['pid'], $data)) {

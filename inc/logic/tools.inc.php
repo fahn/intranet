@@ -13,6 +13,7 @@
  ******************************************************************************/
 
 include_once $_SERVER['BASE_DIR'] .'/smarty/libs/Smarty.class.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/db/brdb.inc.php';
 
 # libary
 require_once $_SERVER['BASE_DIR'] .'/vendor/autoload.php';
@@ -33,8 +34,12 @@ class Tools {
 
     private $ini;
 
+    private $brdb;
+
     public function __construct() {
-      $this->ini = self::getIni();
+        // load ini
+        $this->ini = self::getIni();
+
     }
 
     public static function escapeInput($data) {
@@ -65,7 +70,7 @@ class Tools {
         if(isset($url) && is_array($url)) {
           self::customRedirect(self::linkTo($url));
         } else {
-            header_remove(); 
+            header_remove();
             header("HTTP/1.1 303 See Other");
             header("Location: ". $url);
             exit("Exit of the PRG pattern...");
@@ -267,7 +272,7 @@ class Tools {
                 continue;
             }
             $urlArr[] = $key .'='. $value;
-          
+
         }
         $addParams = "";
         if(count($urlArr) > 0) {
@@ -277,7 +282,7 @@ class Tools {
         return self::getBaseUrl() . $data['page'] . $addParams;
 
       }
-      $this->log(printf("Found no data: %s", var_dump($data)));
+      $this->infoLog(printf("Found no data: %s", var_dump($data)));
       return "#";
     }
 
@@ -291,9 +296,9 @@ class Tools {
 
     public function isMaintenance() {
       $status = self::getIniValue("Maintenance");
-      
+
       $devIPAddress = $status["devIP"];
-      
+
       if ($devIPAddress == $this->getUserIPAdress()) {
           return false;
       }
@@ -304,7 +309,7 @@ class Tools {
 
       return false;
     }
-    
+
     private function getUserIPAdress() {
         if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
             $ip = $_SERVER['HTTP_CLIENT_IP'];
@@ -313,14 +318,32 @@ class Tools {
         } else {
             $ip = $_SERVER['REMOTE_ADDR'];
         }
-        
+
         return $ip;
     }
 
-    public function log($message) {
+    public function infoLog($message) {
         return error_log($message);
     }
-    
+
+    public function log($table, $details, $data, $action, $userId = NULL) {
+        try {
+            // load mysql
+            $this->brdb = new BrankDB();
+            $this->brdb->insertLog($table, $details, serialize($data), $action, $userId);
+        } catch (Exception $e) {
+            echo 'Please report this to an admin:<br>';
+            echo '<pre>';
+            echo 'UserId:'. $userId;
+            echo 'Action:'. $action;
+            echo 'Table'.   $table;
+            echo 'Details'. $details;
+            echo 'Data:'. $data;
+            echo '</pre>';
+            die();
+        }
+    }
+
     public function getPageination($active = 0, $maxRows) {
         $key = 0;
         $page = array();
@@ -331,10 +354,10 @@ class Tools {
                 'id'     => ++$key,
             );
         } while ($maxRows < 0);
-        
+
         return $page;
     }
-    
+
     public function dump($var) {
         echo "<pre>";
         var_dump($var);

@@ -41,6 +41,7 @@
                             <a class="dropdown-item" href="/pages/adminCategory.inc.php"><i class="far fa-list-alt"></i> Kategorien</a>
                             <div class="dropdown-divider"></div>
                             <!-- <a class="dropdown-item" href="settings.php"><i class="fas fa-wrench"></i> Einstellungen</a> -->
+                            <a class="dropdown-item" href="/pages/log.php"><i class="fas fa-list"></i> Logs</a>
                         </div>
                     </li>
                 {/if}
@@ -53,7 +54,7 @@
                         {$currentUserName}
                     </a>
                     <div class="dropdown-menu dropdown-menu-right">
-                        
+
                         <a class="dropdown-item" href="/pages/user.php?id={$userId}"><i class="fas fa-user-circle" aria-hidden="true"></i> My Account</a>
                         <a class="dropdown-item" href="myAccount.php"><i class="fas fa-edit"></i> Edit Account</a>
                         <div class="dropdown-divider"></div>

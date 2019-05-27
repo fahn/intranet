@@ -45,8 +45,7 @@ trait NotificationDB {
      * @param unknown $userId
      * @return unknown
      */
-    public function statementReadNotificationByUserId($notificationId, $userId)
-    {
+    public function statementReadNotificationByUserId($notificationId, $userId) {
         $cmd = $this->db->prepare("UPDATE `Notification` set isRead=1 WHERE notificationId = ? AND userId = ?");
         $cmd->bind_param("ii", $notificationId, $userId);
 

@@ -18,6 +18,7 @@ include_once 'brdb.Api.inc.php';
 include_once 'brdb.Categories.inc.php';
 include_once 'brdb.Club.inc.php';
 include_once 'brdb.Faq.inc.php';
+include_once 'brdb.Log.inc.php';
 include_once 'brdb.News.inc.php';
 include_once 'brdb.Notification.inc.php';
 include_once 'brdb.Player.inc.php';
@@ -26,6 +27,7 @@ include_once 'brdb.Settings.inc.php';
 include_once 'brdb.Staff.inc.php';
 include_once 'brdb.Tournament.inc.php';
 include_once 'brdb.User.inc.php';
+
 
 class BrankDB {
 
@@ -49,6 +51,9 @@ class BrankDB {
 
     // load Ranking
     use RankingDB;
+
+    // load Log
+    use LogDB;
 
     // load News
     use NewsDB;

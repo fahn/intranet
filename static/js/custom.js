@@ -107,7 +107,7 @@ $(document).ready(function() {
             //hideSelectionInSingle: true,
             minimumInputLength: 3,
             ajax: {
-                url: 'https://schwalbe.badtra.de/ajax/player.php',
+                url: '/ajax/player.php',
                 type: "post",
                 dataType: 'json',
                 data: function(params) {
