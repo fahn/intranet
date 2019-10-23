@@ -16,8 +16,8 @@ Alternativ kann der Docker-container (https://github.com/fahn/rangliste_docker) 
 # Installation
 1. Dateien auf dem Server übertragen
 2. sql/mysql_schema.sql importieren
-3. User in der DB anlegen ``` INSERT INTO User (email, password, admin) VALUES ('###EMAIL###', PASSWORD('###PASSWORD###'), 1) ```  
-   Dabei die Platzhalter ###EMAIL### und ###PASSWORD### ersetzen
+3. User in der DB anlegen ``` INSERT INTO User (email, password, admin) VALUES ('###EMAIL###', '###PASSWORD###', 1) ```  
+   Dabei die Platzhalter ###EMAIL### und ###PASSWORD### (das Passwort muss erst mit password_hash('###PASSWORD###', DEFAULT_PASSWORD) verschlüsselt werden) ersetzen
 4. config.ini unter inc/config.ini bearbeiten und anpassen
 
 # Verwendete Bibliotheken  
