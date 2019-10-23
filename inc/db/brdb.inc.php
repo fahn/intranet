@@ -76,14 +76,15 @@ class BrankDB {
 
 
 
-    public function __construct()
-    {
+    public function __construct() {
+        if (!function_exists('mysqli_init') && !extension_loaded('mysqli')) {
+            die("install mysqli\n");
+        }
         // load connection
         $this->connection();
     }
 
-    private function connection()
-    {
+    private function connection() {
         if ($this->db == NULL) {
             try {
                 $tools = new Tools();
@@ -102,8 +103,7 @@ class BrankDB {
     /**
      * Destructor that closes the DB connection
      */
-    public function __destruct()
-    {
+    public function __destruct() {
         $this->db->close();
     }
 
@@ -112,8 +112,7 @@ class BrankDB {
      *
      * @return boolean true in case there is an error pending
      */
-    public function hasError()
-    {
+    public function hasError() {
         return $this->hasError;
     }
 
@@ -124,8 +123,7 @@ class BrankDB {
      *
      * @return unknown
      */
-    public function getError()
-    {
+    public function getError() {
         $this->hasError = false;
         return $this->error;
     }
@@ -136,14 +134,12 @@ class BrankDB {
      * @param string $error
      *            the error to be set
      */
-    private function setError($error)
-    {
+    private function setError($error) {
         $this->hasError = true;
         $this->error = $error;
     }
 
-    public function insert_id()
-    {
+    public function insert_id() {
         return $this->db->insert_id;
     }
 
@@ -155,8 +151,7 @@ class BrankDB {
      *            the prepared and bound statement to be executed
      * @return mysqli_result the result of the executed statement
      */
-    public function executeStatement($statement)
-    {
+    public function executeStatement($statement) {
         if (! $statement->execute()) {
             $this->setError($statement->error);
         }
