@@ -313,29 +313,17 @@ class PrgPatternElementUser extends APrgPatternElement {
         $gender     = strval(trim($this->getPostVariable(self::FORM_USER_GENDER)));
 
         // is Admin
-        if(!$this->issetPostVariable(self::FORM_USER_IS_ADMIN) && $userId != 2) {
-            $isAdmin = 0;
-        } else {
-            $isAdmin = strval(trim($this->getPostVariable(self::FORM_USER_IS_ADMIN)));
-        }
-
+        $isAdmin = $this->issetPostVariable(self::FORM_USER_IS_ADMIN) && $userId > 2 ? strval(trim($this->getPostVariable(self::FORM_USER_IS_ADMIN))) : 0;
+        
         // isReporter
-        if(!$this->issetPostVariable(self::FORM_USER_IS_REPORTER)) {
-            $isReporter = 0;
-        } else {
-            $isReporter = strval(trim($this->getPostVariable(self::FORM_USER_IS_REPORTER)));
-        }
+        $isReporter = !$this->issetPostVariable(self::FORM_USER_IS_REPORTER) ? strval(trim($this->getPostVariable(self::FORM_USER_IS_REPORTER))) : 0;
 
         // isPlayer
-        if(!$this->issetPostVariable(self::FORM_USER_IS_PLAYER)) {
-            $isPlayer = 0;
-        } else {
-            $isPlayer = strval(trim($this->getPostVariable(self::FORM_USER_IS_PLAYER)));
-        }
+        $isPlayer = $this->issetPostVariable(self::FORM_USER_IS_PLAYER) ? strval(trim($this->getPostVariable(self::FORM_USER_IS_PLAYER))) : 0;
+        
 
         // additional
         $playerId = strval(trim($this->getPostVariable(self::FORM_USER_PLAYERID)));;
-        $clubId   = strval(trim($this->getPostVariable(self::FORM_USER_CLUBID)));;
         $phone    = strval(trim($this->getPostVariable(self::FORM_USER_PHONE)));;
         if ($this->issetPostVariable(self::FORM_USER_BDAY)) {
             $bday     = date("Y-m-d", strtotime($this->getPostVariable(self::FORM_USER_BDAY)));
@@ -354,26 +342,28 @@ class PrgPatternElementUser extends APrgPatternElement {
         }
 
         // First filter the email before continue
-        if(isset($email) && count($email) > 3) {
-          if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        if(!isset($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $this->setFailedMessage(self::ERROR_USER_UPDATE_INVALID_EMAIL);
-          }
-          // Check if the user is already registered
-          // In case it is we have to throw an error
-          $res = $this->brdb->selectUserbyEmail($email);
-          if ($this->brdb->hasError()) {
-              $this->setFailedMessage($this->brdb->getError());
-              return;
-          }
-          if ($res->num_rows > 0) {
-              // Check that it is not my email, which is allowed to be set!
-              $dataSetUser = new User($res->fetch_assoc());
-              if ($dataSetUser->userId != $userId) {
-                  $this->setFailedMessage(self::ERROR_USER_EMAIL_EXISTS);
-                  return;
-              }
-          }
+            return;
         }
+          
+        // Check if the user is already registered
+        // In case it is we have to throw an error
+        $res = $this->brdb->selectUserbyEmail($email);
+        if ($this->brdb->hasError()) {
+            $this->setFailedMessage($this->brdb->getError());
+            return;
+        }
+        
+        if ($res->num_rows > 0) {
+            // Check that it is not my email, which is allowed to be set!
+            $dataSetUser = new User($res->fetch_assoc());
+            if ($dataSetUser->userId != $userId) {
+                $this->setFailedMessage(self::ERROR_USER_EMAIL_EXISTS);
+                return;
+            }
+        }
+        
 
         // now everything is checked and the command for adding
         // the user can be called
