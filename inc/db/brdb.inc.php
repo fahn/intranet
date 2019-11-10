@@ -11,7 +11,6 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
-
 require_once $_SERVER['BASE_DIR'] . '/inc/logic/tools.inc.php';
 
 include_once 'brdb.Api.inc.php';

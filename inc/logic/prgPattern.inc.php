@@ -251,7 +251,8 @@ abstract class APrgPatternElement implements IPrgPatternElement {
     public function getPostVariable($variableName) {
         $prefixedVariableName = $this->getPrefixedName($variableName);
         if(isset($_POST) && isset($_POST[$prefixedVariableName])) {
-            return Tools::escapeInput($_POST[$prefixedVariableName]);
+            // @TASK Warum steht hier ein strtolower drin?
+            return Tools::escapeInput(strval(trim($_POST[$prefixedVariableName])));
         }
     }
 
@@ -314,6 +315,7 @@ class PrgPattern {
                 // which is not desired.
                 $prgElement->processPost();
             }
+
             // Now after all posts have been processed start doing the redirect
             $this->processRedirect();
         } elseif ($_SERVER[Http::SERVER_REQUEST_METHOD] === Http::REQUEST_METHOD_GET) {

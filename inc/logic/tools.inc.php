@@ -364,6 +364,37 @@ class Tools {
         die();
     }
 
+    public function createPassword() {
+
+    }
+
+    public function createPasswordHash($password) {
+        return password_hash($password, PASSWORD_DEFAULT);
+    }
+
+    public function validPassword($password, $hash) {
+
+    }
+
+    public function validEMail($email) {
+        return filter_var($email, FILTER_VALIDATE_EMAIL);
+    }
+    /*
+    public function isUserGod() {
+        return $this->isUserGod($this->prgPatternElementLogin->getLoggedInUser()->userId);
+    }*/
+
+    public function isUserGod($userId) {
+        return in_array($userId, $this->getGod());
+    }
+
+    /**
+     * Get List of User who are god!
+     */
+    public function getGod() {
+        return $this->getIniValue("God");
+    }
+
 }
 
 ?>

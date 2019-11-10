@@ -76,7 +76,7 @@ class BrdbHtmlAdminAllClubPage extends BrdbHtmlPage {
       return $this->smarty->fetch('admin/ClubEdit.tpl');
     }
 
-  private function loadClubList($page = 0) {
+  public function loadClubList($page = 0) {
     $this->countRows = $this->brdb->selectAllClubs()->num_rows;
     $max = self::MAX_ENTRIES*(1+$page);
     $min = $max - self::MAX_ENTRIES;

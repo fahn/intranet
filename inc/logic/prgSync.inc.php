@@ -27,9 +27,10 @@ class PrgPatternElementSync extends APrgPatternElement {
     protected $prgElementLogin;
 
     // links
+    private const API_HOST            = "https://api.badtra.de/";
     private const API_LIST_CLUB       = "https://api.badtra.de/club/list";
     private const API_LIST_PLAYER     = "https://api.badtra.de/player/list.php";
-    private const API_LIST_TOURNAMENT = "https://api.badtra.de/player/list.php";
+    private const API_LIST_TOURNAMENT = "https://api.badtra.de/tournament/list.php";
 
     // statistics
     private $statistics = array('clubs' => '', 'player' => '', 'tournaments' => '');
@@ -209,6 +210,20 @@ class PrgPatternElementSync extends APrgPatternElement {
     }
 
     private function startSyncMode() {
+        // check if api is available
+        stream_context_set_default( [
+            'ssl' => [
+                'verify_peer' => false,
+                'verify_peer_name' => false,
+            ],
+        ]);
+
+        $file_headers = @get_headers(self::API_HOST, 1);
+        if(!$file_headers || $file_headers[0] == 'HTTP/1.1 404 Not Found') {
+            $this->setFailedMessage("REMOTE HOST not available");
+            return;
+        }
+
         // sync Clubs
         $this->syncClubs();
 

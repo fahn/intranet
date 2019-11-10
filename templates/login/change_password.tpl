@@ -5,7 +5,7 @@
     <div class="login-form">
         {include file="messages.tpl"}
 
-        <h2>Passwort ändern</h2>
+        <h2 class="display-4 mb-5 text-center">Passwort ändern</h2>
 
         <div class="form-group">
           <input type="password" class="form-control login-field" value="" placeholder="Enter password" id="loginFormLoginPass" name="loginFormLoginPass" required>

@@ -174,11 +174,21 @@ class PrgPatternElementClub extends APrgPatternElement {
             }
         }
     }
-    
-    
-    
-    
-    
+
+    public function list() {
+        $this->countRows = $this->brdb->selectAllClubs()->num_rows;
+
+        $res = $this->brdb->selectAllClubs();
+        $loop = array();
+        if (!$this->brdb->hasError()) {
+          while ($dataSet = $res->fetch_assoc()) {
+            $loop[] = $dataSet; //new User($dataSet);
+
+          }
+        }
+        return $loop;
+    }
+
     public function find($item) {
         if ($item instanceof Club) {
             echo "**";
@@ -187,7 +197,7 @@ class PrgPatternElementClub extends APrgPatternElement {
             if ($this->brdb->hasError()) {
                 return false;
             }
-            
+
             return $res->num_rows == 1 ? true : false;
         }
         return false;

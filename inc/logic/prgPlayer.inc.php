@@ -20,8 +20,8 @@ include_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
 class PrgPatternElementPlayer extends APrgPatternElement {
     const FORM_PLAYER_PLAYERID    = "playerId";
     const FORM_PLAYER_PLAYERNR    = "playerNr";
-    const FORM_PLAYER_FIRSTNAME   = "firstname";
-    const FORM_PLAYER_LASTNAME    = "lastname";
+    const FORM_PLAYER_FIRSTNAME   = "firstName";
+    const FORM_PLAYER_LASTNAME    = "lastName";
     const FORM_PLAYER_BDAY        = "bday";
     const FORM_PLAYER_CLUBID      = "clubId";
     const FORM_PLAYER_GENDER      = "gender";
@@ -51,7 +51,7 @@ class PrgPatternElementPlayer extends APrgPatternElement {
 
     protected $brdb;
 
-    public function __construct(BrankDB $brdb, PrgPatternElementLogin $prgElementLogin) {
+    public function __construct() {
         parent::__construct("player");
 
         $this->registerPostSessionVariable(self::FORM_PLAYER_PLAYERID);
@@ -65,24 +65,29 @@ class PrgPatternElementPlayer extends APrgPatternElement {
         // load DB
         $this->brdb = $brdb;
 
-        // load User
+        // load Login
         $this->prgElementLogin = $prgElementLogin;
 
-
+        #echo $loginAction;
+        #die(print_r($_POST));
     }
 
     public function processPost() {
-        $this->prgElementLogin->redirectUserIfNotLoggindIn();
-
         // ADMIN AREA
-        $this->prgElementLogin->redirectUserIfnoRights(array('reporter', 'admin'), 'or');
+        #$this->prgElementLogin->redirectUserIfNotLoggindIn();
+        #$this->prgElementLogin->redirectUserIfnoRights(array('reporter', 'admin'), 'or');
+
+
+
+
 
         if (! $this->issetPostVariable(self::FORM_PLAYER_ACTION)) {
             $this->setFailedMessage("Kein Formular.");
             return;
         }
 
-        $loginAction = strval(trim($this->getPostVariable(self::FORM_PLAYER_ACTION)));
+
+        $loginAction = $this->getPostVariable(self::FORM_PLAYER_ACTION);
         switch ($loginAction) {
             case self::FORM_PLAYER_ACTION_INSERT:
                 $this->processPostInsertPlayer();
@@ -107,22 +112,28 @@ class PrgPatternElementPlayer extends APrgPatternElement {
 
     private function processPostInsertPlayer() {
       // Check that all information has been posted
+
       if (
-        ! $this->issetPostVariable(self::FORM_PLAYER_CLUBID) ||
         ! $this->issetPostVariable(self::FORM_PLAYER_FIRSTNAME) ||
-        ! $this->issetPostVariable(self::FORM_PLAYER_LASTNAME)
+        ! $this->issetPostVariable(self::FORM_PLAYER_LASTNAME) ||
+        ! $this->issetPostVariable(self::FORM_PLAYER_BDAY) ||
+        ! $this->issetPostVariable(FORM_PLAYER_GENDER) ||
+        ! $this->issetPostVariable(FORM_PLAYER_PLAYERID) ||
+        ! $this->issetPostVariable(self::FORM_PLAYER_CLUBID)
       ) {
           $this->setFailedMessage(self::ERROR_USER_UPDATE_MISSING_INFORMATION);
           return;
       }
 
+
+
       $data = array(
-          'clubid'    => strval(trim($this->getPostVariable(self::FORM_PLAYER_CLUBID))),
-          'firstName' => strval(trim($this->getPostVariable(self::FORM_PLAYER_FIRSTNAME))),
-          'lastName'  => strval(trim($this->getPostVariable(self::FORM_PLAYER_LASTNAME))),
-          'gender'    => strval(trim($this->getPostVariable(self::FORM_PLAYER_GENDER))),
-          'playerNr'  => strval(trim($this->getPostVariable(self::FORM_PLAYER_PLAYERNR))),
-          'bday'      => strval(trim($this->getPostVariable(self::FORM_PLAYER_BDAY))),
+          'clubid'    => $this->getPostVariable(self::FORM_PLAYER_CLUBID),
+          'firstName' => $this->getPostVariable(self::FORM_PLAYER_FIRSTNAME),
+          'lastName'  => $this->getPostVariable(self::FORM_PLAYER_LASTNAME),
+          'gender'    => $this->getPostVariable(self::FORM_PLAYER_GENDER),
+          'playerNr'  => $this->getPostVariable(self::FORM_PLAYER_PLAYERNR),
+          'bday'      => $this->getPostVariable(self::FORM_PLAYER_BDAY),
       );
 
       $res = $this->brdb->insertPlayer($data);

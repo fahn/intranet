@@ -72,7 +72,7 @@ class PrgPatternElementUser extends APrgPatternElement {
 
     protected $brdb;
 
-
+    private $tools;
 
     private $uploadImageFileName;
     private $IMAGE_PATH;
@@ -97,6 +97,8 @@ class PrgPatternElementUser extends APrgPatternElement {
 
         // load User
         $this->prgElementLogin = $prgElementLogin;
+
+        $this->tools = new Tools();
     }
 
     public function processPost() {
@@ -187,7 +189,7 @@ class PrgPatternElementUser extends APrgPatternElement {
       $lastName   = strval(trim($this->getPostVariable(self::FORM_USER_LNAME)));
       $gender     = strval(trim($this->getPostVariable(self::FORM_USER_GENDER)));
 
-      if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
+      if (! $this->tools->validEMail($email) ) {
         $this->setFailedMessage(self::ERROR_USER_UPDATE_INVALID_EMAIL);
         return;
       }
@@ -237,7 +239,7 @@ class PrgPatternElementUser extends APrgPatternElement {
         $gender     = strval(trim($this->getPostVariable(self::FORM_USER_GENDER)));
 
         // First filter the email before continue
-        if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        if (! $this->tools->validEMail($email) ) {
           $this->setFailedMessage(self::ERROR_USER_UPDATE_INVALID_EMAIL);
           return;
         }
@@ -272,9 +274,10 @@ class PrgPatternElementUser extends APrgPatternElement {
             return;
         }
 
+        // check if User is God
         $userId = intval($this->getPostVariable(self::FORM_USER_ADMIN_USER_ID));
-        if ($userId == 2) {
-            $this->setFailedMessage("GodMode ON");
+        if ($this->tools->isUserGod($userId)) {
+            $this->setFailedMessage("User is protected");
             return;
         }
         $res = $this->brdb->deleteUserById($userId);
@@ -290,10 +293,12 @@ class PrgPatternElementUser extends APrgPatternElement {
       *
       */
     private function processGetDeleteUserAccount($userId) {
-        if ($userId == 2) {
-            $this->setFailedMessage("GodMode ON");
+        // check if User is God
+        if ($this->tools->isUserGod($userId)) {
+            $this->setFailedMessage("User is protected");
             return;
         }
+
         $res = $this->brdb->deleteUserById($userId);
         if ($this->brdb->hasError()) {
             $this->setFailedMessage($this->brdb->getError());
@@ -306,31 +311,37 @@ class PrgPatternElementUser extends APrgPatternElement {
         return true;
     }
 
+    /**
+     * Update User
+     */
     public function processPostUpdateUserAccount($userId) {
-        $email      = strtolower(strval(trim($this->getPostVariable(self::FORM_USER_EMAIL))));
-        $firstName  = strval(trim($this->getPostVariable(self::FORM_USER_FNAME)));
-        $lastName   = strval(trim($this->getPostVariable(self::FORM_USER_LNAME)));
-        $gender     = strval(trim($this->getPostVariable(self::FORM_USER_GENDER)));
+        $userLogginIn = $this->prgElementLogin->getLoggedInUser()->userId;
 
-        // is Admin
-        $isAdmin = $this->issetPostVariable(self::FORM_USER_IS_ADMIN) && $userId > 2 ? strval(trim($this->getPostVariable(self::FORM_USER_IS_ADMIN))) : 0;
-        
-        // isReporter
-        $isReporter = !$this->issetPostVariable(self::FORM_USER_IS_REPORTER) ? strval(trim($this->getPostVariable(self::FORM_USER_IS_REPORTER))) : 0;
-
-        // isPlayer
-        $isPlayer = $this->issetPostVariable(self::FORM_USER_IS_PLAYER) ? strval(trim($this->getPostVariable(self::FORM_USER_IS_PLAYER))) : 0;
-        
-
-        // additional
-        $playerId = strval(trim($this->getPostVariable(self::FORM_USER_PLAYERID)));;
-        $phone    = strval(trim($this->getPostVariable(self::FORM_USER_PHONE)));;
-        if ($this->issetPostVariable(self::FORM_USER_BDAY)) {
-            $bday     = date("Y-m-d", strtotime($this->getPostVariable(self::FORM_USER_BDAY)));
-        } else {
-            $bday = "";
+        // check if edit user is god and
+        if ($this->tools->isUserGod($userId) && ! $this->tools->isUserGod($userLogginIn)) {
+            $this->setFailedMessage("Sorry, aber ein Superadmin kann dies tun.");
+            return;
         }
 
+        $email      = $this->getPostVariable(self::FORM_USER_EMAIL);
+        $firstName  = $this->getPostVariable(self::FORM_USER_FNAME);
+        $lastName   = $this->getPostVariable(self::FORM_USER_LNAME);
+        $gender     = $this->getPostVariable(self::FORM_USER_GENDER);
+
+        // is Admin
+        $isAdmin = $this->issetPostVariable(self::FORM_USER_IS_ADMIN) ? $this->getPostVariable(self::FORM_USER_IS_ADMIN) : 0;
+
+        // isReporter
+        $isReporter = $this->issetPostVariable(self::FORM_USER_IS_REPORTER) ? $this->getPostVariable(self::FORM_USER_IS_REPORTER) : 0;
+        
+        // isPlayer
+        $isPlayer = $this->issetPostVariable(self::FORM_USER_IS_PLAYER) ? $this->getPostVariable(self::FORM_USER_IS_PLAYER) : 0;
+
+
+        // additional
+        $playerId = $this->getPostVariable(self::FORM_USER_PLAYERID);
+        $phone    = $this->getPostVariable(self::FORM_USER_PHONE);
+        $bday     = $this->issetPostVariable(self::FORM_USER_BDAY) ? date("Y-m-d", strtotime($this->getPostVariable(self::FORM_USER_BDAY))) : "";
 
         // Check if oyu try to deadmin yourself this is not allowed, otherwise
         // it would be possible to lockout oneself from the data base
@@ -342,11 +353,11 @@ class PrgPatternElementUser extends APrgPatternElement {
         }
 
         // First filter the email before continue
-        if(!isset($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        if (!isset($email) || !$this->tools->validEMail($email) ) {
             $this->setFailedMessage(self::ERROR_USER_UPDATE_INVALID_EMAIL);
             return;
         }
-          
+
         // Check if the user is already registered
         // In case it is we have to throw an error
         $res = $this->brdb->selectUserbyEmail($email);
@@ -354,7 +365,7 @@ class PrgPatternElementUser extends APrgPatternElement {
             $this->setFailedMessage($this->brdb->getError());
             return;
         }
-        
+
         if ($res->num_rows > 0) {
             // Check that it is not my email, which is allowed to be set!
             $dataSetUser = new User($res->fetch_assoc());
@@ -363,7 +374,7 @@ class PrgPatternElementUser extends APrgPatternElement {
                 return;
             }
         }
-        
+
 
         // now everything is checked and the command for adding
         // the user can be called
@@ -412,7 +423,7 @@ class PrgPatternElementUser extends APrgPatternElement {
         }
 
         // First filter the email before continue
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        if (! $this->tools->validEMail($email) ) {
             $this->setFailedMessage(self::ERROR_USER_UPDATE_INVALID_EMAIL);
             return;
         }

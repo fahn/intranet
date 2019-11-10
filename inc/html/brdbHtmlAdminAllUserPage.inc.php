@@ -32,6 +32,7 @@ class BrdbHtmlAdminAllUserPage extends BrdbHtmlPage {
         $this->prgPattern->registerPrg($this->prgPatternElementUser);
 
         $this->info  = array('firstName', 'lastName', 'email', 'gender', 'bday', 'phone', 'playerId', 'clubId');
+
     }
 
     protected function showProtectedArea() {
@@ -70,6 +71,7 @@ class BrdbHtmlAdminAllUserPage extends BrdbHtmlPage {
             'content' => $content,
         ));
 
+
         $this->smarty->display('index.tpl');
     }
 
@@ -87,8 +89,8 @@ class BrdbHtmlAdminAllUserPage extends BrdbHtmlPage {
     }
 
     /**
-    PAGINATION
-    */
+      * PAGINATION
+      */
     private function loadUserList($page = 0) {
         $this->countRows = $this->brdb->selectAllUser()->num_rows;
         $max = self::MAX_ENTRIES*(1+$page);
@@ -99,7 +101,7 @@ class BrdbHtmlAdminAllUserPage extends BrdbHtmlPage {
         if (!$this->brdb->hasError()) {
             while ($dataSet = $res->fetch_assoc()) {
                 $user = new User($dataSet);
-                //$isLoggedInUser = ($this->prgPatternElementLogin->getLoggedInUser()->userId == $loopUser->userId);
+                $isLoggedInUser = ($this->prgPatternElementLogin->getLoggedInUser()->userId == $loopUser->userId);
                 //$dataSet['isLoggedInUser'] = $isLoggedInUser;
                 $dataSet['isAdmin']    = $user->isAdmin();
                 $dataSet['isReporter'] = $user->isReporter();

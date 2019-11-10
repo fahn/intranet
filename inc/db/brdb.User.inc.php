@@ -166,10 +166,10 @@ trait UserDB {
      *            set to 1 if the user is a reporter or 0 if not
      * @return mysqli_result the result of the executed maysql statement
      */
-    public function updateAdminUser($userId, $email, $fname, $lName, $gender, $phone, $bday, $playerId, $clubId, $isPlayer, $isReporter, $isAdmin)
+    public function updateAdminUser($userId, $email, $fname, $lName, $gender, $phone, $bday, $playerId, $isPlayer, $isReporter, $isAdmin)
     {
-        $cmd = $this->db->prepare("UPDATE User set email=?, firstName=?, lastName=?, gender=?, phone=?, bday = ?, playerId = ?, clubId = ?, activePlayer = ?, reporter = ?, admin = ? WHERE UserId = ?");
-        $cmd->bind_param("sssssssiiiii", $email, $fname, $lName, $gender, $phone, $bday, $playerId, $clubId, $isPlayer, $isReporter, $isAdmin, $userId);
+        $cmd = $this->db->prepare("UPDATE User set email=?, firstName=?, lastName=?, gender=?, phone=?, bday = ?, playerId = ?, activePlayer = ?, reporter = ?, admin = ? WHERE UserId = ?");
+        $cmd->bind_param("sssssssiiii", $email, $fname, $lName, $gender, $phone, $bday, $playerId, $isPlayer, $isReporter, $isAdmin, $userId);
 
         return $this->executeStatement($cmd);
     }

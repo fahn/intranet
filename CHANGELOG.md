@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### [1.0.6.3] - 2019-11-11
+- FIX: Users via Admincenter
+- FIX: cannt login (wrong base64-decode)
+- FIX: Widget latest games (bottom border)
+
 ### [1.0.6.2] - 2019-05-12
 - seperate Player and Users
 - fix own account editoring

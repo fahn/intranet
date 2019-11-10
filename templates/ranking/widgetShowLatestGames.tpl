@@ -1,4 +1,4 @@
-<div class="card">
+<div class="card mb-4">
     <h5 class="card-header">Deine letzten 5 Spiele</h5>
     <div class="card-body">
         <p class="card-text">
