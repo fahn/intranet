@@ -1,0 +1,40 @@
+version: '3.0'
+
+services:
+  intranet:
+    image: badtra/intranet:latest
+    container_name: intranet
+    ports:
+      - "8000:80"
+    volumes:
+      - "./data/config.ini:/var/www/html/inc/config.ini"
+      - "./data/img/background.jpg:/var/www/html/static/img/background.jpg"
+      - "./data/img/background_mobil.jpg:/var/www/html/static/img/background_mobil.jpg"
+      - "./data/img/logo.png:/var/www/html/static/img/logo.png"
+      - "./data/img/favicon:/var/www/html/static/img/favicon:ro"
+      # user upload image dir
+      - "./data/img/user:/var/www/html/static/img/user"
+      # Sending e-mail
+      - ./msmtp/msmtprc:/etc/msmtprc:ro
+      - ./msmtp/aliases:/etc/aliases:ro
+    links:
+      - db
+
+  db:
+    image: mariadb:10.0.37-xenial
+    container_name: db
+    restart: always
+    environment:
+      - MYSQL_DATABASE=<DATABASE>
+      - MYSQL_USER=<USER>
+      - MYSQL_PASSWORD=<PASSWORD>
+      - MYSQL_RANDOM_ROOT_PASSWORD=yes
+    volumes:
+      - "./dump.sql:/docker-entrypoint-initdb.d/dump.sql"
+      - "./mysql/:/var/lib/mysql"
+  # debug
+  #adminer:
+  #  image: adminer
+  #  restart: always
+  #  ports:
+  #    - 8080:8080
