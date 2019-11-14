@@ -1,5 +1,13 @@
+<?php
 use PHPUnit\Framework\TestCase;
 use PHPUnit\DbUnit\TestCaseTrait;
+
+class TestPrgUser {
+    private $db;
+
+    public __constructor() {
+
+    }
 
 public function testGetProjectInformation() {
     // Here, we create a mock prMysql object so we don't use the original
@@ -23,3 +31,6 @@ public function testGetProjectInformation() {
     $result = $object->getProjectInformation(1);
     $this->assertSame($returnValue, $result);
 }
+
+}
+?>
