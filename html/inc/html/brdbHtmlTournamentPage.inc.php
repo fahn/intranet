@@ -155,10 +155,14 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
     }
 
     private function valueIsKey($arr) {
-        foreach($arr as $key =>$item) {
-            $tmp[$item] = $item;
+        if (is_array($arr)) {
+            foreach($arr as $key => $item) {
+                $tmp[$item] = $item;
+            }
+            return $tmp;
         }
-        return $tmp;
+
+        return array();
     }
 
     private function calendar($id) {

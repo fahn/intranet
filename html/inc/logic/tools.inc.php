@@ -202,7 +202,7 @@ class Tools {
     //////////////////////////////////////// ** MODE
 
     public function getModeArr() {
-        return sort($this->getIniValue("tournament")["modes"]);
+        return sort($this->modes);
     }
 
     /**
