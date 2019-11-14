@@ -251,9 +251,13 @@ abstract class APrgPatternElement implements IPrgPatternElement {
     public function getPostVariable($variableName) {
         $prefixedVariableName = $this->getPrefixedName($variableName);
         if(isset($_POST) && isset($_POST[$prefixedVariableName])) {
-            // @TASK Warum steht hier ein strtolower drin?
-            return Tools::escapeInput(strval(trim($_POST[$prefixedVariableName])));
+            $data = $_POST[$prefixedVariableName];
+            if (!is_array($data)) {
+                $data = strval(trim($data))
+            }
+            return Tools::escapeInput($data);
         }
+        return null;
     }
 
     public function safeGetSessionVariable($variableName, $defaultValue = "") {

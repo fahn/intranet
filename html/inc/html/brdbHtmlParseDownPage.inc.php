@@ -30,7 +30,11 @@ class BrdbHtmlParseDownPage extends BrdbHtmlPage {
 
 
     protected function htmlBody() {
-        $mdfile = file_get_contents($this->markDownFile);
+        if(is_file($this->markDownFile)) {
+            $mdfile = file_get_contents($this->markDownFile);
+        } else {
+            $mdfile = "No file founded";
+        }
         $Parsedown = new Parsedown();
 
         $this->smarty->assign(array(

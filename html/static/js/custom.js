@@ -35,10 +35,6 @@ $(document).ready(function() {
     // Tooltipps
     $('[data-toggle="tooltip"]').tooltip();
 
-
-    //$('select#rankingGamePlayerA1').val('Moritz Patzelt').trigger('change');
-    //$('select#rankingGamePlayerA1').val('144').trigger('change');
-
     /*  DEBUG.STAGE ] */
     $("a").each(function() {
         var address = $(location).attr('href')
