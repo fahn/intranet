@@ -253,7 +253,7 @@ abstract class APrgPatternElement implements IPrgPatternElement {
         if(isset($_POST) && isset($_POST[$prefixedVariableName])) {
             $data = $_POST[$prefixedVariableName];
             if (!is_array($data)) {
-                $data = strval(trim($data))
+                $data = strval(trim($data));
             }
             return Tools::escapeInput($data);
         }
