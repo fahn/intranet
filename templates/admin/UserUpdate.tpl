@@ -27,16 +27,13 @@
         </div>
 
         <div class="col-md-6">
-          <label class="d-block">Geschlecht</label>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="userRegisterAccountGender" id="inlineRadio1" value="Male" {if $info.gender == "Male"}checked{/if}>
-            <label class="form-check-label" for="inlineRadio1">Mann</label>
-          </div>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="userRegisterAccountGender" id="inlineRadio2" value="Female" {if $info.gender == "Female"}checked{/if}>
-            <label class="form-check-label" for="inlineRadio2">Frau</label>
-          </div>
+          <label for="userRegisterAccountGender">Geschlecht:</label>
+          <select class="custom-select" name="userRegisterAccountGender">
+            <option value="Male" {if $info['gender'] == 'Male'}selected{/if}> Mann</option>
+            <option value="Female" {if $info['gender'] == 'Female'}selected{/if}> Frau</option>
+          </select>
         </div>
+
     </div>
 
     <div class="row">

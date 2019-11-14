@@ -333,7 +333,7 @@ class PrgPatternElementUser extends APrgPatternElement {
 
         // isReporter
         $isReporter = $this->issetPostVariable(self::FORM_USER_IS_REPORTER) ? $this->getPostVariable(self::FORM_USER_IS_REPORTER) : 0;
-        
+
         // isPlayer
         $isPlayer = $this->issetPostVariable(self::FORM_USER_IS_PLAYER) ? $this->getPostVariable(self::FORM_USER_IS_PLAYER) : 0;
 
@@ -378,13 +378,16 @@ class PrgPatternElementUser extends APrgPatternElement {
 
         // now everything is checked and the command for adding
         // the user can be called
-        $res = $this->brdb->updateAdminUser($userId, $email, $firstName, $lastName, $gender, $phone, $bday, $playerId, $isPlayer, $isReporter, $isAdmin);
-        if ($this->brdb->hasError()) {
-            $this->setFailedMessage($this->brdb->getError());
-            return;
-        }
-        $this->setSuccessMessage(self::SUCCESS_USER_UPDATE);
-        return true;
+        #updateAdminUser($userId, $email, $fname, $lName, $gender, $phone, $bday, $playerId, $isPlayer, $isReporter, $isAdmin)
+        #try {
+            $res = $this->brdb->updateAdminUser($userId, $email, $firstName, $lastName, $gender, $phone, $bday, $playerId, $isPlayer, $isReporter, $isAdmin);
+            if ($this->brdb->hasError()) {
+                $this->setFailedMessage($this->brdb->getError());
+                return;
+            }
+            $this->setSuccessMessage(self::SUCCESS_USER_UPDATE);
+            return true;
+        #}
     }
 
     public function processPostUpdateUserMyAccount() {

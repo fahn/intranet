@@ -1,0 +1,98 @@
+{
+    "Database": {
+        "db_host": "127.0.0.1",
+        "db_user": "demo",
+        "db_pass": "demo",
+        "db_name": "demo"
+    },
+    "Generell": {
+        "baseUrl": "http:\/\/192.168.178.79\/pages\/",
+        "pageTitle": "DEMO System",
+        "logoTitle": "DEMO System",
+        "stage": "0",
+        "God": "[1,2] # UserId from User Where cant delete or change via Admin-Interface"
+    },
+    "Maintenance": {
+        "maintenance": "off",
+        "maintenanceHeadline": "Wartungsarbeiten",
+        "maintenanceText": "Momentan ist die Webseite wegen Wartungsarbeiten gesperrt",
+        "maintenanceDate": "20.01.2019 20:03",
+        "devIP": "87.164.162.205"
+    },
+    "Maps": {
+        "GoogleMapsKey": "AIzaSyCt9xKhw9W6PJtpAn8CppDFFwPK_RjFetk",
+        "HomeMarkerName": "MarkerName",
+        "HomeMarkerPlace": "Braunschweig",
+        "HomeMarkerLat": "52.2448374",
+        "HomeMarkerLng": "10.477203"
+    },
+    "Mail": {
+        "senderMail": "demo@weinekind.de",
+        "senderName": "DEMO Intranet"
+    },
+    "Links": {
+        "imprint": "<Link to imprint>",
+        "disclaimer": "<Link to disclaimer>"
+    },
+    "Social": {
+        "socialFacebook": "## link to facebook",
+        "socialYoutube": "https:\/\/www.youtube.com\/channel\/UCJhuBsKc55YdTNznSORIEQg",
+        "socialHomepage": "http:\/\/www.bc-comet.de",
+        "socialTwitter": ""
+    },
+    "Settings": {
+        "tournamentEnable": "on"
+    },
+    "tournament": {
+        "classes": [
+            "U9",
+            "U11",
+            "U13",
+            "U15",
+            "U17",
+            "U19",
+            "U22",
+            "O19",
+            "O35",
+            "O40",
+            "O45",
+            "O50",
+            "O55",
+            "O60",
+            "O65",
+            "O70",
+            "O75"
+        ],
+        "modes": [
+            "HE",
+            "JE",
+            "DE",
+            "ME",
+            "HD",
+            "JD",
+            "DD",
+            "MD",
+            "GD"
+        ]
+    },
+    "rankingEnable": {
+        "RankingEnabled": "on",
+        "rankingstats": "off"
+    },
+    "Support": {
+        "receiverEmail": "stefan@weinekind.de",
+        "receiverName": "Stefan Metzner"
+    },
+    "Login": {
+        "registerEnabled": "off"
+    },
+    "Faq": {
+        "faqEnabled": "off"
+    },
+    "Notification": {
+        "notificationEnable": "off"
+    },
+    "News": {
+        "newsEnable": "off"
+    }
+}

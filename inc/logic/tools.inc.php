@@ -14,6 +14,7 @@
 
 include_once $_SERVER['BASE_DIR'] .'/smarty/libs/Smarty.class.php';
 include_once $_SERVER['BASE_DIR'] .'/inc/db/brdb.inc.php';
+include_once $_SERVER['BASE_DIR'] .'/inc/exception/badtra.exception.php';
 
 # libary
 require_once $_SERVER['BASE_DIR'] .'/vendor/autoload.php';
@@ -27,11 +28,8 @@ use Nette\Mail\Message;
  */
 class Tools {
     /* Private */
-    /** Tournament mode **/
-    private $ageClassArr = array('U9', 'U11', 'U13', 'U15', 'U17', 'U19', 'U22', 'O19', 'O35', 'O40', 'O45', 'O50', 'O55', 'O60', 'O65', 'O70', 'O75');
-    private $modeArr     = array('HE', 'JE', 'DE', 'ME', 'HD', 'JD', 'DD', 'MD', 'GD');
-
-
+    private $ageClassArr = array("U9", "U11", "U13", "U15", "U17", "U19", "U22", "O19", "O35", "O40", "O45", "O50", "O55", "O60", "O65", "O70", "O75");
+    private $modes = array("HE", "JE", "DE", "ME", "HD", "JD", "DD", "MD", "GD");
     private $ini;
 
     private $brdb;
@@ -39,6 +37,12 @@ class Tools {
     public function __construct() {
         // load ini
         $this->ini = self::getIni();
+
+        // set class for tournmanet
+        # = $this->getIniValue("classes"); //["classes"];
+        #echo($this->ageClassArr);
+        #die();
+        #usort($this->ageClassArr, array('Tools','cmpSortAgeClass'));
 
     }
 
@@ -79,12 +83,23 @@ class Tools {
 
     private function getIni() {
         $file =  $_SERVER['BASE_DIR'] .'/inc/config.ini';
-      # debug
-      #$backtrace = debug_backtrace();
-      #echo "<pre>";
-      #print_r( $backtrace );
+        # debug
+        #$backtrace = debug_backtrace();
+        #echo "<pre>";
+        #print_r( $backtrace );
 
       return parse_ini_file($file, true);
+    }
+
+    private function getConfigFile() {
+        $file   =  $_SERVER['BASE_DIR'] .'/inc/config.json';
+        if (!file_exists($file)) {
+            throw new BadtraException("File is missing", "Config file not found");
+            return array();
+        }
+        $string = file_get_contents($file);
+
+        return json_decode($string, true);
     }
 
     public function getIniValue($val = "") {
@@ -105,6 +120,7 @@ class Tools {
       return count($returnValues) > 1 ? $returnValues : $returnValues[0];
 
     }
+
 
     function secure_array(&$array) {
     // this function secures the content of an array against SQL injection and HTML code injection attacks
@@ -146,8 +162,6 @@ class Tools {
 
 
     public function getAgeClassArray() {
-        //sort($this->ageClassArr);
-        usort($this->ageClassArr, array('Tools','cmpSortAgeClass'));
         return $this->ageClassArr;
     }
 
@@ -188,8 +202,7 @@ class Tools {
     //////////////////////////////////////// ** MODE
 
     public function getModeArr() {
-        sort($this->modeArr);
-        return $this->modeArr;
+        return sort($this->getIniValue("tournament")["modes"]);
     }
 
     /**
