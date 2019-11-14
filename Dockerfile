@@ -3,9 +3,9 @@
 #
 FROM php:7.2-apache
 
-MAINTAINER Stefan Metzner "stefan@weinekind.de"
+LABEL maintainer="Stefan Metzner <stefan@weinekind.de>"
+LABEL version="1.0.6.4"
 
-ARG ACCESS_TOKEN="2a806806979e1e8ae0bc51af93dd6bc6a9782098"
 ARG COMPOSER_MD5="a5c698ffe4b8e849a443b120cd5ba38043260d5c4023dbf93e1558871f1f07f58274fc6f4c93bcfd858c6bd0775cd8d1"
 
 # install os requirements
@@ -22,7 +22,7 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# install php extentions
+# install php requirements
 RUN docker-php-ext-install -j$(nproc) iconv \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd \
@@ -47,12 +47,15 @@ RUN test -f index.html && rm index.html || true
 COPY html/ /var/www/html/
 
 # REMOVE
-RUN rm -rf .git* templates_c/*
+RUN rm -rf .git* \
+    templates_c/* \
+    Tests \
+    /var/www/html/inc/config.ini \
+    /var/www/html/static/img/background.jpg \
+    /var/www/html/static/img/background_mobil.jpg
 
-RUN chmod -R 755 .
-RUN chown -R www-data:www-data .
-
-
+# set rights
+RUN chmod -R 755 . && chown -R www-data:www-data .
 
 # install composer
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
@@ -60,32 +63,22 @@ RUN php -r "if (hash_file('sha384', 'composer-setup.php') === ${COMPOSER_MD5}) {
 RUN php composer-setup.php --install-dir=/usr/local/bin --filename=composer
 RUN php -r "unlink('composer-setup.php');"
 
-
 USER www-data
 WORKDIR /var/www/html/
-
 
 # install composer requiredments
 ## parse md-files
 RUN composer install
 
-#UNSET ARGS
-ARG ACCESS_TOKEN=""
-
 USER root
-
-# Ports
-EXPOSE 80
-
-# if file is available
-RUN rm -rf /var/www/html/inc/config.ini \
-    /var/www/html/static/img/background.jpg \
-    /var/www/html/static/img/background_mobil.jpg
 
 # Volumes
 VOLUME /var/www/html/inc/config.ini
 VOLUME /var/www/html/static/img/background.jpg
 VOLUME /var/www/html/static/img/background_mobil.jpg
+
+# Ports
+EXPOSE 80
 
 ENTRYPOINT [ "/usr/sbin/apache2ctl" ]
 
