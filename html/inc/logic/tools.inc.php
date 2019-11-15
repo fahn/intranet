@@ -202,7 +202,10 @@ class Tools {
     //////////////////////////////////////// ** MODE
 
     public function getModeArr() {
-        return sort($this->modes);
+        if (is_array($this->modes)) {
+            asort($this->modes);
+        }
+        return $this->modes;
     }
 
     /**
@@ -288,7 +291,7 @@ class Tools {
 
         }
         $addParams = "";
-        if(count($urlArr) > 0) {
+        if(is_array($urlArr) && count($urlArr) > 0) {
             $addParams = "?". implode("&", $urlArr);
         }
 

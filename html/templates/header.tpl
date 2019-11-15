@@ -39,6 +39,10 @@
 
     <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 
+    <!-- include summernote css/js -->
+    <link href="/static/css/summernote-bs4.css" rel="stylesheet">
+    <script src="/static/js/summernote-bs4.js"></script>
+
 
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements. All other JS at the end of file. -->
     <!--[if lt IE 9]>

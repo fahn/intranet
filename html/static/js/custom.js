@@ -19,7 +19,7 @@ $(document).ready(function() {
     /**
      * wsgyi editor
      */
-    if (typeof summernote === "function") {
+    //if (typeof summernote === "function") {
         /* html editor */
         $('#summernote').summernote({
             placeholder: '',
@@ -27,8 +27,18 @@ $(document).ready(function() {
             height: 150,
             lang: 'de-DE',
             codeview: false,
+            toolbar: [
+                // [groupName, [list of button]]
+                ['style', ['style', 'bold', 'italic', 'underline', 'clear']],
+                ['font', ['strikethrough', 'superscript', 'subscript']],
+                ['fontsize', ['fontsize']],
+                ['color', ['color']],
+                ['insert', ['link']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['height', ['height']]
+              ]
         });
-    }
+//}
 
 
 

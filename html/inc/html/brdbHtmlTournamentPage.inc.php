@@ -111,6 +111,7 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
 
 
     private function updateTournamentTMPL($id, $action = 'add') {
+
         $classificationArr = $this->valueIsKey($this->tools->getAgeClassArray());
         $disciplineArr     = $this->valueIsKey($this->tools->getModeArr());
         $reportArr         = $this->getAllUser();
