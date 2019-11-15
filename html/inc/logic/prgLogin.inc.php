@@ -161,7 +161,7 @@ class PrgPatternElementLogin extends APrgPatternElement {
             'name' => $name,
             'link' => $link,
         );
-        die($link);
+
         $message   = '';
         if(!$this->tools->sendMail($mail, $name, $subject, 'Dein Passwort wurde angefordert', $message, $assign, 'htmlmail/request_password.tpl')) {
             $this->setFailedMessage("Fehler beim E-Mail-Versand.");

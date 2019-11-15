@@ -64,7 +64,6 @@ trait PlayerDB {
 
     public function updatePlayer($data) {
         try {
-            #die(var_dump($data));
             extract($data);
             $sql = "UPDATE Player set
                         firstName = ?,

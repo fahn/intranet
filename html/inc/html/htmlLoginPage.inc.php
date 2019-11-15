@@ -93,8 +93,8 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
             $this->tools->customRedirect(array(
               'page' => 'index.php',
             ));
-            die();
         }
+        return
     }
 
     private function loadSettings() {

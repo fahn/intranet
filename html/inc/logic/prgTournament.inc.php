@@ -242,7 +242,6 @@ class PrgPatternElementTournament extends APrgPatternElement {
         $p1    = $resP1->fetch_assoc();
         
         if (! $this->checkPlayerAndDisciplin($p1, $tmp_disziplin, 1)) {
-            die(var_dump($p1));
           $this->setFailedMessage(sprintf("Falsche Diziplin für Spieler %s %s", $p1['firstName'], $p1['lastName']));
           return;
         }
