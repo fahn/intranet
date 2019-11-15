@@ -94,7 +94,7 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
               'page' => 'index.php',
             ));
         }
-        return
+        return;
     }
 
     private function loadSettings() {
