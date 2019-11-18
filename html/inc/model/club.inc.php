@@ -43,6 +43,14 @@ class Club {
         return $this->association;
     }
 
+    public function getClubArray() {
+        return array(
+            'clubNr'      => $this->getClubNr(),
+            'clubName'    => $this->getClubName(),
+            'association' => $this->getAssociation(),
+        );
+    }
+
     /**
      * Print Club
      */

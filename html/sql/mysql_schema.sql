@@ -63,7 +63,7 @@ CREATE TABLE `Club` (
   `visible` int(1) DEFAULT '1',
   `name` text NOT NULL,
   `clubNr` text NOT NULL,
-  `association` varchar(10) NOT NULL
+  `association` varchar(10)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 ALTER TABLE `Club` ADD PRIMARY KEY (`clubId`);
