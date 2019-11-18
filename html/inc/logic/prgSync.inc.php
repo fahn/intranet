@@ -26,6 +26,9 @@ class PrgPatternElementSync extends APrgPatternElement {
     private $brdb;
     protected $prgElementLogin;
 
+    private $prgPatternElementClub;
+    private $prgPatternElementPlayer;
+
     // links
     private const API_HOST            = "https://api.badtra.de/";
     private const API_LIST_CLUB       = "https://api.badtra.de/club/list";
@@ -42,12 +45,17 @@ class PrgPatternElementSync extends APrgPatternElement {
         $this->prgElementLogin = $prgElementLogin;
 
         #$this->statistics
+        $this->prgPatternElementClub = new PrgPatternElementClub($this->brdb, $this->prgElementLogin);
+
+        $this->prgPatternElementPlayer = new PrgPatternElementPlayer($this->brdb, $this->prgElementLogin);
     }
 
     public function processPost() {
         $isUserLoggedIn = $this->prgElementLogin->isUserLoggedIn();
         $isUserAdmin    = $this->prgElementLogin->getLoggedInUser()->isAdmin();
         $isUserReporter = $this->prgElementLogin->getLoggedInUser()->isReporter();
+
+
 
         // Don't process the posts if no user is logged in!
         // otherwise well formed post commands could trigger database actions
@@ -72,26 +80,31 @@ class PrgPatternElementSync extends APrgPatternElement {
 
         $file = file_get_contents(self::API_LIST_CLUB, false, $this->arrContextOptions());
         $data = json_decode($file);
+
         unset($file);//prevent memory leaks for large json.
 
-        $records = $data->clubs->records;
+        $records = $data->records;
         if ($records) {
             foreach($records as $item) {
                 try {
                     $club = new Club($item);
                     if (! $this->prgPatternElementClub->find($club)) {
-                        $this->prgPatternElementClub->insert($item);
+                        $this->prgPatternElementClub->insert($club);
                         $statistics['new']++;
                     } else {
                         $this->prgPatternElementClub->update($club);
                         $statistics['updated']++;
                     }
+                    return;
                 } catch (Exception $e) {
                     $statistics['failed']++;
                 }
             }
             $this->statistics['clubs'] = $statistics;
         }
+
+        print_r($this->statistics);
+        die();
         return;
     }
 
@@ -216,6 +229,9 @@ class PrgPatternElementSync extends APrgPatternElement {
                 'verify_peer' => false,
                 'verify_peer_name' => false,
             ],
+            'http' => [
+                'timeout' => 5
+            ]
         ]);
 
         $file_headers = @get_headers(self::API_HOST, 1);
@@ -228,7 +244,7 @@ class PrgPatternElementSync extends APrgPatternElement {
         $this->syncClubs();
 
         // sync Player
-        $this->syncPlayer();
+        //$this->syncPlayer();
 
         // sync Tournmanet
         // $this->syncTournament();

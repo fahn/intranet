@@ -49,7 +49,7 @@ trait ClubDB {
 
      public function insertClubByModel($club) {
          $cmd = $this->db->prepare("INSERT INTO Club (name, clubNr, association) VALUES (?, ?, ?)");
-         $cmd->bind_param("sss", $name, $number, $association);
+         $cmd->bind_param("sss", $club['clubName'], $club['clubNr'], $club['association']);
 
          return $this->executeStatement($cmd);
      }

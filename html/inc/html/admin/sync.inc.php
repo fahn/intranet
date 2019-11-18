@@ -47,12 +47,6 @@ class BrdbHtmlAdminSyncPage extends BrdbHtmlPage {
         $this->prgPatternElementSync = new PrgPatternElementSync($this->brdb, $this->prgPatternElementLogin);
         $this->prgPattern->registerPrg($this->prgPatternElementSync);
 
-
-        $this->prgPatternElementClub = new PrgPatternElementClub($this->brdb, $this->prgPatternElementLogin);
-        $this->prgPattern->registerPrg($this->prgPatternElementClub);
-
-        $this->prgPatternElementPlayer = new PrgPatternElementPlayer($this->brdb, $this->prgPatternElementLogin);
-        $this->prgPattern->registerPrg($this->prgPatternElementPlayer);
     }
 
 

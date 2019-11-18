@@ -191,7 +191,6 @@ class PrgPatternElementClub extends APrgPatternElement {
 
     public function find($item) {
         if ($item instanceof Club) {
-            echo "**";
             $res = $this->brdb->selectClubByClubNr($item->getClubNr());
             $tmp = array();
             if ($this->brdb->hasError()) {
@@ -203,10 +202,12 @@ class PrgPatternElementClub extends APrgPatternElement {
         return false;
     }
 
-    public function insert($item) {
-        if ($item instanceof Club) {
+    public function insert($club) {
+        if ($club instanceof Club) {
+            $item = $club->getClubArray();
             $res = $this->brdb->insertClubByModel($item);
             if ($this->brdb->hasError()) {
+                echo "#";
                 return false;
             }
             return true;
