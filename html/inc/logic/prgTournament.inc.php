@@ -214,7 +214,7 @@ class PrgPatternElementTournament extends APrgPatternElement {
                 return;
             }
 
-        $id = $this->tools->get("id");
+        $id            = $this->tools->get("id");
 
         $player        = $this->getPostVariable(self::FORM_INPUT_PLAYER);
         $partner       = $this->getPostVariable(self::FORM_INPUT_PARTNER);
@@ -240,7 +240,7 @@ class PrgPatternElementTournament extends APrgPatternElement {
         // check player p1
         $resP1 = $this->brdb->selectPlayerById($player);
         $p1    = $resP1->fetch_assoc();
-        
+
         if (! $this->checkPlayerAndDisciplin($p1, $tmp_disziplin, 1)) {
           $this->setFailedMessage(sprintf("Falsche Diziplin für Spieler %s %s", $p1['firstName'], $p1['lastName']));
           return;
@@ -280,9 +280,9 @@ class PrgPatternElementTournament extends APrgPatternElement {
       if ((!isset($player) && !is_array($player)) || ($first != 1 && $first != 2)) {
         return 0;
       }
-      
+
       $discipline = explode(" ", $discipline);
-      
+
       switch ($discipline[0]) {
         case 'HE':
         case 'JE':

@@ -38,9 +38,10 @@ trait PlayerDB {
     }
 
     public function selectPlayerByPlayerNr($playerNr) {
-        $sql = "SELECT Player.*, Club.name AS clubName FROM Player
-                LEFT JOIN `Club` ON Club.clubId = Player.clubId
-                WHERE playerNr = ? ";
+        if (empty($playerNr)) {
+            return false;
+        }
+        $sql = "SELECT * FROM Player WHERE playerNr = ? ";
         $cmd = $this->db->prepare($sql);
         $cmd->bind_param("s", $playerNr);
 
@@ -51,10 +52,11 @@ trait PlayerDB {
 
     public function insertPlayer($data) {
         try {
+
             extract($data);
-            $sql = "INSERT INTO Player (playerNr, clubId, firstName, lastName, gender, bday) VALUES (?,?,?, ?, ?, ?)";
+            $sql = "INSERT INTO Player (playerNr, clubId, firstName, lastName, gender) VALUES (?,?,?,?,?)";
             $cmd = $this->db->prepare($sql);
-            $cmd->bind_param("sissss", $playerNr, $clubId, $firstName, $lastName, $gender, $bday);
+            $cmd->bind_param("sisss", $playerNr, $clubId, $firstName, $lastName, $gender);
 
             return $this->executeStatement($cmd);
         } catch (Exception $e) {

@@ -71,7 +71,7 @@ class User {
             $this->isReporter = boolval($dataSet[self::USER_CLM_REPORTER]);
             $this->passHash   = strval($dataSet[self::USER_CLM_PASS]);
             $this->playerId   = strval($dataSet[self::USER_CLM_PLAYERID]);
-            $this->clubId     = strval($dataSet[self::USER_CLM_CLUBID]);
+            //$this->clubId     = intval($dataSet[self::USER_CLM_CLUBID]);
             $this->phone      = strval($dataSet[self::USER_CLM_PHONE]);
             $this->bday       = strval($dataSet[self::USER_CLM_BDAY]);
             $this->clubName   = "";
@@ -87,7 +87,7 @@ class User {
             $this->isReporter = false;
             $this->passHash   = "N/A";
             $this->playerId   = "";
-            $this->clubId     = "";
+            //$this->clubId     = 0;
             $this->clubName   = "";
             $this->phone      = "";
             $this->bday       = "";

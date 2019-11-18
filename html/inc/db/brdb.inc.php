@@ -156,6 +156,8 @@ class BrankDB {
         }
         return $statement->get_result();
     }
+
+    
 }
 
 ?>

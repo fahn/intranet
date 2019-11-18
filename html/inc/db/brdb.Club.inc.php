@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /*******************************************************************************
  * Badminton Intranet System
  * Copyright 2017-2019
@@ -24,9 +26,9 @@ trait ClubDB {
         return $this->executeStatement($cmd);
     }
 
-    public function selectClubByClubNr($clubNr) {
-        $cmd = $this->db->prepare("SELECT * FROM Club WHERE clubNr = ? LIMIT 1");
-        $cmd->bind_param("i", $clubNr);
+    public function selectClubByClubNr(string $clubNr) {
+        $cmd = $this->db->prepare("SELECT * FROM Club WHERE clubNr = ?");
+        $cmd->bind_param("s", $clubNr);
 
         return $this->executeStatement($cmd);
     }
@@ -46,13 +48,18 @@ trait ClubDB {
 
          return $this->executeStatement($cmd);
      }
-
+     /*
      public function insertClubByModel($club) {
-         $cmd = $this->db->prepare("INSERT INTO Club (name, clubNr, association) VALUES (?, ?, ?)");
-         $cmd->bind_param("sss", $club['clubName'], $club['clubNr'], $club['association']);
 
-         return $this->executeStatement($cmd);
+         $statement = $this->db->prepare('INSERT INTO Club (name, clubNr, association) VALUES (:clubName, :clubNr, :association)');
+         $statement->bindParam('clubName', $club['clubName']);
+         $statement->bindParam('clubNr', $club['clubNr']);
+         $statement->bindParam('association', $club['association']);
+
+         return $this->executeStatement($statement);
      }
+     */
+
 
     /**
      * update club by Id
@@ -69,9 +76,9 @@ trait ClubDB {
          return $this->executeStatement($cmd);
      }
 
-     public function updateClubByClubNr($clubNr, $name, $association) {
+     public function updateClubByClubNr($clubNr, $clubName, $association) {
          $cmd = $this->db->prepare("UPDATE Club set name = ?, association = ? WHERE clubNr = ?");
-         $cmd->bind_param("sss", $name, $association, $clubNr);
+         $cmd->bind_param("sss", $clubName, $association, $clubNr);
 
          return $this->executeStatement($cmd);
      }
@@ -86,8 +93,9 @@ trait ClubDB {
         if($min != $max) {
             $cmd = $this->db->prepare("SELECT * FROM Club ORDER by sort, name LIMIT ?,?");
             $cmd->bind_param("ii", $min, $max);
+            #echo $min;
         } else {
-            $cmd = $this->db->prepare("SELECT * FROM Club ORDER by sort, name ASC ");
+            $cmd = $this->db->prepare("SELECT * FROM Club ORDER by sort, name ASC");
         }
 
         return $this->executeStatement($cmd);

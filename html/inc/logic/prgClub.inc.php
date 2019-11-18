@@ -191,13 +191,13 @@ class PrgPatternElementClub extends APrgPatternElement {
 
     public function find($item) {
         if ($item instanceof Club) {
-            $res = $this->brdb->selectClubByClubNr($item->getClubNr());
-            $tmp = array();
+            $clubNr = $item->getClubNr();
+            $res    = $this->brdb->selectClubByClubNr($clubNr);
             if ($this->brdb->hasError()) {
                 return false;
             }
 
-            return $res->num_rows == 1 ? true : false;
+            return $res->num_rows > 0 ? true : false;
         }
         return false;
     }
@@ -205,9 +205,8 @@ class PrgPatternElementClub extends APrgPatternElement {
     public function insert($club) {
         if ($club instanceof Club) {
             $item = $club->getClubArray();
-            $res = $this->brdb->insertClubByModel($item);
+            $res = $this->brdb->insertClub($item['clubName'], $item['clubNr'], $item['association']);
             if ($this->brdb->hasError()) {
-                echo "#";
                 return false;
             }
             return true;
@@ -217,7 +216,11 @@ class PrgPatternElementClub extends APrgPatternElement {
 
     public function update($item) {
         if ($item instanceof Club) {
-            $res = $this->brdb->updateClubByClubNr($item->getClubNr(), $item->getClubName(), $item->getAssociation());
+            $clubNr      = $item->getClubNr();
+            $clubName    = $item->getClubName();
+            $association = $item->getAssociation();
+
+            $res = $this->brdb->updateClubByClubNr($clubNr, $clubName, $association);
             if ($this->brdb->hasError()) {
                 return false;
             }
