@@ -1,4 +1,5 @@
 <?php
+
 /*******************************************************************************
  * Badminton Intranet System
  * Copyright 2017-2019
@@ -51,7 +52,7 @@ class PrgPatternElementPlayer extends APrgPatternElement {
 
     protected $brdb;
 
-    public function __construct() {
+    public function __construct(BrankDB $brdb, PrgPatternElementLogin $prgElementLogin) {
         parent::__construct("player");
 
         $this->registerPostSessionVariable(self::FORM_PLAYER_PLAYERID);
@@ -68,8 +69,6 @@ class PrgPatternElementPlayer extends APrgPatternElement {
         // load Login
         $this->prgElementLogin = $prgElementLogin;
 
-        #echo $loginAction;
-        #die(print_r($_POST));
     }
 
     public function processPost() {
@@ -128,7 +127,7 @@ class PrgPatternElementPlayer extends APrgPatternElement {
 
 
       $data = array(
-          'clubid'    => $this->getPostVariable(self::FORM_PLAYER_CLUBID),
+          'clubId'    => $this->getPostVariable(self::FORM_PLAYER_CLUBID),
           'firstName' => $this->getPostVariable(self::FORM_PLAYER_FIRSTNAME),
           'lastName'  => $this->getPostVariable(self::FORM_PLAYER_LASTNAME),
           'gender'    => $this->getPostVariable(self::FORM_PLAYER_GENDER),
@@ -256,8 +255,8 @@ class PrgPatternElementPlayer extends APrgPatternElement {
 
     public function find($item) {
         if ($item instanceof Player) {
-            $res = $this->brdb->selectPlayerByPlayerNr($item->getPlayerNr());
-            $tmp = array();
+            $playerNr = $item->getPlayerNr();
+            $res      = $this->brdb->selectPlayerByPlayerNr($playerNr);
             if ($this->brdb->hasError()) {
                 return false;
             }
@@ -265,11 +264,15 @@ class PrgPatternElementPlayer extends APrgPatternElement {
             return $res->num_rows == 1 ? true : false;
         }
         return false;
+
     }
 
-    public function insert($item) {
-        if ($item instanceof Player) {
-            $res = $this->brdb->insertPlayer($item->getSqlData());
+
+
+    public function insert($player) {
+        if ($player instanceof Player) {
+            $arr = $player->getSqlData();
+            $res = $this->brdb->insertPlayer($arr);
             if ($this->brdb->hasError()) {
                 return false;
             }

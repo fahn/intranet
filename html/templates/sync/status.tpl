@@ -1,7 +1,7 @@
 <h1 class="display-1 mb-5">Sync</h1>
 
 <div class="alert alert-danger">
-    <p>Funktioniert atm nicht ! Bitte nicht starten</p>
+    <p>Aktuell Funktioniert nur Clubs und Spieler zur Syncronisation.</p>
 </div>
 
 <p class="text-center mb-5">

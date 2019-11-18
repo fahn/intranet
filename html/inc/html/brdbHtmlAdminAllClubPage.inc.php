@@ -77,11 +77,11 @@ class BrdbHtmlAdminAllClubPage extends BrdbHtmlPage {
     }
 
   public function loadClubList($page = 0) {
-    $this->countRows = $this->brdb->selectAllClubs()->num_rows;
-    $max = self::MAX_ENTRIES*(1+$page);
-    $min = $max - self::MAX_ENTRIES;
+    #echo $this->countRows = $this->brdb->selectAllClubs()->num_rows;
+    #$max = self::MAX_ENTRIES*(1+$page);
+    #$min = $max - self::MAX_ENTRIES;
 
-    $res = $this->brdb->selectAllClubs($min, $max);
+    $res = $this->brdb->selectAllClubs(); #$min, $max);
     $loop = array();
     if (!$this->brdb->hasError()) {
       while ($dataSet = $res->fetch_assoc()) {

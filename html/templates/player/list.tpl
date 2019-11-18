@@ -23,10 +23,13 @@
                 <td>{$user.lastName}</td>
                 <td>{$user.playerNr}</td>
                 <td>{$user.clubName}</td>
-                <td>{$user.gender}</td>
+                <td class="text-center">{if $user.gender == "Male"}<i class="fas fa-male"></i>{else}<i class="fas fa-female"></i>{/if}</td>
                 <td class="text-center">
-                    <a class="btn btn-info" href="?action=edit&id={$user.userId}">Editieren</a>
-                    <a class="btn btn-danger" href="?action=delete&id={$user.userId}">Löschen</a>
+                    <!--
+                    <a class="btn btn-info" href="?action=edit&id={$user.playerId}">Editieren</a>
+                    <a class="btn btn-danger" href="?action=delete&id={$user.playerId}">Löschen</a>
+                    -->
+                    coming soon
                 </td>
             </tr>
             {foreachelse}

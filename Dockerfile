@@ -33,7 +33,7 @@ RUN docker-php-ext-install -j$(nproc) iconv \
     && docker-php-ext-enable mysqli
 
 # set msmtp as sendmail
-RUN echo "sendmail_path = /usr/bin/msmtp -t" > /usr/local/etc/php/conf.d/docker-php-sendmail.ini &&
+RUN echo "sendmail_path = /usr/bin/msmtp -t" > /usr/local/etc/php/conf.d/docker-php-sendmail.ini && \
     echo "max_execution_time 120" > /usr/local/etc/php/conf.d/docker-php-intranet.ini
 
 # enable modules for apache

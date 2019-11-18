@@ -269,7 +269,11 @@ abstract class APrgPatternElement implements IPrgPatternElement {
     }
 
     public function getGetVariable($variableName) {
-        return Tools::escapeInput($_GET[$variableName]);
+        if (isset($_GET[$variableName])) {
+            return Tools::escapeInput($_GET[$variableName]);
+        } else {
+            return "";
+        }
     }
 
     public function issetGetVariable($variableName) {

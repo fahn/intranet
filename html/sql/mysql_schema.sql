@@ -47,7 +47,7 @@ CREATE TABLE `Player` (
   `firstName` varchar(64) NOT NULL,
   `lastName` varchar(64) NOT NULL,
   `gender` enum('Male','Female') NOT NULL DEFAULT 'Male',
-  `bday` date NOT NULL
+  `bday` date
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 ALTER TABLE `Player` ADD PRIMARY KEY (`playerId`);
@@ -141,7 +141,7 @@ CREATE TABLE `TournamentPlayer` (
   `locked` tinyint(1) NOT NULL DEFAULT '0',
   `fillingDate` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `reporterId` int(11) NOT NULL,
-  `message` text NOT NULL
+  `message` text
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 

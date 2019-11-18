@@ -32,8 +32,8 @@ class PrgPatternElementSync extends APrgPatternElement {
     // links
     private const API_HOST            = "https://api.badtra.de/";
     private const API_LIST_CLUB       = "https://api.badtra.de/club/list";
-    private const API_LIST_PLAYER     = "https://api.badtra.de/player/list.php";
-    private const API_LIST_TOURNAMENT = "https://api.badtra.de/tournament/list.php";
+    private const API_LIST_PLAYER     = "https://api.badtra.de/player/list";
+    private const API_LIST_TOURNAMENT = "https://api.badtra.de/tournament/list";
 
     // statistics
     private $statistics = array('clubs' => '', 'player' => '', 'tournaments' => '');
@@ -83,8 +83,9 @@ class PrgPatternElementSync extends APrgPatternElement {
 
         unset($file);//prevent memory leaks for large json.
 
-        $records = $data->records;
-        if ($records) {
+
+        if (isset($data) && isset($data->records)) {
+            $records = $data->records;
             foreach($records as $item) {
                 try {
                     $club = new Club($item);
@@ -95,7 +96,6 @@ class PrgPatternElementSync extends APrgPatternElement {
                         $this->prgPatternElementClub->update($club);
                         $statistics['updated']++;
                     }
-                    return;
                 } catch (Exception $e) {
                     $statistics['failed']++;
                 }
@@ -103,8 +103,6 @@ class PrgPatternElementSync extends APrgPatternElement {
             $this->statistics['clubs'] = $statistics;
         }
 
-        print_r($this->statistics);
-        die();
         return;
     }
 
@@ -116,12 +114,13 @@ class PrgPatternElementSync extends APrgPatternElement {
         $data = json_decode($file);
         unset($file);//prevent memory leaks for large json.
 
-        $records = $data->player->records;
+        $records = $data->records;
         if ($records) {
             foreach($records as $item) {
                 if (empty($item->playerNr)) {
                     continue;
                 }
+
                 try {
                     $clubData = $this->brdb->selectClubByClubNr($item->clubNr)->fetch_assoc();
                     $item->clubId = $clubData['clubId'];
@@ -149,19 +148,24 @@ class PrgPatternElementSync extends APrgPatternElement {
 
         $file = file_get_contents(self::API_LIST_TOURNAMENT, false, $this->arrContextOptions());
         $data = json_decode($file);
+
         unset($file);//prevent memory leaks for large json.
 
-        $records = $data->player->records;
+        $records = $data->records;
         if ($records) {
             foreach($records as $item) {
+                print_r($item);
+                die();
                 if (empty($item->playerNr)) {
                     continue;
                 }
                 try {
-                    $clubData = $this->brdb->selectClubByClubNr($item->clubNr)->fetch_assoc();
+                    echo $clubNr = $item->getClubNr();
+                    $clubData = $this->brdb->selectClubByClubNr($clubNr)->fetch_assoc();
                     $item->clubId = $clubData['clubId'];
 
                     $player = new Player($item);
+                    echo $player;
 
                     if (! $this->prgPatternElementPlayer->find($player)) {
                         $this->prgPatternElementPlayer->insert($player);
@@ -185,6 +189,10 @@ class PrgPatternElementSync extends APrgPatternElement {
                         "verify_peer"=>false,
                         "verify_peer_name"=>false,
                     ),
+                    'http'=>array(
+                        'method'=>"GET",
+                        'header'=>"Content-Type: application/json"
+                      )
                 ));
     }
 
@@ -244,7 +252,7 @@ class PrgPatternElementSync extends APrgPatternElement {
         $this->syncClubs();
 
         // sync Player
-        //$this->syncPlayer();
+        $this->syncPlayer();
 
         // sync Tournmanet
         // $this->syncTournament();

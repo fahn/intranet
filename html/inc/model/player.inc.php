@@ -64,7 +64,7 @@ class Player {
             'firstName' => $this->firstName,
             'lastName'  => $this->lastName,
             'gender'    => $this->gender,
-            'bday'      => $this->bday,
+            //'bday'      => $this->bday,
         );
     }
 
