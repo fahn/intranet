@@ -22,7 +22,7 @@
                             {$tournament.startdate|date_format:"d.m.y"} - {$tournament.enddate|date_format:"d.m.y"}
                         {/if}
                     </td> <td>{$tournament.place}</td>
-                    <td>{if $tournament.participant > 0}<span class="badge badge-success" data-toggle="tooltip" data-placement="bottom" title="{$tournament.participant} Teilnehmer">{$tournament.participant}</span>{else}-{/if}</td>
+                    <td>{if $tournament.participant && $tournament.participant > 0}<span class="badge badge-success" data-toggle="tooltip" data-placement="bottom" title="{$tournament.participant} Teilnehmer">{$tournament.participant}</span>{else}-{/if}</td>
                 </tr>
                 {foreachelse}
                 <tr>
