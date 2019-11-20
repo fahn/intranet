@@ -21,7 +21,7 @@
 
 {literal}
 <style>
-    <!-- 
+    <!--
     img.active {
         border: 3px solid green !important;
     }

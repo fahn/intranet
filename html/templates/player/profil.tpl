@@ -21,7 +21,7 @@
                                 {if $player.playerNr}
                                     <p><strong>Spielernummer:</strong> {$player.playerNr}</p>
                                 {/if}
-    
+
                                 {if $player.clubName}
                                     <p><strong>Verein: </strong> {$player.clubName}</p>
                                 {/if}
@@ -32,7 +32,7 @@
             </div>
         </div>
     </div>
-    
+
     <p class="text-right">
       <a class="btn btn-danger" href="javascript:history.back()">Zurück</a>
     </p>

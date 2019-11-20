@@ -18,7 +18,7 @@
                 <td>{$tournament.classification}</td>
                 <td><a class="text-{if $smarty.now < $tournament.deadline|strtotime}success{else}danger{/if}" href="?action=details&id={$tournament.tournamentId}">{$tournament.name}</a></td>
                 <td>{$tournament.place}</td>
-                <td>1
+                <td>
                     {if $tournament.startdate|date_format:"d.m.y" == $tournament.enddate|date_format:"d.m.y"}
                         {$tournament.startdate|date_format:"%d.%m.%Y"}
                     {else}

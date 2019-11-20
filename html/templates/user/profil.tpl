@@ -1,5 +1,5 @@
 {if !$user}
-    <div class="alert alert-danger text-center">Bitte wählen Sie einen gültigen User aus</div>
+    <div class="alert alert-danger text-center">Bitte wï¿½hlen Sie einen gï¿½ltigen User aus</div>
 {else}
 
     {if $user.userId == $userId || $isAdmin}
@@ -86,6 +86,6 @@
     </div>
     
     <p class="text-right">
-      <a class="btn btn-danger" href="javascript:history.back()">Zurück</a>
+      <a class="btn btn-danger" href="javascript:history.back()">Zurï¿½ck</a>
     </p>
 {/if}
