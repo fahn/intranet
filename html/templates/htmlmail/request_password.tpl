@@ -291,7 +291,7 @@
                   <table border="0" cellpadding="0" cellspacing="0">
                     <tr>
                       <td style="margin-bottom: 20px">
-                        <img src="/static/img/mail_logo.png" alt="Logo" title="LOGO">
+                        <img src="{$baseUrl}/static/img/mail_logo.png" alt="Logo" title="LOGO">
                       </td>
                     </tr>
                     <tr>
