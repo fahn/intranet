@@ -34,7 +34,7 @@ RUN docker-php-ext-install -j$(nproc) iconv \
 
 # set msmtp as sendmail
 RUN echo "sendmail_path = /usr/bin/msmtp -t" > /usr/local/etc/php/conf.d/docker-php-sendmail.ini && \
-    echo "max_execution_time 120" > /usr/local/etc/php/conf.d/docker-php-intranet.ini
+    echo -e "max_execution_time 120\npost_max_size 20M\nupload_max_filesize 20M\n" > /usr/local/etc/php/conf.d/docker-php-intranet.ini
 
 # enable modules for apache
 RUN a2enmod http2 expires deflate rewrite session
