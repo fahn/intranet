@@ -158,8 +158,9 @@ class PrgPatternElementLogin extends APrgPatternElement {
         ));
 
         $assign    = array(
-            'name' => $name,
-            'link' => $link,
+            'name'    => $name,
+            'link'    => $link,
+            'baseUrl' => $this->tools->getIniValue('baseUrl'),
         );
 
         $message   = '';

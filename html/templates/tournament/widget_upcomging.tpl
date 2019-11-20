@@ -13,10 +13,16 @@
                 {foreach item=tournament from=$data}
                 <tr>
                     <td>{$tournament.classification}</td>
-                    <td><a {if $tournament.deadline|strtotime < $smarty.now}class="text-danger"{else}class="text-success"{/if} href="{$tournament.linkTo}" title="{$tournament.name}: vom {$tournament.startdate|date_format:"d.m.y"} - {$tournament.enddate|date_format:'d.m.y'}">{$tournament.name}</a></td>
-                    <td {if $tournament.deadline|strtotime < $smarty.now}class="text-danger"{else} class="text-success"{/if}>{if $tournament.startdate == $tournament.enddate}{$tournament.startdate|date_format:"d.m.y"}{else}{$tournament.startdate|date_format:"d.m.y"} - {$tournament.enddate|date_format:"d.m.y"}{/if}</td>
-                    <td>{$tournament.place}</td>
-                    <td>{if $tournament.participant > 0}<span class="badge badge-success" data-toggle="tooltip" data-placement="bottom" title="{$tournament.participant} Teilnehmer">{$tournament.participant}</span>{else}-{/if}</td>
+                    <td><a {if $tournament.deadline|strtotime < $smarty.now}class="text-danger" {else}class="text-success" {/if} href="{$tournament.linkTo}" title="{$tournament.name}: vom {$tournament.startdate|date_format:" d.m.y"} -
+                            {$tournament.enddate|date_format:'d.m.y'}">{$tournament.name}</a></td>
+                    <td {if $tournament.deadline|strtotime < $smarty.now}class="text-danger" {else} class="text-success" {/if}>
+                        {if $tournament.startdate|date_format:"d.m.y" == $tournament.enddate|date_format:"d.m.y"}
+                            {$tournament.startdate|date_format:"d.m.y"}
+                        {else}
+                            {$tournament.startdate|date_format:"d.m.y"} - {$tournament.enddate|date_format:"d.m.y"}
+                        {/if}
+                    </td> <td>{$tournament.place}</td>
+                    <td>{if $tournament.participant && $tournament.participant > 0}<span class="badge badge-success" data-toggle="tooltip" data-placement="bottom" title="{$tournament.participant} Teilnehmer">{$tournament.participant}</span>{else}-{/if}</td>
                 </tr>
                 {foreachelse}
                 <tr>
