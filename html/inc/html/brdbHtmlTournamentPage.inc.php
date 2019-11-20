@@ -459,7 +459,7 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
         } catch (Exception $e) {
             $arr = $value;
         }
-        echo substr($arr[0], -1);
+        substr($arr[0], -1);
         if (substr($arr[0], -1) == 'D') {
             return true;
         }

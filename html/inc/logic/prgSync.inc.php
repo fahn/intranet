@@ -29,6 +29,8 @@ class PrgPatternElementSync extends APrgPatternElement {
     private $prgPatternElementClub;
     private $prgPatternElementPlayer;
 
+    private $page = 'adminSync.php';
+
     // links
     private const API_HOST            = "https://api.badtra.de/";
     private const API_LIST_CLUB       = "https://api.badtra.de/club/list";
@@ -48,6 +50,8 @@ class PrgPatternElementSync extends APrgPatternElement {
         $this->prgPatternElementClub = new PrgPatternElementClub($this->brdb, $this->prgElementLogin);
 
         $this->prgPatternElementPlayer = new PrgPatternElementPlayer($this->brdb, $this->prgElementLogin);
+
+
     }
 
     public function processPost() {
@@ -171,7 +175,7 @@ class PrgPatternElementSync extends APrgPatternElement {
                         $this->prgPatternElementPlayer->insert($player);
                         $statistics['new']++;
                     } else {
-                        echo $this->prgPatternElementPlayer->update($player) ? '#T#' : '#F#';
+                        $this->prgPatternElementPlayer->update($player);
                         $statistics['updated']++;
                     }
                 } catch (Exception $e) {
@@ -256,6 +260,12 @@ class PrgPatternElementSync extends APrgPatternElement {
 
         // sync Tournmanet
         // $this->syncTournament();
+
+        // save statistics
+        $this->setSuccessMessage($this->statistics);
+
+        // redirect
+        $this->tools->customRedirect(array('page' => $this->page));
     }
 
     public function getStatistics() {
