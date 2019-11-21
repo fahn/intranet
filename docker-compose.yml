@@ -21,7 +21,7 @@ services:
       - db
 
   db:
-    image: mariadb:10.0.37-xenial
+    image: mariadb:10
     container_name: db
     restart: always
     environment:
