@@ -32,6 +32,9 @@ RUN docker-php-ext-install -j$(nproc) iconv \
     && docker-php-ext-install mysqli \
     && docker-php-ext-enable mysqli
 
+# create log for msmtp
+RUN touch /var/log/msmtp.log
+
 # set msmtp as sendmail
 RUN echo "sendmail_path = /usr/bin/msmtp -t" > /usr/local/etc/php/conf.d/docker-php-sendmail.ini && \
     echo -e "max_execution_time 120\npost_max_size 20M\nupload_max_filesize 20M\nupload_tmp_dir /tmp\n" > /usr/local/etc/php/conf.d/docker-php-intranet.ini
@@ -53,7 +56,9 @@ RUN rm -rf .git* \
     Tests \
     /var/www/html/inc/config.ini \
     /var/www/html/static/img/background.jpg \
-    /var/www/html/static/img/background_mobil.jpg
+    /var/www/html/static/img/background_mobil.jpg \
+    /var/www/html/static/img/user \
+    /var/www/html/static/img/favicon
 
 # set rights
 RUN chmod -R 755 . && chown -R www-data:www-data .

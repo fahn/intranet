@@ -15,8 +15,8 @@ services:
       # user upload image dir
       - "./data/img/user:/var/www/html/static/img/user"
       # Sending e-mail
-      - ./msmtp/msmtprc:/etc/msmtprc:ro
-      - ./msmtp/aliases:/etc/aliases:ro
+      - ./data/msmtp/msmtprc:/etc/msmtprc:ro
+      - ./data/msmtp/aliases:/etc/aliases:ro
     links:
       - db
 
