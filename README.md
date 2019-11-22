@@ -33,6 +33,10 @@ Folgende Bibliotheken wurde hier eingesetzt:
 | Gargron/fileupload | 1.4.0   | MIT         | (https://github.com/Gargron/fileupload)   |
 | erusev/parsedown   | 1.7.3   | MIT         | (https://github.com/erusev/parsedown)     |
 
+
+## weitere Hilfsmittel
+- https://mapmarker.io/documentation: Erstellung Google Maps Marker
+
 # Docker
 ## Build des Images
 ```
