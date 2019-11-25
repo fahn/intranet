@@ -86,6 +86,6 @@
     </div>
     
     <p class="text-right">
-      <a class="btn btn-danger" href="javascript:history.back()">Zur�ck</a>
+      <a class="btn btn-danger" href="javascript:history.back()">Zurück</a>
     </p>
 {/if}
