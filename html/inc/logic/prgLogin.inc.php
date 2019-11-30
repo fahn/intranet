@@ -17,7 +17,6 @@ include_once $_SERVER['BASE_DIR'] .'/inc/model/user.inc.php';
 
 include_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
 include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgPattern.inc.php';
-#include_once $_SERVER['BASE_DIR'] .'/inc/class.simple_mail.php';
 include_once $_SERVER['BASE_DIR'] .'/smarty/libs/Smarty.class.php';
 
 class PrgPatternElementLogin extends APrgPatternElement {
