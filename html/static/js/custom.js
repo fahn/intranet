@@ -45,23 +45,6 @@ $(document).ready(function() {
     // Tooltipps
     $('[data-toggle="tooltip"]').tooltip();
 
-    /*  DEBUG.STAGE ] */
-    $("a").each(function() {
-        var address = $(location).attr('href')
-        if (address.includes("stage=debug")) {
-            var $this = $(this);
-            var _href = $(this).attr('href');
-            if (_href.includes('?')) {
-                var sep = "&";
-            } else {
-                var sep = "?";
-            }
-            $this.attr("href", _href + sep + 'stage=debug');
-        }
-    });
-
-
-
 
     $('#mySelector').change(function() {
         var selection = $(this).val();
@@ -105,37 +88,61 @@ $(document).ready(function() {
     }
 
     //if (typeof select2 === "function") {
-        $('.js-data-ajax-player').select2({
-            language: "de",
-            CloseOnSelect: true,
-            //allowClear: true,
-            //minimumResultsForSearch: 1,
-            //hideSelectionInSingle: true,
-            minimumInputLength: 3,
-            ajax: {
-                url: '/ajax/player.php',
-                type: "post",
-                dataType: 'json',
-                data: function(params) {
-                    var query = {
-                        playerSearch: params.term,
-                    }
-                    return query;
-                },
-                processResults: function(data) {
-                    // parse the results into the format expected by Select2.
-                    // since we are using custom formatting functions we do not need to
-                    // alter the remote JSON data
-                    //console.log(data);
-                    return {
-                        results: data.results
-                    };
-                },
+    $('.js-data-ajax-player').select2({
+        language: "de",
+        CloseOnSelect: true,
+        //allowClear: true,
+        //minimumResultsForSearch: 1,
+        //hideSelectionInSingle: true,
+        minimumInputLength: 3,
+        ajax: {
+            url: '/ajax/player.php',
+            type: "post",
+            dataType: 'json',
+            data: function(params) {
+                var query = {
+                    playerSearch: params.term,
+                }
+                return query;
             },
-            placeholder: 'Search for a player',
-            delay: 250,
-            cache: true
-        });
+            processResults: function(data) {
+                return {
+                    results: data.results
+                };
+            },
+        },
+        placeholder: 'Search for a player',
+        delay: 250,
+        cache: true
+    });
+
+    $('.js-data-ajax-user').select2({
+        language: "de",
+        CloseOnSelect: true,
+        //allowClear: true,
+        //minimumResultsForSearch: 1,
+        //hideSelectionInSingle: true,
+        minimumInputLength: 3,
+        ajax: {
+            url: '/ajax/user.php',
+            type: "post",
+            dataType: 'json',
+            data: function(params) {
+                var query = {
+                    userSearch: params.term,
+                }
+                return query;
+            },
+            processResults: function(data) {
+                return {
+                    results: data.results
+                };
+            },
+        },
+        placeholder: 'Search for a User',
+        delay: 250,
+        cache: true
+    });
 
         // Select
         $('select.js-example-basic-single').select2({
