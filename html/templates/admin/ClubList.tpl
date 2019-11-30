@@ -1,4 +1,4 @@
-<h3>Vereine</h3>
+<h1 class="display-2 mb-5">Vereine</h1>
 <p class="text-right">
     <a class="btn btn-success" href="?action=add_club">Club hinzufügen</a>
 </p>

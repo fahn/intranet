@@ -1,4 +1,4 @@
-<h1 class="display-1">Benutzerverwaltung</h1>
+<h1 class="display-2 mb-5">Benutzerverwaltung</h1>
 <div class="alert alert-info">
     <p>Hier werden <strong>alle</strong> Benutzer vom Intranet aufgelistet. </p>
 </div>

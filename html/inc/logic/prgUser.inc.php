@@ -268,6 +268,9 @@ class PrgPatternElementUser extends APrgPatternElement {
         return;
     }
 
+    /**
+      *
+      */
     public function processPostDeleteUserAccount() {
         if (!$this->issetPostVariable(self::FORM_USER_ADMIN_USER_ID)) {
             $this->setFailedMessage(self::ERROR_USER_DELETE_NO_USERID);
@@ -278,6 +281,9 @@ class PrgPatternElementUser extends APrgPatternElement {
         $userId = intval($this->getPostVariable(self::FORM_USER_ADMIN_USER_ID));
         if ($this->tools->isUserGod($userId)) {
             $this->setFailedMessage("User is protected");
+            Tools::customRedirect(array(
+              'page' => "adminAllUser.php",
+            ));
             return;
         }
         $res = $this->brdb->deleteUserById($userId);
@@ -296,6 +302,9 @@ class PrgPatternElementUser extends APrgPatternElement {
         // check if User is God
         if ($this->tools->isUserGod($userId)) {
             $this->setFailedMessage("User is protected");
+            Tools::customRedirect(array(
+              'page' => "adminAllUser.php",
+            ));
             return;
         }
 

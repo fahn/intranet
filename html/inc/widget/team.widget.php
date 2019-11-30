@@ -64,7 +64,7 @@ class TeamWidget extends Widget {
 
     private function getTeam() {
         $data = array();
-        $res = $this->brdb->selectStaffList();
+        $res = $this->brdb->selectGetStaff();
         if (!$this->brdb->hasError()) {
             while ($dataSet = $res->fetch_assoc()) {
                 $data[]         = array(

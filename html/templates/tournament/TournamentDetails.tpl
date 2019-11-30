@@ -39,14 +39,14 @@
 </div>
 
 {if $tournament.description}
-<div class="row">
-    <div class="col-md-12 align-items-stretch">
-        <div class="card">
-            <h5 class="card-header">Beschreibung</h5>
-            <div class="card-body">{$tournament.description|unescape:'html'}</div>
+    <div class="row">
+        <div class="col-md-12 align-items-stretch">
+            <div class="card">
+                <h5 class="card-header">Beschreibung</h5>
+                <div class="card-body">{$tournament.description|unescape:'html'}</div>
+            </div>
         </div>
     </div>
-</div>
 {/if}
 
 <div class="d-flex flex-row-reverse">
@@ -109,7 +109,7 @@
                             <a class="btn btn-danger" href="{$player.linkLock}" data-toggle="tooltip" data-placement="bottom" title="Spieler als gemeldet setzen"><i class="fas fa-lock"></i></a>
                         {/if}
                     {/if}
-                    {if $isAdmin or $isReporter or $player.playerId == $userId or $player.partnerId == $userId}
+                    {if $isAdmin or $isReporter or $player.playerNr == $userPlayerId or $player.partnerNr == $userPlayerId}
                         <a class="btn btn-danger" href="{$player.linkDelete}" onclick="return confirm('Möchtest du wirklich den Spieler abmelden ?');">Abmelden</a>
                     {/if}
                 </td>

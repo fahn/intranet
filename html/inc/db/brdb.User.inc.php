@@ -16,6 +16,17 @@ trait UserDB {
         return $this->executeStatement($cmd);
     }
 
+
+    public function getUserByTerm($term) {
+        $term = $this->db->real_escape_string($term);
+        $term = "%".$term."%";
+        
+        $cmd = $this->db->prepare("SELECT * FROM User WHERE lastName LIKE ?");
+        $cmd->bind_param("s", $term);
+
+        return $this->executeStatement($cmd);
+    }
+
     /**
      * Get a user from the data base by a given Id
      *

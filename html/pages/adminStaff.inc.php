@@ -13,9 +13,9 @@
  ******************************************************************************/
 
 require_once '_options.php';
-include_once $_SERVER['BASE_DIR'] .'inc/html/brdbHtmlAdminAllUserPage.inc.php';
+include_once $_SERVER['BASE_DIR'] .'inc/html/admin/staff.inc.php';
 
-$page = new BrdbHtmlAdminAllUserPage();
+$page = new BrdbHtmlAdminStaff();
 $page->processPage();
 
 ?>

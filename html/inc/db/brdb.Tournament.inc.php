@@ -1,14 +1,25 @@
 <?php
+/*******************************************************************************
+ * Badminton Intranet System
+ * Copyright 2017-2019
+ * All Rights Reserved
+ *
+ * Copying, distribution, usage in any form is not
+ * allowed without  written permit.
+ *
+ * Stefan Metzner <stefan@weinekind.de>
+ * Philipp M. Fischer <phil.m.fischer@googlemail.com>
+ *
+ ******************************************************************************/
+declare(strict_types=1);
 
 trait TournamentDB {
+    public function selectTournamentList(){
+        $query = "SELECT T.*, (SELECT COUNT(*) from TournamentPlayer AS TP where TP.visible = 1 AND TP.tournamentId = T.tournamentId) AS userCounter FROM Tournament AS T
+                  WHERE T.visible = 1 AND T.enddate > (NOW() - INTERVAL 4 DAY) ORDER by T.startdate ASC";
+        $statement = $this->db->prepare($query);
 
-
-    public function selectTournamentList() {
-        $sql = "SELECT T.*, (SELECT count(*) from TournamentPlayer AS TP where TP.visible = 1 AND TP.tournamentId = T.tournamentId) AS userCounter FROM Tournament AS T
-      WHERE T.visible = 1 AND T.enddate > NOW() - INTERVAL 4 DAY ORDER by T.startdate ASC";
-        $cmd = $this->db->prepare($sql);
-
-        return $this->executeStatement($cmd);
+        return $this->executeStatement($statement);
     }
 
     public function selectOldTournamentList() {
@@ -17,11 +28,22 @@ trait TournamentDB {
         return $this->executeStatement($cmd);
     }
 
+/*
     public function selectLatestTournamentList($max = 5) {
         $cmd = $this->db->prepare("SELECT * FROM Tournament WHERE visible = 1 AND enddate < NOW() ORDER by startdate ASC LIMIT ?");
         $cmd->bind_param("i", $max);
 
         return $this->executeStatement($cmd);
+    } */
+
+    public function selectLatestTournamentList(int $max = 5): bool
+    {
+        $query = "SELECT * FROM Tournament WHERE visible = 1 AND enddate < NOW() ORDER by startdate ASC LIMIT :limit";
+        $statement = $this->db->prepare($query);
+        $statement->bindParam('limit', $max);
+        $statement->execute();
+
+        return $statement->execute();
     }
 
     public function selectUpcomingTournamentList($max = 5) {
@@ -30,16 +52,31 @@ trait TournamentDB {
                                                               FROM Tournament
                                                               WHERE visible = 1 AND startdate > NOW()
                                                               ORDER by startdate ASC LIMIT*/
-        $cmd = $this->db->prepare("SELECT *, (SELECT COUNT(*) FROM TournamentPlayer AS TP WHERE TP.tournamentId = Tournament.tournamentId AND TP.visible = 1  ) AS participant
+        $cmd = $this->db->prepare("SELECT Tournament.*
                                    FROM Tournament
                                    WHERE visible = 1 AND startdate > NOW()
-                                   ORDER by startdate ASC LIMIT ?");
-        $cmd->bind_param("i", $max);
+                                   ORDER by startdate ASC LIMIT 5");
+        #$cmd->bind_param("i", $max);
+        #(SELECT COUNT(*) FROM TournamentPlayer AS TP WHERE TP.tournamentId = Tournament.tournamentId AND TP.visible = 1  ) AS participant#
 
         return $this->executeStatement($cmd);
     }
 
     public function selectUpcomingTournamentPlayer($tournamentId) {
+        $cmd = $this->db->prepare("SELECT COUNT(DISTINCT concat(playerId,partnerId)) from TournamentPlayer WHERE tournamentId = ? AND visible = 1");
+
+        /*SELECT COUNT(*) FROM (
+                                      SELECT DISTINCT playerId FROM TournamentPlayer WHERE tournamentId = ? AND visible = 1 GROUP BY playerId
+                                      UNION
+                                      SELECT DISTINCT partnerId FROM TournamentPlayer WHERE tournamentId = ? AND visible = 1 AND partnerId > 0 GROUP BY partnerId
+                                  ) AS result GROUP BY playerId");
+                                  */
+        $cmd->bind_param("i", $tournamentId);
+
+        return $this->executeStatement($cmd);
+    }
+
+    public function selectUpcomingTournamentPlayerOrginal($tournamentId) {
         $cmd = $this->db->prepare("SELECT DISTINCT playerId FROM TournamentPlayer WHERE tournamentId = ? AND visible = 1 GROUP BY playerId
                                    UNION
                                    SELECT DISTINCT partnerId FROM TournamentPlayer WHERE tournamentId = ? AND visible = 1 AND partnerId > 0 GROUP BY partnerId");
@@ -65,7 +102,8 @@ trait TournamentDB {
       TP.*,
       CONCAT_WS(' ', Player.firstName, Player.lastName) AS playerName,
       CONCAT_WS(' ', Partner.firstName, Partner.lastName) as partnerName,
-      CONCAT_WS(' ', Reporter.firstName, Reporter.lastName) as reporterName
+      CONCAT_WS(' ', Reporter.firstName, Reporter.lastName) as reporterName,
+      Partner.playerNr as partnerNr
       FROM TournamentPlayer AS TP
       LEFT JOIN Player ON TP.playerId = Player.playerId
       LEFT JOIN Player as Partner ON TP.partnerId = Partner.playerId
@@ -205,7 +243,12 @@ trait TournamentDB {
     }
 
     public function getPlayerFromTournamentById($playerId) {
-        $cmd = $this->db->prepare("SELECT * FROM TournamentPlayer WHERE tournamentPlayerId = ?");
+        $sql = "SELECT TournamentPlayer.*,
+                (SELECT playerNr FROM Player WHERE playerId = TournamentPlayer.playerId ) AS playerNr,
+                (SELECT playerNr FROM Player WHERE playerId = TournamentPlayer.partnerId ) AS partnerNr,
+                (SELECT playerNr FROM User WHERE userId = TournamentPlayer.reporterId ) AS reporterNr FROM TournamentPlayer
+                WHERE tournamentPlayerId = ?";
+        $cmd = $this->db->prepare($sql);
         $cmd->bind_param("i", $playerId);
 
         return $this->executeStatement($cmd);

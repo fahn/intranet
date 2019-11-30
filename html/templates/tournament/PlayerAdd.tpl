@@ -25,7 +25,7 @@
 
     <h3 class="mt-5 mb-5">Spieler</h3>
 
-    <div class="row initline">
+    <div class="row initline mb-5">
       <div class="col-md-4 input-control" data-role="select">
         <label class="d-block font-weight-bold">Spieler</label>
         <select class="form-control js-data-ajax-player" type="text" id="tournamentPlayerId" name="tournamentPlayerId"></select>

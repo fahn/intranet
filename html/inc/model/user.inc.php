@@ -123,6 +123,10 @@ class User {
         return $this->userId;
     }
 
+    public function getPlayerId() {
+        return $this->playerId;
+    }
+
     /**
      * get UserId
      */

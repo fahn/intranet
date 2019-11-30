@@ -1,4 +1,16 @@
 <?php
+/*******************************************************************************
+ * Badminton Intranet System
+ * Copyright 2017-2019
+ * All Rights Reserved
+ *
+ * Copying, distribution, usage in any form is not
+ * allowed without  written permit.
+ *
+ * Stefan Metzner <stefan@weinekind.de>
+ * Philipp M. Fischer <phil.m.fischer@googlemail.com>
+ *
+ ******************************************************************************/
 
 require_once('default.widget.php');
 
@@ -79,6 +91,8 @@ class TournamentWidget extends Widget {
                 $dataSet['linkTo']         = $this->tools->linkTo(array('page' => 'tournament.php', 'action' => 'details', 'id' => $dataSet['tournamentId']));
                 // get unique player
                 $players = $this->brdb->selectUpcomingTournamentPlayer($dataSet['tournamentId']);
+                #echo "1";
+                #die(var_dump($players));
                 $dataSet['participant'] = $players->num_rows;
 
 

@@ -101,8 +101,7 @@ class BrdbHtmlAdminAllUserPage extends BrdbHtmlPage {
         if (!$this->brdb->hasError()) {
             while ($dataSet = $res->fetch_assoc()) {
                 $user = new User($dataSet);
-                $isLoggedInUser = ($this->prgPatternElementLogin->getLoggedInUser()->userId == $loopUser->userId);
-                //$dataSet['isLoggedInUser'] = $isLoggedInUser;
+
                 $dataSet['isAdmin']    = $user->isAdmin();
                 $dataSet['isReporter'] = $user->isReporter();
                 $dataSet['isPlayer']   = $user->isPlayer();

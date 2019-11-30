@@ -1,4 +1,4 @@
-<h1 class="display-1 mb-5">Benutzer {if $task == "edit"}bearbeiten{else}Hinzufügen{/if}</h1>
+<h1 class="display-2 mb-5">Benutzer {if $task == "edit"}bearbeiten{else}Hinzufügen{/if}</h1>
 
 <form action="" method="post">
     <input type="hidden" name="userRegisterFormAction" id="userRegisterFormAction" value="{$hidden}">

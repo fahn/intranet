@@ -207,7 +207,7 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
             'tournament'  => $tournament,
             'players'     => $this->getPlayersByTournamentId($id),
             'disciplines' => $this->getDisciplinesByTournamentId($id),
-            'userid'      => '',
+            'userPlayerId'        => $userId = $this->prgPatternElementLogin->getLoggedInUser()->getPlayerId(),
         ));
 
         return $this->smarty->fetch('tournament/TournamentDetails.tpl');
@@ -349,6 +349,7 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
 
     private function getAllTournamentDataList() {
         $res = $this->brdb->selectTournamentList();
+        #die(var_dump($res));
         if (!$this->brdb->hasError()) {
             $data = array();
             while ($dataSet = $res->fetch_assoc()) {
@@ -398,14 +399,16 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
 
                 if($this->isDouble($dataSet['classification'])) {
                     if($dataSet['partnerId'] > 0) {
-
+                        $dataSet['partnerNr']   = $dataSet['partnerNr'];
                         $dataSet['partnerLink'] =  $this->tools->linkTo(array('page' => 'player.php', 'id' => $dataSet['partnerId']));
                     } else {
                       $dataSet['partnerId']   = 0;
                       $dataSet['partnerName'] = 'FREI';
+
                     }
                 } else {
                     unset($dataSet['partnerId']);
+                    unset($dataSet['partnerNr']);
                 }
 
                 // Links

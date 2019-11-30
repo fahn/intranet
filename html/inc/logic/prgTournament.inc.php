@@ -313,10 +313,13 @@ class PrgPatternElementTournament extends APrgPatternElement {
     private function deletePlayersFromTournamentId($tournamentId, $playerId) {
         // player data
         $tmp = $this->brdb->getPlayerFromTournamentById($playerId)->fetch_assoc();
+        #die(var_dump($tmp));
         $actUser = $this->prgElementLogin->getLoggedInUser();
         if (! $actUser->isAdmin() &&
             ! $actUser->isReporter() &&
-            $tmp['reporterId'] != $actUser->userId)
+            $tmp['reporterId'] != $actUser->userId &&
+            $actUser->getPlayerId()  != $tmp['playerNr'] &&
+            $actUser->getPlayerId()  != $tmp['partnerNr'])
         {
             $this->setFailedMessage("Nicht genug Rechte: Der Spieler konnte nicht gelöscht werden");
             $url = $this->customRedirect(array(
@@ -338,11 +341,11 @@ class PrgPatternElementTournament extends APrgPatternElement {
           /// reporter
             $this->informUser($row['reporterId']);
           /// player
-            $this->informUser($row['playerId']);
+            #$this->informUser($row['playerId']);
           /// partner
-          if(isset($tmp['partnerId']) && $tmp['partnerId'] > 0) {
-              $this->informUser($tmp['partnerId']);
-          }
+          #if(isset($tmp['partnerId']) && $tmp['partnerId'] > 0) {
+        #      $this->informUser($tmp['partnerId']);
+          #}
         }
 
 

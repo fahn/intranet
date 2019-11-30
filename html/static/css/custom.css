@@ -245,3 +245,8 @@ h6 {
 #toStringOutput {
   margin:0 2em 0 2em;
 }
+
+
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  opacity: 0.2 !important; /* Firefox */
+}
