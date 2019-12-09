@@ -3,11 +3,11 @@
 --
 
 CREATE TABLE `User` (
-  `userId` int(11) NOT NULL,
+  `userId` int(11) AUTO_INCREMENT PRIMARY KEY UNIQUE NOT NULL,
   `firstName` varchar(64) NOT NULL,
   `lastName` varchar(64) NOT NULL,
   `email` varchar(64) NOT NULL,
-  `gender` enum('Male','Female') NOT NULL DEFAULT 'Male',
+  `gender` enum('Male', 'Female') NOT NULL DEFAULT 'Male',
   `password` varchar(255) NOT NULL DEFAULT 'unset',
   `last_login` date NOT NULL,
   `admin` tinyint(1) NOT NULL DEFAULT '0',
@@ -21,10 +21,8 @@ CREATE TABLE `User` (
   `dsgvo_timestamp` timestamp NULL DEFAULT NULL,
   FOREIGN KEY (userId) REFERENCES UserStaff (userId) ON DELETE CASCADE,
   FOREIGN KEY (userId) REFERENCES UserPassHash (userId) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;
 
-ALTER TABLE `User` ADD PRIMARY KEY (`userId`);
-ALTER TABLE `User` MODIFY `userId` int(11) NOT NULL AUTO_INCREMENT;
 
 
 
@@ -45,7 +43,7 @@ CREATE TABLE `UserPassHash` (
 -- PLAYER
 --
 CREATE TABLE `Player` (
-  `playerId` int(11) NOT NULL,
+  `playerId` int(11) PRIMARY KEY AUTO_INCREMENT UNIQUE NOT NULL,
   `playerNr` varchar(64) NULL,
   `clubId`   int(11) NOT NULL,
   `firstName` varchar(64) NOT NULL,
@@ -54,15 +52,11 @@ CREATE TABLE `Player` (
   `bday` date
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-ALTER TABLE `Player` ADD PRIMARY KEY (`playerId`);
-ALTER TABLE `Player` MODIFY `playerId` int(11) NOT NULL AUTO_INCREMENT;
-
 --
 --  CLUBS
 --
-
 CREATE TABLE `Club` (
-  `clubId` int(11) NOT NULL,
+  `clubId` int(11) PRIMARY KEY AUTO_INCREMENT UNIQUE NOT NULL,
   `sort` int(1) NOT NULL DEFAULT '1',
   `visible` int(1) DEFAULT '1',
   `name` text NOT NULL,
@@ -70,16 +64,13 @@ CREATE TABLE `Club` (
   `association` varchar(10)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-ALTER TABLE `Club` ADD PRIMARY KEY (`clubId`);
-ALTER TABLE `Club` MODIFY `clubId` int(11) NOT NULL AUTO_INCREMENT;
-
-INSERT `Club` (name) VALUES ('FREI');
+INSERT `Club` (name, clubNr) VALUES ('FREI', '0000');
 
 --
 --  UserStaff
 --
 CREATE TABLE `UserStaff` (
-  `staffId` int(11) NOT NULL,
+  `staffId` int(11) PRIMARY KEY AUTO_INCREMENT UNIQUE NOT NULL,
   `userId` int(11) NOT NULL,
   `position` varchar(200) NOT NULL,
   `description` text NOT NULL,
@@ -87,15 +78,11 @@ CREATE TABLE `UserStaff` (
   `sort` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-ALTER TABLE `UserStaff` ADD PRIMARY KEY (`staffId`);
-ALTER TABLE `UserStaff` ADD UNIQUE(`staffId`);
-ALTER TABLE `UserStaff` MODIFY `staffId` int(11) NOT NULL AUTO_INCREMENT;
-
 --
 --  tournament
 --
 CREATE TABLE `Tournament` (
-  `tournamentId` int(11) NOT NULL,
+  `tournamentId` int(11) PRIMARY KEY AUTO_INCREMENT UNIQUE NOT NULL,
   `reporterId` int(11) NOT NULL,
   `openSubscription` int(1) NOT NULL DEFAULT '1',
   `name` varchar(255) NOT NULL,
@@ -114,29 +101,24 @@ CREATE TABLE `Tournament` (
   `description` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-ALTER TABLE `Tournament` ADD PRIMARY KEY (`tournamentId`);
-ALTER TABLE `Tournament` MODIFY `tournamentId` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 --  TournamentClass
 --
 CREATE TABLE `TournamentClass` (
-  `classId` int(11) NOT NULL,
-  `tournamentId` int(11) NOT NULL,
+  `classId` int(11) PRIMARY KEY AUTO_INCREMENT UNIQUE NOT NULL,
+  `tournamentId` int(11) PRIMARY KEY NOT NULL,
   `name` varchar(10) NOT NULL,
   `description` text NOT NULL,
   `modus` varchar(10) NOT NULL,
   `visible` int(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-ALTER TABLE `TournamentClass` ADD PRIMARY KEY (`classId`,`tournamentId`);
-ALTER TABLE `TournamentClass` MODIFY `classId` int(11) NOT NULL AUTO_INCREMENT;
-
 --
 --  TournamentPlayer
 --
 CREATE TABLE `TournamentPlayer` (
-  `tournamentPlayerId` int(11) NOT NULL,
+  `tournamentPlayerId` int(11) PRIMARY KEY AUTO_INCREMENT UNIQUE NOT NULL,
   `tournamentId` int(11) NOT NULL,
   `playerId` int(11) NOT NULL,
   `partnerId` int(11) DEFAULT NULL,
@@ -148,44 +130,32 @@ CREATE TABLE `TournamentPlayer` (
   `message` text
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-
-ALTER TABLE `TournamentPlayer` ADD PRIMARY KEY (`tournamentPlayerId`);
-ALTER TABLE `TournamentPlayer` MODIFY `tournamentPlayerId` int(11) NOT NULL AUTO_INCREMENT;
-
 --
 -- TournamentBackup
 --
 CREATE TABLE `TournamentBackup` (
-  `backupId` int(11) NOT NULL,
+  `backupId` int(11)  PRIMARY KEY AUTO_INCREMENT UNIQUE NOT NULL,
   `tournamentId` int(11) NOT NULL,
   `data` text NOT NULL,
   `date` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-ALTER TABLE `TournamentBackup` ADD PRIMARY KEY (`backupId`);
-ALTER TABLE `TournamentBackup` MODIFY `backupId` int(11) NOT NULL AUTO_INCREMENT;
-
-
-
-
 
 --
 --  Table: eloRanking
 --
 
 CREATE TABLE `EloRanking` (
-  `playerId` int(11) NOT NULL,
+  `playerId` int(11) PRIMARY KEY UNIQUE NOT NULL,
   `points` INT NOT NULL DEFAULT 1000,
   `serie`  varchar(64) NOT NULL,
   `win` int(11) NOT NULL DEFAULT '0',
   `loss` int(11) NOT NULL DEFAULT '0',
   `lastGame` timestamp NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-ALTER TABLE `EloRanking` ADD PRIMARY KEY (`playerId`);
 
 
 CREATE TABLE `EloGames` (
-  `gameId`      INT(11) NOT NULL,
+  `gameId`      INT(11) PRIMARY KEY AUTO_INCREMENT UNIQUE NOT NULL,
   `hidden`      INT(1) NOT NULL DEFAULT '0',
   `playerId`    INT(11) NOT NULL,
   `opponentId`  INT(11) NOT NULL,
@@ -193,22 +163,18 @@ CREATE TABLE `EloGames` (
   `winnerId`    int(11) NOT NULL,
   `gameTime`    timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-ALTER TABLE `EloGames` ADD PRIMARY KEY (`gameId`);
 
 
 --
 --  Table: Notification
 --
 CREATE TABLE `Notification` (
-  `notificationId` int(11) NOT NULL,
+  `notificationId` int(11) PRIMARY KEY AUTO_INCREMENT UNIQUE NOT NULL,
   `userId` int(11) NOT NULL,
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `text` text NOT NULL,
   `isRead` bit(1) NOT NULL DEFAULT b'0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-ALTER TABLE `Notification` ADD PRIMARY KEY (`notificationId`);
-ALTER TABLE `Notification` MODIFY `notificationId` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 --  SETTINGS
@@ -234,7 +200,7 @@ ALTER TABLE `Settings`
 --  Table: Faq
 --
 CREATE TABLE `Faq` (
-  `faqId` int(11) NOT NULL,
+  `faqId` int(11) PRIMARY KEY AUTO_INCREMENT UNIQUE NOT NULL,
   `categoryId` INT NOT NULL,
   `title` varchar(200) NOT NULL,
   `text` text NOT NULL,
@@ -242,28 +208,21 @@ CREATE TABLE `Faq` (
   `lastEdited` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-ALTER TABLE `Faq` ADD PRIMARY KEY (`faqId`);
-ALTER TABLE `Faq` MODIFY `faqId` int(11) NOT NULL AUTO_INCREMENT;
-
 --
 --  Table: Category
 --
 
 CREATE TABLE `Category` (
-  `categoryId` int(11) NOT NULL,
+  `categoryId` int(11) PRIMARY KEY AUTO_INCREMENT UNIQUE NOT NULL,
   `pid` int(11) NOT NULL,
   `title` varchar(200) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-ALTER TABLE `Category` ADD PRIMARY KEY (`categoryId`);
-ALTER TABLE `Category` MODIFY `categoryId` int(11) NOT NULL AUTO_INCREMENT;
-
 
 --
 --  Table: News
 --
 CREATE TABLE `News` (
-  `newsId` int(11) NOT NULL,
+  `newsId` int(11) PRIMARY KEY AUTO_INCREMENT UNIQUE NOT NULL,
   `categoryId` int(11) NOT NULL,
   `userId` int(11) NOT NULL,
   `title` varchar(200) NOT NULL,
@@ -272,15 +231,11 @@ CREATE TABLE `News` (
   `lastEdited` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-ALTER TABLE `News` ADD PRIMARY KEY (`newsId`);
-ALTER TABLE `News` MODIFY `newsId` int(11) NOT NULL AUTO_INCREMENT;
-
-
 --
 --  Table: log
 --
 CREATE TABLE `Log` (
-  'uid' int(11) NOT NULL,
+  'uid' int(11) PRIMARY KEY AUTO_INCREMENT UNIQUE NOT NULL,
   `userId` int(11) DEFAULT NULL,
   `action` varchar(200) CHARACTER SET latin1 NOT NULL,
   `fromTable` varchar(200) CHARACTER SET latin1 DEFAULT NULL,
@@ -289,7 +244,3 @@ CREATE TABLE `Log` (
   `logdata` text CHARACTER SET latin1 NOT NULL,
   `ip` varchar(15) CHARACTER SET latin1 NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-
-ALTER TABLE `Log` ADD PRIMARY KEY (`uid`);
-ALTER TABLE `Log` MODIFY `uid` int(11) NOT NULL AUTO_INCREMENT;
