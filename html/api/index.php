@@ -99,7 +99,7 @@ class Api {
         foreach ($xml->entry as $entry) {
             if (is_array($data) && count($data) > 0) {
                 foreach($data as $tournament) {
-                    $sim = similar_text($entry->title, $tournament['name'], $percent);
+                    similar_text($entry->title, $tournament['name'], $percent);
                     if ($percent > 50) {
                         echo "Skip $entry->title \n";
                         echo sprintf("\t%s VS %s = %d\n", $entry->title, $tournament['name'], $percent);

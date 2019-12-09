@@ -1,15 +1,15 @@
 $(document).ready(function() {
-    //
-    var filename = basename($(location).attr('pathname'));
+    // ???
+    var filename = basename($(location).attr("pathname"));
 
-    $('a[href$="' + filename + '"]').addClass('active');
+    $("a[href$=${filename}]").addClass("active");
 
     function basename(path) {
-        return path.split('/').reverse()[0];
+        return path.split("/").reverse()[0];
     }
 
 
-
+    // ??
     $(".dropdown").hover(function() {
         $(this).addClass("show");
     }, function() {
@@ -20,44 +20,42 @@ $(document).ready(function() {
      * wsgyi editor
      */
     //if (typeof summernote === "function") {
-        /* html editor */
-        $('#summernote').summernote({
-            placeholder: '',
-            tabsize: 2,
-            height: 150,
-            lang: 'de-DE',
-            codeview: false,
-            toolbar: [
-                // [groupName, [list of button]]
-                ['style', ['style', 'bold', 'italic', 'underline', 'clear']],
-                ['font', ['strikethrough', 'superscript', 'subscript']],
-                ['fontsize', ['fontsize']],
-                ['color', ['color']],
-                ['insert', ['link']],
-                ['para', ['ul', 'ol', 'paragraph']],
-                ['height', ['height']]
-              ]
-        });
+    $("#summernote").summernote({
+        placeholder: "",
+        tabsize: 2,
+        height: 150,
+        lang: "de-DE",
+        codeview: false,
+        toolbar: [
+            // [groupName, [list of button]]
+            ["style", ["style", "bold", "italic", "underline", "clear"]],
+            ["font", ["strikethrough", "superscript", "subscript"]],
+            ["fontsize", ["fontsize"]],
+            ["color", ["color"]],
+            ["insert", ["link"]],
+            ["para", ["ul", "ol", "paragraph"]],
+            ["height", ["height"]]
+            ]
+    });
 //}
 
 
 
     // Tooltipps
-    $('[data-toggle="tooltip"]').tooltip();
+    $("[data-toggle="tooltip"]").tooltip();
 
 
-    $('#mySelector').change(function() {
+    $("#mySelector").change(function() {
         var selection = $(this).val();
         console.log(selection);
-        $('table')[selection ? 'show' : 'hide']();
+        $("table")[selection ? "show" : "hide"]();
 
         if (selection) {
-            $.each($('#myTable tbody tr'), function(index, item) {
-                $(item)[$(item).is(':contains(' + selection + ')') ? 'show' : 'hide']();
+            $.each($("#myTable tbody tr"), function(index, item) {
+                $(item)[$(item).is(":contains(" + selection + ")") ? "show" : "hide"]();
             });
         } else {
-            console.log("***");
-            $.each($('#myTable tbody tr'), function(index, item) {
+            $.each($("#myTable tbody tr"), function(index, item) {
                 /*            console.log(item);
                             $(this).show(); */
             });
@@ -88,7 +86,7 @@ $(document).ready(function() {
     }
 
     //if (typeof select2 === "function") {
-    $('.js-data-ajax-player').select2({
+    $(".js-data-ajax-player").select2({
         language: "de",
         CloseOnSelect: true,
         //allowClear: true,
@@ -96,9 +94,9 @@ $(document).ready(function() {
         //hideSelectionInSingle: true,
         minimumInputLength: 3,
         ajax: {
-            url: '/ajax/player.php',
+            url: "/ajax/player.php",
             type: "post",
-            dataType: 'json',
+            dataType: "json",
             data: function(params) {
                 var query = {
                     playerSearch: params.term,
@@ -111,12 +109,12 @@ $(document).ready(function() {
                 };
             },
         },
-        placeholder: 'Search for a player',
+        placeholder: "Search for a player",
         delay: 250,
         cache: true
     });
 
-    $('.js-data-ajax-user').select2({
+    $(".js-data-ajax-user").select2({
         language: "de",
         CloseOnSelect: true,
         //allowClear: true,
@@ -124,13 +122,14 @@ $(document).ready(function() {
         //hideSelectionInSingle: true,
         minimumInputLength: 3,
         ajax: {
-            url: '/ajax/user.php',
+            url: "/ajax/user.php",
             type: "post",
-            dataType: 'json',
+            dataType: "json",
             data: function(params) {
                 var query = {
                     userSearch: params.term,
-                }
+                };
+
                 return query;
             },
             processResults: function(data) {
@@ -139,17 +138,17 @@ $(document).ready(function() {
                 };
             },
         },
-        placeholder: 'Search for a User',
+        placeholder: "Search for a User",
         delay: 250,
         cache: true
     });
 
-        // Select
-        $('select.js-example-basic-single').select2({
-            language: "de",
-            placeholder: 'Bitte wählen',
-            allowClear: true,
-            minimumResultsForSearch: 1,
-            hideSelectionInSingle: true,
-        });
+    // Select
+    $("select.js-example-basic-single").select2({
+        language: "de",
+        placeholder: "Bitte wählen",
+        allowClear: true,
+        minimumResultsForSearch: 1,
+        hideSelectionInSingle: true,
+    });
 });

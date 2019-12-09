@@ -83,27 +83,23 @@ class Tools {
         }
     }
 
+    /**
+     * Load config.ini file
+     *
+     * @return void
+     */
     private function getIni() {
         $file =  BASE_DIR .'/inc/config.ini';
-        # debug
-        #$backtrace = debug_backtrace();
-        #echo "<pre>";
-        #print_r( $backtrace );
-
-      return parse_ini_file($file, true);
+        
+        return parse_ini_file($file, true);
     }
 
-    private function getConfigFile() {
-        $file   =  BASE_DIR .'/inc/config.json';
-        if (!file_exists($file)) {
-            throw new BadtraException("File is missing", "Config file not found");
-            return array();
-        }
-        $string = file_get_contents($file);
-
-        return json_decode($string, true);
-    }
-
+    /**
+     * get value from ini file
+     *
+     * @param string $val
+     * @return void
+     */
     public function getIniValue($val = "") {
       $ini = self::getIni();
 
@@ -119,6 +115,7 @@ class Tools {
       if (! is_array($returnValues) || empty($returnValues)) {
         return false;
       }
+      
       return count($returnValues) > 1 ? $returnValues : $returnValues[0];
 
     }

@@ -180,25 +180,37 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
         return array();
     }
 
-    private function calendar($actionId) {
+    /**
+     * Show calendar for tournament
+     *
+     * @param int $actionId
+     * @return void
+     */
+    private function calendar(int $actionId) {
         if(!isset($actionId) or !is_numeric($actionId)) {
             return "";
 
         }
-        $tournament                   = $this->brdb->getTournamentData($actionId)->fetch_assoc();
-        extract($tournament);
 
+        // get ressource
+        $tournament                   = $this->brdb->getTournamentData($actionId)->fetch_assoc();
+
+        // load cal
         $vCalendar = new \Eluceo\iCal\Component\Calendar('Badminton');
         $vEvent    = new \Eluceo\iCal\Component\Event();
         $vEvent
-            ->setDtStart(new \DateTime($startdate))
-            ->setDtEnd(new \DateTime($enddate))
+            ->setDtStart(new \DateTime($tournament['startdate']))
+            ->setDtEnd(new \DateTime($tournament['enddate']))
             ->setNoTime(true)
-            ->setLocation($place)
-            ->setSummary($name);
+            ->setLocation($tournament['place'])
+            ->setSummary($tournament['name']);
         $vCalendar->addComponent($vEvent);
+
+        // set header
         header('Content-Type: text/calendar; charset=utf-8');
         header('Content-Disposition: attachment; filename="cal.ics"');
+
+        // render object and print it
         echo $vCalendar->render();
     }
 

@@ -20,8 +20,6 @@ class BrdbHtmlAdminStaff extends BrdbHtmlPage {
     private $prgPatternElementStaff;
     private $countRows;
 
-    private $info;
-
     private $page;
 
 

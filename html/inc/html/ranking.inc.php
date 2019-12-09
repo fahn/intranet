@@ -201,7 +201,7 @@ class Ranking extends BrdbHtmlPage {
 
       $dompdf->loadHtml($content);
       $dompdf->setPaper('A4', 'portrait');
-      $dompdf->getCanvas()->page_text(72, 18, "Header: {PAGE_NUM} of {PAGE_COUNT}", $font, 10, array(0,0,0));
+      $dompdf->getCanvas()->page_text(72, 18, "Header: {PAGE_NUM} of {PAGE_COUNT}", 10, array(0,0,0));
       $dompdf->render();
 
       // set name & download file
