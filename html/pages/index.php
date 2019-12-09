@@ -11,14 +11,14 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
-#require_once($_SERVER['BASE_DIR'] .'/inc/exception/badtra.exception.php');
+include_once('_options.php');
+include_once(BASE_DIR .'/inc/html/brdbHtmlPage.inc.php');
+
+#require_once(BASE_DIR .'/inc/exception/badtra.exception.php');
 
 #set_exception_handler(array('BadtraException', 'exception_handler'));
 
 #throw new Exception('DOH!!');
-
-require_once '_options.php';
-include_once $_SERVER['BASE_DIR'] .'/inc/html/brdbHtmlPage.inc.php';
 
 $page = new BrdbHtmlPage();
 $page->processPage();

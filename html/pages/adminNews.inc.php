@@ -13,7 +13,8 @@
  ******************************************************************************/
 
 require_once '_options.php';
-include_once $_SERVER['BASE_DIR'] .'inc/html/admin/news.inc.php';
+include_once BASE_DIR .'/inc/html/admin/news.inc.php';
+
 $page = new BrdbHtmlAdminNewsPage(basename(__FILE__));
 $page->processPage();
 

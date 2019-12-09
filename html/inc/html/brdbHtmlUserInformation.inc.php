@@ -11,13 +11,14 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
+include_once('brdbHtmlPage.inc.php');
 
-include_once $_SERVER['BASE_DIR'] .'/inc/html/brdbHtmlPage.inc.php';
-include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgUser.inc.php';
+// load logic
+include_once BASE_DIR .'/inc/logic/prgUser.inc.php';
 
 // load widgets
-include_once $_SERVER['BASE_DIR'] .'/inc/widget/tournament.widget.php';
-include_once $_SERVER['BASE_DIR'] .'/inc/widget/ranking.widget.php';
+include_once BASE_DIR .'/inc/widget/tournament.widget.php';
+include_once BASE_DIR .'/inc/widget/ranking.widget.php';
 
 
 class BrdbHtmlUserInformation extends BrdbHtmlPage {

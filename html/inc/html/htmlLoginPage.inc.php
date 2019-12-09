@@ -11,24 +11,24 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
+include_once('htmlPage.inc.php');
 
-include_once $_SERVER['BASE_DIR'] .'/inc/db/brdb.inc.php';
-include_once $_SERVER['BASE_DIR'] .'/inc/html/htmlPage.inc.php';
+include_once(BASE_DIR .'/inc/db/brdb.inc.php');
 
 // Logic
-include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgLogin.inc.php';
-include_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
-include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgUser.inc.php';
+include_once(BASE_DIR .'/inc/logic/prgLogin.inc.php');
+include_once(BASE_DIR .'/inc/logic/tools.inc.php');
+include_once(BASE_DIR .'/inc/logic/prgUser.inc.php');
 
 // load widgets
-require_once $_SERVER['BASE_DIR'] .'/inc/widget/ranking.widget.php';
-require_once $_SERVER['BASE_DIR'] .'/inc/widget/tournament.widget.php';
-require_once $_SERVER['BASE_DIR'] .'/inc/widget/team.widget.php';
-require_once $_SERVER['BASE_DIR'] .'/inc/widget/bday.widget.php';
-require_once $_SERVER['BASE_DIR'] .'/inc/widget/news.widget.php';
+include_once(BASE_DIR .'/inc/widget/ranking.widget.php');
+include_once(BASE_DIR .'/inc/widget/tournament.widget.php');
+include_once(BASE_DIR .'/inc/widget/team.widget.php');
+include_once(BASE_DIR .'/inc/widget/bday.widget.php');
+include_once(BASE_DIR .'/inc/widget/news.widget.php');
 
 // notification
-#include_once $_SERVER['BASE_DIR'] .'/inc/html/brdbHtmlNotification.inc.php';
+#include_once BASE_DIR .'/inc/html/brdbHtmlNotification.inc.php';
 
 
 
@@ -195,7 +195,7 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
                   break;
 
               case 'register':
-                  require_once $_SERVER['BASE_DIR'] .'/inc/html/brdbHtmlSupport.inc.php';
+                  require_once BASE_DIR .'/inc/html/brdbHtmlSupport.inc.php';
                   $support = new brdbHtmlSupport();
                   $this->content = $support->register();
                   break;

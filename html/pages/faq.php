@@ -12,7 +12,7 @@
  *
  ******************************************************************************/
 require_once '_options.php';
-include_once $_SERVER['BASE_DIR'] .'/inc/html/brdbHtmlFaq.inc.php';
+include_once BASE_DIR .'/inc/html/brdbHtmlFaq.inc.php';
 
 $page = new BrdbHtmlFaq();
 $page->processPage();

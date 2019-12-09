@@ -11,20 +11,18 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
+include_once('htmlLoginPage.inc.php');
 
- include_once $_SERVER['BASE_DIR'] .'/inc/html/htmlLoginPage.inc.php';
+class BrdbHtmlMaintenance extends HtmlPageProcessor {
+    public function __construct() {
+        parent::__construct();
+    }
 
- class BrdbHtmlMaintenance extends HtmlPageProcessor {
-     public function __construct() {
-         parent::__construct();
-     }
-
-   public function processPage() {
-         parent::processPage();
-     }
+    public function processPage() {
+        parent::processPage();
+    }
 
     protected function htmlBody() {
-
         $this->smarty->assign(array(
             'headline' => $this->tools->getIniValue('maintenanceHeadline'), #$ini["Maintenance"]['maintenanceHeadline'],
             'text'     => $this->tools->getIniValue('maintenanceText'), #$ini["Maintenance"]['maintenanceText'],
@@ -38,5 +36,5 @@
         $this->smarty->display('index.tpl');
     }
 
- }
+}
 ?>

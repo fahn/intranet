@@ -12,11 +12,12 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
+include_once('prgPattern.inc.php');
 
-include_once $_SERVER['BASE_DIR'] .'/inc/db/brdb.inc.php';
-include_once $_SERVER['BASE_DIR'] .'/inc/model/player.inc.php';
-include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgPattern.inc.php';
-include_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
+include_once BASE_DIR .'/inc/db/brdb.inc.php';
+include_once BASE_DIR .'/inc/model/player.inc.php';
+
+include_once BASE_DIR .'/inc/logic/tools.inc.php';
 
 class PrgPatternElementPlayer extends APrgPatternElement {
     const FORM_PLAYER_PLAYERID    = "playerId";

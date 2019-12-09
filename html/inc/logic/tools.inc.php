@@ -11,13 +11,15 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
+include_once(dirname(dirname(__FILE__)) .'/config.php');
 
-include_once $_SERVER['BASE_DIR'] .'/smarty/libs/Smarty.class.php';
-include_once $_SERVER['BASE_DIR'] .'/inc/db/brdb.inc.php';
-include_once $_SERVER['BASE_DIR'] .'/inc/exception/badtra.exception.php';
+include_once BASE_DIR .'/smarty/libs/Smarty.class.php';
+include_once BASE_DIR .'/inc/db/brdb.inc.php';
+include_once BASE_DIR .'/inc/exception/badtra.exception.php';
 
 # libary
-require_once $_SERVER['BASE_DIR'] .'/vendor/autoload.php';
+require_once BASE_DIR .'/vendor/autoload.php';
+
 use Nette\Mail\SendmailMailer;
 use Nette\Mail\Message;
 
@@ -82,7 +84,7 @@ class Tools {
     }
 
     private function getIni() {
-        $file =  $_SERVER['BASE_DIR'] .'/inc/config.ini';
+        $file =  BASE_DIR .'/inc/config.ini';
         # debug
         #$backtrace = debug_backtrace();
         #echo "<pre>";
@@ -92,7 +94,7 @@ class Tools {
     }
 
     private function getConfigFile() {
-        $file   =  $_SERVER['BASE_DIR'] .'/inc/config.json';
+        $file   =  BASE_DIR .'/inc/config.json';
         if (!file_exists($file)) {
             throw new BadtraException("File is missing", "Config file not found");
             return array();
@@ -219,9 +221,9 @@ class Tools {
 
       // message
       $smarty = new Smarty();
-      $smarty->setTemplateDir(  $_SERVER['BASE_DIR'] .'templates');
-      $smarty->setCompileDir(  $_SERVER['BASE_DIR'] .'templates_c');
-      $smarty->setConfigDir(  $_SERVER['BASE_DIR'] .'configs');
+      $smarty->setTemplateDir(  BASE_DIR .'templates');
+      $smarty->setCompileDir(  BASE_DIR .'templates_c');
+      $smarty->setConfigDir(  BASE_DIR .'configs');
       $smarty->assign(array(
           'content'   => $content,
           'preheader' => $preheader,
@@ -278,7 +280,7 @@ class Tools {
     */
     function linkTo($data) {
       if(isset($data) && is_array($data) && count($data) > 0) {
-        if(!isset($data['page']) || !file_exists(  $_SERVER['BASE_DIR'] .'/pages/'. $data['page']) ) {
+        if(!isset($data['page']) || !file_exists(  BASE_DIR .'/pages/'. $data['page']) ) {
           return "#";
         }
 

@@ -11,9 +11,8 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
-
 require_once '_options.php';
-include_once $_SERVER['BASE_DIR'] .'inc/html/brdbHtmlMyAccountPage.inc.php';
+include_once BASE_DIR .'/inc/html/brdbHtmlMyAccountPage.inc.php';
 
 $page = new BrdbHtmlMyAccountPage();
 $page->processPage();

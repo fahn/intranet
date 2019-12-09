@@ -1,17 +1,20 @@
-<?PHP
+<?php
 
-class Config{
+/*******************************************************************************
+ * Badminton Intranet System
+ * Copyright 2017-2019
+ * All Rights Reserved
+ *
+ * Copying, distribution, usage in any form is not
+ * allowed without  written permit.
+ *
+ * Stefan Metzner <stefan@weinekind.de>
+ * Philipp M. Fischer <phil.m.fischer@googlemail.com>
+ *
+ ******************************************************************************/
 
-    private static $registry = Array();
 
-    public static function set($key,$value){
-        self::$registry[$key] = $value;
-    }
 
-    public static function get($key){
-        if(array_key_exists($key,self::$registry)){
-            return self::$registry[$key];
-        }
-        return false;
-    }
-}
+define("BASE_DIR", dirname(dirname(__FILE__)));
+
+?>

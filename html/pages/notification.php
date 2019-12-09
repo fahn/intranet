@@ -11,8 +11,8 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
-
-include_once $_SERVER['BASE_DIR'] .'/inc/html/brdbHtmlNotification.inc.php';
+require_once '_options.php';
+include_once BASE_DIR .'/inc/html/brdbHtmlNotification.inc.php';
 
 $page = new BrdbHtmlTournamentPage();
 $page->processPage();

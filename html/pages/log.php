@@ -11,12 +11,10 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
+require_once '_options.php';
+include_once BASE_DIR .'/inc/html/admin/log.inc.php';
 
-
- require_once '_options.php';
- include_once $_SERVER['BASE_DIR'] .'inc/html/admin/log.inc.php';
-
- $page = new BrdbHtmlAdminShowLog(dirname(__FILE__));
- $page->processPage();
+$page = new BrdbHtmlAdminShowLog(dirname(__FILE__));
+$page->processPage();
 
 ?>

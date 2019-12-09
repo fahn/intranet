@@ -11,9 +11,9 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
+include_once('brdbHtmlPage.inc.php');
 
-include_once $_SERVER['BASE_DIR'] .'/inc/html/brdbHtmlPage.inc.php';
-require_once $_SERVER['BASE_DIR'] .'/vendor/autoload.php';
+require_once BASE_DIR .'/vendor/autoload.php';
 
 class BrdbHtmlParseDownPage extends BrdbHtmlPage {
 

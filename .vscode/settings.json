@@ -1,0 +1,31 @@
+{
+    "sync-rsync.include": "-aR",
+    "sync-rsync.remote": "root@badtra.de:/opt/container/badtra.de/demo/",
+    "sync-rsync.shell": "ssh -p 30161",
+    "sync-rsync.onSave": false,
+    "sync-rsync.onSaveIndividual": true,
+    "sync-rsync.executableShell": "C:\\Windows\\System32\\bash.exe",
+    "sync-rsync.chmod": "D2775,F664",
+    "sync-rsync.useWSL": true,
+    "sync-rsync.options": [
+      ['progress']
+    ]
+    "sync-rsync.exclude": [
+        ".vscode",
+        "awstats-icon",
+        "awstatsicons",
+        ".git",
+        ".gitignore",
+        ".well-known",
+        "icon",
+        "bootstrap",
+        "fonts",
+        "node_modules",
+        "storage",
+        "stats",
+        "vendor",
+        "tests",
+        "Dockerfile",
+        "docker-compose"
+    ]
+}

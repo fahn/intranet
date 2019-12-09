@@ -11,9 +11,10 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
+include_once(dirname(dirname(__FILE__)) .'/config.php');
 
-include_once $_SERVER['BASE_DIR'] .'/inc/logic/http.inc.php';
-include_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
+include_once BASE_DIR .'/inc/logic/http.inc.php';
+include_once BASE_DIR .'/inc/logic/tools.inc.php';
 
 interface IPrgPatternElement {
 

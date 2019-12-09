@@ -11,8 +11,9 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
-
 session_start();
+$directory=dirname(dirname(__FILE__));
 
+include_once($directory .'/inc/config.php');
 
 ?>

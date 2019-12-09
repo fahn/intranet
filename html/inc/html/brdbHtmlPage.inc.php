@@ -11,8 +11,7 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
-
-include_once $_SERVER['BASE_DIR'] .'/inc/html/htmlLoginPage.inc.php';
+include_once('htmlLoginPage.inc.php');
 
 class BrdbHtmlPage extends AHtmlLoginPage {
     public function __construct() {

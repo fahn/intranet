@@ -11,21 +11,21 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
+include_once('brdbHtmlPage.inc.php');
 
-include_once $_SERVER['BASE_DIR'] .'/inc/html/brdbHtmlPage.inc.php';
-include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgTournament.inc.php';
-include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgPattern.inc.php';
-include_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
+include_once BASE_DIR .'/inc/logic/prgTournament.inc.php';
+include_once BASE_DIR .'/inc/logic/prgPattern.inc.php';
+include_once BASE_DIR .'/inc/logic/tools.inc.php';
 
 # libary
-require_once $_SERVER['BASE_DIR'] .'/vendor/autoload.php';
+require_once BASE_DIR .'/vendor/autoload.php';
 #use \Eluceo\iCal\Component\Calendar;
 #use \Eluceo\iCal\Component\Event;
 
 
 
 # diff
-require_once $_SERVER['BASE_DIR'] .'/inc/class.Diff.php';
+require_once BASE_DIR .'/inc/class.Diff.php';
 
 
 class BrdbHtmlTournamentPage extends BrdbHtmlPage {

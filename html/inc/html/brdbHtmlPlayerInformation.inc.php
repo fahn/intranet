@@ -11,9 +11,7 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
-
-include_once $_SERVER['BASE_DIR'] .'/inc/html/brdbHtmlPage.inc.php';
-
+include_once('brdbHtmlPage.inc.php');
 
 class BrdbHtmlPlayerInformation extends BrdbHtmlPage {
     

@@ -11,12 +11,12 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
+include_once 'prgPattern.inc.php';
 
-include_once $_SERVER['BASE_DIR'] .'/inc/db/brdb.inc.php';
-include_once $_SERVER['BASE_DIR'] .'/inc/model/user.inc.php';
-include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgPattern.inc.php';
-include_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
-require_once $_SERVER['BASE_DIR'] .'/vendor/autoload.php';
+include_once BASE_DIR .'/inc/db/brdb.inc.php';
+include_once BASE_DIR .'/inc/model/user.inc.php';
+include_once BASE_DIR .'/inc/logic/tools.inc.php';
+require_once BASE_DIR .'/vendor/autoload.php';
 
 class PrgPatternElementUser extends APrgPatternElement {
     const FORM_USER_ADMIN_USER_ID = "accountAdminUserId";
@@ -90,7 +90,7 @@ class PrgPatternElementUser extends APrgPatternElement {
         $this->registerPostSessionVariable(self::FORM_USER_ADMIN_USER_ID);
 
         // set Image Path
-        $this->IMAGE_PATH = $_SERVER['BASE_DIR'] .'static/img/user/';
+        $this->IMAGE_PATH = BASE_DIR .'static/img/user/';
 
         // load DB
         $this->brdb = $brdb;
