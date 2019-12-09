@@ -2,6 +2,8 @@
 README.sh
 ---------
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/fc23a5e452e745aab296a6bf9eda2bd0)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=fahn/intranet&amp;utm_campaign=Badge_Grade)
+
 # Requirements
 Folgende Sachen werden benötigt:
 - Webserver
