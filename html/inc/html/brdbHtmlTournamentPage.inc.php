@@ -30,7 +30,6 @@ require_once BASE_DIR .'/inc/class.Diff.php';
 
 class BrdbHtmlTournamentPage extends BrdbHtmlPage {
     private $prgElementTournament;
-    private $vars;
 
     private $tournamentType;
 
@@ -230,10 +229,10 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
         }
 
         $this->smarty->assign(array(
-            'tournament'  => $tournament,
-            'players'     => $this->getPlayersByTournamentId($actionId),
-            'disciplines' => $this->getDisciplinesByTournamentId($actionId),
-            'userPlayerId'        => $userId = $this->prgPatternElementLogin->getLoggedInUser()->getPlayerId(),
+            'tournament'   => $tournament,
+            'players'      => $this->getPlayersByTournamentId($actionId),
+            'disciplines'  => $this->getDisciplinesByTournamentId($actionId),
+            'userPlayerId' => $this->prgPatternElementLogin->getLoggedInUser()->getPlayerId(),
         ));
 
         return $this->smarty->fetch('tournament/TournamentDetails.tpl');
@@ -362,18 +361,7 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
         return $data;
     }
 
-    private function getClassID($actionId) {
-        $actionId = explode(" ", $actionId);
-        if(count($actionId) == 2) {
-            return $this->brdb->getClassIdByNameAndModus($name, $modus);
-        }
-
-        return null;
-    }
-
-
-
-    private function getAllTournamentDataList() {
+     private function getAllTournamentDataList() {
         $res = $this->brdb->selectTournamentList();
         #die(var_dump($res));
         if (!$this->brdb->hasError()) {
@@ -451,20 +439,6 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
         }
 
         return "";
-    }
-
-    private function strpos_arr($search, $array) {
-      if(is_array($array) && count($array) > 0) {
-        foreach ($array as $value) {
-          $pos = strpos($search, $value);
-          if($pos !== false) {
-            return true;
-          }
-        }
-      }
-
-      return false;
-
     }
 
     private function getDisciplinesByTournamentId($actionId) {

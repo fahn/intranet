@@ -202,10 +202,18 @@ class PrgPatternElementClub extends APrgPatternElement {
         return false;
     }
 
+    /**
+     * Insert club Data
+     *
+     * @param [type] $club
+     * @return void
+     */
     public function insert($club) {
         if ($club instanceof Club) {
             $item = $club->getClubArray();
-            $res = $this->brdb->insertClub($item['clubName'], $item['clubNr'], $item['association']);
+            
+            // insert club data
+            $this->brdb->insertClub($item['clubName'], $item['clubNr'], $item['association']);
             if ($this->brdb->hasError()) {
                 return false;
             }
@@ -214,6 +222,12 @@ class PrgPatternElementClub extends APrgPatternElement {
         return false;
     }
 
+    /**
+     * Update Club by Id
+     *
+     * @param [type] $item
+     * @return void
+     */
     public function update($item) {
         if ($item instanceof Club) {
             $clubNr      = $item->getClubNr();

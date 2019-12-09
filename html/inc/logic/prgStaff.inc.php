@@ -83,12 +83,6 @@ class PrgPatternElementStaff extends APrgPatternElement {
 
         // load id
         $this->id = Tools::get("id");
-
-
-        foreach($this->requiredFields as $field) {
-            #echo $this->getConstant($field);
-        }
-
     }
 
     public function processPost() {
@@ -179,13 +173,14 @@ class PrgPatternElementStaff extends APrgPatternElement {
       Tools::customRedirect(array(
         'page'   => $this->page,
         'action' => 'edit',
-        'id'     => $id,
+        'id'     => $this->id,
       ));
       return;
     }
 
     private function processPostDeleteStaff() {
-        $res = $this->brdb->deleteStaff($this->id);
+        // delete staff
+        $this->brdb->deleteStaff($this->id);
         if ($this->brdb->hasError()) {
             $this->setFailedMessage($this->brdb->getError());
         } else {

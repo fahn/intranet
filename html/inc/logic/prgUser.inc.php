@@ -308,7 +308,7 @@ class PrgPatternElementUser extends APrgPatternElement {
             return;
         }
 
-        $res = $this->brdb->deleteUserById($userId);
+        $this->brdb->deleteUserById($userId);
         if ($this->brdb->hasError()) {
             $this->setFailedMessage($this->brdb->getError());
         }

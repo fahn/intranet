@@ -52,11 +52,9 @@ trait PlayerDB {
 
     public function insertPlayer($data) {
         try {
-
-            extract($data);
             $sql = "INSERT INTO Player (playerNr, clubId, firstName, lastName, gender) VALUES (?,?,?,?,?)";
             $cmd = $this->db->prepare($sql);
-            $cmd->bind_param("sisss", $playerNr, $clubId, $firstName, $lastName, $gender);
+            $cmd->bind_param("sisss", $data['playerNr'], $data['clubId'], $data['firstName'], $data['lastName'], $data['gender']);
 
             return $this->executeStatement($cmd);
         } catch (Exception $e) {
@@ -75,7 +73,7 @@ trait PlayerDB {
                         clubId = ?
                     WHERE playerNr = ?";
             $cmd = $this->db->prepare($sql);
-            $cmd->bind_param("ssssis", $firstName, $lastName, $gender, $bday, $clubId, $playerNr);
+            $cmd->bind_param("ssssis", $data['firstName'], $data['lastName'], $data['gender'], $data['bday'], $data['clubId'], $data['playerNr']);
 
             return $this->executeStatement($cmd);
         } catch (Exception $e) {

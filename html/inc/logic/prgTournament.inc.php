@@ -323,7 +323,8 @@ class PrgPatternElementTournament extends APrgPatternElement {
             $actUser->getPlayerId()  != $tmp['partnerNr'])
         {
             $this->setFailedMessage("Nicht genug Rechte: Der Spieler konnte nicht gelöscht werden");
-            $url = $this->customRedirect(array(
+            
+            $this->customRedirect(array(
               'page'   => $this->page,
               'action' => 'details',
               'id'     => $tournamentId,
@@ -350,7 +351,7 @@ class PrgPatternElementTournament extends APrgPatternElement {
         }
 
 
-        $res = $this->brdb->deletePlayersFromTournamentId($tournamentId, $playerId);
+        $this->brdb->deletePlayersFromTournamentId($tournamentId, $playerId);
 
         if ($this->brdb->hasError()) {
             $this->setFailedMessage("Der Spieler konnte nicht gelöscht werden");
@@ -385,22 +386,6 @@ class PrgPatternElementTournament extends APrgPatternElement {
         return false;
     }
     */
-
-    // TODO: move to tools
-    private function isToday($time) {
-        return (strtotime($time) === strtotime('today'));
-    }
-
-    // TODO: move to tools
-    private function isPast($time) {
-        return (strtotime($time) < time());
-    }
-
-    // TODO: move to tools
-    private function isFuture($time) {
-        return (strtotime($time) > time());
-    }
-
 
     /**
      * Returns the id of the suer for a given full name

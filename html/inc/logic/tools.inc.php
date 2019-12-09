@@ -115,7 +115,7 @@ class Tools {
       if (! is_array($returnValues) || empty($returnValues)) {
         return false;
       }
-      
+
       return count($returnValues) > 1 ? $returnValues : $returnValues[0];
 
     }
@@ -128,12 +128,12 @@ class Tools {
             foreach ($array as $key => $value) {
                 if (is_array($array[$key])) {
                     // if element is array, then go to next dimension
-                    secure_array($array[$key]);
+                    secure_array($value);
                 } else {
                     // if element is a normal variable, clean it up
                     // replace this with mysql / PDO real escape string function depending on which database connector you are using
                     #$array[$key] = $brdb->real_escape_string($array[$key]);
-                    $array[$key] = strip_tags($array[$key]);
+                    $array[$key] = strip_tags($value);
                 }
             }
         }
@@ -245,8 +245,11 @@ class Tools {
       $from = sprintf("%s %s", $this->getIniValue('senderName'), $this->getIniValue('senderMail'));
       $from = self::getIniValue('senderMail');
 
+      $to = sprintf("%s <%s>", $name, $email);
+
+      // preparation
       $mail->setFrom($from)
-          ->addTo($email)
+          ->addTo($to)
           ->setSubject($subject)
           ->setBody($txtContent)
           ->setHtmlBody($mailContent);

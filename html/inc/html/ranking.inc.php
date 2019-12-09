@@ -23,8 +23,6 @@ require_once $_SERVER['BASE_DIR'] .'/vendor/autoload.php';
 class Ranking extends BrdbHtmlPage {
     private $prgElementRanking;
 
-    private $vars;
-
     protected $smarty;
 
     private $cssPrint;

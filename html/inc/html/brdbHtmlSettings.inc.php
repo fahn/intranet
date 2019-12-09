@@ -17,7 +17,6 @@ include_once BASE_DIR .'/inc/logic/prgPattern.inc.php';
 include_once BASE_DIR .'/inc/logic/tools.inc.php';
 
 class BrdbHtmlSettings extends BrdbHtmlPage {
-    private $vars;
 
     public function __construct() {
         parent::__construct();

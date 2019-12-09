@@ -139,7 +139,7 @@ class PrgPatternElementRanking extends APrgPatternElement {
         $gameTime = strtotime($gameTime);
 
         // INSERT MATCH
-        $res = $this->db->insertMatch($player, $opponent, $sets, $winner, $gameTime);
+        $this->db->insertMatch($player, $opponent, $sets, $winner, $gameTime);
         if ( $this->db->hasError()) {
             $this->setFailedMessage($this->brdb->getError());
             return false;

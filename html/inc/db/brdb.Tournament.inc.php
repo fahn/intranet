@@ -55,8 +55,8 @@ trait TournamentDB {
         $cmd = $this->db->prepare("SELECT Tournament.*
                                    FROM Tournament
                                    WHERE visible = 1 AND startdate > NOW()
-                                   ORDER by startdate ASC LIMIT 5");
-        #$cmd->bind_param("i", $max);
+                                   ORDER by startdate ASC LIMIT ?");
+        $cmd->bind_param("i", $max);
         #(SELECT COUNT(*) FROM TournamentPlayer AS TP WHERE TP.tournamentId = Tournament.tournamentId AND TP.visible = 1  ) AS participant#
 
         return $this->executeStatement($cmd);

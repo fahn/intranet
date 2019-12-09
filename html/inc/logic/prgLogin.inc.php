@@ -145,7 +145,6 @@ class PrgPatternElementLogin extends APrgPatternElement {
           return;
         }
 
-        $email     = $mail;
         $name      = $userData['firstName'];
         $subject   = "Dein Password wurde angefordert.";
 

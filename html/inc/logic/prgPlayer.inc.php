@@ -136,7 +136,7 @@ class PrgPatternElementPlayer extends APrgPatternElement {
           'bday'      => $this->getPostVariable(self::FORM_PLAYER_BDAY),
       );
 
-      $res = $this->brdb->insertPlayer($data);
+      $this->brdb->insertPlayer($data);
       if ($this->brdb->hasError()) {
           $this->setFailedMessage($this->brdb->getError());
           return;
@@ -182,7 +182,9 @@ class PrgPatternElementPlayer extends APrgPatternElement {
     public function insert($player) {
         if ($player instanceof Player) {
             $arr = $player->getSqlData();
-            $res = $this->brdb->insertPlayer($arr);
+            
+            // insert player
+            $this->brdb->insertPlayer($arr);
             if ($this->brdb->hasError()) {
                 return false;
             }
@@ -193,7 +195,8 @@ class PrgPatternElementPlayer extends APrgPatternElement {
 
     public function update($item) {
         if ($item instanceof Player) {
-            $res = $this->brdb->updatePlayer($item->getSqlData());
+            
+            $this->brdb->updatePlayer($item->getSqlData());
             if ($this->brdb->hasError()) {
                 return false;
             }

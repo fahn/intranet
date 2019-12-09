@@ -57,18 +57,8 @@ class PrgPatternElementSync extends APrgPatternElement {
     public function processPost() {
         $isUserLoggedIn = $this->prgElementLogin->isUserLoggedIn();
         $isUserAdmin    = $this->prgElementLogin->getLoggedInUser()->isAdmin();
-        $isUserReporter = $this->prgElementLogin->getLoggedInUser()->isReporter();
 
-
-
-        // Don't process the posts if no user is logged in!
-        // otherwise well formed post commands could trigger database actions
-        // without theoretically having access to it.
-        if (!$this->prgElementLogin->isUserLoggedIn()) {
-            return;
-        }
-
-        if (!$isUserReporter) {
+        if (!$isUserLoggedIn || !$isUserAdmin) {
             return;
         }
     }

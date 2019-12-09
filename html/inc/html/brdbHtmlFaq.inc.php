@@ -44,9 +44,11 @@ class BrdbHtmlFaq extends BrdbHtmlPage {
         $this->smarty->display('index.tpl');
     }
     
-    private function TMPL_showCategory($id) {
+    /*
+    private function TMPL_showCategory() {
         $this->lcontent = "DAS";
     }
+    */
 
     private function TMPL_showFAQ() {
         $this->smarty->assign(array(

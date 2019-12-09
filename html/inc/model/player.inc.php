@@ -49,12 +49,40 @@ class Player {
         return sprintf("%s %s", $this->firstName, $this->lastName);
     }
 
+    /**
+     * get PlayerId from Player
+     *
+     * @return void
+     */
     public function getPlayerId() {
         return $this->playerId;
     }
 
+    /**
+     * Get PlayerNr from Player
+     *
+     * @return void
+     */
     public function getPlayerNr() {
         return $this->playerNr;
+    }
+
+    /**
+     * Get ClubNr from PlayerId
+     *
+     * @return void
+     */
+    public function getClubNr() {
+        return $this->clubNr;
+    }
+
+    /**
+     * Ger Bday from Player
+     *
+     * @return void
+     */
+    public function getBday() {
+        return $this->bday;
     }
 
     public function getSqlData() {

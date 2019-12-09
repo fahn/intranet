@@ -16,7 +16,6 @@ include_once('brdbHtmlPage.inc.php');
 #include_once BASE_DIR .'/inc/logic/tools.inc.php';
 
 class BrdbHtmlNotification extends BrdbHtmlPage {
-    private $vars;
 
     public function __construct() {
         parent::__construct();

@@ -155,16 +155,12 @@ class PrgPatternElementFaq extends APrgPatternElement {
         #die($id);
 
 
-        // get the admin ID and try to read the corresponding game from the
-        // data base, process the rror in case of
-        $res = $this->brdb->updateFaqById($id, $title, $categoryId, $text);
+        $this->brdb->updateFaqById($id, $title, $categoryId, $text);
         if ($this->brdb->hasError()) {
             $this->setFailedMessage($this->brdb->getError());
             return;
         }
-        #echo "<pre>";
-        #die(print_r($this->brdb));
-
+        
         $this->setSuccessMessage("FAQ wurde erfolgreich geändert.");
         return;
     }

@@ -152,7 +152,7 @@ class PrgPatternElementCategory extends APrgPatternElement {
 
         // get the admin ID and try to read the corresponding game from the
         // data base, process the rror in case of
-        $res = $this->brdb->updateNewsById($id, $title, $categoryId, $text);
+        $this->brdb->updateNewsById($id, $title, $categoryId, $text);
         if ($this->brdb->hasError()) {
             $this->setFailedMessage($this->brdb->getError());
             return;
