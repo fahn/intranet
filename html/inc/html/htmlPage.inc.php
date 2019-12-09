@@ -12,7 +12,8 @@
  *
  ******************************************************************************/
 
-if (isset(getenv('stage')) && getenv('stage') == "development") {
+$stage = getenv('stage', true) ?: getenv('stage');
+if ($stage == "development") {
     error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
 }
 
@@ -30,6 +31,9 @@ abstract class HtmlPageProcessor {
     // tools
     protected $tools;
 
+    // stage
+    protected $stage;
+
     /**
      * Standard constructor which gets called
      * by some derived classes
@@ -37,6 +41,9 @@ abstract class HtmlPageProcessor {
     public function __construct() {
         // load tools
         $this->tools = new Tools;
+
+        // set stage
+        $this->stage = getenv('stage', true) ?: getenv('stage');
 
         // load smarty
         $this->smarty = new Smarty;

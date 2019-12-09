@@ -14,7 +14,7 @@
 require_once '_options.php';
 include_once BASE_DIR .'/inc/html/brdbHtmlParseDownPage.inc.php';
 
-$page = new BrdbHtmlParseDownPage(BASE_DIR .'CHANGELOG.md');
+$page = new BrdbHtmlParseDownPage(BASE_DIR .'/CHANGELOG.md');
 $page->processPage();
 
 ?>

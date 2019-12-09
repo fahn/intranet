@@ -11,8 +11,9 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
+$stage = getenv('stage', true) ?: getenv('stage');
 
-if (isset(getenv('stage')) && getenv('stage') == "development") {
+if ($stage == "development") {
     error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
 }
 
@@ -34,10 +35,9 @@ try {
         if (!$brdb->hasError() || $res->num_rows > 0) {
             $data = array();
             while ($row = $res->fetch_assoc()) {
-                extract($row);
                 $data['results'][] = array(
                     'id'   => $playerId,
-                    'text' => sprintf("%s (SpNr.: %s; Verein: %s)", $playerName, $playerNr, $clubName)
+                    'text' => sprintf("%s (SpNr.: %s; Verein: %s)", $row['playerName'], $row['playerNr'], $row['clubName'])
                 );
 
             }
