@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 
 ### 1.0.7
 **Date:** upcoming
+- implement codacy for automatic code quality and generating issue-management
 
 ### 1.0.6.4
 **Date:** 2019-11-14
@@ -68,21 +69,20 @@ All notable changes to this project will be documented in this file.
 ### 1.0.3
 **Date:** 2018-02-09
 
-
 ### 1.0.2
 **Date:** 2017-11-23
 -  Add Clubs: edit, add a new club
 
 ### 1.0.1
 **Date:** 2017-11-21
--  Add Tournament-system
-  -  create tournament, subscripte tournament, sign off from tournament
+-  Add Tournament-system(create tournament, subscripte tournament, sign off from tournament)
 -  Add Smarty-Template engine
 -  add bootstrap-style
 -  Add Messages for failed login
 -  Add Logout functionality
 -  change layout
 -  Change Messages
+
 ### 1.0.0
 **Date:** 2017-11-01
 init version

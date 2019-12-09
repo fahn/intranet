@@ -84,6 +84,7 @@ class PrgPatternElementUser extends APrgPatternElement {
         $this->registerPostSessionVariable(self::FORM_USER_FNAME);
         $this->registerPostSessionVariable(self::FORM_USER_LNAME);
         $this->registerPostSessionVariable(self::FORM_USER_GENDER);
+        $this->registerPostSessionVariable(self::FORM_USER_PLAYERID);
         $this->registerPostSessionVariable(self::FORM_USER_IS_PLAYER);
         $this->registerPostSessionVariable(self::FORM_USER_IS_ADMIN);
         $this->registerPostSessionVariable(self::FORM_USER_IS_REPORTER);
@@ -194,7 +195,8 @@ class PrgPatternElementUser extends APrgPatternElement {
         return;
       }
 
-      $res = $this->brdb->insertUser($email, $firstName, $lastName, $gender);
+      
+      $this->brdb->insertUser($email, $firstName, $lastName, $gender);
       if ($this->brdb->hasError()) {
           $this->setFailedMessage($this->brdb->getError());
           return;
@@ -237,6 +239,7 @@ class PrgPatternElementUser extends APrgPatternElement {
         $firstName  = strval(trim($this->getPostVariable(self::FORM_USER_FNAME)));
         $lastName   = strval(trim($this->getPostVariable(self::FORM_USER_LNAME)));
         $gender     = strval(trim($this->getPostVariable(self::FORM_USER_GENDER)));
+        $playerId   = strval(trim($this->getPostVariable(self::FORM_USER_PLAYERID)));
 
         // First filter the email before continue
         if (! $this->tools->validEMail($email) ) {
@@ -530,7 +533,7 @@ class PrgPatternElementUser extends APrgPatternElement {
             return;
         }
 
-        $res = $this->brdb->updateUserImage($userId, $this->uploadImageFileName);
+        $this->brdb->updateUserImage($userId, $this->uploadImageFileName);
         if ($this->brdb->hasError()) {
           $this->setFailedMessage($this->brdb->getError());
           return;

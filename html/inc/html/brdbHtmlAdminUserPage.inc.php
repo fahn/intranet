@@ -22,10 +22,6 @@ class BrdbHtmlAdminUserPage extends BrdbHtmlPage {
     public function __construct() {
         parent::__construct();
 
-    if(!showProtectedArea) {
-      die("NO ACCESS");
-    }
-
         $this->prgElementUser = new PrgPatternElementUser($this->brdb, $this->prgPatternElementLogin);
         $this->prgPattern->registerPrg($this->prgElementUser);
     }

@@ -604,7 +604,7 @@ class PrgPatternElementTournament extends APrgPatternElement {
         }
 
         // kill it
-        exit(0);
+        return;
 
       }
 

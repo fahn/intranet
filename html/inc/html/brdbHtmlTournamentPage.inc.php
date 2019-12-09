@@ -170,7 +170,7 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
 
     private function valueIsKey($arr) {
         if (is_array($arr)) {
-            foreach($arr as $key => $item) {
+            foreach($arr as $item) {
                 $tmp[$item] = $item;
             }
             return $tmp;

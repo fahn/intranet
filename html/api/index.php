@@ -90,7 +90,7 @@ class Api {
             $xml = simplexml_load_string($content);
         } catch (Exception $e) {
             echo "Import failed "+ $e;
-            exit(99);
+            return;
         }
         $data = $this->getTournamentData();
 

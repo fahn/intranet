@@ -149,8 +149,6 @@ class PrgPatternElementSync extends APrgPatternElement {
         $records = $data->records;
         if ($records) {
             foreach($records as $item) {
-                print_r($item);
-                die();
                 if (empty($item->playerNr)) {
                     continue;
                 }

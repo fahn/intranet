@@ -37,8 +37,7 @@ class BrdbHtmlUserInformation extends BrdbHtmlPage {
 
 
     protected function htmlBody() {
-        $id = $this->getGetVariable('id');
-        $content = $this->loadContent($id);
+        $content  = $this->loadContent($this->tools->get('id'));
 
         // widget
         $widgetTournament = new TournamentWidget();

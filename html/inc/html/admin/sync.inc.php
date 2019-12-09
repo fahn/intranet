@@ -52,7 +52,6 @@ class BrdbHtmlAdminSyncPage extends BrdbHtmlPage {
 
     public function htmlBody() {
         $action = $this->tools->get("action");
-        $id     = $this->tools->get("id");
 
         switch ($action) {
             case 'sync':

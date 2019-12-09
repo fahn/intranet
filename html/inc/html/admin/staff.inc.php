@@ -19,7 +19,6 @@ include_once BASE_DIR .'/inc/logic/tools.inc.php';
 
 class BrdbHtmlAdminStaff extends BrdbHtmlPage {
     private $prgPatternElementStaff;
-    private $countRows;
 
     private $page;
 

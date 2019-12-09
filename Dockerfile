@@ -74,8 +74,6 @@ WORKDIR /var/www/html/
 ## parse md-files
 RUN composer install
 
-USER root
-
 # Volumes
 VOLUME /var/www/html/inc/config.ini
 VOLUME /var/www/html/static/img/background.jpg

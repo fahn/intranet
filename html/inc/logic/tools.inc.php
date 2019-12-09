@@ -79,7 +79,8 @@ class Tools {
             header_remove();
             header("HTTP/1.1 303 See Other");
             header("Location: ". $url);
-            exit("Exit of the PRG pattern...");
+            echo "Exit of the PRG pattern...";
+            return;
         }
     }
 
@@ -391,7 +392,7 @@ class Tools {
     }
 
     public function validPassword($password, $hash) {
-
+        return password_verify($password, $hash);
     }
 
     public function validEMail($email) {
