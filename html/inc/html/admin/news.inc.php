@@ -21,8 +21,6 @@ include_once BASE_DIR .'/inc/html/admin/category.inc.php';
 
 class BrdbHtmlAdminNewsPage extends BrdbHtmlPage {
   private $prgPatternElementNews;
-  private $variable;
-  private $countRows;
 
   //
   private $_page = "";

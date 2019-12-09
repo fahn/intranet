@@ -234,7 +234,7 @@ class PrgPatternElementClub extends APrgPatternElement {
             $clubName    = $item->getClubName();
             $association = $item->getAssociation();
 
-            $res = $this->brdb->updateClubByClubNr($clubNr, $clubName, $association);
+            $this->brdb->updateClubByClubNr($clubNr, $clubName, $association);
             if ($this->brdb->hasError()) {
                 return false;
             }

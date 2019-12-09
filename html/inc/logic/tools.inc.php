@@ -52,7 +52,7 @@ class Tools {
         if(is_array($data)) {
             return $data;
             $tmp = array();
-            foreach($data as $key => $item) {
+            foreach($data as $item) {
                 $tmp[] = $this->escapeInput($item);
             }
             $data = $tmp;

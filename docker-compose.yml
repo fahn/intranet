@@ -4,6 +4,8 @@ services:
   intranet:
     image: badtra/intranet:latest
     container_name: intranet
+    environment: 
+      - stage: "development"
     ports:
       - "8000:80"
     volumes:

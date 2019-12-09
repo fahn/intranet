@@ -68,12 +68,8 @@ class PrgPatternElementStaff extends APrgPatternElement {
     public function __construct(BrankDB $brdb, PrgPatternElementLogin $prgElementLogin) {
         parent::__construct("staff");
 
-        $this->registerPostSessionVariable(self::FORM_STAFF_STAFFID);
-        $this->registerPostSessionVariable(self::FORM_STAFF_USERID);
-        $this->registerPostSessionVariable(self::FORM_STAFF_POSTION);
-        $this->registerPostSessionVariable(self::FORM_STAFF_DESCRIPTION);
-        $this->registerPostSessionVariable(self::FORM_STAFF_ROW);
-        $this->registerPostSessionVariable(self::FORM_STAFF_SORT);
+        $this->registerPostSessionVariables($this->requiredFields, true);
+        #$this->registerPostSessionVariables(self::FORM_STAFF_STAFFID);
 
         // load DB
         $this->brdb = $brdb;
@@ -87,8 +83,10 @@ class PrgPatternElementStaff extends APrgPatternElement {
 
     public function processPost() {
         // ADMIN AREA
-        #$this->prgElementLogin->redirectUserIfNotLoggindIn();
-        #$this->prgElementLogin->redirectUserIfnoRights(array('reporter', 'admin'), 'or');
+        $this->prgElementLogin->redirectUserIfNotLoggindIn();
+        $this->prgElementLogin->redirectUserIfnoRights(array('admin'));
+        
+        
 
         if (! $this->issetPostVariable(self::FORM_STAFF_ACTION)) {
             $this->setFailedMessage("Kein Formular.");

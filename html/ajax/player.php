@@ -1,14 +1,29 @@
 <?php
-#error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
+/*******************************************************************************
+ * Badminton Intranet System
+ * Copyright 2017-2019
+ * All Rights Reserved
+ *
+ * Copying, distribution, usage in any form is not
+ * allowed without  written permit.
+ *
+ * Stefan Metzner <stefan@weinekind.de>
+ * Philipp M. Fischer <phil.m.fischer@googlemail.com>
+ *
+ ******************************************************************************/
+
+if (isset(getenv('stage')) && getenv('stage') == "development") {
+    error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
+}
 
 header("Access-Control-Allow-Origin: *");
-header("Content-Type: application/json; charset=UTF-8");
+header("Content-Type: application/json");
 
 $path=dirname(dirname(__FILE__));
-$_SERVER['BASE_DIR'] = $path;
+define("BASE_DIR", $path);
 
-require_once $_SERVER['BASE_DIR'] ."/inc/db/brdb.inc.php";
-require_once $_SERVER['BASE_DIR'] ."/inc/logic/tools.inc.php";
+require_once $path ."/inc/db/brdb.inc.php";
+require_once $path ."/inc/logic/tools.inc.php";
 
 try {
     if (isset($_POST["playerSearch"])) {

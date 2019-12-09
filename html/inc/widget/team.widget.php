@@ -39,7 +39,7 @@ class TeamWidget extends Widget {
 
     private function getAdminsAndReporter() {
         $data = array();
-        $res = $this->brdb->GetActiveAndReporterOrAdminPlayer();
+        $res = $this->brdb->selectGetStaff();
         if (!$this->brdb->hasError()) {
             while ($dataSet = $res->fetch_assoc()) {
                 $data[]         = array(
@@ -67,10 +67,7 @@ class TeamWidget extends Widget {
         $res = $this->brdb->selectGetStaff();
         if (!$this->brdb->hasError()) {
             while ($dataSet = $res->fetch_assoc()) {
-                $data[]         = array(
-                    'userId'   => $dataSet['userId'],
-                    'fullName' => $dataSet['firstName'] .' '. $dataSet['lastName'],
-                );
+                $data[] = $dataSet;
             }
         }
         return $data;

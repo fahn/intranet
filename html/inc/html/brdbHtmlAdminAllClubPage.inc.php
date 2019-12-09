@@ -18,8 +18,6 @@ include_once BASE_DIR .'/inc/logic/tools.inc.php';
 
 class BrdbHtmlAdminAllClubPage extends BrdbHtmlPage {
   private $prgPatternElementClub;
-  private $variable;
-  private $countRows;
 
   const MAX_ENTRIES = 50;
 

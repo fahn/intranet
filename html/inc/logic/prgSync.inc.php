@@ -138,6 +138,7 @@ class PrgPatternElementSync extends APrgPatternElement {
     }
 
     private function syncTournament() {
+        return;
         $statistics = $this->getBaseStats();
 
         $file = file_get_contents(self::API_LIST_TOURNAMENT, false, $this->arrContextOptions());
@@ -197,17 +198,10 @@ class PrgPatternElementSync extends APrgPatternElement {
      * @see IPrgPatternElement::processGet()
      */
     public function processGet() {
-
         $isUserLoggedIn = $this->prgElementLogin->isUserLoggedIn();
         $isUserAdmin     = $this->prgElementLogin->getLoggedInUser()->isAdmin();
-        // Don't process the posts if no user is logged in!
-        // otherwise well formed post commands could trigger database actions
-        // without theoretically having access to it.
-        if ( !$this->prgElementLogin->isUserLoggedIn() || !$isUserAdmin ) {
-            return;
-        }
 
-        if ($this->prgElementLogin->getLoggedInUser()->getUserId() != 1) {
+        if (!$isUserLoggedIn && !$isUserAdmin ) {
             return;
         }
 
@@ -249,7 +243,7 @@ class PrgPatternElementSync extends APrgPatternElement {
         $this->syncPlayer();
 
         // sync Tournmanet
-        // $this->syncTournament();
+        $this->syncTournament();
 
         // save statistics
         $this->setSuccessMessage($this->statistics);

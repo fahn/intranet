@@ -97,6 +97,7 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
         return;
     }
 
+    /* 
     private function loadSettings() {
         $data = array();
         $res = $this->brdb->loadSettings();
@@ -106,6 +107,7 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
 
         return $data;
     }
+    */
 
 
 
@@ -204,7 +206,7 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
                 // if there is no user logged in, then show the content to
                 // to perform a new login
                 $variableNameEmail              = $this->prgPatternElementLogin->getPrefixedName(PrgPatternElementLogin::FORM_LOGIN_EMAIL);
-                $variableNameEmailValue         = $this->prgPatternElementLogin->safeGetSessionVariable(PrgPatternElementLogin::FORM_LOGIN_EMAIL);
+                #$variableNameEmailValue         = $this->prgPatternElementLogin->safeGetSessionVariable(PrgPatternElementLogin::FORM_LOGIN_EMAIL);
                 $variableNamePassw              = $this->prgPatternElementLogin->getPrefixedName(PrgPatternElementLogin::FORM_LOGIN_PASSWORD);
                 $variableNameAction             = $this->prgPatternElementLogin->getPrefixedName(PrgPatternElementLogin::FORM_LOGIN_ACTION);
                 $variableNameActionLogin        = PrgPatternElementLogin::FORM_LOGIN_ACTION_LOGIN;

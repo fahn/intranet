@@ -27,13 +27,10 @@ class BrdbHtmlAdminStaff extends BrdbHtmlPage {
     public function __construct($page = null) {
         parent::__construct();
 
-        if ($page != null) {
-            $this->page = $page;
-        }
+        $this->page = $page != null ? $page : "";
 
         $this->prgPatternElementStaff = new PrgPatternElementStaff($this->brdb, $this->prgPatternElementLogin);
         $this->prgPattern->registerPrg($this->prgPatternElementStaff);
-
     }
 
     protected function showProtectedArea() {

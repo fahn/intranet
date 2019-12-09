@@ -23,7 +23,6 @@ include_once BASE_DIR .'/inc/widget/ranking.widget.php';
 
 class BrdbHtmlUserInformation extends BrdbHtmlPage {
     private $prgElementUser;
-    private $id;
 
     public function __construct() {
         parent::__construct();

@@ -19,8 +19,6 @@ include_once BASE_DIR .'/inc/logic/tools.inc.php';
 
 class BrdbHtmlAdminCategoryPage extends BrdbHtmlPage {
   private $prgPatternElementCategory;
-  private $variable;
-  private $countRows;
 
   //
   private $_page  = "";

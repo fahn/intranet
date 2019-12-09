@@ -265,7 +265,7 @@ class PrgPatternElementRanking extends APrgPatternElement {
   private function updatePoints($playerId, $points, $win) {
       error_log ($playerId ." - ". $points ." - ". $win ."<br>");
       $loss = ($win == 1 ? 0 : 1);
-      $upd = $this->db->updatePoints($playerId, $points, $win, $loss);
+      $this->db->updatePoints($playerId, $points, $win, $loss);
       if (! $this->db->hasError() ) {
           return true;
       }

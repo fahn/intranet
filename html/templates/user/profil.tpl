@@ -20,7 +20,6 @@
                 <img src="/static/img/user/default_{if $user.gender == "Male"}m{else}w{/if}.png" name="about {$user.firstName} {$user.lastName}" width="140" height="140" border="0" class="card-img-profile"">
             {/if}
         </div>
-
     </div>
 
 
@@ -44,9 +43,9 @@
                                     <p><strong>Telefon:</strong> {$user.phone}</p>
                                   {/if}
                                 {/if}
-                            </div>
-                            <div class="col-md-6">
-                                {if $user.playerId}
+                            </div> 
+                            <div class="col-md-6"> 
+                                {if $user.playerId} 
                                     <p><strong>Spielernummer:</strong> {$user.playerId}</p>
                                 {/if}
     

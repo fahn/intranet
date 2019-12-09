@@ -20,7 +20,6 @@ include_once BASE_DIR .'/inc/logic/tools.inc.php';
 
 class BrdbHtmlAdminAllPlayer extends BrdbHtmlPage {
     private $prgPatternElementPlayer;
-    private $countRows;
 
     private $info;
 
@@ -147,7 +146,7 @@ class BrdbHtmlAdminAllPlayer extends BrdbHtmlPage {
     /**
     PAGINATION
     */
-    private function loadPlayerList($page = 0) {
+    private function loadPlayerList() {
         #$this->countRows = $this->brdb->selectAllUser()->num_rows;
         #$max = self::MAX_ENTRIES*(1+$page);
         #$min = $max - self::MAX_ENTRIES;

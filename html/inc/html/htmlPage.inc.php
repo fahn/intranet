@@ -11,6 +11,11 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
+
+if (isset(getenv('stage')) && getenv('stage') == "development") {
+    error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
+}
+
 $path=dirname(dirname(__FILE__));
 include($path .'/config.php');
 
@@ -36,7 +41,7 @@ abstract class HtmlPageProcessor {
         // load smarty
         $this->smarty = new Smarty;
 
-        if ($this->tools->getIniValue('stage') == "development") {
+        if (getenv('stage') == "development") {
             // @TODO: set debug bar
             $this->smarty->force_compile  = true;
             $this->smarty->debugging      = true;
@@ -54,6 +59,7 @@ abstract class HtmlPageProcessor {
         $this->smarty->assign(array(
             'pageTitle' => $this->tools->getIniValue('pageTitle'),
             'logoTitle' => $this->tools->getIniValue('logoTitle'),
+            'baseUrl'   => $this->tools->getIniValue('baseUrl'),
         ));
     }
 
