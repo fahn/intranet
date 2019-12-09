@@ -11,7 +11,8 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
-include_once(dirname(dirname(__FILE__)) .'/config.php');
+$path=dirname(dirname(__FILE__));
+include($path .'/config.php');
 
 require_once BASE_DIR .'/smarty/libs/Smarty.class.php';
 require_once BASE_DIR .'/inc/logic/tools.inc.php';

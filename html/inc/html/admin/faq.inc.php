@@ -11,7 +11,8 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
-include_once('brdbHtmlPage.inc.php');
+$path=dirname(dirname(__FILE__));
+require($path .'/brdbHtmlPage.inc.php');
 
 include_once BASE_DIR .'/inc/logic/prgFaq.inc.php';
 include_once BASE_DIR .'/inc/logic/tools.inc.php';
