@@ -11,9 +11,9 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
+include_once('brdbHtmlPage.inc.php');
 
-include_once $_SERVER['BASE_DIR'] .'/inc/html/brdbHtmlPage.inc.php';
-include_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
+include_once BASE_DIR .'/inc/logic/tools.inc.php';
 
 class BrdbHtmlAdminShowLog extends BrdbHtmlPage {
   //

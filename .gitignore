@@ -2,3 +2,4 @@ inc/config.ini
 templates_c
 .remote-sync.json
 .vscode
+.settings

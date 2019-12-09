@@ -11,10 +11,10 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
+include_once('brdbHtmlPage.inc.php');
 
-include_once $_SERVER['BASE_DIR'] .'/inc/html/brdbHtmlPage.inc.php';
-include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgImage.inc.php';
-include_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
+include_once BASE_DIR .'/inc/logic/prgImage.inc.php';
+include_once BASE_DIR .'/inc/logic/tools.inc.php';
 
 class BrdbHtmlAdminAllImagesPage extends BrdbHtmlPage {
   private $prgPatternElementImage;
@@ -75,7 +75,7 @@ class BrdbHtmlAdminAllImagesPage extends BrdbHtmlPage {
     private function scanDirectory() {
         $userImages = $this->prgPatternElementImage->getUserImages();
         
-        $servPath = $_SERVER['BASE_DIR'] .'/';
+        $servPath = BASE_DIR .'/';
         $images = glob($servPath . self::_USER_IMAGE_PATH_ . "/*");
         
         $data = array();

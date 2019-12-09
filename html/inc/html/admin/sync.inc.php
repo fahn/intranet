@@ -11,18 +11,18 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
+include_once('brdbHtmlPage.inc.php');
 
-include_once $_SERVER['BASE_DIR'] .'/inc/html/brdbHtmlPage.inc.php';
-include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgSync.inc.php';
-include_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
+include_once BASE_DIR .'/inc/logic/prgSync.inc.php';
+include_once BASE_DIR .'/inc/logic/tools.inc.php';
 
 // load models
-include_once $_SERVER['BASE_DIR'] .'/inc/model/club.inc.php';
-include_once $_SERVER['BASE_DIR'] .'/inc/model/player.inc.php';
+include_once BASE_DIR .'/inc/model/club.inc.php';
+include_once BASE_DIR .'/inc/model/player.inc.php';
 
 // load logic
-include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgClub.inc.php';
-include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgPlayer.inc.php';
+include_once BASE_DIR .'/inc/logic/prgClub.inc.php';
+include_once BASE_DIR .'/inc/logic/prgPlayer.inc.php';
 
 class BrdbHtmlAdminSyncPage extends BrdbHtmlPage {
     private $prgPatternElementSync;
