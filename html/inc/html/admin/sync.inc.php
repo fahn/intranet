@@ -26,7 +26,6 @@ include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgPlayer.inc.php';
 
 class BrdbHtmlAdminSyncPage extends BrdbHtmlPage {
     private $prgPatternElementSync;
-    private $prgPatternElementClub;
 
     private $_page;
 

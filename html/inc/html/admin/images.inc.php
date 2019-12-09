@@ -18,7 +18,6 @@ include_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
 
 class BrdbHtmlAdminAllImagesPage extends BrdbHtmlPage {
   private $prgPatternElementImage;
-  private $variable;
   private $countRows;
   
   const _USER_IMAGE_PATH_   = "/static/img/user/";

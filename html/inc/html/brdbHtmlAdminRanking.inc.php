@@ -18,7 +18,6 @@ include_once BASE_DIR .'/inc/logic/tools.inc.php';
 
 class BrdbHtmlAdminRanking extends BrdbHtmlPage {
   private $prgElementGame;
-  private $vars;
 
   public function __construct() {
     parent::__construct();

@@ -52,13 +52,13 @@ trait RankingDB
     /**
      * get Game by ID
      */
-    public function statementGetGameById($id)
+    public function statementGetGameById($actionId)
     {
         $cmd = $this->db->prepare("SELECT games.*, CONCAT_WS(' ', player.firstName, player.lastName) playerName, CONCAT_WS(' ', opponent.firstName, opponent.lastName) opponentName FROM `EloGames` AS games
                                    LEFT JOIN Player AS player ON player.playerId = games.playerId
                                    LEFT JOIN Player AS opponent ON opponent.playerId = games.opponentId
                                    WHERE games.gameId = ?");
-        $cmd->bind_param("i", $id);
+        $cmd->bind_param("i", $actionId);
         
         return $this->executeStatement($cmd);
     }
@@ -94,13 +94,13 @@ trait RankingDB
         return $this->executeStatement($cmd);
     }
 
-    public function selectLatestRankingGamesByPlayerId($id)
+    public function selectLatestRankingGamesByPlayerId($actionId)
     {
         $cmd = $this->db->prepare("SELECT games.*, CONCAT_WS(' ', Player.firstName, Player.lastName) AS name FROM EloGames AS games
                                 LEFT JOIN Player ON Player.playerId = games.opponentId
                                 WHERE (games.playerId = ? OR games.opponentId = ?) AND games.hidden = 0
                                 ORDER BY gameTime DESC LIMIT 5");
-        $cmd->bind_param("ii", $id, $id);
+        $cmd->bind_param("ii", $actionId, $actionId);
 
         return $this->executeStatement($cmd);
     }
@@ -108,10 +108,10 @@ trait RankingDB
     /**
      * delete game by ID
      */
-    public function deleteMatch($id)
+    public function deleteMatch($actionId)
     {
         $cmd = $this->db->prepare("UPDATE `EloGames` SET hidden='1' WHERE gameId = ?");
-        $cmd->bind_param("i", $id);
+        $cmd->bind_param("i", $actionId);
 
         return $this->executeStatement($cmd);
     }

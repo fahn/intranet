@@ -140,7 +140,7 @@ class PrgPatternElementClub extends APrgPatternElement {
 
             // get the admin ID and try to read the corresponding game from the
             // data base, process the rror in case of
-            $res = $this->brdb->updateClubById($id, $name, $number, $association);
+            $this->brdb->updateClubById($id, $name, $number, $association);
             if ($this->brdb->hasError()) {
                 $this->setFailedMessage($this->brdb->getError());
                 return;

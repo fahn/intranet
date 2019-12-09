@@ -4,12 +4,6 @@
 /*
  * General styles
  */
-body, html {
-    height: 100%;
-    background-repeat: no-repeat;
-    /* background-image: linear-gradient(rgb(104, 145, 162), rgb(12, 97, 33)); */
-
-}
 html {
     background-image: url('/static/img/background.jpg');
     background-attachment:fixed;
@@ -20,6 +14,13 @@ html {
   html {
     background-image: url('/static/img/background_mobile.jpg');
   }
+}
+
+body, html {
+  height: 100%;
+  background-repeat: no-repeat;
+  /* background-image: linear-gradient(rgb(104, 145, 162), rgb(12, 97, 33)); */
+
 }
 
 body {
@@ -41,6 +42,7 @@ body {
     height: 36px;
     -moz-user-select: none;
     -webkit-user-select: none;
+    -ms-user-select: none;
     user-select: none;
     cursor: default;
 }

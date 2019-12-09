@@ -22,7 +22,7 @@ class BrdbHtmlSettings extends BrdbHtmlPage {
     public function __construct() {
         parent::__construct();
 
-        $this->tools->secure_array($_GET);
+        //$this->tools->secure_array($_GET);
     }
 
     public function processPage() {

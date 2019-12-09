@@ -338,15 +338,15 @@ class PrgPatternElementTournament extends APrgPatternElement {
 
         // inform reporterId
         if($this->isPast($row['deadline']) && $row['reporterId'] > 0) {
-          // SEND MAIL
-          /// reporter
-            $this->informUser($row['reporterId']);
-          /// player
-            #$this->informUser($row['playerId']);
-          /// partner
-          #if(isset($tmp['partnerId']) && $tmp['partnerId'] > 0) {
-        #      $this->informUser($tmp['partnerId']);
-          #}
+            // inform player
+            //$this->informUser($row['playerId']);
+            // inform partner
+            //if(isset($tmp['partnerId']) && $tmp['partnerId'] > 0) {
+            //    $this->informUser($tmp['partnerId']);
+            //}
+
+            // inform reporter
+            //$this->informUser($row['reporterId']);
         }
 
 
@@ -365,7 +365,8 @@ class PrgPatternElementTournament extends APrgPatternElement {
         ));
     }
 
-    private function informUser($userId = null) {
+    /*
+    private function informUser($informUserId) {
         if ($userId > 0) {
             $res       = $this->brdb->selectPlayerById($userId);
             $partner   = $res->fetch_assoc();
@@ -383,6 +384,7 @@ class PrgPatternElementTournament extends APrgPatternElement {
         }
         return false;
     }
+    */
 
     // TODO: move to tools
     private function isToday($time) {

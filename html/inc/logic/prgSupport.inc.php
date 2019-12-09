@@ -85,7 +85,7 @@ class PrgPatternElementSupport extends APrgPatternElement {
 
         $message  .= "<h2>DEBUG:</h2>";
         $message  .= "Zeit: ". date("d.m.Y H:i") ."<br>";
-        $message  .= "IP: ". (!isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['REMOTE_ADDR'] : $_SERVER['HTTP_X_FORWARDED_FOR']) ."<br>";
+        $message  .= sprintf("IP: %s <br>", $this->getIP());
         $message  .= sprintf('USER: <a href="%s">%s</a>', $this->tools->linkTo(array('page' => 'user.php', 'id' => $this->prgElementLogin->getLoggedInUser()->getID())), $this->prgElementLogin->getLoggedInUser()->getFullname());
 
         if (!$this->tools->sendMail($to, $name, $subject, $preheader, $message, false, false)) {
@@ -95,6 +95,10 @@ class PrgPatternElementSupport extends APrgPatternElement {
 
         $this->setSuccessMessage(self::SUCCESS_MESSAGE);
         return;
+    }
+
+    private function getIP() {
+        return isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
     }
 }
 

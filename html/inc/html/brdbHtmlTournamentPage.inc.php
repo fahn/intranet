@@ -58,33 +58,33 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
     protected function htmlBody() {
         $this->getMessages();
 
-        $content = "";
-        $action = $this->tools->get("action");
-        $id     = $this->tools->get("id");
+        $content  = "";
+        $action   = $this->tools->get("action");
+        $actionId = $this->tools->get("id");
 
         switch ($action) {
             case 'add_tournament':
-                $content = $this->updateTournamentTMPL($id);
+                $content = $this->updateTournamentTMPL($actionId);
                 break;
 
             case 'edit_tournament':
-                $content = $this->updateTournamentTMPL($id, 'edit');
+                $content = $this->updateTournamentTMPL($actionId, 'edit');
                 break;
 
             case 'calendar':
-                $content = $this->calendar($id);
+                $content = $this->calendar($actionId);
                 break;
 
             case 'details':
-                $content = $this->TMPL_showDetails($id);
+                $content = $this->TMPL_showDetails($actionId);
                 break;
 
             case 'add_player':
-                $content = $this->addPlayerToTournamentTMPL($id);
+                $content = $this->addPlayerToTournamentTMPL($actionId);
                 break;
 
             case 'backup':
-                $content = $this->TMPL_backup($id);
+                $content = $this->TMPL_backup($actionId);
                 break;
 
             default:
@@ -110,7 +110,7 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
     }
 
 
-    private function updateTournamentTMPL($id, $action = 'add') {
+    private function updateTournamentTMPL($actionId, $action = 'add') {
 
         $classificationArr = $this->valueIsKey($this->tools->getAgeClassArray());
         $disciplineArr     = $this->valueIsKey($this->tools->getModeArr());
@@ -119,8 +119,8 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
 
 
         if ($action == 'edit') {
-            $id                           = $this->tools->get("id");
-            $res                          = $this->brdb->getTournamentData($id);
+            $actionId                           = $this->tools->get("id");
+            $res                          = $this->brdb->getTournamentData($actionId);
             $tournament                   = $res->fetch_assoc();
             $tournament['classification'] = unserialize($tournament['classification']);
             $tournament['discipline']     = unserialize($tournament['discipline']);
@@ -131,7 +131,7 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
             }
 
             if (!$this->brdb->hasError()) {
-                $res = $this->brdb->getDisciplinesByTournamentId($id);
+                $res = $this->brdb->getDisciplinesByTournamentId($actionId);
                 if($this->brdb->hasError()) {
                     return "Fehler";
                 }
@@ -144,7 +144,7 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
         $this->smarty->assign(array(
             'task'              => $action,
             'hidden'            => $action == 'add' ? 'Insert Tournament' : 'Edit Tournament',
-            'vars'              => $action == 'add' ? $_POST : $tournament,
+            'vars'              => $action == 'add' ? $this->getPostData() : $tournament,
             'disc'              => $rows,
             'players'           => $this->getAllPlayerDataList(),
             'reporterArr'       => $reportArr,
@@ -153,6 +153,20 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
             'tournamentType'    => $this->tournamentType,
         ));
         return $this->smarty->fetch('tournament/TournamentUpdate.tpl');
+    }
+
+    private function getPostData() {
+        if (isset($_POST)) {
+            $data = array();
+            foreach ($_POST as $key => $value) {
+                // @TASK
+                $data[$key] = $value;
+            }
+
+            return $data;
+        }
+        return "";
+
     }
 
     private function valueIsKey($arr) {
@@ -166,12 +180,12 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
         return array();
     }
 
-    private function calendar($id) {
-        if(!isset($id) or !is_numeric($id)) {
+    private function calendar($actionId) {
+        if(!isset($actionId) or !is_numeric($actionId)) {
             return "";
 
         }
-        $tournament                   = $this->brdb->getTournamentData($id)->fetch_assoc();
+        $tournament                   = $this->brdb->getTournamentData($actionId)->fetch_assoc();
         extract($tournament);
 
         $vCalendar = new \Eluceo\iCal\Component\Calendar('Badminton');
@@ -191,12 +205,12 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
     /**
         details of a tournament
     */
-    private function TMPL_showDetails($id) {
-        if(!isset($id) or !is_numeric($id)) {
+    private function TMPL_showDetails($actionId) {
+        if(!isset($actionId) or !is_numeric($actionId)) {
             return "";
 
         }
-        $tournament                   = $this->brdb->getTournamentData($id)->fetch_assoc();
+        $tournament                   = $this->brdb->getTournamentData($actionId)->fetch_assoc();
         $tournament['classification'] = $this->tools->formatClassification($tournament['classification']);
         $tournament['discipline']     = $this->tools->formatDiscipline($tournament['discipline']);
         if(isset($tournament['additionalClassification'])) {
@@ -205,8 +219,8 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
 
         $this->smarty->assign(array(
             'tournament'  => $tournament,
-            'players'     => $this->getPlayersByTournamentId($id),
-            'disciplines' => $this->getDisciplinesByTournamentId($id),
+            'players'     => $this->getPlayersByTournamentId($actionId),
+            'disciplines' => $this->getDisciplinesByTournamentId($actionId),
             'userPlayerId'        => $userId = $this->prgPatternElementLogin->getLoggedInUser()->getPlayerId(),
         ));
 
@@ -216,9 +230,9 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
     /**
         add player to tournament
     */
-    private function addPlayerToTournamentTMPL($id) {
+    private function addPlayerToTournamentTMPL($actionId) {
         // load data
-        $tournament = $this->brdb->getTournamentData($id)->fetch_assoc();
+        $tournament = $this->brdb->getTournamentData($actionId)->fetch_assoc();
         $disciplines = "";
 
         if(isset($tournament['classification']) && isset($tournament['discipline'])) {
@@ -336,9 +350,9 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
         return $data;
     }
 
-    private function getClassID($id) {
-        $id = explode(" ", $id);
-        if(count($id) == 2) {
+    private function getClassID($actionId) {
+        $actionId = explode(" ", $actionId);
+        if(count($actionId) == 2) {
             return $this->brdb->getClassIdByNameAndModus($name, $modus);
         }
 
@@ -387,11 +401,11 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
 
     /** Get players from tournament
      *
-     * @param unknown $id
+     * @param unknown $actionId
      * @return unknown[]|string
      */
-    private function getPlayersByTournamentId($id) {
-        $res = $this->brdb->getPlayersByTournamentId($id);
+    private function getPlayersByTournamentId($actionId) {
+        $res = $this->brdb->getPlayersByTournamentId($actionId);
         if (!$this->brdb->hasError()) {
             $data = array();
             while ($dataSet = $res->fetch_assoc()) {
@@ -441,8 +455,8 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
 
     }
 
-    private function getDisciplinesByTournamentId($id) {
-        $res = $this->brdb->getDisciplinesByTournamentId($id);
+    private function getDisciplinesByTournamentId($actionId) {
+        $res = $this->brdb->getDisciplinesByTournamentId($actionId);
 
         if (!$this->brdb->hasError()) {
             $data = array();
