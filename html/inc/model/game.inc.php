@@ -59,19 +59,19 @@ class Game {
 	 */
 	public function __construct($dataSet = null) {
 		if ($dataSet != null) {
-			$this->matchId 		= intval($dataSet[self::GAME_CLM_MATCH_ID]);
+			$this->matchId 		= (int) ($dataSet[self::GAME_CLM_MATCH_ID]);
 			$this->dateTime	 	= strtotime($dataSet[self::GAME_CLM_DATETIME]);
-			$this->playerA1 	= strval($dataSet[self::GAME_CLM_PLAYER_A1]);
-			$this->playerB1 	= strval($dataSet[self::GAME_CLM_PLAYER_B1]);
-			$this->playerA2 	= strval($dataSet[self::GAME_CLM_PLAYER_A2]);
-			$this->playerB2 	= strval($dataSet[self::GAME_CLM_PLAYER_B2]);
-			$this->setA1		= intval($dataSet[self::GAME_CLM_SET_A1]);
-			$this->setB1		= intval($dataSet[self::GAME_CLM_SET_B1]);
-			$this->setA2		= intval($dataSet[self::GAME_CLM_SET_A2]);
-			$this->setB2		= intval($dataSet[self::GAME_CLM_SET_B2]);
-			$this->setA3		= intval($dataSet[self::GAME_CLM_SET_A3]);
-			$this->setB3		= intval($dataSet[self::GAME_CLM_SET_B3]);
-			$this->winner		= strval($dataSet[self::GAME_CLM_WINNER]);
+			$this->playerA1 	= (string) $dataSet[self::GAME_CLM_PLAYER_A1];
+			$this->playerB1 	= (string) $dataSet[self::GAME_CLM_PLAYER_B1];
+			$this->playerA2 	= (string) $dataSet[self::GAME_CLM_PLAYER_A2];
+			$this->playerB2 	= (string) $dataSet[self::GAME_CLM_PLAYER_B2];
+			$this->setA1		= (int) ($dataSet[self::GAME_CLM_SET_A1]);
+			$this->setB1		= (int) ($dataSet[self::GAME_CLM_SET_B1]);
+			$this->setA2		= (int) ($dataSet[self::GAME_CLM_SET_A2]);
+			$this->setB2		= (int) ($dataSet[self::GAME_CLM_SET_B2]);
+			$this->setA3		= (int) ($dataSet[self::GAME_CLM_SET_A3]);
+			$this->setB3		= (int) ($dataSet[self::GAME_CLM_SET_B3]);
+			$this->winner		= (string) $dataSet[self::GAME_CLM_WINNER];
 		} else {
 			$this->matchId 		= 0;
 			$this->dateTime	 	= strtotime("1-1-2017 00:00:00");

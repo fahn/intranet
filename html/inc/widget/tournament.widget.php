@@ -11,9 +11,7 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
-
 require_once('default.widget.php');
-
 
 class TournamentWidget extends Widget {
     private $linkToTournament;

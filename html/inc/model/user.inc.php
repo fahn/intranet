@@ -12,11 +12,6 @@
  *
  ******************************************************************************/
 
-/**
- * This class implements a user object to simplyfy access to the data base
- * @author philipp
- *
- */
 class User {
 
     // Constants for the User table in the database

@@ -244,13 +244,13 @@ class Tools {
       $mail = new Message;
 
       $from = sprintf("%s %s", $this->getIniValue('senderName'), $this->getIniValue('senderMail'));
-      $from = self::getIniValue('senderMail');
+      $mailFrom = self::getIniValue('senderMail');
 
-      $to = sprintf("%s <%s>", $name, $email);
+      $mailTo = sprintf("%s <%s>", $name, $email);
 
       // preparation
-      $mail->setFrom($from)
-          ->addTo($to)
+      $mail->setFrom($mailFrom)
+          ->addTo($mailTo)
           ->setSubject($subject)
           ->setBody($txtContent)
           ->setHtmlBody($mailContent);
