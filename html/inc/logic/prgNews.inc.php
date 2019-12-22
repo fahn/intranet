@@ -171,16 +171,6 @@ class PrgPatternElementNews extends APrgPatternElement {
      * {@inheritDoc}
      * @see IPrgPatternElement::processGet()
      */
-    public function processGet() {
-        return;
-        // Check that all information has been posted
-        if (isset($_GET[self::FORM_GAME_ACTION])) {
-            $formAction = strVal(Tools::escapeInput($_GET[self::FORM_GAME_ACTION]));
-            if ($formAction == self::FORM_GAME_ACTION_NEW_GAME) {
-                $this->setSessionVariable(self::FORM_GAME_ADMIN_MATCH_ID, self::FORM_GAME_ACTION_NEW_GAME);
-                $this->clearSessionVariables();
-            }
-        }
-    }
+    public function processGet() {}
 }
 ?>

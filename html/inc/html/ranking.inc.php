@@ -11,6 +11,8 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
+$path=dirname(dirname(__FILE__));
+include($path .'/config.php');
 
 include_once BASE_DIR .'/inc/html/brdbHtmlPage.inc.php';
 include_once BASE_DIR .'/inc/logic/prgRanking.inc.php';

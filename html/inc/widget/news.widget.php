@@ -13,7 +13,6 @@
  ******************************************************************************/
 require_once('default.widget.php');
 
-
 class NewsWidget extends Widget {
 
     public function __construct() {
