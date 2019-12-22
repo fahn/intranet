@@ -21,6 +21,7 @@ class BrdbHtmlPage extends AHtmlLoginPage {
   public function processPage() {
         // Call all prgs and process them all
         $this->prgPattern->processPRG();
+
         parent::processPage();
     }
 

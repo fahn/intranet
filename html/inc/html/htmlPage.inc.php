@@ -12,16 +12,19 @@
  *
  ******************************************************************************/
 
-$stage = getenv('stage', true) ?: getenv('stage');
+error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
+
+$stage = getenv('INTRANET_STAGE', true) ?: getenv('INTRANET_STAGE');
 if ($stage == "development") {
-    error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
+    ini_set('display_errors', 1);
+    ini_set('display_startup_errors', 1);
+    error_reporting(E_ALL);
 }
 
-$path=dirname(dirname(__FILE__));
-include($path .'/config.php');
 
 require_once BASE_DIR .'/smarty/libs/Smarty.class.php';
 require_once BASE_DIR .'/inc/logic/tools.inc.php';
+
 
 abstract class HtmlPageProcessor {
     // smarty
@@ -43,25 +46,29 @@ abstract class HtmlPageProcessor {
         $this->tools = new Tools;
 
         // set stage
-        $this->stage = getenv('stage', true) ?: getenv('stage');
+        $this->stage = getenv('INTRANET_STAGE', true) ?: getenv('INTRANET_STAGE');
 
         // load smarty
         $this->smarty = new Smarty;
 
-        if (getenv('stage') == "development") {
-            // @TODO: set debug bar
-            $this->smarty->force_compile  = true;
-            $this->smarty->debugging      = true;
-            $this->smarty->caching        = true;
-            $this->smarty->cache_lifetime = 120;
-        }
+        $this->smarty->setTemplateDir(BASE_DIR .'/templates');
+        $this->smarty->setCompileDir(BASE_DIR  .'/templates_c');
+        $this->smarty->setConfigDir(BASE_DIR  .'/smarty/configs');
 
-        $this->smarty->setTemplateDir($_SERVER['BASE_DIR'] .'/templates');
-        $this->smarty->setCompileDir($_SERVER['BASE_DIR']  .'/templates_c');
-        $this->smarty->setConfigDir($_SERVER['BASE_DIR']  .'/smarty/configs');
+        if ($this->stage == "development") {
+            // @TODO: set debug bar
+            #$this->smarty->force_compile  = true;
+            #$this->smarty->debugging      = true;
+            #$this->smarty->caching        = true;
+            #$this->smarty->cache_lifetime = 120;
+        }
 
         // remove notice
         $this->smarty->error_reporting = E_ALL & ~E_NOTICE;
+
+
+
+        
 
         $this->smarty->assign(array(
             'pageTitle' => $this->tools->getIniValue('pageTitle'),
@@ -85,7 +92,7 @@ abstract class HtmlPageProcessor {
      * content of the html.
      */
     protected function htmlBody() {
-      $this->smarty->display('index.tpl');
+        $this->smarty->display('index.tpl');
     }
 }
 ?>

@@ -13,8 +13,8 @@
  ******************************************************************************/
 include_once 'prgPattern.inc.php';
 
-include_once $_SERVER['BASE_DIR'] .'/inc/db/brdb.inc.php';
-include_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
+include_once BASE_DIR .'/inc/db/brdb.inc.php';
+include_once BASE_DIR .'/inc/logic/tools.inc.php';
 
 /**
  * This prg pattern ahndles all the post and get actions
@@ -77,7 +77,7 @@ class PrgPatternElementImage extends APrgPatternElement {
             return;
         }
         
-        $servPath = $_SERVER['BASE_DIR'] .'/';
+        $servPath = BASE_DIR .'/';
         $imagePath = $servPath . self::_USER_IMAGE_PATH_ . $image;
         $thumnailImagePath = $servPath . self::_USER_IMAGE_PATH_ .'/thumb_'. $image;
         

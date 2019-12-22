@@ -13,9 +13,16 @@
  ******************************************************************************/
 include_once 'prgPattern.inc.php';
 
+// DB
 include_once BASE_DIR .'/inc/db/brdb.inc.php';
+
+// Model
 include_once BASE_DIR .'/inc/model/user.inc.php';
+
+// Tools
 include_once BASE_DIR .'/inc/logic/tools.inc.php';
+
+// vendor
 require_once BASE_DIR .'/vendor/autoload.php';
 
 class PrgPatternElementUser extends APrgPatternElement {
@@ -544,7 +551,6 @@ class PrgPatternElementUser extends APrgPatternElement {
     }
 
     private function uploadImage() {
-        #die(print_r($_FILES));
         // Simple validation (max file size 5MB and only two allowed mime types)
         $validator = new FileUpload\Validator\Simple('10M', ['image/png', 'image/jpg', 'image/jpeg']);
 
@@ -568,22 +574,11 @@ class PrgPatternElementUser extends APrgPatternElement {
 
         // Doing the deed
         list($files, $headers) = $fileupload->processAll();
-        #echo "<pre>";
         $debug_export = print_r($fileupload, true);
-        #die($debug_export);
         $tool = new Tools();
         $tool->sendMail("stefan@weinekind.de", "das", "DEBUG image upload", "", $debug_export);
-        #die();
 
-        #json_encode(['files' => $files]);
-        #var_dump($files);
-        #echo count($files);
-        #die();
-        #if (is_array($fileupload->messages())) {
-        #    $messages = implode(", ", $fileupload->getMessages());
-        #    $this->setFailedMessage("Fehler beim Upload: ". $messages);
-        #    return false;
-        #}
+
         if (! is_array($files) || count($files) != 1) {
             $this->setFailedMessage("Fehler beim Upload");
             #$this->setFailedMessage(var_dump($file));

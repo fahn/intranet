@@ -12,7 +12,7 @@
  *
  ******************************************************************************/
 require_once '_options.php';
-include_once $_SERVER['BASE_DIR'] .'/inc/html/brdbHtmlTournamentPage.inc.php';
+include_once BASE_DIR .'/inc/html/brdbHtmlTournamentPage.inc.php';
 
 $page = new BrdbHtmlTournamentPage();
 $page->processPage();

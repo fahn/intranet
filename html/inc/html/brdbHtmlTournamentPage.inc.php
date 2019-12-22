@@ -192,7 +192,7 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
         }
 
         // get ressource
-        $tournament                   = $this->brdb->getTournamentData($actionId)->fetch_assoc();
+        $tournament = $this->brdb->getTournamentData($actionId)->fetch_assoc();
 
         // load cal
         $vCalendar = new \Eluceo\iCal\Component\Calendar('Badminton');
@@ -363,7 +363,7 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
 
      private function getAllTournamentDataList() {
         $res = $this->brdb->selectTournamentList();
-        #die(var_dump($res));
+        
         if (!$this->brdb->hasError()) {
             $data = array();
             while ($dataSet = $res->fetch_assoc()) {

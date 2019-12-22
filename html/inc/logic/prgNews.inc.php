@@ -161,8 +161,6 @@ class PrgPatternElementNews extends APrgPatternElement {
             $this->setFailedMessage($this->brdb->getError());
             return;
         }
-        #echo "<pre>";
-        #die(print_r($this->brdb));
 
         $this->setSuccessMessage("News wurde erfolgreich geändert.");
         return;

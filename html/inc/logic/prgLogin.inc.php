@@ -13,10 +13,16 @@
  ******************************************************************************/
 include_once 'prgPattern.inc.php';
 
+// DB
 include_once BASE_DIR .'/inc/db/brdb.inc.php';
+
+// Model
 include_once BASE_DIR .'/inc/model/user.inc.php';
 
+// Tools
 include_once BASE_DIR .'/inc/logic/tools.inc.php';
+
+// Smarty
 include_once BASE_DIR .'/smarty/libs/Smarty.class.php';
 
 class PrgPatternElementLogin extends APrgPatternElement {
@@ -322,15 +328,12 @@ class PrgPatternElementLogin extends APrgPatternElement {
     public function isUserLoggedIn() {
       // first unsset the current user to basically clear it
       // and remove all pending informations in case of a logout
-      #die(var_dump($this->loggedInUser));
       if (isset($this->loggedInUser)) {
           unset($this->loggedInUser);
       }
 
       // If there is no post we directly get here and we try to set the class
       // information directly from the stored information in the session
-      #echo "das";
-      #die($this->issetSessionVariable(self::SESSION_LOGIN_USER_ID));
       if ($this->issetSessionVariable(self::SESSION_LOGIN_USER_ID)) {
         // Try to get the user by the ID stored in the session
         $userId = intval($this->getSessionVariable(self::SESSION_LOGIN_USER_ID));

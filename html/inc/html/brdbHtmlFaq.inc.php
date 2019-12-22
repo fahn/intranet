@@ -75,8 +75,6 @@ class BrdbHtmlFaq extends BrdbHtmlPage {
 
             
         }
-        #echo "<pre>";
-        #die(print_r($data));
 
         return $data;
     }

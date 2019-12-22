@@ -11,5 +11,5 @@
       </div>
     </div>
 <!-- closing  </div> in footer -->
-
+{debug}
 {include file="footer.tpl"}

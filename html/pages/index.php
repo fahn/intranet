@@ -19,8 +19,6 @@ include_once(BASE_DIR .'/inc/html/brdbHtmlPage.inc.php');
 #set_exception_handler(array('BadtraException', 'exception_handler'));
 
 #throw new Exception('DOH!!');
-
 $page = new BrdbHtmlPage();
 $page->processPage();
-
 ?>

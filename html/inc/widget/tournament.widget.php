@@ -91,12 +91,10 @@ class TournamentWidget extends Widget {
                 $dataSet['linkTo']         = $this->tools->linkTo(array('page' => 'tournament.php', 'action' => 'details', 'id' => $dataSet['tournamentId']));
                 // get unique player
                 $players = $this->brdb->selectUpcomingTournamentPlayer($dataSet['tournamentId']);
-                #echo "1";
-                #die(var_dump($players));
+                
                 $dataSet['participant'] = $players->num_rows;
 
-
-                $data[]                     = $dataSet;
+                $data[]                 = $dataSet;
             }
         }
         return $data;

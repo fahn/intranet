@@ -13,11 +13,11 @@
  ******************************************************************************/
 include_once('htmlPage.inc.php');
 
+// DB
 include_once(BASE_DIR .'/inc/db/brdb.inc.php');
 
 // Logic
 include_once(BASE_DIR .'/inc/logic/prgLogin.inc.php');
-include_once(BASE_DIR .'/inc/logic/tools.inc.php');
 include_once(BASE_DIR .'/inc/logic/prgUser.inc.php');
 
 // load widgets
@@ -27,9 +27,10 @@ include_once(BASE_DIR .'/inc/widget/team.widget.php');
 include_once(BASE_DIR .'/inc/widget/bday.widget.php');
 include_once(BASE_DIR .'/inc/widget/news.widget.php');
 
+
+
 // notification
 #include_once BASE_DIR .'/inc/html/brdbHtmlNotification.inc.php';
-
 
 
 /**
@@ -46,7 +47,6 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
     protected $brdb;
     protected $prgPattern;
     protected $prgPatternElementLogin;
-    protected $tools;
 
     /**
      * Standard Constructor for the HTML Login page. It
@@ -59,21 +59,17 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
         parent::__construct();
 
 
-        /* TOOLS */
-        $this->tools = new Tools();
-
-
-
-        if ( $this->tools->isMaintenance()) {
-          $this->tools->customRedirect('maintenance.php');
-        }
-
-
+        // check maintenance
+        #if ($this->tools->isMaintenance()) {
+        #    $this->tools->customRedirect('maintenance.php');
+        #}
 
         /* SQL CONNECTION */
         $this->brdb = new BrankDB();
 
+        /* Login pattern */
         $this->prgPatternElementLogin = new PrgPatternElementLogin($this->brdb);
+
 
         $this->prgPattern = new PrgPattern();
         $this->prgPattern->registerPrg($this->prgPatternElementLogin);
@@ -86,8 +82,7 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
         $basename = basename($_SERVER['PHP_SELF']);
 
         $isUserLoggedIn = $this->prgPatternElementLogin->isUserLoggedIn();
-        #die(print_r($this->prgPatternElementLogin->getLoggedInUser()));
-        #die(print_r($this->prgPatternElementLogin->isUserLoggedIn()));
+
         if($basename != "index.php" && $isUserLoggedIn === false) {
             $_SESSION['ref'] = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
             $this->tools->customRedirect(array(
@@ -96,20 +91,6 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
         }
         return;
     }
-
-    /* 
-    private function loadSettings() {
-        $data = array();
-        $res = $this->brdb->loadSettings();
-        while($row = $res->fetch_assoc()) {
-            $data[] = $row;
-        }
-
-        return $data;
-    }
-    */
-
-
 
     public function processPage() {
         $this->getMessages();
@@ -130,9 +111,11 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
                     'currentUserName'    => $currentUserName,
                     'currentUserImage'   => $currentUserImage,
                     'isUserLoggedIn'     => $isUserLoggedIn,
+                    // rights
                     'isAdmin'            => $this->prgPatternElementLogin->getLoggedInUser()->isAdmin(),
                     'isReporter'         => $this->prgPatternElementLogin->getLoggedInUser()->isReporter(),
                     'userId'             => $this->prgPatternElementLogin->getLoggedInUser()->getId(),
+                    // ini values
                     'rankingEnable'      => $this->tools->getIniValue('RankingEnabled'),
                     'tournamentEnable'   => $this->tools->getIniValue('tournamentEnable'),
                     'faqEnabled'         => $this->tools->getIniValue('faqEnabled'),
@@ -145,6 +128,7 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
 
         // Call all prgs and process them all
         $this->prgPattern->processPRG();
+
         parent::processPage();
     }
 
@@ -169,9 +153,11 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
      */
     protected function htmlBody() {
         $isUserLoggedIn = $this->prgPatternElementLogin->isUserLoggedIn();
+        
+        // get Messages
         $this->getMessages();
 
-        if($isUserLoggedIn) {
+        if ($isUserLoggedIn) {
             $this->smarty->assign(array(
                     'content'      => $this->loadContent(),
                     #'notification' => $this->getNotification(),
@@ -183,8 +169,8 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
 
             switch ($request) {
               case 'request_password':
-                $this->content = $this->smarty->fetch('login/request_password.tpl');
-                break;
+                  $this->content = $this->smarty->fetch('login/request_password.tpl');
+                  break;
 
               case 'change_password':
                   $token = $this->tools->get("token");

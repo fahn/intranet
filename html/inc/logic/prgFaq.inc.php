@@ -152,7 +152,6 @@ class PrgPatternElementFaq extends APrgPatternElement {
         $title      = strval(trim($this->getPostVariable(self::FORM_FIELD_TITLE)));
         $categoryId = strval(trim($this->getPostVariable(self::FORM_FIELD_CATEGORYID)));
         $text       = strval(trim($this->getPostVariable(self::FORM_FIELD_TEXT)));
-        #die($id);
 
 
         $this->brdb->updateFaqById($id, $title, $categoryId, $text);

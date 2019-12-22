@@ -11,9 +11,16 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
-session_start();
-$directory=dirname(dirname(__FILE__));
 
-include_once($directory .'/inc/config.php');
+// start session();
+session_start();
+
+// load BASE_DIR
+#$directory=dirname(dirname(__FILE__));
+#include_once($directory .'/inc/config.php');
+
+if (!defined("BASE_DIR")) {
+    define("BASE_DIR", "/var/www/html/"); 
+}
 
 ?>

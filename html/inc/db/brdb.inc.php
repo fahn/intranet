@@ -11,7 +11,9 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
-require_once $_SERVER['BASE_DIR'] . '/inc/logic/tools.inc.php';
+require_once(dirname(dirname(__FILE__)) .'/config.php');
+
+require_once BASE_DIR . '/inc/logic/tools.inc.php';
 
 include_once 'brdb.Api.inc.php';
 include_once 'brdb.Categories.inc.php';
@@ -86,8 +88,7 @@ class BrankDB {
     private function connection() {
         if ($this->db == NULL) {
             try {
-                $tools = new Tools();
-
+                $tools    = new Tools();
                 $this->db = new mysqli($tools->getIniValue('db_host'), $tools->getIniValue('db_user'), $tools->getIniValue('db_pass'), $tools->getIniValue('db_name'));
                 $this->db->set_charset("utf8mb4");
 

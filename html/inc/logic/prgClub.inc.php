@@ -91,9 +91,6 @@ class PrgPatternElementClub extends APrgPatternElement {
     }
 
     public function processPostInsertClub() {
-        #echo $this->getPostVariable(self::FORM_FIELD_NAME), $this->getPostVariable(self::FORM_FIELD_NUMBER),  $this->getPostVariable(self::FORM_FIELD_ASSOCIATION);
-        #die();
-
         // Check that all information has been posted
         if ($this->issetPostVariable(self::FORM_FIELD_NAME) &&
             $this->issetPostVariable(self::FORM_FIELD_NUMBER) &&

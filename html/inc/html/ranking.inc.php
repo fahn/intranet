@@ -12,12 +12,12 @@
  *
  ******************************************************************************/
 
-include_once $_SERVER['BASE_DIR'] .'/inc/html/brdbHtmlPage.inc.php';
-include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgRanking.inc.php';
-include_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
+include_once BASE_DIR .'/inc/html/brdbHtmlPage.inc.php';
+include_once BASE_DIR .'/inc/logic/prgRanking.inc.php';
+include_once BASE_DIR .'/inc/logic/tools.inc.php';
 
 // libary: dompdf
-require_once $_SERVER['BASE_DIR'] .'/vendor/autoload.php';
+require_once BASE_DIR .'/vendor/autoload.php';
 
 
 class Ranking extends BrdbHtmlPage {
@@ -33,7 +33,7 @@ class Ranking extends BrdbHtmlPage {
 
         $this->tools->secure_array($_GET);
 
-        $this->cssPrint = $_SERVER['BASE_DIR'] .'/static/css/print.css';
+        $this->cssPrint = BASE_DIR .'/static/css/print.css';
 
         $this->prgElementRanking = new PrgPatternElementRanking();
         $this->prgElementRanking->__loadPattern($this->prgPatternElementLogin);

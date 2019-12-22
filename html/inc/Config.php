@@ -12,9 +12,8 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
-
-
-
-define("BASE_DIR", dirname(dirname(__FILE__)));
+if (!defined("BASE_DIR")) {
+    define("BASE_DIR", dirname(dirname(__FILE__))); 
+}
 
 ?>

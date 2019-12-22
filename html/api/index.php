@@ -15,10 +15,10 @@
  ******************************************************************************/
 
 $path=dirname(dirname(__FILE__));
-$_SERVER['BASE_DIR'] = $path;
+define(BASE_DIR, $path);
 
-require_once $_SERVER['BASE_DIR'] ."/inc/db/brdb.inc.php";
-require_once $_SERVER['BASE_DIR'] ."/inc/logic/tools.inc.php";
+require_once BASE_DIR ."/inc/db/brdb.inc.php";
+require_once BASE_DIR ."/inc/logic/tools.inc.php";
 
 class Api {
     protected $brdb;

@@ -147,7 +147,6 @@ class PrgPatternElementCategory extends APrgPatternElement {
         $title      = strval(trim($this->getPostVariable(self::FORM_FIELD_TITLE)));
         $categoryId = strval(trim($this->getPostVariable(self::FORM_FIELD_CATEGORYID)));
         $text       = strval(trim($this->getPostVariable(self::FORM_FIELD_TEXT)));
-        #die($id);
 
 
         // get the admin ID and try to read the corresponding game from the
@@ -157,8 +156,7 @@ class PrgPatternElementCategory extends APrgPatternElement {
             $this->setFailedMessage($this->brdb->getError());
             return;
         }
-        #echo "<pre>";
-        #die(print_r($this->brdb));
+
 
         $this->setSuccessMessage("News wurde erfolgreich geändert.");
         return;

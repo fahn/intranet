@@ -13,10 +13,10 @@
  *
  ******************************************************************************/
 
-include_once $_SERVER['BASE_DIR'] .'/inc/db/brdb.inc.php';
-#include_once $_SERVER['BASE_DIR'] .'/inc/model/staff.inc.php';
-include_once $_SERVER['BASE_DIR'] .'/inc/logic/prgPattern.inc.php';
-include_once $_SERVER['BASE_DIR'] .'/inc/logic/tools.inc.php';
+include_once BASE_DIR .'/inc/db/brdb.inc.php';
+#include_once BASE_DIR .'/inc/model/staff.inc.php';
+include_once BASE_DIR .'/inc/logic/prgPattern.inc.php';
+include_once BASE_DIR .'/inc/logic/tools.inc.php';
 
 /*
 `staffId` int(11) NOT NULL,

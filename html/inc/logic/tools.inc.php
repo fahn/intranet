@@ -11,14 +11,14 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
-include_once(dirname(dirname(__FILE__)) .'/config.php');
+require_once(dirname(dirname(__FILE__)) .'/config.php');
 
-include_once BASE_DIR .'/smarty/libs/Smarty.class.php';
-include_once BASE_DIR .'/inc/db/brdb.inc.php';
-include_once BASE_DIR .'/inc/exception/badtra.exception.php';
+require_once BASE_DIR .'/smarty/libs/Smarty.class.php';
+require_once BASE_DIR .'/inc/db/brdb.inc.php';
 
 # libary
 require_once BASE_DIR .'/vendor/autoload.php';
+//require_once BASE_DIR .'/inc/exception/badtra.exception.php';
 
 use Nette\Mail\SendmailMailer;
 use Nette\Mail\Message;
@@ -34,18 +34,10 @@ class Tools {
     private $modes = array("HE", "JE", "DE", "ME", "HD", "JD", "DD", "MD", "GD");
     private $ini;
 
-    private $brdb;
 
     public function __construct() {
         // load ini
         $this->ini = self::getIni();
-
-        // set class for tournmanet
-        # = $this->getIniValue("classes"); //["classes"];
-        #echo($this->ageClassArr);
-        #die();
-        #usort($this->ageClassArr, array('Tools','cmpSortAgeClass'));
-
     }
 
     public static function escapeInput($data) {
@@ -348,8 +340,8 @@ class Tools {
     public function log($table, $details, $data, $action, $userId = NULL) {
         try {
             // load mysql
-            $this->brdb = new BrankDB();
-            $this->brdb->insertLog($table, $details, serialize($data), $action, $userId);
+            $brdb = new BrankDB();
+            $brdb->insertLog($table, $details, serialize($data), $action, $userId);
         } catch (Exception $e) {
             echo 'Please report this to an admin:<br>';
             echo '<pre>';

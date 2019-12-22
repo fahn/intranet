@@ -1,6 +1,16 @@
 <?php
-
-
+/*******************************************************************************
+ * Badminton Intranet System
+ * Copyright 2017-2019
+ * All Rights Reserved
+ *
+ * Copying, distribution, usage in any form is not
+ * allowed without  written permit.
+ *
+ * Stefan Metzner <stefan@weinekind.de>
+ * Philipp M. Fischer <phil.m.fischer@googlemail.com>
+ *
+ ******************************************************************************/
 require_once('default.widget.php');
 
 class RankingWidget extends Widget {
@@ -57,7 +67,6 @@ class RankingWidget extends Widget {
                 $dataSet['sets']    = $this->convertSets($dataSet['sets']);
 
                 $data[] = $dataSet;
-                #die(print_r($data));
             }
 
         }

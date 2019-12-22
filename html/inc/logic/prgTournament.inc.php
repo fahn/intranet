@@ -314,7 +314,7 @@ class PrgPatternElementTournament extends APrgPatternElement {
     private function deletePlayersFromTournamentId($tournamentId, $playerId) {
         // player data
         $tmp = $this->brdb->getPlayerFromTournamentById($playerId)->fetch_assoc();
-        #die(var_dump($tmp));
+
         $actUser = $this->prgElementLogin->getLoggedInUser();
         if (! $actUser->isAdmin() &&
             ! $actUser->isReporter() &&

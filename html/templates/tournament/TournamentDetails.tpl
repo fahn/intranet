@@ -110,7 +110,7 @@
                         {/if}
                     {/if}
                     {if $isAdmin or $isReporter or $player.playerNr == $userPlayerId or $player.partnerNr == $userPlayerId}
-                        <a class="btn btn-danger" href="{$player.linkDelete}" onclick="return confirm('Möchtest du wirklich den Spieler abmelden ?');">Abmelden</a>
+                        <a class="btn btn-danger" href="{$player.linkDelete}" title="Spieler abmelden" onclick="return confirm('Möchtest du wirklich den Spieler abmelden ?');"><i class="fas fa-window-close"></i> <span>Abmelden</span></a>
                     {/if}
                 </td>
             </tr>
