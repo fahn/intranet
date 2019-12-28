@@ -1,23 +1,17 @@
-{if isset($isUserLoggedIn) and $isUserLoggedIn == 1}
-  <footer>
-      <nav class="navbar navbar-default" role="navigation">
-          <!-- Brand and toggle get grouped for better mobile display -->
 
-          <!-- Collect the nav links, forms, and other content for toggling -->
-          <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-              <ul class="nav navbar-nav">
-                  <li><a href="#">Badminton Ranking - Version {$version|default:"1.0.7"}</a></li>
-                  <li><a href="infoManual.php">Manual</a></li>
-                  <li><a href="infoLicense.php">License</a></li>
-                  <li><a href="infoThirdPartyLicenses.php">TPLicenses</a></li>
-                  <li><a href="infoChangeLog.php">Changelog</a></li>
-                  <li><a href="infoImpressum.php">Impressum</a></li>
+  </div>
+  <footer>
+     <nav class="navbar fixed-bottom navbar-expand-sm navbar-dark bg-dark">
+          <a class="navbar-brand" href="https://badtra.de">Badtra</a>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+              <ul class="navbar-nav mr-auto">
+                  <li class="nav-item"><a class="nav-link" href="https://docs.badtra.de">Manual</a></li>
+                  <li class="nav-item"><a class="nav-link disabled" href="#">Version: {$version|default:"1.0.7"}</a></li>
               </ul>
-          </div>
+              </div>
+
       </nav>
   </footer>
-  </div>
-{/if}
 
 
 
