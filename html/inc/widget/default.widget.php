@@ -13,14 +13,15 @@
  ******************************************************************************/
 include_once(dirname(dirname(__FILE__)) .'/config.php');
 
+
 // load tools
-require(BASE_DIR .'/inc/logic/tools.inc.php');
+require_once(BASE_DIR .'/inc/logic/tools.inc.php');
 
 // load db
-require(BASE_DIR .'/inc/db/brdb.inc.php');
+require_once(BASE_DIR .'/inc/db/brdb.inc.php');
 
 // load smarty
-require(BASE_DIR .'/smarty/libs/Smarty.class.php');
+require_once(BASE_DIR .'/smarty/libs/Smarty.class.php');
 
 abstract class Widget {
     // smarty object

@@ -20,8 +20,9 @@
             {$widgetRankingLatestGames}
         {/if}
 
-        {if $widgetShowTeam}
-            {$team}
+
+        {if $widgetShowTeam && isset($team)}
+            {$team|default:""}
         {/if}
 
         {if $isAdmin}

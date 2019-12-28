@@ -22,6 +22,9 @@ require_once BASE_DIR .'/vendor/autoload.php';
 #use \Eluceo\iCal\Component\Calendar;
 #use \Eluceo\iCal\Component\Event;
 
+// Routing
+use Symfony\Component\Routing\Annotation\Route;
+
 
 
 # diff
@@ -39,7 +42,8 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
         $this->tools = new Tools();
         $this->tools->secure_array($_GET);
 
-        $this->tournamentType = array('NBV', 'FUN', 'OTHER');
+        $this->tournamentType = $this->tools->getIni('tournament'); # array('NBV', 'FUN', 'OTHER');
+        var_dump($this->tournamentType);
 
         $this->prgElementTournament = new PrgPatternElementTournament($this->brdb, $this->prgPatternElementLogin);
         $this->prgPattern->registerPrg($this->prgElementTournament);
@@ -97,6 +101,11 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
         $this->smarty->display('index.tpl');
     }
 
+    /**
+     * @Route("/tournament/")
+     *
+     * @return void
+     */
     private function showTournamentsTMPL() {
         $this->smarty->assign(array(
             'tournamentList'       => $this->getAllTournamentDataList(),
@@ -109,6 +118,13 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
     }
 
 
+    /**
+     * @Route("/tournamen/update/{id})
+     *
+     * @param [type] $actionId
+     * @param string $action
+     * @return void
+     */
     private function updateTournamentTMPL($actionId, $action = 'add') {
 
         $classificationArr = $this->valueIsKey($this->tools->getAgeClassArray());

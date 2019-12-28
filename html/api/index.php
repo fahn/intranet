@@ -63,15 +63,16 @@ class Api {
               if(isset($row) && isset($row['email']) && filter_var($row['email'], FILTER_VALIDATE_EMAIL)) {
                   $subject   = sprintf("Meldeschluss für %s", $row['name']);
                   // content
-                  $to        = $row['email'];
+                  $toUser        = $row['email'];
                   $name      = $row['name'];
+
                   $link      = $this->tools->linkTo(array(
                       'page'   => 'tournament.php',
                       'action' => 'details',
                       'id'     => $row['tournamentId'],
                   ));
                   $content = sprintf("Hallo %s,<br>Für das Turnier/Rangliste \"%s\" ist heute Meldeschluss.<br><br>Alle weiteren Informationen gibt es <a href='%s'>hier</a>.", $row['reporterName'], $row['name'], $link);
-                  if($this->tools->sendMail($to, $name, $subject, $subject, $content)) {
+                  if($this->tools->sendMail($toUser, $name, $subject, $subject, $content)) {
                       $row['mail'] = "success";
                   }
 
@@ -83,6 +84,7 @@ class Api {
       }
   }
 
+  
     private function importTournament() {
         // load Tournament
         $content = exec('../tools/getNbvTournament.py');

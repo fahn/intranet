@@ -13,14 +13,9 @@ SetEnv BASE_DIR /var/www/html/
 </ifModule>
 
 #enable apache rewrite engine
+#<ifModule 
 RewriteEngine on
-
-#set your rewrite base
-RewriteBase /pages/
-
-#Deliver the folder or file if it exists on the server directly
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-
-#Push every request to index.php
-RewriteRule ^(.*)$ index.php [QSA]
+RewriteCond %{SCRIPT_FILENAME} !-f
+RewriteCond %{SCRIPT_FILENAME} !-d
+RewriteCond %{SCRIPT_FILENAME} !-l
+RewriteRule ^(.*)$ index.php/$1

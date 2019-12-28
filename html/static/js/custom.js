@@ -19,30 +19,30 @@ $(document).ready(function() {
     /**
      * wsgyi editor
      */
-    //if (typeof summernote === "function") {
-    $("#summernote").summernote({
-        placeholder: "",
-        tabsize: 2,
-        height: 150,
-        lang: "de-DE",
-        codeview: false,
-        toolbar: [
-            // [groupName, [list of button]]
-            ["style", ["style", "bold", "italic", "underline", "clear"]],
-            ["font", ["strikethrough", "superscript", "subscript"]],
-            ["fontsize", ["fontsize"]],
-            ["color", ["color"]],
-            ["insert", ["link"]],
-            ["para", ["ul", "ol", "paragraph"]],
-            ["height", ["height"]]
-            ]
-    });
-//}
+    /* if (typeof summernote === "function") { */
+        $("#summernote").summernote({
+            placeholder: "",
+            tabsize: 2,
+            height: 150,
+            lang: "de-DE",
+            codeview: false,
+            toolbar: [
+                // [groupName, [list of button]]
+                ["style", ["style", "bold", "italic", "underline", "clear"]],
+                ["font", ["strikethrough", "superscript", "subscript"]],
+                ["fontsize", ["fontsize"]],
+                ["color", ["color"]],
+                ["insert", ["link"]],
+                ["para", ["ul", "ol", "paragraph"]],
+                ["height", ["height"]]
+                ]
+        });
+    //}
 
 
 
     // Tooltipps
-    $("[data-toggle="tooltip"]").tooltip();
+    $('[data-toggle="tooltip"]').tooltip();
 
 
     $("#mySelector").change(function() {

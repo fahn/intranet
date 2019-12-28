@@ -150,7 +150,7 @@ class PrgPatternElementUser extends APrgPatternElement {
                 break;
 
             case self::FORM_USER_ACTION_UPDATE_ACCOUNT:
-                $this->processPostUpdateUserAccount(Tools::get("id"));
+                $this->processPostUpdateUserAccount($this->tools->get("id"));
                 break;
 
             default:
@@ -165,12 +165,12 @@ class PrgPatternElementUser extends APrgPatternElement {
         // check if user is login
         $this->prgElementLogin->redirectUserIfNotLoggindIn();
 
-        $action = Tools::get("action");
+        $action = $this->tools->get("action");
 
         switch ($action) {
             case 'delete':
                 $this->prgElementLogin->redirectUserIfnoRights('admin');
-                $id = Tools::get("id");
+                $id = $this->tools->get("id");
                 $this->processGetDeleteUserAccount($id);
                 break;
 
@@ -212,7 +212,7 @@ class PrgPatternElementUser extends APrgPatternElement {
 
       if(!$this->processPostUpdateUserAccount($id)) {
           $this->setFailedMessage("Probleme beim anlegen. Bitte editieren Sie den Nutzer!");
-          Tools::customRedirect(array(
+          $this->tools->customRedirect(array(
             'page'   => "adminAllUser.php",
             'action' => 'edit',
             'id'     => $id,
@@ -221,7 +221,7 @@ class PrgPatternElementUser extends APrgPatternElement {
       }
 
       $this->setSuccessMessage("Nutzer wurde angelegt");
-      Tools::customRedirect(array(
+      $this->tools->customRedirect(array(
         'page'   => "adminAllUser.php",
         'action' => 'edit',
         'id'     => $id,
@@ -291,7 +291,7 @@ class PrgPatternElementUser extends APrgPatternElement {
         $userId = intval($this->getPostVariable(self::FORM_USER_ADMIN_USER_ID));
         if ($this->tools->isUserGod($userId)) {
             $this->setFailedMessage("User is protected");
-            Tools::customRedirect(array(
+            $this->tools->customRedirect(array(
               'page' => "adminAllUser.php",
             ));
             return;
@@ -312,7 +312,7 @@ class PrgPatternElementUser extends APrgPatternElement {
         // check if User is God
         if ($this->tools->isUserGod($userId)) {
             $this->setFailedMessage("User is protected");
-            Tools::customRedirect(array(
+            $this->tools->customRedirect(array(
               'page' => "adminAllUser.php",
             ));
             return;
@@ -324,7 +324,7 @@ class PrgPatternElementUser extends APrgPatternElement {
         }
 
         $this->setSuccessMessage(self::SUCCESS_USER_DELETE);
-        Tools::customRedirect(array(
+        $this->tools->customRedirect(array(
           'page' => "adminAllUser.php",
         ));
         return true;

@@ -1,5 +1,5 @@
 #
-# docker container for github rangliste
+# docker container for github intranet
 #
 FROM php:7.2-apache
 

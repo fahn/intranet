@@ -12,7 +12,7 @@
         <div class="col-md-8">
             <div class="form-group">
                 <label for="tournamentName">Name des Turniers:</label>
-                <input class="form-control" type="text" id="tournamentName" name="tournamentName" placeholder="B-/C-Rangliste" value="{$vars['name']}" required>
+                <input class="form-control" type="text" id="tournamentName" name="tournamentName" placeholder="B-/C-Rangliste" value="{$vars['name']|default:""}" required>
             </div>
         </div>
     </div>
@@ -20,7 +20,7 @@
         <div class="col-md-8">
             <div class="form-group">
                 <label for="tournamentPlace">Ort:</label>
-                <input class="form-control" type="text" id="tournamentPlace" name="tournamentPlace" placeholder="Braunschweig" value="{$vars['place']}" required>
+                <input class="form-control" type="text" id="tournamentPlace" name="tournamentPlace" placeholder="Braunschweig" value="{$vars['place']|default:""}" required>
             </div>
         </div>
     </div>
@@ -28,7 +28,7 @@
         <div class="col-md-4">
             <label for="tournamentStartdate">Start-Datum:</label>
             <div class="input-group">
-                <input class="form-control datetimepicker" type="text" id="tournamentStartdate" name="tournamentStartdate" placeholder="dd.mm.YYYY" value="{$vars['startdate']|date_format:" d.m.Y H:m"}" data-input required>
+                <input class="form-control datetimepicker" type="text" id="tournamentStartdate" name="tournamentStartdate" placeholder="dd.mm.YYYY" value="{$vars['startdate']|date_format:" d.m.Y H:m"|default:""}" data-input required>
                 <div class="input-group-addon">
                     <span class="glyphicon glyphicon-th"></span>
                 </div>
@@ -38,7 +38,7 @@
         <div class="col-md-4">
             <label for="tournamentEnddate">Enddatum:</label>
             <div class="input-group">
-                <input class="form-control datepicker" type="text" id="tournamentEnddate" name="tournamentEnddate" placeholder="dd.mm.YYYY" value="{$vars['enddate']|date_format:" d.m.Y"}" data-input required>
+                <input class="form-control datepicker" type="text" id="tournamentEnddate" name="tournamentEnddate" placeholder="dd.mm.YYYY" value="{$vars['enddate']|date_format:" d.m.Y"|default:""}" data-input required>
                 <div class="input-group-addon">
                     <span class="glyphicon glyphicon-th"></span>
                 </div>
@@ -48,7 +48,7 @@
         <div class="col-md-4">
             <label for="tournamentDeadline">Meldeschluss:</label>
             <div class="input-group">
-                <input class="form-control datepicker" type="text" id="tournamentDeadline" name="tournamentDeadline" placeholder="dd.mm.YYYY" value="{$vars['deadline']|date_format:" d.m.Y"}" data-input required>
+                <input class="form-control datepicker" type="text" id="tournamentDeadline" name="tournamentDeadline" placeholder="dd.mm.YYYY" value="{$vars['deadline']|date_format:" d.m.Y"|default:""}" data-input required>
                 <div class="input-group-addon">
                     <span class="glyphicon glyphicon-th"></span>
                 </div>
@@ -60,7 +60,7 @@
         <div class="col-md-8">
             <div class="form-group">
                 <label for="tournamentLink">Link zur Ausschreibung:</label>
-                <input class="form-control" type="text" id="tournamentLink" name="tournamentLink" placeholder="http://" value="{$vars['link']}">
+                <input class="form-control" type="text" id="tournamentLink" name="tournamentLink" placeholder="http://" value="{$vars['link']|default:""}">
             </div>
         </div>
     </div>
@@ -78,7 +78,7 @@
         <div class="col-md-4">
             <div class="form-group">
                 <label for="tournamentAdditionalClassification">Weitere:</label>
-                <input class="form-control" type="text" id="tournamentAdditionalClassification" name="tournamentAdditionalClassification" placeholder="A,B,C" value="{$vars['additionalClassification']}">
+                <input class="form-control" type="text" id="tournamentAdditionalClassification" name="tournamentAdditionalClassification" placeholder="A,B,C" value="{$vars['additionalClassification']|default:""}">
             </div>
         </div>
     </div>
@@ -115,7 +115,7 @@
     <h3 class="mt-5">Beschreibung</h3>
     <div class="row">
         <div class="col-md-12">
-            <textarea id="summernote" name="tournamentDescription">{$vars['description']}</textarea>
+            <textarea id="summernote" name="tournamentDescription">{$vars['description']|default:""}</textarea>
         </div>
     </div>
 

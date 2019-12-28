@@ -9,7 +9,7 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="nav mr-auto nav-pills">
                 {if $tournamentEnable == "on"}
-                    <li class="nav-item"><a class="nav-link" href="tournament.php"><i class="fas fa-trophy"></i> Tuniere</a><li>
+                    <li class="nav-item"><a class="nav-link" href="tournament.php"><i class="fas fa-trophy"></i> Tuniere</a></li>
                 {/if}
 
                 {if $rankingEnable == "on"}

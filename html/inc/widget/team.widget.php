@@ -11,7 +11,7 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
-require('default.widget.php');
+require_once('default.widget.php');
 
 class TeamWidget extends Widget {
 

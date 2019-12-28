@@ -22,6 +22,20 @@ services:
     links:
       - db
 
+  intranet-reminder:
+    image: "intranet"
+    environment: 
+      - stage: "development"
+      volumes:
+        - "./data/config.ini:/var/www/html/inc/config.ini"
+        # Sending e-mail
+        - ./data/msmtp/msmtprc:/etc/msmtprc:ro
+        - ./data/msmtp/aliases:/etc/aliases:ro
+      links:
+        - db
+      command: 
+        - php /var/www/html/api/index.php tournament
+
   db:
     image: mariadb:10
     container_name: db
@@ -34,6 +48,7 @@ services:
     volumes:
       - "./dump.sql:/docker-entrypoint-initdb.d/dump.sql"
       - "./mysql/:/var/lib/mysql"
+
   # debug
   #adminer:
   #  image: adminer

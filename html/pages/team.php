@@ -12,7 +12,7 @@
  *
  ******************************************************************************/
 require_once '_options.php';
-include_once $_SERVER['BASE_DIR'] .'/inc/html/brdbHtmlTeam.inc.php';
+include_once BASE_DIR .'/inc/html/brdbHtmlTeam.inc.php';
 
 $page = new BrdbHtmlTeam();
 $page->processPage();

@@ -55,25 +55,27 @@ abstract class HtmlPageProcessor {
         $this->smarty->setCompileDir(BASE_DIR  .'/templates_c');
         $this->smarty->setConfigDir(BASE_DIR  .'/smarty/configs');
 
+        $version = "1.0.7";
+
         if ($this->stage == "development") {
+            $this->smarty->setCacheDir(BASE_DIR  .'/cache');
             // @TODO: set debug bar
-            #$this->smarty->force_compile  = true;
-            #$this->smarty->debugging      = true;
-            #$this->smarty->caching        = true;
-            #$this->smarty->cache_lifetime = 120;
+            $this->smarty->force_compile  = true;
+            $this->smarty->debugging      = false;
+            $this->smarty->caching        = true;
+            $this->smarty->cache_lifetime = 0;
+            $version .="-dev";
+        } else {
+            // remove notice
+            $this->smarty->error_reporting = E_ALL & ~E_NOTICE;
         }
 
-        // remove notice
-        $this->smarty->error_reporting = E_ALL & ~E_NOTICE;
-
-
-
         
-
         $this->smarty->assign(array(
             'pageTitle' => $this->tools->getIniValue('pageTitle'),
             'logoTitle' => $this->tools->getIniValue('logoTitle'),
             'baseUrl'   => $this->tools->getIniValue('baseUrl'),
+            'version'   => $version,
         ));
     }
 

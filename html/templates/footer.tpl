@@ -6,7 +6,7 @@
           <!-- Collect the nav links, forms, and other content for toggling -->
           <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
               <ul class="nav navbar-nav">
-                  <li><a href="#">Badminton Ranking - Version 1.0.2 BETA</a></li>
+                  <li><a href="#">Badminton Ranking - Version {$version|default:"1.0.7"}</a></li>
                   <li><a href="infoManual.php">Manual</a></li>
                   <li><a href="infoLicense.php">License</a></li>
                   <li><a href="infoThirdPartyLicenses.php">TPLicenses</a></li>

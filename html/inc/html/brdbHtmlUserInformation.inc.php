@@ -59,10 +59,10 @@ class BrdbHtmlUserInformation extends BrdbHtmlPage {
         }
 
         $user = $this->brdb->selectUserById($id)->fetch_assoc();
-        $club = $this->brdb->selectGetClubById($user['clubId'])->fetch_assoc();
+        //$club = $this->brdb->selectGetClubById($user['clubId'])->fetch_assoc();
         $this->smarty->assign(array(
             'user'       => $user,
-            'club'       => $club,
+            //'club'       => $club,
             'tournament' => $this->getLatestTournamentFromUserId($id),
             #'games'      => $this->getRankedGamesByUser(),
         ));
