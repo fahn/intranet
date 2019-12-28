@@ -1,12 +1,12 @@
 $(document).ready(function() {
-    // ???
-    var filename = basename($(location).attr("pathname"));
-
-    $("a[href$=${filename}]").addClass("active");
-
+    /* NAVI active boots trap*/
     function basename(path) {
         return path.split("/").reverse()[0];
     }
+    var filename = basename($(location).attr("pathname"));
+    $('ul.nav a[href$="${filename}"]').addClass("active");
+
+
 
 
     // ??
@@ -63,9 +63,10 @@ $(document).ready(function() {
 
     });
 
-    if (typeof flatpickr === "function") {
+    //if (typeof flatpickr === "function") {
         /* DATE_TIME_PICKER */
         $(".datetimepicker").flatpickr({
+            allowInput: true,
             weekNumbers: true,
             enableTime: true,
             time_24hr: true,
@@ -77,13 +78,14 @@ $(document).ready(function() {
         });
 
         $(".datepicker").flatpickr({
+            allowInput: true,
             weekNumbers: true,
             dateFormat: "d.m.Y",
             "locale": {
                 "firstDayOfWeek": 1 // start week on Monday
             }
         });
-    }
+    //}
 
     //if (typeof select2 === "function") {
     $(".js-data-ajax-player").select2({
