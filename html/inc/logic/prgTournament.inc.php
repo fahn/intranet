@@ -387,24 +387,6 @@ class PrgPatternElementTournament extends APrgPatternElement {
     }
     */
 
-    /**
-     * Returns the id of the suer for a given full name
-     * @param BrankDB $brdb the brdb to be used for this function
-     * @param $string $fullName the full name as a string
-     * @return the user id as integer or 0 in case the suer was not found -1 in case of error
-     */
-    private function getUserIdByFullName($fullName) {
-        $res = $this->brdb->getUserIdByFullName($fullName);
-        if ($this->brdb->hasError()) {
-            $this->setFailedMessage(self::ERROR_GAME_FAILED_TO_GET_USER_ID . " " . $fullName);
-            return -1;
-        }
-        $dataSet = $res->fetch_assoc();
-        if ($dataSet) {
-            return intval($dataSet[User::USER_CLM_ID]);
-        }
-        return 0;
-    }
 
 
 
@@ -484,13 +466,13 @@ class PrgPatternElementTournament extends APrgPatternElement {
      */
     public function processGet() {
         if($this->issetGetVariable("action")) {
-            $action = $this->getGetVariable("action");
-            $id = $this->getGetVariable("id");
+            $action = $this->tools->get("action");
+            $id = $this->tools->get("id");
 
             switch ($action) {
                 case 'deletePlayer':
                     if($this->issetGetVariable("id") && $this->issetGetVariable("tournamentPlayerId")) {
-                      $this->deletePlayersFromTournamentId($this->getGetVariable("id"), $this->getGetVariable("tournamentPlayerId"));
+                      $this->deletePlayersFromTournamentId($this->tools->get("id"), $this->tools->get("tournamentPlayerId"));
                     }
                     break;
 
@@ -509,9 +491,9 @@ class PrgPatternElementTournament extends APrgPatternElement {
 
                 case 'export':
                     // create backup
-                    $this->createBackup($this->getGetVariable("id"));
+                    $this->createBackup($this->tools->get("id"));
                     // create xls
-                    $this->export($this->getGetVariable("id"));
+                    $this->export($this->tools->get("id"));
                     break;
 
                 case 'unlock':
@@ -531,12 +513,12 @@ class PrgPatternElementTournament extends APrgPatternElement {
 
 
     private function unlockPlayerFromTournament() {
-        $id = $this->getGetVariable("id");
+        $id = $this->tools->get("id");
         if (!isset($id) || !is_numeric($id)) {
             $this->setFailedMessage("Unlocked failed");
             return false;
         }
-        $playerId = $this->getGetVariable("tournamentPlayerId");
+        $playerId = $this->tools->get("tournamentPlayerId");
         if (!isset($playerId) || !is_numeric($playerId)) {
             $this->brdb->unlockAllPlayerFromTournament($id);
         } else {
@@ -553,8 +535,9 @@ class PrgPatternElementTournament extends APrgPatternElement {
     }
 
     private function lockPlayerFromTournament() {
-        $id = $this->getGetVariable("id");
-        $playerId = $this->getGetVariable("tournamentPlayerId");
+        $id = $this->tools->get("id");
+
+        $playerId = $this->tools->get("tournamentPlayerId");
         if (!isset($id) || !is_numeric($id) || !isset($playerId) || !is_numeric($playerId)) {
             $this->setFailedMessage("locked failed");
             return false;

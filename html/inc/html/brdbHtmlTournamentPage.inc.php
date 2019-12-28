@@ -19,8 +19,6 @@ include_once BASE_DIR .'/inc/logic/tools.inc.php';
 
 # libary
 require_once BASE_DIR .'/vendor/autoload.php';
-#use \Eluceo\iCal\Component\Calendar;
-#use \Eluceo\iCal\Component\Event;
 
 // Routing
 use Symfony\Component\Routing\Annotation\Route;
@@ -36,14 +34,15 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
 
     private $tournamentType;
 
+    private $tournamenIniValues;
+
     public function __construct() {
         parent::__construct();
 
         $this->tools = new Tools();
         $this->tools->secure_array($_GET);
 
-        $this->tournamentType = $this->tools->getIni('tournament'); # array('NBV', 'FUN', 'OTHER');
-        var_dump($this->tournamentType);
+        $this->tournamenIniValues = $this->tools->getIniValue('tournament'); # array('NBV', 'FUN', 'OTHER');
 
         $this->prgElementTournament = new PrgPatternElementTournament($this->brdb, $this->prgPatternElementLogin);
         $this->prgPattern->registerPrg($this->prgElementTournament);
@@ -126,15 +125,14 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
      * @return void
      */
     private function updateTournamentTMPL($actionId, $action = 'add') {
-
-        $classificationArr = $this->valueIsKey($this->tools->getAgeClassArray());
-        $disciplineArr     = $this->valueIsKey($this->tools->getModeArr());
+        $classificationArr = $this->valueIsKey($this->getTournamentAgeClass());
+        $disciplineArr     = $this->valueIsKey($this->getTournamentModeArr());
         $reportArr         = $this->getAllUser();
         $rows              = array();
 
 
         if ($action == 'edit') {
-            $actionId                           = $this->tools->get("id");
+            $actionId                     = $this->tools->get("id");
             $res                          = $this->brdb->getTournamentData($actionId);
             $tournament                   = $res->fetch_assoc();
             $tournament['classification'] = unserialize($tournament['classification']);
@@ -156,6 +154,8 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
                 }
             }
         }
+
+
         $this->smarty->assign(array(
             'task'              => $action,
             'hidden'            => $action == 'add' ? 'Insert Tournament' : 'Edit Tournament',
@@ -235,7 +235,6 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
     private function TMPL_showDetails($actionId) {
         if(!isset($actionId) or !is_numeric($actionId)) {
             return "";
-
         }
         $tournament                   = $this->brdb->getTournamentData($actionId)->fetch_assoc();
         $tournament['classification'] = $this->tools->formatClassification($tournament['classification']);

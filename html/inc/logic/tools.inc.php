@@ -29,11 +29,7 @@ use Nette\Mail\Message;
  * @return string the returned and filtered string
  */
 class Tools {
-    /* Private */
-    private $ageClassArr = array("U9", "U11", "U13", "U15", "U17", "U19", "U22", "O19", "O35", "O40", "O45", "O50", "O55", "O60", "O65", "O70", "O75");
-    private $modes = array("HE", "JE", "DE", "ME", "HD", "JD", "DD", "MD", "GD");
-    private $ini;
-
+    protected $ini;
 
     public function __construct() {
         // load ini
@@ -153,8 +149,8 @@ class Tools {
     }
 
 
-    public function getAgeClassArray() {
-        return $this->ageClassArr;
+    public function getTournamentAgeClass() {
+        return $this->getIniValue("tournament")["classes"];
     }
 
 
@@ -193,20 +189,42 @@ class Tools {
 
     //////////////////////////////////////// ** MODE
 
-    public function getModeArr() {
-        if (is_array($this->modes)) {
-            asort($this->modes);
+    public function getTournamentModeArr() {
+        $modes = $this->getIniValue("tournament")["modes"];
+        if (is_array($modes)) {
+            asort($modes);
         }
-        return $this->modes;
+        return $modes;
     }
 
     /**
-     * send mail
+     * Send mail
+     *
+     * @param [type] $to
+     * @param [type] $name
+     * @param [type] $subject
+     * @param [type] $preheader
+     * @param [type] $content
+     * @param boolean $assign
+     * @param boolean $template
+     * @return void
      */
     public function sendMail($to, $name, $subject, $preheader, $content, $assign = false, $template = false) {
         return $this->sendHtmlMail($to, $name, $subject, $preheader, $content, $assign, $template);
     }
 
+    /**
+     * Send Html-Mail
+     *
+     * @param [type] $email
+     * @param [type] $name
+     * @param [type] $subject
+     * @param [type] $preheader
+     * @param [type] $content
+     * @param boolean $assign
+     * @param boolean $template
+     * @return void
+     */
     private function sendHtmlMail($email, $name, $subject, $preheader,  $content, $assign = false, $template = false) {
 
       // message
