@@ -1,0 +1,13 @@
+version: '3.0'
+
+services:
+  intranet:
+    #image: badtra/intranet:doc-latest
+    build: "Dockerfile"
+    container_name: intranet-doc
+    labels:
+        - "traefik.enable=true"
+        - "traefik.network=web"
+        - "traefik.http.routers.docBadtra.rule=Host(`doc.badtra.de`)"
+        - "traefik.http.routers.docBadtra.tls=true"
+        - "traefik.http.routers.docBadtra.entrypoints=websecure"
