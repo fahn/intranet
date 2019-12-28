@@ -11,6 +11,7 @@
                     {if $tournament.startdate|date_format:"d.m.y" != $tournament.enddate|date_format:"d.m.y"}
                         - {$tournament.enddate|date_format:"%d.%m.%Y"}
                     {/if}
+                    <a href="?action=calendar&id={$tournament.tournamentId}" title="add to calendar"><i class="fas fa-calendar-check"></i></a>
                 </p>
                 <p><strong>Meldeschluss:</strong> <span class="text-{if $tournament.deadline|strtotime < $smarty.now}danger{else}success{/if}">{$tournament.deadline|date_format:"%d.%m.%Y"}</span></p>
                 <p><strong>Ausschreibung:</strong> {if $tournament.link}<a href="{$tournament.link}" target="_blank">Link zur Ausschreibung</a>{else}-{/if}</p>

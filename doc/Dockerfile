@@ -3,8 +3,13 @@ FROM ubuntu:18.04
 LABEL MAINTAINER="Stefan Metzner <stmetzner@gmail.com>"
 LABEL VERSION="0.1"
 
+ARG DEBIAN_FRONTEND=noninteractive
+
 # install apache2 and shinx
-RUN apt-get -qq update && apt-get -f install -y python3-sphinx apache2 python3-pip
+RUN apt-get -qq update && \
+    apt-get upgrade -y && \
+    apt-get -f install -y apt-utils python3-sphinx apache2 apache2-bin python3-pip && \
+    rm -rf /var/lib/apt/cache
 
 # install theme
 RUN pip install sphinx_theme
