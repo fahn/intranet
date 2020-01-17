@@ -1,14 +1,20 @@
-<form action="{$formTO}" method="post" class="form-signin">
+<form action="{$formTO}" method="post" >
   <input type="hidden" name="loginFormLoginAction" id="loginFormLoginAction" value="Log In">
   <div class="login-form">
     {include file="messages.tpl"}
 
-    <div class="form-group">
-        <input type="email" class="form-control login-field" value="" placeholder="E-Mail-Adresse" id="{$variableNameEmail}" name="{$variableNameEmail}" required autofocus>
+    <div class="input-group mb-2 mr-sm-2">
+      <div class="input-group-prepend">
+        <div class="input-group-text"><i class="fas fa-at"></i></div>
+      </div>
+       <input type="email" class="form-control login-field" value="" placeholder="E-Mail-Adresse" id="{$variableNameEmail}" name="{$variableNameEmail}" required autofocus>
     </div>
 
-    <div class="form-group">
-        <input type="password" class="form-control login-field" value="" placeholder="Password" id="{$variableNamePassw}" name="{$variableNamePassw}" required>
+    <div class="input-group mb-2 mr-sm-2">
+      <div class="input-group-prepend">
+        <div class="input-group-text"><i class="fas fa-key"></i></div>
+      </div>
+      <input type="password" class="form-control login-field" value="" placeholder="Password" id="{$variableNamePassw}" name="{$variableNamePassw}" required>
     </div>
 
     <input type="submit" name="{$variableNameAction}" class="btn btn-success btn-block " value="{$variableNameActionLogin}">

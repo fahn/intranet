@@ -1,14 +1,14 @@
-{if $pagination}
+{if isset($pagination)}
   <nav aria-label="Page navigation example" class="mt-1 mb-1">
     <ul class="pagination justify-content-center">
-      {if $smarty.get.page > 1}
+      {if isset($smarty.get.page) && $smarty.get.page > 1}
       <li class="page-item">
             <a class="page-link" href="?page={$smarty.get.page-1}" aria-label="Previous">
                 <span aria-hidden="true">&laquo;</span>
                 <span class="sr-only">Previous</span>
             </a>
         </li>
-        {/if}
+      {/if}
       <!-- Make dropdown appear above pagination -->
       {foreach item=pn from=$pagination}
           {assign var="max" value=$pn.id}
