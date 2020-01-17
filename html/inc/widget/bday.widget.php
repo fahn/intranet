@@ -47,7 +47,7 @@ class BdayWidget extends Widget {
         $data = array();
         $res  = $this->brdb->selectNextBirthdays();
         if (! $this->brdb->hasError() ) {
-            while ($dataSet = $res->fetch_assoc()) {
+            while ($dataSet = $res) {
                 $dataSet['linkToUser'] = $this->tools->linkTo(array('page' => 'user.php', 'id' => $dataSet['userId']));
                 $dataSet['years']      = $this->calculate_age($dataSet['bday']);
 
