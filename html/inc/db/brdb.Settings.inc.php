@@ -17,11 +17,12 @@ trait SettingsDB
     /**
      * loadSettings @TODO: upcoming feature
      */
-    public function loadSettings()
-    {
-        $cmd = $this->db->prepare("SELECT * FROM Settings");
+    public function loadSettings() {
+        $query = "SELECT * FROM Settings";
+        $statement = $this->db->prepare($query);
 
-        return $this->executeStatement($cmd);
+        return $statement->execute();
+
     }
 }
 ?>

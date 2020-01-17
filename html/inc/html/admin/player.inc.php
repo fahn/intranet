@@ -12,7 +12,7 @@
  *
  ******************************************************************************/
 $path=dirname(dirname(__FILE__));
-require($path .'/brdbHtmlPage.inc.php');
+require_once($path .'/brdbHtmlPage.inc.php');
 
 include_once BASE_DIR .'/inc/logic/prgPlayer.inc.php';
 include_once BASE_DIR .'/inc/logic/prgClub.inc.php';

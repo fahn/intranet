@@ -11,53 +11,61 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
-declare(strict_types=1);
+#declare(strict_types=1);
 
 trait StaffDB {
     public function selectGetStaff() {
-        $cmd = $this->db->prepare("SELECT US.*, CONCAT_WS(' ', User.firstName, User.lastName) AS name, User.image, User.gender FROM UserStaff AS US
-                                 LEFT JOIN User ON User.userId = US.userId
-                                 ORDER BY US.row ASC, US.sort ASC, User.lastName ASC");
+        $query = "SELECT US.*, CONCAT_WS(' ', User.firstName, User.lastName) AS name, User.image, User.gender FROM UserStaff AS US
+                    LEFT JOIN User ON User.userId = US.userId
+                    ORDER BY US.row ASC, US.sort ASC, User.lastName ASC";
+        $statement = $this->db->prepare($query);
+        $statement->execute();
 
-        return $this->executeStatement($cmd);
+        return $statement->fetchAll();
     }
 
-    public function selectGetStaffById($staffId) {
-        $cmd = $this->db->prepare("SELECT US.*, CONCAT_WS(' ', User.firstName, User.lastName) AS name FROM UserStaff AS US
-                                 LEFT JOIN User ON User.userId = US.userId
-                                 WHERE US.staffId = ?");
-        $cmd->bind_param("i", $staffId);
+    public function selectGetStaffById(int $staffId) {
+        $query = "SELECT US.*, CONCAT_WS(' ', User.firstName, User.lastName) AS name FROM UserStaff AS US
+                    LEFT JOIN User ON User.userId = US.userId
+                    WHERE US.staffId = ?";
+        $statement = $this->db->prepare($query);
+        $statement->bindParam('staffId', $staffId);
 
-        return $this->executeStatement($cmd);
+        return $statement->execute();
     }
 
     public function insertStaff() {
-        $cmd = $this->db->prepare("INSERT INTO UserStaff (userId, position, description, row, sort) VALUES (99, 1, '', 1, 99)");
+        $query = "INSERT INTO UserStaff (userId, position, description, row, sort) VALUES (99, 1, '', 1, 99)";
+        $statement = $this->db->prepare($query);
 
-        return $this->executeStatement($cmd);
+        return $statement->execute();
     }
 
     public function updateStaff($data) {
         try {
-            #$cmd = $this->db->prepare("UPDATE UserStaff set userId = :userId where staffId = :staffid");
-            $cmd = $this->db->prepare("UPDATE UserStaff set userId = ?, position  = ?, description  = ?, row  = ? where staffId = ?");
-            $cmd->bind_param("iisii", $data['userId'], $data['position'], $data['desciption'], $data['row'], $data['staffId']);
-            #$cmd->bindParam('userId', $data['userId']);
-            #$cmd->bindParam('staffid', $data['staffid']);
+            #$query = "UPDATE UserStaff set userId = :userId where staffId = :staffid");
+            $query = "UPDATE UserStaff set userId = :userId, position  = :position, description  = :desciption, row  = :row where staffId = :staffId";
+            $statement = $this->db->prepare($query);
+            $statement->bindParam('userId', $data['userId']);
+            $statement->bindParam('position', $data['position']);
+            $statement->bindParam('desciption', $data['desciption']);
+            $statement->bindParam('row', $data['row']);
+            $statement->bindParam('staffId', $data['staffId']);
 
-            return $this->executeStatement($cmd);
+            return $statement->execute();
         } catch (Exception $e) {
             throw new BadtraException('Failed to update Staff');
         }
 
     }
 
-    public function deleteStaff($staffId) {
+    public function deleteStaff(int $staffId) {
         try {
-            $cmd = $this->db->prepare("DELETE FROM UserStaff WHERE staffId = ?");
-            $cmd->bind_param("i", $staffId);
+            $query = "DELETE FROM UserStaff WHERE staffId = :staffId";
+            $statement = $this->db->prepare($query);
+            $statement->bindParam('staffId', $staffId);
 
-            return $this->executeStatement($cmd);
+            return $statement->execute();
         } catch (Exception $e) {
             throw new BadtraException('Failed to update Staff');
         }

@@ -92,22 +92,21 @@ class BrdbHtmlAdminAllUserPage extends BrdbHtmlPage {
       * PAGINATION
       */
     private function loadUserList($page = 0) {
-        $this->countRows = $this->brdb->selectAllUser()->num_rows;
+        $this->countRows = count($this->brdb->selectAllUser());
         $max = self::MAX_ENTRIES*(1+$page);
         $min = $max - self::MAX_ENTRIES;
 
         $res = $this->brdb->selectAllUserPagination($min, $max);
         $loopUser = array();
-        if (!$this->brdb->hasError()) {
-            while ($dataSet = $res->fetch_assoc()) {
-                $user = new User($dataSet);
+        print_r($res);
+        foreach ($res as $dataSet) { // = $res->fetch_assoc()) {
+            $user = new User($dataSet);
 
-                $dataSet['isAdmin']    = $user->isAdmin();
-                $dataSet['isReporter'] = $user->isReporter();
-                $dataSet['isPlayer']   = $user->isPlayer();
+            $dataSet['isAdmin']    = $user->isAdmin();
+            $dataSet['isReporter'] = $user->isReporter();
+            $dataSet['isPlayer']   = $user->isPlayer();
 
-                $loopUser[] = $dataSet; //new User($dataSet);
-            }
+            $loopUser[] = $dataSet; //new User($dataSet);
         }
         return $loopUser;
     }
@@ -144,7 +143,7 @@ class BrdbHtmlAdminAllUserPage extends BrdbHtmlPage {
 
         $id  = $this->tools->get('id');
         $res = $this->brdb->selectUserById($id);
-        if(!$this->brdb->hasError()) {
+        if (!$this->brdb->hasError()) {
             $this->info = $res->fetch_assoc();
         }
         $this->smarty->assign(array(
@@ -159,9 +158,10 @@ class BrdbHtmlAdminAllUserPage extends BrdbHtmlPage {
     private function TMPL_deletePlayer() {
         $id  = $this->tools->get('id');
         $res = $this->brdb->selectUserById($id);
-        if(!$this->brdb->hasError()) {
+        if (!$this->brdb->hasError()) {
             $this->user = $res->fetch_assoc();
         }
+
         $this->smarty->assign(array(
             'user'   => $this->user,
             'hidden' => "Delete User",
@@ -171,15 +171,7 @@ class BrdbHtmlAdminAllUserPage extends BrdbHtmlPage {
     }
 
     private function getClubs() {
-        $res = $this->brdb->selectAllClubs();
-        $tmp = array();
-        if (!$this->brdb->hasError()) {
-            while($row = $res->fetch_assoc()) {
-                $tmp[] = $row;
-            }
-        }
-
-        return $tmp;
+        return $this->brdb->selectAllClubs();
     }
 }
 ?>

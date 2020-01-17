@@ -1,4 +1,20 @@
 <?php
+/*******************************************************************************
+ * Badminton Intranet System
+ * Copyright 2017-2019
+ * All Rights Reserved
+ *
+ * Copying, distribution, usage in any form is not
+ * allowed without  written permit.
+ *
+ * Stefan Metzner <stefan@weinekind.de>
+ * Philipp M. Fischer <phil.m.fischer@googlemail.com>
+ *
+ ******************************************************************************/
+
+require_once(BASE_DIR .'/inc/exception/badtra.exception.php');
+
+
 trait UserDB {
 
     /**
@@ -10,10 +26,17 @@ trait UserDB {
      */
     public function selectUserByEmail($email)
     {
-        $cmd = $this->db->prepare("SELECT * FROM User WHERE email = ?");
-        $cmd->bind_param("s", $email);
+        $query     = "SELECT * FROM User WHERE email = :email";
+        $statement = $this->db->prepare($query);
+        $statement->bindParam('email', $email);
+        $statement->execute();
 
-        return $this->executeStatement($cmd);
+        $user = $statement->fetchObject();
+        if (empty($user)) {
+            throw new BadtraException('User not found.');
+        }
+
+        return $user;
     }
 
 
@@ -34,12 +57,18 @@ trait UserDB {
      *            The user ID as integer
      * @return mysqli_result the user from the database as SQL Result
      */
-    public function selectUserById($userId)
-    {
-        $cmd = $this->db->prepare("SELECT * FROM User WHERE userId = ?");
-        $cmd->bind_param("i", $userId);
+    public function selectUserById(int $userId) {
+        $query = 'SELECT * FROM `User` WHERE userId = :id';
+        $statement = $this->db->prepare($query);
+        $statement->bindParam('id', $userId);
+        $statement->execute();
 
-        return $this->executeStatement($cmd);
+        $user = $statement->fetchObject();
+        #if (empty($user)) {
+        #    throw new BadtraException('User not found.');
+        #}
+
+        return $user;
     }
 
     /**
@@ -50,10 +79,11 @@ trait UserDB {
      * @return mysqli_result result of the sql execution
      */
     public function deleteUserById($userId) {
-        $cmd = $this->db->prepare("Update User set email = '', password = '', reporter = 0, admin = 0 WHERE userId = ?");
-        $cmd->bind_param("i", $userId);
-
-        return $this->executeStatement($cmd);
+        $query = "Update User set email = '', password = '', reporter = 0, admin = 0 WHERE userId = :userId";
+        $statement = $this->db->prepare($query);
+        $statement->bindParam('userId', $userId);
+        
+        return $statement->execute();
     }
 
     /**
@@ -61,34 +91,40 @@ trait UserDB {
      *
      * @return mysqli_result all users from the database as SQL Result
      */
-    public function selectAllUser()
-    {
-        $cmd = $this->db->prepare("SELECT *, CONCAT_WS(' ', User.firstName, User.lastName) as fullName FROM User");
+    public function selectAllUser(){
+        $query = "SELECT *, CONCAT_WS(' ', User.firstName, User.lastName) as fullName FROM User";
+        $statement = $this->db->prepare($query);
+        $statement->execute();
 
-        return $this->executeStatement($cmd);
+        return $statement->fetchAll();
     }
 
-    public function selectAllUserSortBy($sort, $asc = 'ASC')
-    {
-        $cmd = $this->db->prepare("SELECT * FROM User ORDER BY ? ?");
-        $cmd->bind_param("ss", $sort, $asc);
+    public function selectAllUserSortBy($sort, $asc = 'ASC') {
+        $query = "SELECT * FROM User ORDER BY :sort :order";
+        $statement = $this->db->prepare($query);
+        $statement->bindParam('sort', $sort);
+        $statement->bindParam('order', $order);
 
-        return $this->executeStatement($cmd);
+        return $statement->execute();
     }
 
-    public function selectAllUserPagination($min = 0, $max = 50)
-    {
-        $cmd = $this->db->prepare("SELECT User.* FROM User ORDER BY User.lastName LIMIT ?,?");
-        $cmd->bind_param("ii", $min, $max);
+    public function selectAllUserPagination(int $min = 0, int $max = 50) {
+        $query = "SELECT User.* FROM User ORDER BY User.lastName LIMIT :min,:max";
+        $statement = $this->db->prepare($query);
+        $statement->bindParam('min', $min);
+        $statement->bindParam('max', $max);
+        $statement->execute();
 
-        return $this->executeStatement($cmd);
+        print_r($statement);
+        print_r($statement->debugDumpParams());
+        return $statement->fetchAll();
     }
 
-    public function GetActiveAndReporterOrAdminPlayer()
-    {
-        $cmd = $this->db->prepare("SELECT * FROM User WHERE activePlayer = 1 AND (admin = 1 OR reporter = 1) ORDER BY lastName ASC");
+    public function GetActiveAndReporterOrAdminPlayer() {
+        $query     = "SELECT * FROM User WHERE activePlayer = 1 AND (admin = 1 OR reporter = 1) ORDER BY lastName ASC";
+        $statement = $this->db->prepare($query);
 
-        return $this->executeStatement($cmd);
+        return $statement->execute();
     }
 
     /**
@@ -105,10 +141,17 @@ trait UserDB {
      * @return mysqli_result
      */
     public function registerUser($email, $firstName, $lastName, $gender, $bday, $playerId) {
-        $cmd = $this->db->prepare("INSERT INTO User (email, firstName, lastName, gender, bday, playerId, activePlayer) VALUES (?, ?, ?, ?, ?, ?, 1)");
-        $cmd->bind_param("ssssss", $email, $firstName, $lastName, $gender, $bday, $playerId);
+        $query = "INSERT INTO User (email, firstName, lastName, gender, bday, playerId, activePlayer) 
+                  VALUES (:email, :firstName, :lastName, :gender, :bday, :playerId, 1)";
+        $statement = $this->db->prepare($query);
+        $statement->bindParam('email', $email);
+        $statement->bindParam('firstName', $firstName);
+        $statement->bindParam('lastName', $lastName);
+        $statement->bindParam('gender', $gender);
+        $statement->bindParam('bday', $bday);
+        $statement->bindParam('playerId', $playerId);
 
-        return $this->executeStatement($cmd);
+        return $statement->execute();
     }
 
     /**
@@ -126,32 +169,52 @@ trait UserDB {
      *            the phone to be set
      * @return mysqli_result result of the statement execution
      */
-    public function updateUser($userId, $email, $fname, $lName, $gender, $phone, $bday) {
-        $cmd = $this->db->prepare("Update User set email = ?, firstName = ?, lastName = ?, gender = ?, phone = ?, bday = ? WHERE userId = ?");
-        $cmd->bind_param("ssssssi", $email, $fname, $lName, $gender, $phone, $bday, $userId);
+    public function updateUser(int $userId, $email, $firstName, $lastName, $gender, $phone, $bday) {
+        $query = "Update User set email = :email, firstName = :firstName, lastName = :lastName, gender = :gender, phone = :phone, bday = :bday WHERE userId = :userId";
+        $statement = $this->db->prepare($query);
 
-        return $this->executeStatement($cmd);
+        $statement->bindParam('email', $email);
+        $statement->bindParam('firstName', $firstName);
+        $statement->bindParam('lastName', $lastName);
+        $statement->bindParam('gender', $gender);
+        $statement->bindParam('bday', $bday);
+        $statement->bindParam('phone', $phone);
+        //$statement->bindParam('playerId', $playerId);
+        $statement->bindParam('userId', $userId);
+
+
+        return $statement->execute();
     }
 
-    public function updateUserPassword($userId, $pass) {
-        $cmd = $this->db->prepare("UPDATE User set password = ? WHERE userId = ?");
-        $cmd->bind_param("si", $pass, $userId);
+    public function updateUserPassword(int $userId, String $pass) {
+        $query = "UPDATE User set password = :password WHERE userId = :userId";
+        $statement = $this->db->prepare($query);
 
-        return $this->executeStatement($cmd);
+        $statement->bindParam('userId', $userId);
+        $statement->bindParam('password', $password);
+
+        return $statement->execute();
     }
 
-    public function checkUserPassword($userId, $hashedPassword) {
-        $cmd = $this->db->prepare("SELECT userId FROM User WHERE userId = ? AND password = ? ");
-        $cmd->bind_param("is", $userId, $hashedPassword);
+    public function checkUserPassword(int $userId, $password) {
+        $cmd = $this->db->prepare("SELECT userId FROM User WHERE userId = :userId AND password = :password ");
+        $statement = $this->db->prepare($query);
 
-        return $this->executeStatement($cmd);
+        $statement->bindParam('userId', $userId);
+        $statement->bindParam('password', $password);
+
+        return $statement->execute();
     }
 
     public function insertUser($email, $firstName, $lastName, $gender){
-        $cmd = $this->db->prepare("INSERT INTO User (email, firstName, lastName, gender) VALUES (?, ?, ?, ? )");
-        $cmd->bind_param("ssss", $email, $firstName, $lastName, $gender);
+        $query = "INSERT INTO User (email, firstName, lastName, gender) VALUES (:email, :firstName, :lastName, :gender)";
+        $statement = $this->db->prepare($query);
+        $statement->bindParam('email', $email);
+        $statement->bindParam('firstName', $firstName);
+        $statement->bindParam('lastName', $lastName);
+        $statement->bindParam('gender', $gender);
 
-        return $this->executeStatement($cmd);
+        return $statement->execute();
     }
 
     /**
@@ -177,82 +240,86 @@ trait UserDB {
      *            set to 1 if the user is a reporter or 0 if not
      * @return mysqli_result the result of the executed maysql statement
      */
-    public function updateAdminUser($userId, $email, $fname, $lName, $gender, $phone, $bday, $playerId, $isPlayer, $isReporter, $isAdmin)
-    {
-        $cmd = $this->db->prepare("UPDATE User set email=?, firstName=?, lastName=?, gender=?, phone=?, bday = ?, playerId = ?, activePlayer = ?, reporter = ?, admin = ? WHERE UserId = ?");
-        $cmd->bind_param("sssssssiiii", $email, $fname, $lName, $gender, $phone, $bday, $playerId, $isPlayer, $isReporter, $isAdmin, $userId);
+    public function updateAdminUser($userId, $email, $fname, $lName, $gender, $phone, $bday, $playerId, $isPlayer, $isReporter, $isAdmin) {
+        $query = "UPDATE User set email=:email, firstName=:fname, lastName=:lName, gender=:gender, phone=:phone, bday = :bday, 
+                    playerId = :playerId, activePlayer = :isPlayer, reporter = :isReporter, admin = :isAdmin 
+                    WHERE userId = :userId";
+        $statement = $this->db->prepare($query);
+        $statement->bindParam('email', $email);
+        $statement->bindParam('fname', $fname);
+        $statement->bindParam('lName', $lName);
+        $statement->bindParam('gender', $gender);
+        $statement->bindParam('phone', $phone);
+        $statement->bindParam('bday', $bday);
+        $statement->bindParam('playerId', $playerId);
+        $statement->bindParam('isPlayer', $isPlayer);
+        $statement->bindParam('isReporter', $isReporter);
+        $statement->bindParam('isAdmin', $isAdmin);
+        $statement->bindParam('userId', $userId);
 
-        return $this->executeStatement($cmd);
+        return $statement->execute();
     }
 
-    public function selectNextBirthdays()
-    {
-        $cmd = $this->db->prepare("SELECT userId, CONCAT_WS(' ', firstName, lastName) AS userName, bday
-                                 FROM User
-                                 WHERE DATE_ADD(bday, INTERVAL YEAR(CURDATE())-YEAR(bday) + IF(DAYOFYEAR(CURDATE()) > DAYOFYEAR(bday),1,0) YEAR) BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 14 DAY)
-                                 ORDER BY DAY(bday) ASC");
+    public function selectNextBirthdays() {
+        $query = "SELECT userId, CONCAT_WS(' ', firstName, lastName) AS userName, bday
+                    FROM User
+                    WHERE DATE_ADD(bday, INTERVAL YEAR(CURDATE())-YEAR(bday) + IF(DAYOFYEAR(CURDATE()) > DAYOFYEAR(bday),1,0) YEAR) BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 14 DAY)
+                    ORDER BY DAY(bday) ASC";
+        $statement = $this->db->prepare($query);
+        $statement->execute();
 
-        return $this->executeStatement($cmd);
+        return $statement->fetchAll();
     }
 
-    public function selectAllPlayerByOurClub($clubId = 2)
-    {
-        $cmd = $this->db->prepare("SELECT userId, CONCAT_WS(' ', firstName, lastName) as fullName FROM User WHERE clubId = ? ORDER BY fullName ASC");
-        $cmd->bind_param("i", $clubId);
+    public function selectAllPlayerByOurClub($clubId = 2) {
+        $query = "SELECT userId, CONCAT_WS(' ', firstName, lastName) as fullName FROM User WHERE clubId = :clubId ORDER BY fullName ASC";
+        $statement = $this->db->prepare($query);
+        $statement->bindParam('clubId', $clubId);
 
-        return $this->executeStatement($cmd);
+        return $statement->execute();
     }
 
     // User Password
-    public function insertUserPassHash($id, $token, $ip)
-    {
-        $cmd = $this->db->prepare("INSERT INTO UserPassHash (userId, token, ip) VALUES (?, ?, ?)");
-        $cmd->bind_param("iss", $id, $token, $ip);
+    public function insertUserPassHash($userId, $token, $ip) {
+        $query = "INSERT INTO UserPassHash (userId, token, ip) VALUES (:userId, :token, :ip)";
+        $statement = $this->db->prepare($query);
+        $statement->bindParam('userId', $userId);
+        $statement->bindParam('token', $token);
+        $statement->bindParam('ip', $ip);
 
-        return $this->executeStatement($cmd);
+        return $statement->execute();
     }
 
-    public function GetUserPassHash($mail, $token)
-    {
-        $cmd = $this->db->prepare("SELECT * FROM User
-         LEFT JOIN UserPassHash AS PASS ON PASS.userId = User.userId
-         WHERE User.email = ? AND PASS.token = ? AND PASS.valid = 1 AND PASS.createDate > NOW()-86440");
-        $cmd->bind_param("ss", $mail, $token);
+    public function GetUserPassHash($mail, $token) {
+        $query = "SELECT * FROM User
+                    LEFT JOIN UserPassHash AS PASS ON PASS.userId = User.userId
+                    WHERE User.email = :mail AND PASS.token = :token AND PASS.valid = 1 AND PASS.createDate > NOW()-86440";
+        $statement = $this->db->prepare($query);
+        $statement->bindParam('mail', $mail);
+        $statement->bindParam('token', $token);
 
-        return $this->executeStatement($cmd);
+        return $statement->execute();
     }
 
-    public function DeleteUserPassHash($userid, $token)
-    {
-        $cmd = $this->db->prepare("UPDATE UserPassHash set valid = 0 WHERE userId = ? AND token = ?");
-        $cmd->bind_param("ss", $userid, $token);
+    public function DeleteUserPassHash($userid, $token) {
+        $query = "UPDATE UserPassHash set valid = 0 WHERE userId = :userId AND token = :token";
+        $statement = $this->db->prepare($query);
+        $statement->bindParam('userId', $userId);
+        $statement->bindParam('token', $token);
 
-        return $this->executeStatement($cmd);
-    }
-
-    /**
-     * This method hands back a user by a given full name
-     *
-     * @param String $fullUserName
-     *            the user to be handed back by the DB
-     * @return mysqli_result
-     */
-    public function getUserIdByFullName($fullUserName)
-    {
-        $cmd = $this->db->prepare("SELECT userId FROM User WHERE LOWER(_UserFullName(firstName, lastName)) = LOWER(?)");
-        $cmd->bind_param("s", $fullUserName);
-
-        return $this->executeStatement($cmd);
+        return $statement->execute();
     }
 
     /**
      * set image to User
      */
     public function updateUserImage($userId, $image) {
-        $cmd = $this->db->prepare("UPDATE User set image = ? WHERE userId = ? ");
-        $cmd->bind_param("si", $image, $userId);
+        $cmd = $this->db->prepare("UPDATE User set image = :image WHERE userId = :userId ");
+        $statement = $this->db->prepare($query);
+        $statement->bindParam('userId', $userId);
+        $statement->bindParam('image', $image);
 
-        return $this->executeStatement($cmd);
+        return $statement->execute();
     }
 }
 

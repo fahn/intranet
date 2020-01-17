@@ -69,8 +69,9 @@ class TournamentWidget extends Widget {
     private function getLatestTournament() {
         $data = array();
         $res = $this->brdb->selectLatestTournamentList(5);
+
         if (!$this->brdb->hasError()) {
-            while ($dataSet = $res->fetch_assoc()) {
+            while ($dataSet = $res) {
                 $dataSet['classification'] = $this->tools->formatClassification($dataSet['classification']);
                 $dataSet['linkTo']         = $this->tools->linkTo(array('page' => 'tournament.php', 'action' => 'details', 'id' => $dataSet['tournamentId']));
 
@@ -84,7 +85,7 @@ class TournamentWidget extends Widget {
         $data = array();
         $res = $this->brdb->selectUpcomingTournamentList(5);
         if (!$this->brdb->hasError()) {
-            while ($dataSet = $res->fetch_assoc()) {
+            while ($dataSet = $res) {
                 $dataSet['classification'] = $this->tools->formatClassification($dataSet['classification']);
                 $dataSet['linkTo']         = $this->tools->linkTo(array('page' => 'tournament.php', 'action' => 'details', 'id' => $dataSet['tournamentId']));
                 // get unique player

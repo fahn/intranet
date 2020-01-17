@@ -15,55 +15,63 @@
 trait FaqDB {
 
     public function statementGetAllFaq() {
-        $cmd = $this->db->prepare("SELECT Faq.*, Cat.title as categoryTitle, Cat.categoryId FROM `Faq`
-                                   LEFT JOIN `Category` AS `Cat` ON Cat.categoryId = Faq.categoryId");
+        $query = "SELECT Faq.*, Cat.title as categoryTitle, Cat.categoryId FROM `Faq`
+                    LEFT JOIN `Category` AS `Cat` ON Cat.categoryId = Faq.categoryId";
+        $statement = $this->db->prepare($query);
 
-        return  $this->executeStatement($cmd);
+        return $statement->execute();
     }
 
-    public function statementGetFAQById($id) {
-        $cmd = $this->db->prepare("SELECT * FROM `Faq` WHERE faqId = ?");
-        $cmd->bind_param("i", $id);
+    public function statementGetFAQById($faqId) {
+        $query = "SELECT * FROM `Faq` WHERE faqId = :faqId";
+        $statement = $this->db->prepare($query);
+        $statement->bindParam('faqId', $faqId);
 
-        return  $this->executeStatement($cmd);
+        return $statement->execute();
     }
     
-    public function statementGetFaqByCategoryId($id) {
-        $cmd = $this->db->prepare("SELECT * FROM `Faq`
-                                   WHERE  categoryId = ? ");
-        $cmd->bind_param("i", $id);
+    public function statementGetFaqByCategoryId($categoryId) {
+        $query = "SELECT * FROM `Faq` WHERE categoryId = :categoryId";
+        $statement = $this->db->prepare($query);
+        $statement->bindParam('categoryId', $categoryId);
         
-        return  $this->executeStatement($cmd);
+        return $statement->execute();
     }
     
     public function statementGetCategoryAndCountItems() {
-        $cmd = $this->db->prepare("SELECT *, (SELECT count(*) FROM Faq WHERE Faq.categoryId = Category.categoryId) AS items FROM `Category`");
-
-        return  $this->executeStatement($cmd);
+        $query = "SELECT *, (SELECT count(*) FROM Faq WHERE Faq.categoryId = Category.categoryId) AS items FROM `Category`";
+        $statement = $this->db->prepare($query);
+        
+        return $statement->execute();
     }
 
     public function insertFaq($title, $categoryId, $text) {
-        $cmd = $this->db->prepare("INSERT INTO `Faq` (title, categoryId, text) VALUES (?, ?, ?)");
-        $cmd->bind_param("sis", $title, $categoryId, $text);
-
-        return  $this->executeStatement($cmd);
+        $query = "INSERT INTO `Faq` (title, categoryId, text) VALUES (:title, :categoryId, :text)";
+        $statement = $this->db->prepare($query);
+        $statement->bindParam('title', $title);
+        $statement->bindParam('categoryId', $categoryId);
+        $statement->bindParam('text', $text);
+        
+        return $statement->execute();
     }
 
-    public function updateFaqById($id, $title, $categoryId, $text) {
-        $cmd = $this->db->prepare("UPDATE `Faq` set title = ?, categoryId = ?, text = ? WHERE faqId = ?");
-        $cmd->bind_param("sisi", $title, $categoryId, $text, $id);
+    public function updateFaqById($faqId, $title, $categoryId, $text) {
+        $query = "UPDATE `Faq` set title = :title, categoryId = :categoryId, text = :text WHERE faqId = :faqId";
+        $statement = $this->db->prepare($query);
+        $statement->bindParam('title', $title);
+        $statement->bindParam('categoryId', $categoryId);
+        $statement->bindParam('text', $text);
+        $statement->bindParam('faqId', $faqId);
 
-
-        return  $this->executeStatement($cmd);
+        return $statement->execute();
     }
 
-    public function deleteFaq($id) {
-        $cmd = $this->db->prepare("DELETE FROM `Faq` WHERE faqId = ?");
-        $cmd->bind_param("i", $id);
+    public function deleteFaq($faqId) {
+        $query = "DELETE FROM `Faq` WHERE faqId = ?";
+        $statement = $this->db->prepare($query);
+        $statement->bindParam('faqId', $faqId);
 
-        return  $this->executeStatement($cmd);
+        return $statement->execute();
     }
-
 }
-
 ?>

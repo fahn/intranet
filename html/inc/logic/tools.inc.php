@@ -424,6 +424,14 @@ class Tools {
         return $this->getIniValue("God");
     }
 
+    public function isProductiv() {
+        return $this->getIniValue("stage") == "productive";
+    }
+
+    public function isDeployment() {
+        return $this->getIniValue("stage") == "deployment";
+    }
+
 }
 
 ?>

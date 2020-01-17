@@ -21,19 +21,20 @@ trait ClubDB {
      * @return unknown
      */
     public function selectGetClubById($clubId) {
-        $cmd = $this->db->prepare("SELECT * FROM Club WHERE clubId = ? LIMIT 1");
-        $cmd->bind_param("i", $clubId);
-        return $this->executeStatement($cmd);
+        $query = "SELECT * FROM Club WHERE clubId = :clubId LIMIT 1";
+        $statement = $this->db->prepare($query);
+        $statement->bindParam('clubId', $clubId);
+        
+        return $statement->execute();
     }
 
     public function selectClubByClubNr(string $clubNr) {
-        $cmd = $this->db->prepare("SELECT * FROM Club WHERE clubNr = ?");
-        $cmd->bind_param("s", $clubNr);
+        $query = "SELECT * FROM Club WHERE clubNr = :clubNr";
+        $statement = $this->db->prepare($query);
+        $statement->bindParam('clubNr', $clubNr);
 
-        return $this->executeStatement($cmd);
+        return $statement->execute();
     }
-
-
 
     /**
      * insert club
@@ -42,16 +43,19 @@ trait ClubDB {
      * @param unknown $association
      * @return unknown
      */
-     public function insertClub($name, $number, $association) {
-         $cmd = $this->db->prepare("INSERT INTO Club (name, clubNr, association) VALUES (?, ?, ?)");
-         $cmd->bind_param("sss", $name, $number, $association);
+    public function insertClub($clubName, $clubNr, $association) {
+        $query = "INSERT INTO Club (name, clubNr, association) VALUES (:clubName, :clubNr, :association)";
+        $statement = $this->db->prepare($query);
+        $statement->bindParam('clubName', $clubName);
+        $statement->bindParam('association', $association);
+        $statement->bindParam('clubNr', $clubNr);
 
-         return $this->executeStatement($cmd);
-     }
+        return $statement->execute();
+    }
      /*
      public function insertClubByModel($club) {
 
-         $statement = $this->db->prepare('INSERT INTO Club (name, clubNr, association) VALUES (:clubName, :clubNr, :association)');
+         $statement = 'INSERT INTO Club (name, clubNr, association) VALUES (:clubName, :clubNr, :association)');
          $statement->bindParam('clubName', $club['clubName']);
          $statement->bindParam('clubNr', $club['clubNr']);
          $statement->bindParam('association', $club['association']);
@@ -69,19 +73,26 @@ trait ClubDB {
      * @param unknown $association
      * @return unknown
      */
-     public function updateClubById($clubId, $name, $number, $association) {
-         $cmd = $this->db->prepare("UPDATE Club set name = ?, clubNr = ?, association = ? WHERE clubId = ?");
-         $cmd->bind_param("sssi", $name, $number, $association, $clubId);
+    public function updateClubById($clubId, $clubName, $clubNr, $association) {
+        $query = "UPDATE Club set name = :name, clubNr = :clubNr, association = :association WHERE clubId = :clubId";
+        $statement = $this->db->prepare($query);
+        $statement->bindParam('clubId', $clubId);
+        $statement->bindParam('clubName', $clubName);
+        $statement->bindParam('association', $association);
+        $statement->bindParam('clubNr', $clubNr);
 
-         return $this->executeStatement($cmd);
-     }
+        return $statement->execute();
+    }
 
-     public function updateClubByClubNr($clubNr, $clubName, $association) {
-         $cmd = $this->db->prepare("UPDATE Club set name = ?, association = ? WHERE clubNr = ?");
-         $cmd->bind_param("sss", $clubName, $association, $clubNr);
+    public function updateClubByClubNr($clubNr, $clubName, $association) {
+        $query = "UPDATE Club set name = :clubName, association = :association WHERE clubNr = :clubNr";
+        $statement = $this->db->prepare($query);
+        $statement->bindParam('clubName', $clubName);
+        $statement->bindParam('association', $association);
+        $statement->bindParam('clubNr', $clubNr);
 
-         return $this->executeStatement($cmd);
-     }
+        return $statement->execute();
+    }
 
     /**
      * Select all Clubs
@@ -90,15 +101,14 @@ trait ClubDB {
      * @return unknown
      */
     public function selectAllClubs($min = 0, $max = 0) {
-        if($min != $max) {
-            $cmd = $this->db->prepare("SELECT * FROM Club ORDER by sort, name LIMIT ?,?");
-            $cmd->bind_param("ii", $min, $max);
-            #echo $min;
-        } else {
-            $cmd = $this->db->prepare("SELECT * FROM Club ORDER by sort, name ASC");
-        }
+        $limit = $min != $max ? "LIMIT :min, :max" : "ASC";
+        $query = "SELECT * FROM Club ORDER by sort, name $limit";
+        $statement = $this->db->prepare($query);
+        $statement->bindParam('min', $min);
+        $statement->bindParam('max', $max);
+        $statement->execute();
 
-        return $this->executeStatement($cmd);
+        return $statement->fetchAll();
     }
 
     /**
@@ -107,11 +117,11 @@ trait ClubDB {
      * @return unknown
      */
     public function deleteClubById($clubId) {
-        $cmd = $this->db->prepare("DELETE Club  WHERE clubId = ?");
-        $cmd->bind_param("i", $clubId);
+        $query = "DELETE Club  WHERE clubId = ?";
+        $statement = $this->db->prepare($query);
+        $statement->bindParam('clubId', $clubId);
 
-        return $this->executeStatement($cmd);
+        return $statement->execute();
     }
-
 }
 ?>

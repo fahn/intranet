@@ -14,18 +14,24 @@
 
  trait LogDB {
 
-     public function statementGetAllLogs() {
-         $cmd = $this->db->prepare("SELECT * FROM Log ORDER BY tstamp DESC");
+    public function statementGetAllLogs() {
+        $query = "SELECT * FROM Log ORDER BY tstamp DESC";
+        $statement = $this->db->prepare($query);
 
-         return  $this->executeStatement($cmd);
-     }
+        return $statement->execute();
+    }
 
-     public function insertLog($table, $details, $data, $action, $userId = Null) {
-         $cmd = $this->db->prepare("INSERT `Log` (userId, action, fromTable, details, logdata) VALUES (?, ?, ?, ?, ?)");
-         $cmd->bind_param("issss", $userId, $action, $table, $details, $data);
-
-         return $this->executeStatement($cmd);
-     }
+    public function insertLog($table, $details, $logdata, $action, $userId = Null) {
+        $query     = "INSERT `Log` (userId, action, fromTable, details, logdata) VALUES (:userId, :action, :fromTable, :details, :logdata)";
+        $statement = $this->db->prepare($query);
+        $statement->bindParam('userId', $userId);
+        $statement->bindParam('action', $action);
+        $statement->bindParam('fromTable', $table);
+        $statement->bindParam('details', $details);
+        $statement->bindParam('logdata', $logdata);
+        
+        return $statement->execute();
+    }
 }
 
 ?>

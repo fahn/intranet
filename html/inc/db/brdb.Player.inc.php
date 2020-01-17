@@ -18,64 +18,62 @@ trait PlayerDB {
      * @return unknown
      */
     public function selectGetAllPlayer() {
-        $sql = "SELECT Player.*, CONCAT_WS(' ', Player.firstName, Player.lastName) as fullName, Club.name AS clubName FROM Player
-            LEFT JOIN `Club` ON Club.clubId = Player.clubId
-            ORDER BY Player.lastName ASC";
-        $cmd = $this->db->prepare($sql);
+        $query = "SELECT Player.*, CONCAT_WS(' ', Player.firstName, Player.lastName) as fullName, Club.name AS clubName FROM Player
+                    LEFT JOIN `Club` ON Club.clubId = Player.clubId
+                    ORDER BY Player.lastName ASC";
+        $statement = $this->db->prepare($query);
 
-        return $this->executeStatement($cmd);
+        return $statement->execute();
     }
 
 
-    public function selectPlayerById($playerId) {
-        $sql = "SELECT Player.*, Club.name AS clubName FROM Player
-                LEFT JOIN `Club` ON Club.clubId = Player.clubId
-                WHERE playerId = ? ";
-        $cmd = $this->db->prepare($sql);
-        $cmd->bind_param("i", $playerId);
+    public function selectPlayerById(int $playerId) {
+        $query = "SELECT Player.*, Club.name AS clubName FROM Player
+                    LEFT JOIN `Club` ON Club.clubId = Player.clubId
+                    WHERE playerId = :playerId";
+        $statement = $this->db->prepare($query);
+        $statement->bindParam('playerId', $playerId);
 
-        return $this->executeStatement($cmd);
+        return $statement->execute();
     }
 
-    public function selectPlayerByPlayerNr($playerNr) {
-        if (empty($playerNr)) {
-            return false;
-        }
-        $sql = "SELECT * FROM Player WHERE playerNr = ? ";
-        $cmd = $this->db->prepare($sql);
-        $cmd->bind_param("s", $playerNr);
+    public function selectPlayerByPlayerNr(int $playerNr) {
+        $query = "SELECT * FROM Player WHERE playerNr = :playerId";
+        $statement = $this->db->prepare($query);
+        $statement->bindParam('playerId', $playerId);
 
-        return $this->executeStatement($cmd);
+        return $statement->execute();
     }
 
 
 
     public function insertPlayer($data) {
-        try {
-            $sql = "INSERT INTO Player (playerNr, clubId, firstName, lastName, gender) VALUES (?,?,?,?,?)";
-            $cmd = $this->db->prepare($sql);
-            $cmd->bind_param("sisss", $data['playerNr'], $data['clubId'], $data['firstName'], $data['lastName'], $data['gender']);
+        $query     = "INSERT INTO Player (playerNr, clubId, firstName, lastName, bday, gender) 
+                        VALUES (:playerNr, :clubId, :firstName, :lastName, :gender)";
+        $statement = $this->db->prepare($query);
+        $statement->bindParam('playerNr', $data['playerNr']);
+        $statement->bindParam('clubId', $data['clubId']);
+        $statement->bindParam('firstName', $data['firstName']);
+        $statement->bindParam('lastName', $data['lastName']);
+        $statement->bindParam('gender', $data['gender']);
+        $statement->bindParam('bday', $data['bday']);
 
-            return $this->executeStatement($cmd);
-        } catch (Exception $e) {
-            return false;
-        }
+        return $statement->execute();
     }
 
     public function updatePlayer($data) {
         try {
             extract($data);
-            $sql = "UPDATE Player set
-                        firstName = ?,
-                        lastName = ?,
-                        gender = ?,
-                        bday = ?,
-                        clubId = ?
-                    WHERE playerNr = ?";
-            $cmd = $this->db->prepare($sql);
-            $cmd->bind_param("ssssis", $data['firstName'], $data['lastName'], $data['gender'], $data['bday'], $data['clubId'], $data['playerNr']);
-
-            return $this->executeStatement($cmd);
+            $query = "UPDATE Player set firstName = :firstName, lastName = :lastName, gender = :gender, bday = :bday, clubId = :clubId
+                        WHERE playerNr = :playerNr";
+            $statement = $this->db->prepare($query);
+            $statement->bindParam('playerNr', $data['playerNr']);
+            $statement->bindParam('clubId', $data['clubId']);
+            $statement->bindParam('firstName', $data['firstName']);
+            $statement->bindParam('lastName', $data['lastName']);
+            $statement->bindParam('gender', $data['gender']);
+            
+            return $statement->execute();
         } catch (Exception $e) {
             return false;
         }
@@ -84,15 +82,14 @@ trait PlayerDB {
     public function getPlayerByTerm($term) {
         $term = $this->db->real_escape_string($term);
         $term = "%".$term."%";
-        $cmd  = $this->db->prepare("SELECT Player.*, CONCAT_WS(', ', Player.lastName, Player.firstName) AS playerName, Club.name AS clubName FROM Player
-                                   LEFT JOIN Club ON Club.clubId = Player.clubId
-                                   WHERE CONCAT_WS(' ', Player.firstName, Player.lastName) LIKE ?
-                                   ORDER BY Player.lastName");
+        $query = "SELECT Player.*, CONCAT_WS(', ', Player.lastName, Player.firstName) AS playerName, Club.name AS clubName FROM Player
+                    LEFT JOIN Club ON Club.clubId = Player.clubId
+                    WHERE CONCAT_WS(' ', Player.firstName, Player.lastName) LIKE :term
+                    ORDER BY Player.lastName";
+        $statement = $this->db->prepare($query);
+        $statement->bindParam('term', $data['term']);
 
-        $cmd->bind_param("s", $term);
-        #print_r($cmd->__toString());
-
-        return $this->executeStatement($cmd);
+        return $statement->execute();
     }
 }
 

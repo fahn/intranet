@@ -42,7 +42,7 @@ class NewsWidget extends Widget {
         $data = array();
         $res = $this->brdb->selectLatestNews(5);
         if (!$this->brdb->hasError()) {
-            while ($dataSet = $res->fetch_assoc()) {
+            while ($dataSet = $res) {
                 $dataSet['linkTo']         = $this->tools->linkTo(array('page' => 'news.php', 'action' => 'details', 'id' => $dataSet['tournamentId']));
 
                 $data[]                    = $dataSet;

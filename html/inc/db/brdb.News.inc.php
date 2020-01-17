@@ -15,53 +15,60 @@
 trait NewsDB {
 
     public function statementGetAllNews() {
-        $cmd = $this->db->prepare("SELECT News.*, Cat.title AS categoryTitle, CONCAT_WS(' ', User.firstName, User.lastName) as userName FROM `News`
-                                   LEFT JOIN `Category` AS `Cat` ON Cat.categoryId = News.categoryId
-                                   LEFT JOIN `User` ON User.userId = News.userId");
+        $query = "SELECT News.*, Cat.title AS categoryTitle, CONCAT_WS(' ', User.firstName, User.lastName) as userName FROM `News`
+                    LEFT JOIN `Category` AS `Cat` ON Cat.categoryId = News.categoryId
+                    LEFT JOIN `User` ON User.userId = News.userId";
+        $statement = $this->db->prepare($query);
 
-        return  $this->executeStatement($cmd);
+        return $statement->execute();
     }
 
-    public function selectLatestNews($max=5) {
-        $cmd = $this->db->prepare("SELECT News.*, Cat.title as categoryTitle, Cat.categoryId FROM `News`
-                                   LEFT JOIN `Category` AS `Cat` ON Cat.categoryId = News.categoryId
-                                   LIMIT ?");
-        $cmd->bind_param("i", $max);
+    public function selectLatestNews(int $max=5) {
+        $query = "SELECT News.*, Cat.title as categoryTitle, Cat.categoryId FROM `News`
+                    LEFT JOIN `Category` AS `Cat` ON Cat.categoryId = News.categoryId
+                    LIMIT :max";
+        $statement = $this->db->prepare($query);
+        $statement->bindParam('max', $max);
+        $statement->execute();
 
-        return  $this->executeStatement($cmd);
+        return $statement->fetchAll();
     }
 
+    public function statementGetNewsById(int $newsId) {
+        $query = "SELECT * FROM `News` WHERE newsId = :newsId";
+        $statement = $this->db->prepare($query);
+        $statement->bindParam('newsId', $newsId);
 
-
-    public function statementGetNewsById($id) {
-        $cmd = $this->db->prepare("SELECT * FROM `News` WHERE newsId = ?");
-        $cmd->bind_param("i", $id);
-
-        return  $this->executeStatement($cmd);
+        return $statement->execute();
     }
 
     public function insertNews($title, $categoryId, $text) {
-        $cmd = $this->db->prepare("INSERT INTO `News` (title, categoryId, text) VALUES (?, ?, ?)");
-        $cmd->bind_param("sis", $title, $categoryId, $text);
+        $query = "INSERT INTO `News` (title, categoryId, text) VALUES (?, ?, ?)";
+        $statement = $this->db->prepare($query);
+        $statement->bindParam('title', $title);
+        $statement->bindParam('text', $text);
+        $statement->bindParam('categoryId', $categoryId);
 
-        return  $this->executeStatement($cmd);
+        return $statement->execute();
     }
 
-    public function updateNewsById($id, $title, $categoryId, $text) {
-        $cmd = $this->db->prepare("UPDATE `News` set title = ?, categoryId = ?, text = ? WHERE newsId = ?");
-        $cmd->bind_param("sisi", $title, $categoryId, $text, $id);
+    public function updateNewsById(int $newsId, $title, $categoryId, $text) {
+        $query = "UPDATE `News` set title = :title, categoryId = :categoryId, text = :text WHERE newsId = :newsId";
+        $statement = $this->db->prepare($query);
+        $statement->bindParam('newsId', $newsId);
+        $statement->bindParam('title', $title);
+        $statement->bindParam('text', $text);
+        $statement->bindParam('categoryId', $categoryId);
 
-
-        return  $this->executeStatement($cmd);
+        return $statement->execute();
     }
 
-    public function deleteNews($id) {
-        $cmd = $this->db->prepare("DELETE FROM `News` WHERE newsId = ?");
-        $cmd->bind_param("i", $id);
+    public function deleteNews(int $newsId) {
+        $query = "DELETE FROM `News` WHERE newsId = :newsId";
+        $statement = $this->db->prepare($query);
+        $statement->bindParam('newsId', $newsId);
 
-        return  $this->executeStatement($cmd);
+        return $statement->execute();
     }
-
 }
-
 ?>

@@ -1,4 +1,4 @@
-<?php
+<?php 
 /*******************************************************************************
  * Badminton Intranet System
  * Copyright 2017-2019
@@ -11,9 +11,14 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
+#declare(strict_types=1);
+
+// load BASE_DIR
 require_once(dirname(dirname(__FILE__)) .'/config.php');
 
-require_once BASE_DIR . '/inc/logic/tools.inc.php';
+require_once(BASE_DIR . '/inc/logic/tools.inc.php');
+
+require_once(BASE_DIR .'/inc/exception/badtra.exception.php');
 
 include_once 'brdb.Api.inc.php';
 include_once 'brdb.Categories.inc.php';
@@ -78,23 +83,26 @@ class BrankDB {
 
 
     public function __construct() {
-        if (!function_exists('mysqli_init') && !extension_loaded('mysqli')) {
-            die("install mysqli\n");
+        if (!defined('PDO::ATTR_DRIVER_NAME')) {
+            throw new Exception\Badtra("123");
         }
         // load connection
-        $this->connection();
+        $this->db = $this->connection();
     }
 
     private function connection() {
         if ($this->db == NULL) {
             try {
                 $tools    = new Tools();
-                $this->db = new mysqli($tools->getIniValue('db_host'), $tools->getIniValue('db_user'), $tools->getIniValue('db_pass'), $tools->getIniValue('db_name'));
-                $this->db->set_charset("utf8mb4");
 
-                return $this->db;
+                $database = sprintf('mysql:host=%s;dbname=%s', $tools->getIniValue('db_host'), $tools->getIniValue('db_name'));
+
+                return new \PDO($database, $tools->getIniValue('db_user'), $tools->getIniValue('db_pass'));
+
             } catch (Exception $e) {
+                echo "<pre>";
                 $this->setError($e);
+                print_r($e);
                 return NULL;
             }
         }
@@ -104,7 +112,7 @@ class BrankDB {
      * Destructor that closes the DB connection
      */
     public function __destruct() {
-        $this->db->close();
+        #$this->db->close();
     }
 
     /**
@@ -156,6 +164,10 @@ class BrankDB {
             $this->setError($statement->error);
         }
         return $statement->get_result();
+    }
+
+    public function countRows() {
+        return $this->rowCount();
     }
 
     

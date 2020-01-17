@@ -249,20 +249,20 @@ class PrgPatternElementLogin extends APrgPatternElement {
      * Login via POST-Form
      */
     private function processPostLogin() {
-      if(isset($_SESSION['badlogin']) && $_SESSION['badlogin'] >= 5) {
-          $this->setFailedMessage('Kein Login möglich. Bitte versuchen Sie es später noch einmal');
-          return;
-      }
+        if ($this->tools->isProductiv() && isset($_SESSION['badlogin']) && $_SESSION['badlogin'] >= 5) {
+            $this->setFailedMessage('Kein Login möglich. Bitte versuchen Sie es später noch einmal');
+            return;
+        }
 
-      $_SESSION['badlogin'] = !isset($_SESSION['badlogin']) ? 0 : $_SESSION['badlogin']+1;
+        $_SESSION['badlogin'] = !isset($_SESSION['badlogin']) ? 0 : $_SESSION['badlogin']+1;
 
-      // In case of a post check if the entered information
-      // is valid and does not inject wired stuff. (Avoid SQL injection here)
-      if (! $this->issetPostVariable(self::FORM_LOGIN_EMAIL) ||
-          ! $this->issetPostVariable(self::FORM_LOGIN_PASSWORD)) {
-          $this->setFailedMessage(self::ERROR_LOGIN_INVALID_EMAIL);
-          return false;
-      }
+        // In case of a post check if the entered information
+        // is valid and does not inject wired stuff. (Avoid SQL injection here)
+        if (! $this->issetPostVariable(self::FORM_LOGIN_EMAIL) ||
+            ! $this->issetPostVariable(self::FORM_LOGIN_PASSWORD)) {
+            $this->setFailedMessage(self::ERROR_LOGIN_INVALID_EMAIL);
+            return false;
+        }
 
         $email     = $this->getPostVariable(self::FORM_LOGIN_EMAIL);
         $pass      = $this->getPostVariable(self::FORM_LOGIN_PASSWORD);
@@ -270,26 +270,32 @@ class PrgPatternElementLogin extends APrgPatternElement {
         // filter the email to avoid having other wired stuff being
         // injected to the php code or the database maybe
         if (! $this->tools->validEmail($email)) {
-          $this->setFailedMessage(self::ERROR_LOGIN_INVALID_EMAIL);
-          return;
+            $this->setFailedMessage(self::ERROR_LOGIN_INVALID_EMAIL);
+            return;
         }
-          // Now see if there is a user in the data base with correct
-          // email and hashed password. Passwords are hashed with php hash functionality
-          $res = $this->brdb->selectUserByEmail($email);
-          if ($this->brdb->hasError()) {
-              $this->tools->log('User', 'Login try', $email, 'POST');
-              $this->setFailedMessage($this->brdb->getError());
-              return;
-          }
 
-          if ($res->num_rows == 1) {
+        // Now see if there is a user in the data base with correct
+        // email and hashed password. Passwords are hashed with php hash functionality
+        $dataSet = $this->brdb->selectUserByEmail($email);
+        if ($this->brdb->hasError()) {
+            $this->tools->log('User', 'Login try', $email, 'POST');
+            $this->setFailedMessage($this->brdb->getError());
+            return;
+        }
+
+        $this->brdb->selectUserById(99);
+
+        if ($dataSet == true) {
             // fetch the dataset there is only one and try to verify the passowrd
-            $dataSet = $res->fetch_assoc();
             $loadedUser = new User($dataSet);
             if (password_verify($pass, $loadedUser->passHash)) {
-              $this->setSessionVariable(self::SESSION_LOGIN_USER_ID, intval($dataSet[User::USER_CLM_ID]));
+              $this->setSessionVariable(self::SESSION_LOGIN_USER_ID, intval($dataSet->{User::USER_CLM_ID}));
+              // unset post var
               $this->unsetPostVariable(self::FORM_LOGIN_PASSWORD);
+              // set success message
               $this->setSuccessMessage(self::SUCCESS_LOGIN);
+
+              // ref
               if(isset($_SESSION['ref']) && strpos($_SESSION['ref'],$this->tools->getBaseUrl()) === true) {
                   $link = $_SESSION['ref'];
                   unset($_SESSION['ref']);
@@ -300,9 +306,8 @@ class PrgPatternElementLogin extends APrgPatternElement {
               return;
             }
             // Make an potential attacker wait for us
-            $this->tools->log('User', 'Login try', $email, 'POST');
             sleep(self::PASSWORD_WAIT_FOR_WRONG);
-          }
+        }
 
         $this->tools->log('User', 'Login try', $email, 'POST');
         $this->setFailedMessage(self::ERROR_LOGIN_UNKNOWN_EMAIL_PASSWORD);
@@ -326,36 +331,25 @@ class PrgPatternElementLogin extends APrgPatternElement {
      * @return boolean true in case the current user has a valid login
      */
     public function isUserLoggedIn() {
-      // first unsset the current user to basically clear it
-      // and remove all pending informations in case of a logout
-      if (isset($this->loggedInUser)) {
-          unset($this->loggedInUser);
-      }
-
-      // If there is no post we directly get here and we try to set the class
-      // information directly from the stored information in the session
-      if ($this->issetSessionVariable(self::SESSION_LOGIN_USER_ID)) {
-        // Try to get the user by the ID stored in the session
-        $userId = intval($this->getSessionVariable(self::SESSION_LOGIN_USER_ID));
-        $res = $this->brdb->selectUserById($userId);
-        if ($this->brdb->hasError()) {
-          $this->setFailedMessage($this->brdb->getError());
-          return false;
+        // first unsset the current user to basically clear it
+        // and remove all pending informations in case of a logout
+        if (isset($this->loggedInUser)) {
+            unset($this->loggedInUser);
         }
 
-        // if the query was succesful try to use the data to init the User object
-        if ($res->num_rows == 1) {
-            $dataSet = $res->fetch_assoc();
+        // If there is no post we directly get here and we try to set the class
+        // information directly from the stored information in the session
+        if ($this->issetSessionVariable(self::SESSION_LOGIN_USER_ID)) {
+            // Try to get the user by the ID stored in the session
+            $userId = intval($this->getSessionVariable(self::SESSION_LOGIN_USER_ID));
+            $dataSet = $this->brdb->selectUserById($userId);
 
+            // if the query was succesful try to use the data to init the User object
             $this->loggedInUser = new User($dataSet);
             return true;
-        } else {
-            $this->setFailedMessage(self::ERROR_LOGIN_INVALID_ID);
-            return false;
         }
-      }
 
-      return false;
+        return false;
     }
 
     public function getLoggedInUser() {

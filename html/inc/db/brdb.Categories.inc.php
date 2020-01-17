@@ -11,26 +11,31 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
-
 trait CategoryDB {
 
     public function statementGetAllCategories() {
-        $cmd = $this->db->prepare("SELECT * FROM `Category` ORDER BY pid, title");
-        return  $this->executeStatement($cmd);
+        $query = "SELECT * FROM `Category` ORDER BY pid, title";
+        $statement = $this->db->prepare($query);
+       
+        return $statement->execute();
     }
 
     public function adminStatementGetAllCategories() {
-        $cmd = $this->db->prepare("SELECT Category.*, C1.title AS pidName FROM `Category`
-            LEFT JOIN `Category` AS C1 ON C1.categoryId = Category.pid
-            ORDER BY Category.pid, Category.title");
-        return  $this->executeStatement($cmd);
+        $query = "SELECT Category.*, C1.title AS pidName FROM `Category`
+                    LEFT JOIN `Category` AS C1 ON C1.categoryId = Category.pid
+                    ORDER BY Category.pid, Category.title";
+        $statement = $this->db->prepare($query);
+
+        return $statement->execute();
     }
 
     public function insertCategory($title, $pid) {
-        $cmd = $this->db->prepare("INSERT INTO `Category` (pid, title) VALUES (?, ?)");
-        $cmd->bind_param("is", $pid, $title);
+        $query = "INSERT INTO `Category` (pid, title) VALUES (:pid, :title)";
+        $statement = $this->db->prepare($query);
+        $statement->bindParam('pid', $pid);
+        $statement->bindParam('title', $title);
 
-        return  $this->executeStatement($cmd);
+        return $statement->execute();
     }
 }
 ?>

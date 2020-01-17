@@ -56,21 +56,21 @@ class User {
      */
     public function __construct($dataSet = null) {
         if ($dataSet != null) {
-            $this->userId     = intval($dataSet[self::USER_CLM_ID]);
-            $this->email      = strval($dataSet[self::USER_CLM_EMAIL]);
-            $this->firstName  = strval($dataSet[self::USER_CLM_FNAME]);
-            $this->lastName   = strval($dataSet[self::USER_CLM_LNAME]);
-            $this->gender     = strval($dataSet[self::USER_CLM_GENDER]);
-            $this->isAdmin    = boolval($dataSet[self::USER_CLM_ADMIN]);
-            $this->isPlayer   = boolval($dataSet[self::USER_CLM_PLAYER]);
-            $this->isReporter = boolval($dataSet[self::USER_CLM_REPORTER]);
-            $this->passHash   = strval($dataSet[self::USER_CLM_PASS]);
-            $this->playerId   = strval($dataSet[self::USER_CLM_PLAYERID]);
-            //$this->clubId     = intval($dataSet[self::USER_CLM_CLUBID]);
-            $this->phone      = strval($dataSet[self::USER_CLM_PHONE]);
-            $this->bday       = strval($dataSet[self::USER_CLM_BDAY]);
+            $this->userId     = intval($dataSet->{self::USER_CLM_ID});
+            $this->email      = strval($dataSet->{self::USER_CLM_EMAIL});
+            $this->firstName  = strval($dataSet->{self::USER_CLM_FNAME});
+            $this->lastName   = strval($dataSet->{self::USER_CLM_LNAME});
+            $this->gender     = strval($dataSet->{self::USER_CLM_GENDER});
+            $this->isAdmin    = boolval($dataSet->{self::USER_CLM_ADMIN});
+            $this->isPlayer   = boolval($dataSet->{self::USER_CLM_PLAYER});
+            $this->isReporter = boolval($dataSet->{self::USER_CLM_REPORTER});
+            $this->passHash   = strval($dataSet->{self::USER_CLM_PASS});
+            $this->playerId   = strval($dataSet->{self::USER_CLM_PLAYERID});
+            //$this->clubId     = intval($dataSet->self::USER_CLM_CLUBID]);
+            $this->phone      = strval($dataSet->{self::USER_CLM_PHONE});
+            $this->bday       = strval($dataSet->{self::USER_CLM_BDAY});
             $this->clubName   = "";
-            $this->userImage  = strval($dataSet[self::USER_CLM_IMAGE]);
+            $this->userImage  = strval($dataSet->{self::USER_CLM_IMAGE});
         } else {
             $this->userId     = 0;
             $this->email      = "N/A";

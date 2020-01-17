@@ -54,22 +54,24 @@ class RankingWidget extends Widget {
 
         $data = array();
         $res  = $this->brdb->selectLatestRankingGamesByPlayerId($this->userId);
-        if (! $this->brdb->hasError() ) {
-            while ($dataSet = $res->fetch_assoc()) {
-                // chicken
-                if($this->userId == $dataSet['winnerId']) {
-                    $chicken = '<i class="fas fa-arrow-circle-up text-success"></i>';
-                } else {
-                    $chicken = '<i class="fas fa-arrow-circle-down text-danger"></i>';
-                }
-
-                $dataSet['chicken'] = $chicken;
-                $dataSet['sets']    = $this->convertSets($dataSet['sets']);
-
-                $data[] = $dataSet;
+        try {
+        while ($dataSet = $res) {
+            // chicken
+            if($this->userId == $dataSet['winnerId']) {
+                $chicken = '<i class="fas fa-arrow-circle-up text-success"></i>';
+            } else {
+                $chicken = '<i class="fas fa-arrow-circle-down text-danger"></i>';
             }
 
+            $dataSet['chicken'] = $chicken;
+            $dataSet['sets']    = $this->convertSets($dataSet['sets']);
+
+            $data[] = $dataSet;
         }
+        } catch (Exception $e) {
+            $data = array();
+        }
+
         return $data;
     }
 
