@@ -1,6 +1,6 @@
 <h1 class="display-1 mb-5">Ranking {if $print}{$pageTitle}{/if}</h1>
 
-{$message}
+{$message|default:""}
 
 <div class="alert alert-info d-print-none">
   <p>Dieses Ranking basiert auf dem <a href="https://de.wikipedia.org/wiki/Elo-Zahl" target="_blank">ELO-Prinzip</a></p>
@@ -32,7 +32,7 @@
   <li class="nav-item">
       <a class="nav-link" data-toggle="tab" href="#games">Letzte Spiele</a>
   </li>
-  {if $stats == "on"}
+  {if isset($stats) && $stats == "on"}
       <li class="nav-item">
           <a class="nav-link" data-toggle="tab" href="#stats">Statistik</a>
       </li>

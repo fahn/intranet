@@ -45,11 +45,11 @@
                                 {/if}
                             </div> 
                             <div class="col-md-6"> 
-                                {if $user.playerId} 
+                                {if isset($user.playerId)} 
                                     <p><strong>Spielernummer:</strong> {$user.playerId}</p>
                                 {/if}
     
-                                {if $club.name}
+                                {if isset($club.name)}
                                     <p><strong>Verein: </strong> {$club.name}</p>
                                 {/if}
                             </div>
@@ -61,7 +61,7 @@
     </div>
     
     <div class="row">
-        {if $latestGamesInRanking}
+        {if isset($latestGamesInRanking)}
         <div class="col-md-6">
             <div class="card">
                 <h5 class="card-header">Letzten Spiele im Ranking</h5>
@@ -72,7 +72,7 @@
         </div>
         {/if}
         
-        {if $latestTournament}
+        {if isset($latestTournament)}
         <div class="col-md-6">
             <div class="card">
                 <h5 class="card-header">Letzten 10 offizielle Turniere/Ranglisten</h5>
