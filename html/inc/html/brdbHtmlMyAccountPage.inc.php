@@ -47,9 +47,6 @@ class BrdbHtmlMyAccountPage extends BrdbHtmlPage {
         $variableName['phoneValue']     = strval($this->prgPatternElementLogin->getLoggedInUser()->phone);
         $variableName['bdayValue']      = strval($this->prgPatternElementLogin->getLoggedInUser()->bday);
         $variableName['genderValue']    = strval($this->prgPatternElementLogin->getLoggedInUser()->gender);
-        // get Club
-        $clubName                       = $this->getClubById($variableName['clubIdValue']);
-        $variableName['clubNameValue']  = strval($clubName['name']);
 
         $content = $this->loadContent($variableName);
 
@@ -67,18 +64,5 @@ class BrdbHtmlMyAccountPage extends BrdbHtmlPage {
         return $this->smarty->fetch('user/myAccount.tpl');
     }
 
-    /**
-    *
-    */
-    private function getClubById($id) {
-        if($id && is_numeric($id)) {
-            $res = $this->brdb->selectGetClubById($id);
-            if (!$this->brdb->hasError()) {
-                return $res->fetch_assoc();
-            }
-
-            return "";
-        }
-    }
 }
 ?>

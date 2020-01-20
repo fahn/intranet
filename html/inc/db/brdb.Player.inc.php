@@ -22,8 +22,9 @@ trait PlayerDB {
                     LEFT JOIN `Club` ON Club.clubId = Player.clubId
                     ORDER BY Player.lastName ASC";
         $statement = $this->db->prepare($query);
-
-        return $statement->execute();
+        $statement->execute();
+        
+        return $statement->fetchAll();
     }
 
 
@@ -33,16 +34,18 @@ trait PlayerDB {
                     WHERE playerId = :playerId";
         $statement = $this->db->prepare($query);
         $statement->bindParam('playerId', $playerId);
-
-        return $statement->execute();
+        $statement->execute();
+        
+        return $statement->fetch();
     }
 
     public function selectPlayerByPlayerNr(int $playerNr) {
         $query = "SELECT * FROM Player WHERE playerNr = :playerId";
         $statement = $this->db->prepare($query);
         $statement->bindParam('playerId', $playerId);
-
-        return $statement->execute();
+        $statement->execute();
+        
+        return $statement->fetchAll();
     }
 
 
@@ -88,8 +91,9 @@ trait PlayerDB {
                     ORDER BY Player.lastName";
         $statement = $this->db->prepare($query);
         $statement->bindParam('term', $data['term']);
-
-        return $statement->execute();
+        $statement->execute();
+        
+        return $statement->fetchAll();
     }
 }
 

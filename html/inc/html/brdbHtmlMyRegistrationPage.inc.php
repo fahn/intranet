@@ -66,17 +66,8 @@ class BrdbHtmlMyRegistrationPage extends BrdbHtmlPage {
     }
 
     private function loadClubList() {
-    $res = $this->brdb->selectAllClubs();
-    $loop = array();
-        if (!$this->brdb->hasError()) {
-            while ($dataSet = $res->fetch_assoc()) {
-                $loop[] = $dataSet; //new User($dataSet);
-
-      }
+        return $this->brdb->selectAllClubs();
     }
-
-    return $loop;
-  }
 
 }
 

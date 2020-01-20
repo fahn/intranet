@@ -224,30 +224,30 @@ class PrgPatternElementRanking extends APrgPatternElement {
         return true;
     }
 
-  private function getWinner($sets) {
-    $a = 0;
-    $b = 0;
-    $sets = unserialize($sets);
-    foreach($sets as $set) {
-      $set = explode(":", $set);
-      if ($set[0] > $set[1]) {
-        $a++;
-      } else {
-        $b++;
-      }
-      if ($a == 2) {
-        return true;
-      } elseif ($b == 2) {
-        return false;
-      }
+    private function getWinner($sets) {
+        $a = 0;
+        $b = 0;
+        $sets = unserialize($sets);
+        foreach($sets as $set) {
+            $set = explode(":", $set);
+            if ($set[0] > $set[1]) {
+                $a++;
+            } else {
+                $b++;
+            }
+            if ($a == 2) {
+                return true;
+            } elseif ($b == 2) {
+                return false;
+            }
+        }
     }
-  }
 
 
 
-  /**
-   * get points
-   */
+    /**
+     * get points
+     */
     private function getPointsByUserId($playerId) {
         // GET POINTS
         try {
@@ -259,22 +259,25 @@ class PrgPatternElementRanking extends APrgPatternElement {
         }
     }
 
-  /**
-   * update Points from user
-   */
-  private function updatePoints($playerId, $points, $win) {
-      error_log ($playerId ." - ". $points ." - ". $win ."<br>");
-      $loss = ($win == 1 ? 0 : 1);
-      $this->db->updatePoints($playerId, $points, $win, $loss);
-      if (! $this->db->hasError() ) {
-          return true;
-      }
-      return false;
-  }
+    /**
+     * update Points from user
+     */
+    private function updatePoints($playerId, $points, $win) {
+        error_log ($playerId ." - ". $points ." - ". $win ."<br>");
 
-  /**
-   * calc Match
-   */
+        $loss = ($win == 1 ? 0 : 1);
+        $this->db->updatePoints($playerId, $points, $win, $loss);
+
+        if (! $this->db->hasError() ) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * calc Match
+     */
     public function calcMatch($a, $b, $winnerA = true) {
         if ($winnerA == false) {
             return array_reverse($this->calcMatch($b, $a, true));
@@ -290,55 +293,55 @@ class PrgPatternElementRanking extends APrgPatternElement {
 
     }
 
-  /**
-   * getNewPoints
-   */
-   private function getNewPoints($points, $win, $weak) {
-    return (int) ($points + 15 * (($win == true ? 1 : 0) - $weak));
-  }
+    /**
+     * getNewPoints
+     */
+    private function getNewPoints($points, $win, $weak) {
+        return (int) ($points + 15 * (($win == true ? 1 : 0) - $weak));
+    }
 
-  /**
-   * generate new Ranking
-   */
-  public function newRanking() {
-      // clear Ranking
-      $this->db->deleteRanking();
+    /**
+     * generate new Ranking
+     */
+    public function newRanking() {
+        // clear Ranking
+        $this->db->deleteRanking();
 
-      // get all matches and recalc
-      $res = $this->db->statementGetMatches();
-      if ( $this->db->hasError() ) {
-          return false;
-      }
+        // get all matches and recalc
+        $gameList = $this->db->statementGetMatches();
+        if ( !isset($gameList) || empty($gameList) ) {
+            return false;
+        }
 
-      $games = 0;
-      while($dataSet = $res->fetch_assoc()) {
+        $games = 0;
+        foreach ($gameList as $dataSet) {
 
-          #print_r($dataSet);
-          // SET PLAYERS
-          $a = $dataSet['playerId'];
-          $b = $dataSet['opponentId'];
+            #print_r($dataSet);
+            // SET PLAYERS
+            $a = $dataSet['playerId'];
+            $b = $dataSet['opponentId'];
 
-          $a1 = $this->getPointsByUserId($a);
-          $b1 = $this->getPointsByUserId($b);
+            $a1 = $this->getPointsByUserId($a);
+            $b1 = $this->getPointsByUserId($b);
 
-          $winner = $this->getWinner($dataSet['sets']);
+            $winner = $this->getWinner($dataSet['sets']);
 
-          // calc Points
-          $points = $this->calcMatch($a1, $b1, $winner);
+            // calc Points
+            $points = $this->calcMatch($a1, $b1, $winner);
 
-          // update points
-          // player A
-          $win  = ($winner == 1 ? 1 : 0);
-          // @TODO: change timestamp if recalc
-          $this->updatePoints($a, $points[0], $win);
+            // update points
+            // player A
+            $win  = ($winner == 1 ? 1 : 0);
+            // @TODO: change timestamp if recalc
+            $this->updatePoints($a, $points[0], $win);
 
-          // player B
-          $win  = $win  == 1 ? 0 : 1;
-          $this->updatePoints($b, $points[1], $win);
+            // player B
+            $win  = $win  == 1 ? 0 : 1;
+            $this->updatePoints($b, $points[1], $win);
 
-          $games++;
-      }
-      return true;
-  }
-
+            $games++;
+        }
+        return true;
+    }
 }
+?>

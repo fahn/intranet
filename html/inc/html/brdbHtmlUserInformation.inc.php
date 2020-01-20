@@ -58,8 +58,8 @@ class BrdbHtmlUserInformation extends BrdbHtmlPage {
             return "";
         }
 
-        $user = $this->brdb->selectUserById($id)->fetch_assoc();
-        //$club = $this->brdb->selectGetClubById($user['clubId'])->fetch_assoc();
+        $user = $this->brdb->selectUserById($id);
+        //$club = $this->brdb->selectGetClubById($user['clubId']);
         $this->smarty->assign(array(
             'user'       => $user,
             //'club'       => $club,
@@ -76,14 +76,7 @@ class BrdbHtmlUserInformation extends BrdbHtmlPage {
     }
 
     public function getLatestTournamentFromUserId($id) {
-        $res = $this->brdb->selectGetLatestTournamentFromUserId($id);
-        $loop = array();
-        if (!$this->brdb->hasError()) {
-            while ($dataSet = $res->fetch_assoc()) {
-                $loop[] = $dataSet; //new User($dataSet);
-            }
-        }
-        return $loop;
+        return $this->brdb->selectGetLatestTournamentFromUserId($id);
     }
 
 }

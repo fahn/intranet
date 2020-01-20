@@ -116,7 +116,7 @@ class PrgPatternElementSync extends APrgPatternElement {
                 }
 
                 try {
-                    $clubData = $this->brdb->selectClubByClubNr($item->clubNr)->fetch_assoc();
+                    $clubData = $this->brdb->selectClubByClubNr($item->clubNr);
                     $item->clubId = $clubData['clubId'];
 
                     $player = new Player($item);
@@ -154,7 +154,7 @@ class PrgPatternElementSync extends APrgPatternElement {
                 }
                 try {
                     echo $clubNr = $item->getClubNr();
-                    $clubData = $this->brdb->selectClubByClubNr($clubNr)->fetch_assoc();
+                    $clubData = $this->brdb->selectClubByClubNr($clubNr);
                     $item->clubId = $clubData['clubId'];
 
                     $player = new Player($item);

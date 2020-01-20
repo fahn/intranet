@@ -88,19 +88,18 @@ class BrdbHtmlAdminNewsPage extends BrdbHtmlPage {
 
     private function loadList() {
         $data = array();
-        $res = $this->brdb->statementGetAllNews(); #($min, $max);
-        if (!$this->brdb->hasError()) {
-          while ($dataSet = $res->fetch_assoc()) {
+        $newsList = $this->brdb->statementGetAllNews(); #($min, $max);
+        if (isset($newsList) && !empty($newsList)) {
+          foreach ($newsList as $dataSet) {
             // links
             $dataSet['editLink']   = $this->tools->linkTo(array('page' => $this->_page, 'action' => 'edit', 'id' => $dataSet['newsId']));
             $dataSet['deleteLink'] = $this->tools->linkTo(array('page' => $this->_page, 'action' => 'delete', 'id' => $dataSet['newsId']));
 
             $data[] = $dataSet; //new User($dataSet);
-
-
           }
         }
         return $data;
+        unset($data, $dataSet, $newsList);
     }
 
     private function TMPL_update($action, $id) {
@@ -115,15 +114,8 @@ class BrdbHtmlAdminNewsPage extends BrdbHtmlPage {
         return $this->smarty->fetch('news/adminUpdate.tpl');
     }
 
-  /** GET CLUB BY ID
-    *
-    */
     private function getNewsById($id) {
-      if(!is_numeric($id)) {
-        return;
-      }
-
-        return $this->brdb->statementGetNewsById($id)->fetch_assoc();
+        return $id > 0 ? $this->brdb->statementGetNewsById($id) ? array();
     }
 
     /* DELETE */

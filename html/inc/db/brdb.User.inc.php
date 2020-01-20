@@ -63,7 +63,7 @@ trait UserDB {
         $statement->bindParam('id', $userId);
         $statement->execute();
 
-        $user = $statement->fetchObject();
+        $user = $statement->fetch();
         #if (empty($user)) {
         #    throw new BadtraException('User not found.');
         #}
@@ -314,12 +314,21 @@ trait UserDB {
      * set image to User
      */
     public function updateUserImage($userId, $image) {
-        $cmd = $this->db->prepare("UPDATE User set image = :image WHERE userId = :userId ");
+        $query = "UPDATE User set image = :image WHERE userId = :userId ";
         $statement = $this->db->prepare($query);
         $statement->bindParam('userId', $userId);
         $statement->bindParam('image', $image);
 
         return $statement->execute();
+    }
+
+    public function getUserImages() {
+        $query = "SELECT * FROM User where image is not null";
+        $statement = $this->db->prepare($query);
+        $statement->execute();
+
+        return $statement->fetchAll();
+
     }
 }
 

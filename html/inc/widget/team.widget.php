@@ -38,7 +38,7 @@ class TeamWidget extends Widget {
 
     private function TMPL_AdminsAndReporter() {
         $this->smarty->assign(array(
-            'data' => $this->brdb->selectGetStaff(),
+            'data' => $this->brdb->getStaffList(),
         ));
 
         return $this->smarty->fetch('team/widgetList.tpl');
@@ -46,7 +46,7 @@ class TeamWidget extends Widget {
 
     private function TMPL_ShowTeam() {
         $this->smarty->assign(array(
-            'data' => $this->brdb->selectGetStaff(),
+            'data' => $this->brdb->getStaffList(),
         ));
 
         return $this->smarty->fetch('team/widgetList.tpl');

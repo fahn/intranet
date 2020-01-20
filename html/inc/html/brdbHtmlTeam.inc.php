@@ -36,6 +36,7 @@ class BrdbHtmlTeam extends BrdbHtmlPage {
             'content' => $content,
         ));
         $this->smarty->display('index.tpl');
+        unset($content);
     }
 
     private function TMPL_showTeam() {
@@ -47,20 +48,20 @@ class BrdbHtmlTeam extends BrdbHtmlPage {
     }
 
     private function getTeam() {
-        $res = $this->brdb->selectStaffList();
-        if (!$this->brdb->hasError()) {
-            $data = array();
-            while ($dataSet = $res->fetch_assoc()) {
+        $teamList = $this->brdb->getStaffList();
+        $data = array();
+
+        if (isset($teamList) && !empty($teamList)) {
+            foreach ($teamList as $dataSet) {
               #error_log(print_r($dataSet));
                 if(isset($dataSet['row']) && $dataSet['row'] > 0) {
                     $data[$dataSet['row']][] = $dataSet;
                 }
             }
-
-            return $data;
         }
 
-        return "";
+        return $data;
+        usnet($data, $dataSet, $teamList);
     }
 
 }

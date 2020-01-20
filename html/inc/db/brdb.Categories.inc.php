@@ -16,8 +16,9 @@ trait CategoryDB {
     public function statementGetAllCategories() {
         $query = "SELECT * FROM `Category` ORDER BY pid, title";
         $statement = $this->db->prepare($query);
-       
-        return $statement->execute();
+        $statement->execute();
+        
+        return $statement->fetchAll();
     }
 
     public function adminStatementGetAllCategories() {
@@ -25,8 +26,9 @@ trait CategoryDB {
                     LEFT JOIN `Category` AS C1 ON C1.categoryId = Category.pid
                     ORDER BY Category.pid, Category.title";
         $statement = $this->db->prepare($query);
-
-        return $statement->execute();
+        $statement->execute();
+        
+        return $statement->fetchAll();
     }
 
     public function insertCategory($title, $pid) {

@@ -30,11 +30,11 @@ try {
     if (isset($_POST["userSearch"])) {
         $brdb = new BrankDB();
         $term = strval(trim(strip_tags($_POST['userSearch'])));
-        $res = $brdb->getUserByTerm($term);
+        $userList = $brdb->getUserByTerm($term);
         $data = array();
-        if (!$brdb->hasError() || $res->num_rows > 0) {
+        if (isset($userList) && !empty($userList)) {
 
-            while ($row = $res->fetch_assoc()) {
+            foreach ($userList as $row) {
                 $data['results'][] = array(
                     'id'   => $userId,
                     'text' => sprintf("%s, %s", $row['lastName'], $row['firstName'])
@@ -45,6 +45,7 @@ try {
             $data['message'] = "No matches found";
         }
         echo json_encode($data);
+        unset($brdb, $_term, $data, $row, $userList);
 
     }
 } catch(Exception $e){

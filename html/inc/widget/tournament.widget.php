@@ -68,10 +68,10 @@ class TournamentWidget extends Widget {
 
     private function getLatestTournament() {
         $data = array();
-        $res = $this->brdb->selectLatestTournamentList(5);
+        $tournamtList = $this->brdb->selectLatestTournamentList(5);
 
-        if (!$this->brdb->hasError()) {
-            while ($dataSet = $res) {
+        if (isset($tournamtList) && !empty($tournamtList)) {
+            foreach ($tournamtList as $dataSet) {
                 $dataSet['classification'] = $this->tools->formatClassification($dataSet['classification']);
                 $dataSet['linkTo']         = $this->tools->linkTo(array('page' => 'tournament.php', 'action' => 'details', 'id' => $dataSet['tournamentId']));
 
@@ -79,13 +79,15 @@ class TournamentWidget extends Widget {
             }
         }
         return $data;
+        unset($data, $dataSet, $tournamtList);
     }
 
     private function getUpcomingTournaments() {
         $data = array();
-        $res = $this->brdb->selectUpcomingTournamentList(5);
-        if (!$this->brdb->hasError()) {
-            while ($dataSet = $res) {
+        $tournamtList = $this->brdb->selectUpcomingTournamentList(5);
+        
+        if (isset($tournamtList) && !empty($tournamtList)) {
+            foreach ($tournamtList as $dataSet) {
                 $dataSet['classification'] = $this->tools->formatClassification($dataSet['classification']);
                 $dataSet['linkTo']         = $this->tools->linkTo(array('page' => 'tournament.php', 'action' => 'details', 'id' => $dataSet['tournamentId']));
                 // get unique player
@@ -97,6 +99,7 @@ class TournamentWidget extends Widget {
             }
         }
         return $data;
+        unset($data, $dataSet, $tournamtList);
     }
 
 

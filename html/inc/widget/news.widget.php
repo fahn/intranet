@@ -30,6 +30,9 @@ class NewsWidget extends Widget {
                 break;
         }
 
+        return;
+        unset($name);
+
     }
 
     private function TPML_latestNews() {
@@ -39,15 +42,17 @@ class NewsWidget extends Widget {
     }
 
     private function getLatestNews() {
-        $data = array();
-        $res = $this->brdb->selectLatestNews(5);
-        if (!$this->brdb->hasError()) {
-            while ($dataSet = $res) {
+        $tmp = array();
+        $newsList = $this->brdb->selectLatestNews(5);
+        if (isset($newsList) && !empty($newsList)) {
+            foreach ($newsList as $dataSet) {
                 $dataSet['linkTo']         = $this->tools->linkTo(array('page' => 'news.php', 'action' => 'details', 'id' => $dataSet['tournamentId']));
 
-                $data[]                    = $dataSet;
+                $tmp[]                    = $dataSet;
             }
         }
-        return $data;
+
+        return $tmp;
+        unset($newsList, $tmp, $dataSet);
     }
 }

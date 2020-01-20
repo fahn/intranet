@@ -110,19 +110,17 @@ class Ranking extends BrdbHtmlPage {
      */
     private function TMPL_deleteGame() {
         $id = $this->tools->get('id') > 0 ? $this->tools->get('id') : '';
-        if (! $id) {
+        if (!$id) {
             $this->tools->customRedirect(array('page' => 'ranking.php'));
         }
-
-        $res  = $this->brdb->statementGetGameById($id);
-        if (! $this->brdb->hasError() ) {
-            $data = $res->fetch_assoc();
-            $data['sets'] = $this->SetUnSerialize($data['sets']);
-            $this->smarty->assign(array(
-                'game'     => $data,
-                'linkBack' => $this->tools->linkTo(array('page' => __FILE__)),
-            ));
-        }
+        // get Game Data
+        $gameData  = $this->brdb->statementGetGameById($id);
+        
+        $gameData['sets'] = $this->SetUnSerialize($gameData['sets']);
+        $this->smarty->assign(array(
+            'game'     => $gameData,
+            'linkBack' => $this->tools->linkTo(array('page' => __FILE__)),
+        ));
 
         return $this->smarty->fetch('ranking/delete.tpl');
     }
@@ -131,28 +129,29 @@ class Ranking extends BrdbHtmlPage {
      * get Ranking
      */
     private function getRanking() {
-      $res  = $this->brdb->statementGetRanking();
-      $data = array();
-      if (! $this->brdb->hasError() ) {
+        $rankingList  = $this->brdb->statementGetRanking();
+        $data = array();
+        if (isset($rankingList) && !empty($rankingList) ) {
             $rank = 1;
-            while ($dataSet = $res->fetch_assoc()) {
+            foreach ($rankingList as $dataSet) {
                 $dataSet['playerLink'] = $this->tools->linkTo(array('page' => 'player.php', 'id' => $dataSet['playerId']));
                 $data[$rank++] = $dataSet;
             }
         }
 
       return $data;
+      unset($rankingList, $data, $dataSet);
     }
 
     /**
      *  get Games
      */
     private function getGames() {
-        $res  = $this->brdb->statementGetMatches();
+        $gamesList  = $this->brdb->statementGetMatches();
         $data = array();
-        if (! $this->brdb->hasError() ) {
+        if (isset($gamesList) && !empty($gamesList) ) {
             $rank = 1;
-            while ($dataSet = $res->fetch_assoc()) {
+            foreach ($gamesList as $dataSet) {
                 // sets
                 $dataSet['sets'] = $this->SetUnSerialize($dataSet['sets']);
                 // delete link
@@ -167,21 +166,23 @@ class Ranking extends BrdbHtmlPage {
         }
 
         return $data;
+        unset($gamesList, $data, $dataSet);
     }
 
     private function getRankingGroupedByDate() {
-      $res   = $this->brdb->statementGetMatchesGroupedByDate();
-      $dates = array();
-      $games = array();
+        $data   = $this->brdb->statementGetMatchesGroupedByDate();
+        $dates = array();
+        $games = array();
 
-      if (! $this->brdb->hasError() ) {
-          while ($dataSet = $res->fetch_assoc()) {
-            $dates[] = $dataSet['gamedate'];
-            $games[] = $dataSet['games'];
-          }
+        if (isset($data) && !empty($data) ) {
+            foreach ($data as $dataSet) {
+                $dates[] = $dataSet['gamedate'];
+                $games[] = $dataSet['games'];
+            }
         }
 
-      return array($dates, $games);
+        return array($dates, $games);
+        unset($dates, $data, $games, $dataSet);
     }
 
 

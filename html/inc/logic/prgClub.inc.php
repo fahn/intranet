@@ -172,18 +172,8 @@ class PrgPatternElementClub extends APrgPatternElement {
         }
     }
 
-    public function list() {
-        $this->countRows = $this->brdb->selectAllClubs()->num_rows;
-
-        $res = $this->brdb->selectAllClubs();
-        $loop = array();
-        if (!$this->brdb->hasError()) {
-          while ($dataSet = $res->fetch_assoc()) {
-            $loop[] = $dataSet; //new User($dataSet);
-
-          }
-        }
-        return $loop;
+    public function getClubs() {
+        return $this->brdb->selectAllClubs();
     }
 
     public function find($item) {

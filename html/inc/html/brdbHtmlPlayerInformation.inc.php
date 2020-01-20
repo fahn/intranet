@@ -35,24 +35,16 @@ class BrdbHtmlPlayerInformation extends BrdbHtmlPage {
     }
     
     
-    private function loadContent($id) {
+    private function loadContent(int $id) {
         if (!isset($id) || !is_numeric($id)) {
             return "";
         }
         
-        $player = $this->brdb->selectPlayerById($id)->fetch_assoc();
-        
         $this->smarty->assign(array(
-            'player'       => $player,
+            'player'       => $this->brdb->selectPlayerById($id),
         ));
         
         return $this->smarty->fetch('player/profil.tpl');
     }
-    
-    
-    public function getGetVariable($variableName) {
-        return Tools::escapeInput($_GET[$variableName]);
-    }
-    
 }
 ?>

@@ -16,6 +16,7 @@ require($path .'/brdbHtmlPage.inc.php');
 
 include_once BASE_DIR .'/inc/logic/prgFaq.inc.php';
 include_once BASE_DIR .'/inc/logic/tools.inc.php';
+include_once BASE_DIR .'/inc/html/category.inc.php';
 
 class BrdbHtmlAdminFaqPage extends BrdbHtmlPage {
   private $prgPatternElementFaq;
@@ -42,6 +43,8 @@ class BrdbHtmlAdminFaqPage extends BrdbHtmlPage {
 
         $this->prgPatternElementFaq = new PrgPatternElementFaq($this->brdb, $this->prgPatternElementLogin);
         $this->prgPattern->registerPrg($this->prgPatternElementFaq);
+
+        $this->category = new BrdbHtmlAdminCategoryPage();
     }
 
 
@@ -92,25 +95,24 @@ class BrdbHtmlAdminFaqPage extends BrdbHtmlPage {
         #$min = $max - self::MAX_ENTRIES;
 
         $data = array();
-        $res = $this->brdb->statementGetAllFaq(); #($min, $max);
-        if (!$this->brdb->hasError()) {
-          while ($dataSet = $res->fetch_assoc()) {
-            // links
-            $dataSet['editLink']   = $this->tools->linkTo(array('page' => $this->_page, 'action' => 'edit', 'id' => $dataSet['faqId']));
-            $dataSet['deleteLink'] = $this->tools->linkTo(array('page' => $this->_page, 'action' => 'delete', 'id' => $dataSet['faqId']));
+        $faqList = $this->brdb->statementGetAllFaq(); #($min, $max);
+        if (isset($faqList) && !empty($faqList)) {
+            foreach ($faqList as $dataSet) {
+                // links
+                $dataSet['editLink']   = $this->tools->linkTo(array('page' => $this->_page, 'action' => 'edit', 'id' => $dataSet['faqId']));
+                $dataSet['deleteLink'] = $this->tools->linkTo(array('page' => $this->_page, 'action' => 'delete', 'id' => $dataSet['faqId']));
 
-            $data[] = $dataSet; //new User($dataSet);
-
-
-          }
+                $data[] = $dataSet; //new User($dataSet);
+            }
         }
         return $data;
+        unset($data, $dataSet, $faqList);
     }
 
   private function loadContentAddEdit($action, $id) {
     $this->smarty->assign(array(
         'action'                 => $action,
-        'FaqCategoryHtmlOptions' => $this->getCategories(),
+        'FaqCategoryHtmlOptions' => $this->category->getCategories(),
         'item'                   => $this->getFaqById($id),
     ));
     return $this->smarty->fetch('faq/adminUpdate.tpl');
@@ -119,55 +121,10 @@ class BrdbHtmlAdminFaqPage extends BrdbHtmlPage {
   /** GET CLUB BY ID
     *
     */
-    private function getFaqById($id) {
-      if(!is_numeric($id)) {
-        return;
-      }
-
-        return $this->brdb->statementGetFAQById($id)->fetch_assoc();
+    private function getFaqById(int $id) {
+        return $id > 0 ? $this->brdb->statementGetFAQById($id) : array();
     }
 
-    private function getCategories() {
-        $data = array();
-        $res = $this->brdb->statementGetAllCategories();
-        if (!$this->brdb->hasError()) {
-            while ($dataSet = $res->fetch_assoc()) {
-                if ($dataSet['pid'] > 0) {
-                    if (!array_key_exists($dataSet['pid'], $data)) {
-                        $data[$dataSet['pid']]['records'] = array();
-                    }
-                    $data[$dataSet['pid']]['records'][$dataSet['categoryId']] =  array('title' => $dataSet['title'], 'records' => array());
-                } else {
-                    $data[$dataSet['categoryId']] = array('title' =>$dataSet['title']);
-                }
-
-            }
-        }
-
-        return $this->reformHtmlOptions($data);
-    }
-
-    private function reformHtmlOptions($dataArr, $rec = 0) {
-        if (!is_array($dataArr) || count($dataArr) == 0 || $rec >= 99) {
-            return;
-        }
-        $data = array();
-
-        foreach ($dataArr as $key => $value) {
-            $pre = str_repeat("-", $rec);
-            $pre .= strlen($pre) > 0 ? ">" : "";
-            $title = $pre . $value['title'];
-            $data[$key] = $title;
-            if (is_array($value['records']) && count($value['records']) > 0) {
-                $tmp = $this->reformHtmlOptions($value['records'], $rec+1);
-                if(is_array($tmp)) {
-                    $data += $tmp;
-                }
-            }
-        }
-
-        return $data;
-    }
 
     /* DELETE */
     private function TMPL_delete($id) {

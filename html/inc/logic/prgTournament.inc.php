@@ -239,8 +239,7 @@ class PrgPatternElementTournament extends APrgPatternElement {
         }
 
         // check player p1
-        $resP1 = $this->brdb->selectPlayerById($player);
-        $p1    = $resP1->fetch_assoc();
+        $p1 = $this->brdb->selectPlayerById($player);
 
         if (! $this->checkPlayerAndDisciplin($p1, $tmp_disziplin, 1)) {
           $this->setFailedMessage(sprintf("Falsche Diziplin für Spieler %s %s", $p1['firstName'], $p1['lastName']));
@@ -249,8 +248,7 @@ class PrgPatternElementTournament extends APrgPatternElement {
 
         // check player p2
         if($tmp_partner > 0) {
-            $resP2 = $this->brdb->selectPlayerById($tmp_partner);
-            $p2    = $resP2->fetch_assoc();
+            $p2 = $this->brdb->selectPlayerById($tmp_partner);
             if (! $this->checkPlayerAndDisciplin($p2, $tmp_disziplin, 2)) {
               $this->setFailedMessage(sprintf("Falsche Diziplin für Spieler %s %s", $p2['firstName'], $p2['lastName']));
               return;
@@ -313,7 +311,7 @@ class PrgPatternElementTournament extends APrgPatternElement {
     */
     private function deletePlayersFromTournamentId($tournamentId, $playerId) {
         // player data
-        $tmp = $this->brdb->getPlayerFromTournamentById($playerId)->fetch_assoc();
+        $tmp = $this->brdb->getPlayerFromTournamentById($playerId);
 
         $actUser = $this->prgElementLogin->getLoggedInUser();
         if (! $actUser->isAdmin() &&
@@ -334,8 +332,7 @@ class PrgPatternElementTournament extends APrgPatternElement {
 
 
         // inform reporter
-        $sql = $this->brdb->getTournamentData($tournamentId);
-        $row = $sql->fetch_assoc();
+        $row = $this->brdb->getTournamentData($tournamentId);
 
         // inform reporterId
         if($this->isPast($row['deadline']) && $row['reporterId'] > 0) {
@@ -369,8 +366,7 @@ class PrgPatternElementTournament extends APrgPatternElement {
     /*
     private function informUser($informUserId) {
         if ($userId > 0) {
-            $res       = $this->brdb->selectPlayerById($userId);
-            $partner   = $res->fetch_assoc();
+            $partner       = $this->brdb->selectPlayerById($userId);
             $mail      = $user['email'];
             if (! filter_var($mail, FILTER_VALIDATE_EMAIL)) {
                 return false;
@@ -574,7 +570,7 @@ class PrgPatternElementTournament extends APrgPatternElement {
         header_remove();
 
         // get tournament data
-        $tournament = $this->brdb->getTournamentData($id)->fetch_assoc();
+        $tournament = $this->brdb->getTournamentData($id);
 
         switch ($tournament['tournamentType']) {
           case 'NBV':
@@ -644,101 +640,103 @@ class PrgPatternElementTournament extends APrgPatternElement {
 
 
         $players    = $this->brdb->getPlayersByTournamentIdToExport($id);
-        while($row = $players->fetch_assoc()) {
-            /* MIXED */
-            if(strpos($row['classification'], 'GD') !== false) {
-                $writer->setCurrentSheet($mixed);
-                $add       = True;
-                $rowEinzel = '';
-                $rowDoppel = '';
-                $rowMixed  = $row['classification'];
-                $counter = ++$mixedCount;
+        if (isset($players) && !empty($players)) {
+            foreach (players as $row) {
+                /* MIXED */
+                if(strpos($row['classification'], 'GD') !== false) {
+                    $writer->setCurrentSheet($mixed);
+                    $add       = True;
+                    $rowEinzel = '';
+                    $rowDoppel = '';
+                    $rowMixed  = $row['classification'];
+                    $counter = ++$mixedCount;
 
-            /* Doppel */
-            } else if(strpos($row['classification'], 'DD') !== false || strpos($row['classification'], 'HD') !== false ||
-                      strpos($row['classification'], 'JD') !== false || strpos($row['classification'], 'MD') !== false ) {
-                $writer->setCurrentSheet($doppel);
-                $add       = True;
-                $rowEinzel = '';
-                $rowDoppel = $row['classification'];
-                $rowMixed  = '';
-                $counter   = ++$doppelCount;
+                /* Doppel */
+                } else if(strpos($row['classification'], 'DD') !== false || strpos($row['classification'], 'HD') !== false ||
+                        strpos($row['classification'], 'JD') !== false || strpos($row['classification'], 'MD') !== false ) {
+                    $writer->setCurrentSheet($doppel);
+                    $add       = True;
+                    $rowEinzel = '';
+                    $rowDoppel = $row['classification'];
+                    $rowMixed  = '';
+                    $counter   = ++$doppelCount;
 
-            /* Einzel */
-            } else {
-                $writer->setCurrentSheet($einzel);
-                $add       = False;
-                $rowEinzel = $row['classification'];
-                $rowDoppel = '';
-                $rowMixed  = '';
-                $counter   = ++$einzelCount;
-            }
-
-            // add Player 1
-            $bday   = date("d.m.Y", strtotime($row['p1Bday']));
-            $bday   = $bday == "01.01.1970" ? "" : $bday;
-            $gender = $this->getGenderShortTag($row['p1Gender']);
-            $singleRow = array(
-                $row['p1FirstName'],
-                $row['p1LastName'],
-                $gender,
-                $row['p1ClubName'],
-                $row['p1ClubAssociation'],
-                $rowEinzel,
-                $rowDoppel,
-                $rowMixed,
-                '',
-                '',
-                '',
-                $row['p1PlayerNumber'],
-                $bday,
-                $row['p1ClubNr'],
-                $counter,
-                '',
-                '',
-            );
-            $writer->addRow($singleRow); // add a row at a time
-
-
-            if($add) {
-                if($row['p2FirstName'] != NULL && $row['p2LastName'] != NULL) {
-                    $firstName = $row['p2FirstName'];
-                    $lastName  = $row['p2LastName'];
-                    $gender    = $this->getGenderShortTag($row['p2Gender']);
-
-                    $bday = $this->getBday($row['bday']);
-
+                /* Einzel */
                 } else {
-                    $firstName = "FREIMELDUNG";
-                    $lastName  = "";
-                    $gender    = "";
-                    $bday      = "";
+                    $writer->setCurrentSheet($einzel);
+                    $add       = False;
+                    $rowEinzel = $row['classification'];
+                    $rowDoppel = '';
+                    $rowMixed  = '';
+                    $counter   = ++$einzelCount;
                 }
 
-                $verein      = isset($row['p2ClubName'])         ? $row['p2ClubName']     : '';
-                $association = isset($row['p2ClubAssociation'])  ? $row['p2ClubAssociation']  : '';
-                $sbnr        = isset($row['p2PlayerNumber'])     ? $row['p2PlayerNumber'] : '';
-
+                // add Player 1
+                $bday   = date("d.m.Y", strtotime($row['p1Bday']));
+                $bday   = $bday == "01.01.1970" ? "" : $bday;
+                $gender = $this->getGenderShortTag($row['p1Gender']);
                 $singleRow = array(
-                    $firstName,
-                    $lastName,
+                    $row['p1FirstName'],
+                    $row['p1LastName'],
                     $gender,
-                    $verein,
-                    $association,
+                    $row['p1ClubName'],
+                    $row['p1ClubAssociation'],
                     $rowEinzel,
                     $rowDoppel,
                     $rowMixed,
                     '',
                     '',
                     '',
-                    $sbnr,
+                    $row['p1PlayerNumber'],
                     $bday,
-                    $row['p2ClubNr'],
+                    $row['p1ClubNr'],
                     $counter,
                     '',
                     '',
                 );
                 $writer->addRow($singleRow); // add a row at a time
+
+
+                if ($add) {
+                    if($row['p2FirstName'] != NULL && $row['p2LastName'] != NULL) {
+                        $firstName = $row['p2FirstName'];
+                        $lastName  = $row['p2LastName'];
+                        $gender    = $this->getGenderShortTag($row['p2Gender']);
+
+                        $bday = $this->getBday($row['bday']);
+
+                    } else {
+                        $firstName = "FREIMELDUNG";
+                        $lastName  = "";
+                        $gender    = "";
+                        $bday      = "";
+                    }
+
+                    $verein      = isset($row['p2ClubName'])         ? $row['p2ClubName']     : '';
+                    $association = isset($row['p2ClubAssociation'])  ? $row['p2ClubAssociation']  : '';
+                    $sbnr        = isset($row['p2PlayerNumber'])     ? $row['p2PlayerNumber'] : '';
+
+                    $singleRow = array(
+                        $firstName,
+                        $lastName,
+                        $gender,
+                        $verein,
+                        $association,
+                        $rowEinzel,
+                        $rowDoppel,
+                        $rowMixed,
+                        '',
+                        '',
+                        '',
+                        $sbnr,
+                        $bday,
+                        $row['p2ClubNr'],
+                        $counter,
+                        '',
+                        '',
+                    );
+                    $writer->addRow($singleRow); // add a row at a time
+                }
             }
         }
         //$writer->addRows($multipleRows); // add multiple rows at a time
@@ -795,57 +793,60 @@ class PrgPatternElementTournament extends APrgPatternElement {
         $counter = 0;
 
         $players    = $this->brdb->getPlayersByTournamentIdToExport($id);
-        while($row  = $players->fetch_assoc()) {
-            $gender = $this->getGenderShortTag($row['p1Gender']);
-            $bday   = $this->getBday($row['p1Bday']);
+        if(isset($players) && !empty($players)) {
+            foreach ($players as $row) {
+                $gender = $this->getGenderShortTag($row['p1Gender']);
+                $bday   = $this->getBday($row['p1Bday']);
 
-            $singleRow = array(
-                $row['p1FirstName'],
-                $row['p1LastName'],
-                $gender,
-                $row['p1ClubName'],
-                $row['p1ClubAssociation'],
-                $row['classification'],
-                $row['p1PlayerNumber'],
-                $bday,
-                $row['p1ClubNr'],
-                ++$counter,
-            );
-
-            $writer->addRow($singleRow);
-
-            if ($row['p2FirstName'] != null) {
                 $singleRow = array(
-                    $row['p2FirstName'],
-                    $row['p2LastName'],
-                    $this->getGenderShortTag($row['p2Gender']),
-                    $row['p2ClubName'],
-                    $row['p2ClubAssociation'],
+                    $row['p1FirstName'],
+                    $row['p1LastName'],
+                    $gender,
+                    $row['p1ClubName'],
+                    $row['p1ClubAssociation'],
                     $row['classification'],
-                    $row['p2PlayerNumber'],
-                    $this->getBday($row['p2Bday']),
-                    $row['p2ClubNr'],
-                    $counter,
+                    $row['p1PlayerNumber'],
+                    $bday,
+                    $row['p1ClubNr'],
+                    ++$counter,
                 );
+
                 $writer->addRow($singleRow);
+
+                if ($row['p2FirstName'] != null) {
+                    $singleRow = array(
+                        $row['p2FirstName'],
+                        $row['p2LastName'],
+                        $this->getGenderShortTag($row['p2Gender']),
+                        $row['p2ClubName'],
+                        $row['p2ClubAssociation'],
+                        $row['classification'],
+                        $row['p2PlayerNumber'],
+                        $this->getBday($row['p2Bday']),
+                        $row['p2ClubNr'],
+                        $counter,
+                    );
+                    $writer->addRow($singleRow);
+                }
             }
         }
 
         $writer->close();
+        return;
     }
 
     /** Create a backup
       *
       */
     private function createBackup($id) {
-        $res = $this->brdb->getPlayersByTournamentId($id);
+        $playerList = $this->brdb->getPlayersByTournamentId($id);
         $backup = array();
-        if($res) {
-            while($row = $res->fetch_assoc()) {
-                $backup[substr($row['classification'], 0, 2)][] = array(
-                    'playerId'       => $row['playerId'],
-                    'partnerId'      => $row['partnerId'],
-                    'classification' => $row['classification'],
+        if(isset($playerList) && !empty($playerList)) {
+            foreach ($playerList as $dataSet) {
+                $backup[substr($dataSet['classification'], 0, 2)][] = array(
+                    'playerId'       => $dataSet['playerId'],
+                    'partnerId'      => $dataSet['partnerId'],
+                    'classification' => $dataSet['classification'],
                 );
             }
             if(isset($backup) && is_array($backup) && count($backup) > 0) {

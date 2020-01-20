@@ -14,7 +14,7 @@
 #declare(strict_types=1);
 
 trait StaffDB {
-    public function selectGetStaff() {
+    public function getStaffList() {
         $query = "SELECT US.*, CONCAT_WS(' ', User.firstName, User.lastName) AS name, User.image, User.gender FROM UserStaff AS US
                     LEFT JOIN User ON User.userId = US.userId
                     ORDER BY US.row ASC, US.sort ASC, User.lastName ASC";
@@ -27,11 +27,12 @@ trait StaffDB {
     public function selectGetStaffById(int $staffId) {
         $query = "SELECT US.*, CONCAT_WS(' ', User.firstName, User.lastName) AS name FROM UserStaff AS US
                     LEFT JOIN User ON User.userId = US.userId
-                    WHERE US.staffId = ?";
+                    WHERE US.staffId = :staffId";
         $statement = $this->db->prepare($query);
         $statement->bindParam('staffId', $staffId);
-
-        return $statement->execute();
+        $statement->execute();
+        
+        return $statement->fetchAll();
     }
 
     public function insertStaff() {

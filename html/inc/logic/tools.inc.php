@@ -154,7 +154,6 @@ class Tools {
     }
 
 
-
     function formatClassification($data) {
         $tmpArr = unserialize($data);
         $i = 0;

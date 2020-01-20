@@ -30,11 +30,11 @@ try {
     if (isset($_POST["playerSearch"])) {
         $brdb = new BrankDB();
         $_term = strval(trim(strip_tags($_POST['playerSearch'])));
-        $res = $brdb->getPlayerByTerm($_term);
+        $playerList = $brdb->getPlayerByTerm($_term);
 
-        if (!$brdb->hasError() || $res->num_rows > 0) {
+        if (isset($playerList) && !empty($playerList)) {
             $data = array();
-            while ($row = $res->fetch_assoc()) {
+            foreach ($playerList as $row) {
                 $data['results'][] = array(
                     'id'   => $playerId,
                     'text' => sprintf("%s (SpNr.: %s; Verein: %s)", $row['playerName'], $row['playerNr'], $row['clubName'])
@@ -45,6 +45,7 @@ try {
             $data['message'] = "No matches found";
         }
         echo json_encode($data);
+        unset($brdb, $_term, $data, $playerList, $row);
 
     }
 } catch(Exception $e){

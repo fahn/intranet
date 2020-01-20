@@ -103,14 +103,13 @@ class BrdbHtmlAdminAllPlayer extends BrdbHtmlPage {
     private function TMPL_updatePlayer($action = 'add') {
          $id  = $this->tools->get('id');
 
-         if($id > 0) {
-             $res = $this->brdb->selectUserById($id);
-             if(!$this->brdb->hasError()) {
-                 $this->info = $res->fetch_assoc();
-             }
-         }
+        try {
+            $this->info = $id > 0 ? $this->brdb->selectUserById($id) : array();
+        } except(Exception $e1) {
+            $this->info = array();;
+        }
 
-         $this->smarty->assign(array(
+        $this->smarty->assign(array(
             'clubs'  => $this->prgPatternElementClub->list(),
             'info'   => $this->info,
             'hidden' => $action == 'add' ? $this->prgPatternElementPlayer::FORM_PLAYER_ACTION_INSERT : $this->prgPatternElementPlayer::FORM_PLAYER_ACTION_UPDATE,
@@ -118,21 +117,23 @@ class BrdbHtmlAdminAllPlayer extends BrdbHtmlPage {
          ));
 
         return $this->smarty->fetch('player/adminUpdate.tpl');
+        usnet($id, $action);
     }
 
 
     private function TMPL_deletePlayer() {
         $id  = $this->tools->get('id');
-        $res = $this->brdb->selectUserById($id);
-        if(!$this->brdb->hasError()) {
-            $this->user = $res->fetch_assoc();
-        }
-        $this->smarty->assign(array(
-            'user'   => $this->user,
-            'hidden' => "Delete User",
-        ));
+        $user = $this->brdb->selectUserById($id);
+        if (isset($user) && !empty($user) ) {
+            $this->smarty->assign(array(
+                'user'   => $this->user,
+                'hidden' => "Delete User",
+            ));
 
-        return $this->smarty->fetch('admin/UserDelete.tpl');
+            return $this->smarty->fetch('admin/UserDelete.tpl');
+        } else {
+            //@TODO: switch back and message
+        }
     }
 
     private function TMPL_sync() {
@@ -151,16 +152,9 @@ class BrdbHtmlAdminAllPlayer extends BrdbHtmlPage {
         #$max = self::MAX_ENTRIES*(1+$page);
         #$min = $max - self::MAX_ENTRIES;
 
-        $res = $this->brdb->selectGetAllPlayer();
+        $playerList = $this->brdb->selectGetAllPlayer();
         $data = array();
-        if (!$this->brdb->hasError()) {
-            while ($dataSet = $res->fetch_assoc()) {
-#                $user = new User($dataSet);
-
-                $data[] = $dataSet; //new User($dataSet);
-            }
-        }
-        return $data;
+        return (isset($playerList) && !empty($playerList)) ? $playerList : array();
     }
 }
 ?>

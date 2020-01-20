@@ -122,7 +122,7 @@ abstract class APrgSqlTablePattern extends APrgPatternElement {
      * @return Column of information as an associative array
      */
     public function fetchResultViewRow() {
-        return $this->queryResult->fetch_assoc();
+        return $this->queryResult;
     }
 
     /**

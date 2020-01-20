@@ -57,9 +57,9 @@ class Api {
     }
 
   private function reminderTournament() {
-      $res = $this->brdb->APIGetTournamentFromToday();
-      if($res->num_rows > 0 ) {
-          while($row = $res->fetch_assoc()) {
+      $tournamentList = $this->brdb->APIGetTournamentFromToday();
+      if (isset($tournamentList) && !empty($tournamentList)) {
+          foreach($tournamentList as $row) {
               if(isset($row) && isset($row['email']) && filter_var($row['email'], FILTER_VALIDATE_EMAIL)) {
                   $subject   = sprintf("Meldeschluss für %s", $row['name']);
                   // content
@@ -84,82 +84,9 @@ class Api {
       }
   }
 
-  
-    private function importTournament() {
-        // load Tournament
-        $content = exec('../tools/getNbvTournament.py');
-        try {
-            $xml = simplexml_load_string($content);
-        } catch (Exception $e) {
-            echo "Import failed "+ $e;
-            return;
-        }
-        $data = $this->getTournamentData();
-
-        $stats=array('new' => 0, 'skipped' => 0);
-
-        foreach ($xml->entry as $entry) {
-            if (is_array($data) && count($data) > 0) {
-                foreach($data as $tournament) {
-                    similar_text($entry->title, $tournament['name'], $percent);
-                    if ($percent > 50) {
-                        echo "Skip $entry->title \n";
-                        echo sprintf("\t%s VS %s = %d\n", $entry->title, $tournament['name'], $percent);
-                        $stats['skipped'] +=1;
-                        continue 2;
-                    }
-                }
-            }
-
-            # form dates()
-            $startdate = $this->changeDate($entry->startdate);
-            $enddate   = $this->changeDate($entry->enddate);
-            $deadline  = $this->changeDate($entry->deadline);
-
-
-            $classification = strval($entry->classification);
-            $pos = strpos($classification, "-");
-            if($pos) {
-                $arr = explode("-", $classification);
-                $prefix=substr($arr[0], 0, 1);
-                $min=substr($arr[0], 1);
-                $max=substr($arr[1], 1);
-                // @TODO: U - Tourniere
-                for($i=$min; $i<=$max; $i+=5) {
-                    $temp[] =$prefix.$i;
-                }
-                $classification = serialize($temp);
-            } else {
-                $classification = serialize(array($classification));
-            }
-
-            try {
-                $place     = $entry->place;
-                $address   = $place .", Deutschland"; // Google HQ
-                $latlng    = $this->tools->getGoogleLatAndLng($address);
-                $latitude  = $latlng['lat'];
-                $longitude = $latlng['lng'];
-            } catch (Exception $e) {
-                $latitude  = "";
-                $longitude = "";
-            }
-
-            echo "Insert $entry->title\n";
-            $this->brdb->APIinsertTournament($entry->title, $entry->place, $startdate, $enddate, $deadline, $entry->link, $classification, $entry->tournamentType, $entry->description, $latitude, $longitude);
-            $stats['new'] +=1;
-
-        }
-        echo sprintf("STATS: NEW: %s SKIPPED: %s", $stats['new'], $stats['skipped']);
-    }
 
     private function getTournamentData() {
-        $data = array();
-        $res = $this->brdb->APIGetTournamentList();
-        while($dataSet = $res->fetch_assoc()) {
-            $data[] = $dataSet;
-        }
-
-        return $data;
+        return $this->brdb->APIGetTournamentList();
     }
 
     private function changeDate($date) {

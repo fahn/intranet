@@ -45,18 +45,9 @@ class BrdbHtmlNotification extends BrdbHtmlPage {
     }
 
     public function getNotification() {
-        $userId = $this->prgPatternElementLogin->getLoggedInUser();
-        $res = $this->brdb->statementGetNotifationByUserId($userId->userId);
-        if (!$this->brdb->hasError()) {
-            $data = array();
-            while ($dataSet = $res->fetch_assoc()) {
-                $data[] = $dataSet;
-            }
-
-            return $data;
-        }
-
-        return "";
+        $user = $this->prgPatternElementLogin->getLoggedInUser();
+        
+        return $user->$userId > 0 ? $this->brdb->statementGetNotifationByUserId($user->userId) : array();
     }
 
 }

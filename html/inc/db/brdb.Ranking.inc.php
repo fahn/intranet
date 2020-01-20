@@ -20,8 +20,9 @@ trait RankingDB {
                     #WHERE elo.win != 0 OR elo.loss != 0
                     ORDER BY elo.points DESC";
         $statement = $this->db->prepare($query);
-
-        return $statement->execute();
+        $statement->execute();
+        
+        return $statement->fetchAll();
     }
 
     /**
@@ -33,8 +34,9 @@ trait RankingDB {
                     WHERE hidden = '0'
                     ORDER BY games.gameTime DESC";
         $statement = $this->db->prepare($query);
-
-        return $statement->execute();
+        $statement->execute();
+        
+        return $statement->fetchAll();
 
     }
 
@@ -47,8 +49,9 @@ trait RankingDB {
                     WHERE hidden = '0'
                     GROUP BY gameTime";
         $statement = $this->db->prepare($query);
-
-        return $statement->execute();
+        $statement->execute();
+        
+        return $statement->fetchAll();
 
     }
 
@@ -62,8 +65,9 @@ trait RankingDB {
                     WHERE games.gameId = :gameId";
         $statement = $this->db->prepare($query);
         $statement->bindParam('gameId', $gameId);
-
-        return $statement->execute();
+        $statement->execute();
+        
+        return $statement->fetchAll();
 
     }
 
@@ -92,9 +96,9 @@ trait RankingDB {
         $query = "SELECT IFNULL( (SELECT points FROM `EloRanking` WHERE playerId = :playerId) , '0')";
         $statement = $this->db->prepare($query);
         $statement->bindParam('playerId', $playerId);
+        $statement->execute();
         
-
-        return $statement->execute();
+        return $statement->fetchAll();
     }
 
     public function updatePoints($playerId, $points, $win, $loss) {
@@ -116,8 +120,6 @@ trait RankingDB {
                                 ORDER BY gameTime DESC LIMIT 5";
         $statement = $this->db->prepare($query);
         $statement->bindParam('actionId', $actionId);
-        var_dump($statement->debugDumpParams());
-        echo "<br>";
 
         $statement->execute();
 

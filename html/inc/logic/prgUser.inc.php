@@ -379,20 +379,19 @@ class PrgPatternElementUser extends APrgPatternElement {
 
         // Check if the user is already registered
         // In case it is we have to throw an error
-        $res = $this->brdb->selectUserbyEmail($email);
+        $user = $this->brdb->selectUserbyEmail($email);
         if ($this->brdb->hasError()) {
             $this->setFailedMessage($this->brdb->getError());
             return;
         }
 
-        if ($res->num_rows > 0) {
-            // Check that it is not my email, which is allowed to be set!
-            $dataSetUser = new User($res->fetch_assoc());
-            if ($dataSetUser->userId != $userId) {
-                $this->setFailedMessage(self::ERROR_USER_EMAIL_EXISTS);
-                return;
-            }
+        // Check that it is not my email, which is allowed to be set!
+        $dataSetUser = new User(user);
+        if ($dataSetUser->userId != $userId) {
+            $this->setFailedMessage(self::ERROR_USER_EMAIL_EXISTS);
+            return;
         }
+
 
 
         // now everything is checked and the command for adding
@@ -404,6 +403,7 @@ class PrgPatternElementUser extends APrgPatternElement {
                 $this->setFailedMessage($this->brdb->getError());
                 return;
             }
+
             $this->setSuccessMessage(self::SUCCESS_USER_UPDATE);
             return true;
         #}
@@ -452,19 +452,17 @@ class PrgPatternElementUser extends APrgPatternElement {
 
         // Check if the user is already registered
         // In case it is we have to throw an error
-        $res = $this->brdb->selectUserbyEmail($email);
+        $user = $this->brdb->selectUserbyEmail($email);
         if ($this->brdb->hasError()) {
           $this->setFailedMessage($this->brdb->getError());
           return;
         }
 
-        if ($res->num_rows > 0) {
-          // Check that it is not my email, which is allowed to be set!
-          $dataSetUser = new User($res->fetch_assoc());
-          if ($dataSetUser->userId != $userId) {
-            $this->setFailedMessage(self::ERROR_USER_EMAIL_EXISTS);
-            return;
-          }
+        // Check that it is not my email, which is allowed to be set!
+        $dataSetUser = new User($user);
+        if ($dataSetUser->userId != $userId) {
+        $this->setFailedMessage(self::ERROR_USER_EMAIL_EXISTS);
+        return;
         }
 
         // now everything is checked and the command for adding
@@ -506,15 +504,14 @@ class PrgPatternElementUser extends APrgPatternElement {
             $this->setFailedMessage(self::ERROR_USER_UPDATE_MISSING_INFORMATION);
             return;
         }
-        $res = $this->brdb->selectUserById($userId);
-        if ($res->num_rows != 1) {
+        $user = $this->brdb->selectUserById($userId);
+        if (!isset($user) || empty ($user)) {
             $this->setFailedMessage("Missing Information. Go to support");
             return;
         }
 
           // fetch the dataset there is only one and try to verify the passowrd
-        $dataSet = $res->fetch_assoc();
-        if (!password_verify($oldPassword, $dataSet['password'])) {
+        if (!password_verify($oldPassword, $user['password'])) {
             $this->setFailedMessage("Das alte Passwort stimmt nicht.");
             return;
         }
@@ -523,11 +520,12 @@ class PrgPatternElementUser extends APrgPatternElement {
             $this->setFailedMessage("Das neue und das zu wiederholende Passwort stimmen nicht überein.");
             return;
         }
+
         $hashNewPassword = password_hash($newPassword, PASSWORD_DEFAULT);
         $res = $this->brdb->updateUserPassword($userId, $hashNewPassword);
         if ($this->brdb->hasError()) {
-          $this->setFailedMessage($this->brdb->getError());
-          return;
+            $this->setFailedMessage($this->brdb->getError());
+            return;
         }
 
         $this->setSuccessMessage("Passwort wurde erfolgreich geändert.");
@@ -618,25 +616,20 @@ class PrgPatternElementUser extends APrgPatternElement {
     public function getAdminUser() {
         // If there is no post we directly get here and we try to set the class
         // information directly from the stored information in the session
-        if ($this->issetSessionVariable(self::FORM_USER_ADMIN_USER_ID)) {
-            // Try to get the user by the ID stored in the session
-            $userId = intval($this->getSessionVariable(self::FORM_USER_ADMIN_USER_ID));
-            $res = $this->brdb->selectUserById($userId);
-            if ($this->brdb->hasError()) {
-                $this->setFailedMessage($this->brdb->getError());
-                return new User();
-            }
-            // if the query was succesful try to use the data to init the User object
-            if ($res->num_rows == 1) {
-                $dataSet = $res->fetch_assoc();
-                return new User($dataSet);
-            } else {
-                $this->setFailedMessage(self::ERROR_USER_NO_USER_FOR_ADMIN_FOUND);
-            }
+        if (! $this->issetSessionVariable(self::FORM_USER_ADMIN_USER_ID)) {
             $this->setFailedMessage(self::ERROR_USER_NO_USER_FOR_ADMIN_SELECTED);
+            return;
         }
 
-        return new User();
+        // Try to get the user by the ID stored in the session
+        $userId = intval($this->getSessionVariable(self::FORM_USER_ADMIN_USER_ID));
+        $user = $this->brdb->selectUserById($userId);
+        if (!isset($user) || empty($user)) {
+            $this->setFailedMessage(self::ERROR_USER_NO_USER_FOR_ADMIN_FOUND);
+            return;
+        }
+        
+        return new User($user);
     }
 }
 

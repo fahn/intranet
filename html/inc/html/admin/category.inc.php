@@ -79,56 +79,46 @@ class BrdbHtmlAdminCategoryPage extends BrdbHtmlPage {
 
     private function TMPL_list() {
         $this->smarty->assign(array(
-            'list'      => $this->loadList(),
+            'list'      => $this->loadCategoryList(),
         ));
         return $this->smarty->fetch('category/adminList.tpl');
     }
 
 
-    private function loadList() {
+    private function loadCategoryList() {
         $data = array();
-        $res = $this->brdb->adminStatementGetAllCategories(); #($min, $max);
-        if (!$this->brdb->hasError()) {
-          while ($dataSet = $res->fetch_assoc()) {
-            // links
-            $dataSet['editLink']   = $this->tools->linkTo(array('page' => $this->_page, 'action' => 'edit',   'id' => $dataSet['categoryId']));
-            $dataSet['deleteLink'] = $this->tools->linkTo(array('page' => $this->_page, 'action' => 'delete', 'id' => $dataSet['categoryId']));
+        $categoryList = $this->brdb->adminStatementGetAllCategories(); #($min, $max);
+        if (isset($categoryList) && !empty($categoryList)) {
+            foreach ($categoryList as $dataSet) {
+                // links
+                $dataSet['editLink']   = $this->tools->linkTo(array('page' => $this->_page, 'action' => 'edit',   'id' => $dataSet['categoryId']));
+                $dataSet['deleteLink'] = $this->tools->linkTo(array('page' => $this->_page, 'action' => 'delete', 'id' => $dataSet['categoryId']));
 
-            $data[] = $dataSet; //new User($dataSet);
-
-
-          }
+                $data[] = $dataSet; //new User($dataSet);
+            }
         }
         return $data;
+        unset($data, $categoryList, $dataSet);
     }
 
-  private function TMPL_update($action, $id) {
-    $this->smarty->assign(array(
-        'action'                 => $action,
-        'categoryHtmlOptions'    => $this->getCategories(),
-        'item'                   => $this->getNewsById($id),
-    ));
-    return $this->smarty->fetch('category/adminUpdate.tpl');
-  }
+    private function TMPL_update($action, $id) {
+        $this->smarty->assign(array(
+            'action'                 => $action,
+            'categoryHtmlOptions'    => $this->getCategories(),
+            'item'                   => $this->getNewsById($id),
+        ));
+        return $this->smarty->fetch('category/adminUpdate.tpl');
+    }
 
-  /** GET CLUB BY ID
-    *
-    */
-    private function getNewsById($id) {
-      if(!is_numeric($id)) {
-        return;
-      }
-
-        return $this->brdb->statementGetNewsById($id)->fetch_assoc();
+    private function getNewsById(int $id) {
+        return $id > 0  ? $this->brdb->statementGetNewsById($id) : array();
     }
 
     public function getCategories() {
         $data = array();
-        $res = $this->brdb->statementGetAllCategories();
-        if ($this->brdb->hasError()) {
-            $this->tools->log('getCategories', $this->_table, 'Get Categories', $this->brdb->error(), 'GET', $userId);
-        } else {
-            while ($dataSet = $res->fetch_assoc()) {
+        $categoryList = $this->brdb->statementGetAllCategories();
+        if (!isset(categoryList) && !empty(categoryList) {
+            foreach ($categoryList as $dataSet) {
                 if ($dataSet['pid'] > 0) {
                     if (!array_key_exists($dataSet['pid'], $data)) {
                         $data[$dataSet['pid']]['records'] = array();
@@ -137,7 +127,6 @@ class BrdbHtmlAdminCategoryPage extends BrdbHtmlPage {
                 } else {
                     $data[$dataSet['categoryId']] = array('title' =>$dataSet['title']);
                 }
-
             }
         }
 

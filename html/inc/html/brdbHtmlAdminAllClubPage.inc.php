@@ -79,27 +79,14 @@ class BrdbHtmlAdminAllClubPage extends BrdbHtmlPage {
     #$max = self::MAX_ENTRIES*(1+$page);
     #$min = $max - self::MAX_ENTRIES;
 
-    $res = $this->brdb->selectAllClubs(); #$min, $max);
-    $loop = array();
-    if (!$this->brdb->hasError()) {
-      while ($dataSet = $res->fetch_assoc()) {
-        $loop[] = $dataSet; //new User($dataSet);
-
-      }
-    }
-
-    return $loop;
+    return $this->brdb->selectAllClubs(); #$min, $max);
   }
 
   /** GET CLUB BY ID
     *
     */
-  private function getClubById($id) {
-    if(!is_numeric($id)) {
-      return;
-    }
-
-      return $this->brdb->selectGetClubById($id)->fetch_assoc();
+  private function getClubById(int $id) {
+      return $id > 0 ? $this->brdb->selectGetClubById($id) : array();
   }
 
 }

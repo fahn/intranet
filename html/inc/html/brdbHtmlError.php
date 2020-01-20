@@ -21,16 +21,11 @@ class BrdbHtmlFaq extends BrdbHtmlPage {
 
     public function __construct() {
         parent::__construct();
-
-
+        
+        // secure
         $this->tools->secure_array($_GET);
 
-        // list
-        $links = array(
-            'list'     => $this->tools->linkTo(array('page' => 'faq.php', 'action' => 'list')),
-            'category' => '#',
-        );
-        $this->smarty->assign('links', $links);
+
     }
 
     public function processPage() {
@@ -53,40 +48,5 @@ class BrdbHtmlFaq extends BrdbHtmlPage {
 
         return $this->smarty->fetch('error.tpl');
     }
-
-    private function getFaqGroupedByCategory() {
-        $res = $this->brdb->statementGetFAQs();
-        if (!$this->brdb->hasError()) {
-            $data = array();
-            while ($dataSet = $res->fetch_assoc()) {
-                if (isset($dataSet['categoryId']) && !array_key_exists($dataSet['categoryId'], $data)) {
-                    $data[$dataSet['categoryId']] = array('title' => $dataSet['categoryTitle'], 'rows' => array());
-                }
-                $data[$dataSet['categoryId']]['rows'][] = $dataSet;
-            }
-
-            return $data;
-        }
-
-        return "";
-    }
-
-    private function getFaqList() {
-        $res = $this->brdb->statementGetFAQs();
-        if (!$this->brdb->hasError()) {
-            $data = array();
-            while ($dataSet = $res->fetch_assoc()) {
-                // edit Link
-                $dataSet['editLink'] = "#". $dataSet['faqId'];
-                $dataSet['deleteLink'] = "#". $dataSet['faqId'];
-                $data[] = $dataSet;
-            }
-
-            return $data;
-        }
-
-        return "";
-    }
-
 }
 ?>

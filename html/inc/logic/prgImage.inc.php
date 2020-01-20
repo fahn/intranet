@@ -104,17 +104,7 @@ class PrgPatternElementImage extends APrgPatternElement {
     
     
     public function getUserImages() {
-        $res = $this->brdb->selectAllUser();
-        $data = array();
-        if (!$this->brdb->hasError()) {
-            while($row = $res->fetch_assoc()) {
-                if($row['image']) {
-                    $data[] = $row['image'];
-                }
-            }
-        }
-
-        return $data;
+        return $this->brdb->getUserImages();
     }
 }
 ?>

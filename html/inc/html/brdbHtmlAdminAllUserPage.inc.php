@@ -99,7 +99,7 @@ class BrdbHtmlAdminAllUserPage extends BrdbHtmlPage {
         $res = $this->brdb->selectAllUserPagination($min, $max);
         $loopUser = array();
         print_r($res);
-        foreach ($res as $dataSet) { // = $res->fetch_assoc()) {
+        foreach ($res as $dataSet) {
             $user = new User($dataSet);
 
             $dataSet['isAdmin']    = $user->isAdmin();
@@ -140,30 +140,25 @@ class BrdbHtmlAdminAllUserPage extends BrdbHtmlPage {
 
 
     private function TMPL_editPlayer() {
-
         $id  = $this->tools->get('id');
-        $res = $this->brdb->selectUserById($id);
-        if (!$this->brdb->hasError()) {
-            $this->info = $res->fetch_assoc();
-        }
+        
         $this->smarty->assign(array(
+            'user'   => $this->getUserById($id),
             'clubs'  => $this->getClubs(),
             'info'   => $this->info,
             'hidden' => "Update User",
             'task'   => "edit",
         ));
+        
         return $this->smarty->fetch('admin/UserUpdate.tpl');
+        unset($id, $player);
     }
 
     private function TMPL_deletePlayer() {
         $id  = $this->tools->get('id');
-        $res = $this->brdb->selectUserById($id);
-        if (!$this->brdb->hasError()) {
-            $this->user = $res->fetch_assoc();
-        }
 
         $this->smarty->assign(array(
-            'user'   => $this->user,
+            'user'   => $this->getUserById($id),
             'hidden' => "Delete User",
         ));
 
@@ -172,6 +167,10 @@ class BrdbHtmlAdminAllUserPage extends BrdbHtmlPage {
 
     private function getClubs() {
         return $this->brdb->selectAllClubs();
+    }
+
+    private function getUserById(int $id) {
+        return $id > 0 ? $this->brdb->selectUserById($id) : array();
     }
 }
 ?>

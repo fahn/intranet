@@ -81,7 +81,7 @@ class BrdbHtmlAdminStaff extends BrdbHtmlPage {
     }
 
     private function TMPL_updatePlayer($laction) {
-        $data = $laction == 'edit' ? $this->getStaffById() : array();
+        $data = $laction == 'edit' ? $this->getStaffById(Tools::get('id')) : array();
         $this->smarty->assign(array(
             'rowOption' => array('1' => 'Reihe 1', '2' => 'Reihe 2', '3' => 'Reihe 3'),
             'colOption' => array('1' => 'Spalte 1', '2' => 'Spalte 2', '3' => 'Spalte 3'),
@@ -96,29 +96,12 @@ class BrdbHtmlAdminStaff extends BrdbHtmlPage {
 
 
     private function loadStaffList() {
-        $res = $this->brdb->selectGetStaff();
-        $data = array();
-        if (!$this->brdb->hasError()) {
-            while ($dataSet = $res->fetch_assoc()) {
-                $data[] = $dataSet;
-            }
-        }
-        return $data;
+        return $this->brdb->getStaffList();
     }
 
-    private function getStaffById() {
-        $id = Tools::get('id');
-        $res = $this->brdb->selectGetStaffById($id);
-        if ($this->brdb->hasError()) {
-            throw new BadtraException('Staff not exists');
-        }
-        return $res->fetch_assoc();
-        /*while($dataRow = $res->fetch_assoc()) {
+    private function getStaffById(int $id) {
+        return $id > 0 ? $this->brdb->selectGetStaffById($id) : array();
 
-            print_r($dataRow);
-        }
-        return "1";*/
     }
-
 }
 ?>

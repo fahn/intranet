@@ -63,71 +63,58 @@ class BrdbHtmlFaq extends BrdbHtmlPage {
     }
 
     private function getFaqGroupedByCategory() {
-        $res = $this->brdb->statementGetAllFaq();
-        if (!$this->brdb->hasError()) {
-            $data = array();
-            while ($dataSet = $res->fetch_assoc()) {
-                if (isset($dataSet['categoryId']) && !array_key_exists($dataSet['categoryId'], $data) ) {
+        $data = array();
+        $faqList = $this->brdb->statementGetFAQs();
+        
+        if (isset($faqList) && !empy($faqList))) {    
+            foreach ($faqList as $dataSet) {
+                if (isset($dataSet['categoryId']) && !array_key_exists($dataSet['categoryId'], $data)) {
                     $data[$dataSet['categoryId']] = array('title' => $dataSet['categoryTitle'], 'rows' => array());
                 }
                 $data[$dataSet['categoryId']]['rows'][] = $dataSet;
             }
-
-            
         }
 
         return $data;
+        unset($data, $faqList, $dataSet);
     }
 
     private function getFaqList() {
-        $res = $this->brdb->statementGetAllFaq();
-        if (!$this->brdb->hasError()) {
-            $data = array();
-            while ($dataSet = $res->fetch_assoc()) {
+        $data = array();
+        $faqList = $this->brdb->statementGetFAQs();
+        
+        if (isset($faqList) && !empy($faqList))) {    
+            foreach ($faqList as $dataSet) {
                 // edit Link
+                $dataSet['editLink'] = "#". $dataSet['faqId'];
+                $dataSet['deleteLink'] = "#". $dataSet['faqId'];
                 $data[] = $dataSet;
             }
-
-            return $data;
         }
 
-        return "";
+        return $data;
+        unset($data, $dataSet, $faqList);
     }
 
     private function getCategory() {
-        $res = $this->brdb->statementGetCategoryAndCountItems();
-        if (!$this->brdb->hasError()) {
-            $data = array();
-            while ($dataSet = $res->fetch_assoc()) {
-                $data[] = $dataSet;
-            }
-
-            return $data;
-        }
-
-        return "";
+        return $this->brdb->statementGetCategoryAndCountItems();
     }
 
     private function getCategoryHtmlOptions() {
         $data = array();
-        $tmp = $this->getCategory;
-        while($dataSet = $tmp) {
-            $data[$dataSet['categoryId']] = $dataSet['title'];
+        $categoryList = $this->getCategory;
+        if (isset($categoryList) && !empty($categoryList)) {
+            foreach ($categoryList as $dataSet) {
+                $data[$dataSet['categoryId']] = $dataSet['title'];
+            }
         }
 
         return $data;
+        unset($data, $categoryList);
     }
     
     private function getFaqByCategoryId($id) {
-        $res = $this->brdb->statementGetFaqByCategoryId($id);
-        if (!$this->brdb->hasError()) {
-            $data = array();
-            while ($dataSet = $res->fetch_assoc()) {
-                $data[] = $dataSet;
-            }
-        }
-        return $data;
+        return $this->brdb->statementGetFaqByCategoryId($id);
     }
-
 }
 ?>

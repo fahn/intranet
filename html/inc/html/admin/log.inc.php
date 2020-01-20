@@ -53,9 +53,9 @@ class BrdbHtmlAdminShowLog extends BrdbHtmlPage {
 
     private function getLogs() {
         $data = array();
-        $res = $this->brdb->statementGetAllLogs(); #($min, $max);
-        if (!$this->brdb->hasError()) {
-            while ($dataSet = $res->fetch_assoc()) {
+        $logList = $this->brdb->statementGetAllLogs(); #($min, $max);
+        if (isset($logList) && !empty($logList)) {
+            while ($dataSet = $res) {
                 $dataSet['logdata'] = unserialize($dataSet['logdata']);
                 $data[] = $dataSet;
             }

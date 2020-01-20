@@ -18,15 +18,17 @@ trait TournamentDB {
         $query = "SELECT T.*, (SELECT COUNT(*) from TournamentPlayer AS TP where TP.visible = 1 AND TP.tournamentId = T.tournamentId) AS userCounter FROM Tournament AS T
                   WHERE T.visible = 1 AND T.enddate > (NOW() - INTERVAL 4 DAY) ORDER by T.startdate ASC";
         $statement = $this->db->prepare($query);
+        $statement->execute();
 
-        return $statement->execute();
+        return $statement->fetchAll();
     }
 
     public function selectOldTournamentList() {
         $query = "SELECT * FROM Tournament WHERE visible = 1 AND enddate < NOW() ORDER by startdate DESC";
         $statement = $this->db->prepare($query);
+        $statement->execute();
 
-        return $statement->execute();
+        return $statement->fetchAll();
     }
 
 /*
@@ -41,10 +43,9 @@ trait TournamentDB {
         $query = "SELECT * FROM Tournament WHERE visible = 1 AND enddate < NOW() ORDER by startdate ASC LIMIT :limit";
         $statement = $this->db->prepare($query);
         $statement->bindParam('limit', $max);
+        $statement->execute();
 
-        $tournament = $statement->execute();
-
-        return $tournament->fetchAll();
+        return $statement->fetchAll();
     }
 
     public function selectUpcomingTournamentList($max = 5) {
@@ -70,6 +71,7 @@ trait TournamentDB {
         $query = "SELECT COUNT(DISTINCT concat(playerId,partnerId)) from TournamentPlayer WHERE tournamentId = :tournamentId AND visible = 1";
         $statement = $this->db->prepare($query);
         $statement->bindParam('tournamentId', $tournamentId);
+        $statement->execute();
         /*SELECT COUNT(*) FROM (
                                       SELECT DISTINCT playerId FROM TournamentPlayer WHERE tournamentId = ? AND visible = 1 GROUP BY playerId
                                       UNION
@@ -77,7 +79,7 @@ trait TournamentDB {
                                   ) AS result GROUP BY playerId");
                                   */
 
-                                  return $statement->execute();
+        return $statement->fetchAll();
     }
 
     public function selectUpcomingTournamentPlayerOrginal($tournamentId) {
@@ -86,8 +88,9 @@ trait TournamentDB {
                     SELECT DISTINCT partnerId FROM TournamentPlayer WHERE tournamentId = :tournamentId AND visible = 1 AND partnerId > 0 GROUP BY partnerId";
         $statement = $this->db->prepare($query);
         $statement->bindParam('tournamentId', $tournamentId);
+        $statement->execute();
 
-        return $statement->execute();
+        return $statement->fetchAll();
     }
 
 
@@ -97,8 +100,9 @@ trait TournamentDB {
                     WHERE Tournament.tournamentId = :tournamentId";
         $statement = $this->db->prepare($query);
         $statement->bindParam('tournamentId', $tournamentId);
+        $statement->execute();
 
-        return $statement->execute();
+        return $statement->fetch();
     }
 
     public function getPlayersByTournamentId($tournamentId) {
@@ -115,8 +119,9 @@ trait TournamentDB {
                     WHERE TP.tournamentId = :tournamentId AND TP.visible = 1";
         $statement = $this->db->prepare($query);
         $statement->bindParam('tournamentId', $tournamentId);
+        $statement->execute();
 
-        return $statement->execute();
+        return $statement->fetchAll();
     }
 
     public function getPlayersByTournamentIdToExport($tournamentId) {
@@ -134,16 +139,18 @@ trait TournamentDB {
                     WHERE TP.tournamentId = ? AND TP.visible = 1";
         $statement = $this->db->prepare($query);
         $statement->bindParam('tournamentId', $tournamentId);
+        $statement->execute();
 
-        return $statement->execute();
+        return $statement->fetchAll();
     }
 
     public function getDisciplinesByTournamentId($tournamentId) {
         $query =  "SELECT * FROM TournamentClass AS TC WHERE TC.tournamentId = :tournamentId AND TC.visible = 1";
         $statement = $this->db->prepare($query);
         $statement->bindParam('tournamentId', $tournamentId);
-
-        return $statement->execute();
+        $statement->execute();
+        
+        return $statement->fetchAll();
     }
 
     public function insertPlayerToTournament($tournamentId, $playerId, $partnerId, $classification, $reporterId) {
@@ -265,8 +272,9 @@ trait TournamentDB {
                     ORDER BY enddate DESC LIMIT 10";
         $statement = $this->db->prepare($query);
         $statement->bindParam('id', $id);
+        $statement->execute();
 
-        return $statement->execute();
+        return $statement->fetchAll();
     }
 
     public function getTournamentPlayerByData($tournamentId, $playerId, $partnerId, $classification) {
@@ -277,8 +285,9 @@ trait TournamentDB {
         $statement->bindParam('tournamentId', $playerId);
         $statement->bindParam('partnerId', $partnerId);
         $statement->bindParam('classification', $classification);
+        $statement->execute();
 
-        return $statement->execute();
+        return $statement->fetchAll();
     }
 
     public function insertTournamentBackup($tournamentId, $data) {
@@ -294,8 +303,9 @@ trait TournamentDB {
         $query = "SELECT * FROM TournamentBackup WHERE tournamentId = :tournamentId ORDER BY backupId DESC";
         $statement = $this->db->prepare($query);
         $statement->bindParam('tournamentId', $tournamentId);
+        $statement->execute();
 
-        return $statement->execute();
+        return $statement->fetchAll();
     }
 
     public function getTournamentBackupDiff($first, $second){
@@ -303,8 +313,9 @@ trait TournamentDB {
         $statement = $this->db->prepare($query);
         $statement->bindParam('first', $first);
         $statement->bindParam('second', $second);
+        $statement->execute();
 
-        return $statement->execute();
+        return $statement->fetchAll();
     }
 
     public function getPlayerFromTournamentById($playerId) {
@@ -315,8 +326,9 @@ trait TournamentDB {
                 WHERE tournamentPlayerId = :playerId";
         $statement = $this->db->prepare($query);
         $statement->bindParam('playerId', $playerId);
+        $statement->execute();
 
-        return $statement->execute();
+        return $statement->fetchAll();
     }
 
     public function unlockPlayerFromTournament($tournamentId, $playerId) {

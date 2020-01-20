@@ -39,14 +39,7 @@ abstract class Widget {
         $this->brdb = new BrankDB();
 
         $this->smarty = new Smarty;
-        if ($this->tools->getIniValue('stage') == "development") {
-            // @TODO: set debug bar
-            $this->smarty->force_compile = true;
-            $this->smarty->debugging = true;
-            $this->smarty->caching = true;
-            $this->smarty->cache_lifetime = 120;
-        }
-
+ 
         $this->smarty->setTemplateDir(BASE_DIR .'/templates');
         $this->smarty->setCompileDir(BASE_DIR .'/templates_c');
         $this->smarty->setConfigDir(BASE_DIR .'/smarty/configs');
