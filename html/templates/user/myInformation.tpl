@@ -62,17 +62,17 @@
       <div class="col-md-6">
         <div class="form-group" data-toggle="tooltip" title="Kann nur ein Admin ändern">
           <label for = "userRegisterAccountPlayerId">Spielernummer:</label>
-          <input class="form-control"  type="text" id="userRegisterAccountPlayerId" name="userRegisterAccountPlayerId" placeholder="" value="{$vars['playerIdValue']}" disabled="disabled" >
+          <input class="form-control"  type="text" id="userRegisterAccountPlayerId" name="userRegisterAccountPlayerId" placeholder="" value="{$vars.playerIdValue|default:""}" disabled="disabled" >
         </div>
       </div>
 
       <div class="col-md-6">
         <div class="form-group" data-toggle="tooltip" title="Kann nur ein Admin ändern">
           <label for="userRegisterAccountClub">Verein:</label>
-          <input class="form-control"  type="text" id="userRegisterAccountClub" name="userRegisterAccountClub" placeholder="" value="{$vars['clubNameValue']}" disabled="disabled">
+          <input class="form-control"  type="text" id="userRegisterAccountClub" name="userRegisterAccountClub" placeholder="" value="{$vars.clubNameValue|default:""}" disabled="disabled">
         </div>
       </div>
     </div>
-    <input class="btn btn-success" type="submit" name="submit" value="Daten ändern">
+    <input class="btn btn-success mb-5" type="submit" name="submit" value="Daten ändern">
   </form>
 </div>
