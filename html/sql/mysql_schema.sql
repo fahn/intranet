@@ -49,7 +49,8 @@ CREATE TABLE `Player` (
   `firstName` varchar(64) NOT NULL,
   `lastName` varchar(64) NOT NULL,
   `gender` enum('Male','Female') NOT NULL DEFAULT 'Male',
-  `bday` date
+  `bday` date,
+  `lastUpdate` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -61,7 +62,8 @@ CREATE TABLE `Club` (
   `visible` int(1) DEFAULT '1',
   `name` text NOT NULL,
   `clubNr` text NOT NULL,
-  `association` varchar(10)
+  `association` varchar(10),
+  `lastUpdate` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT `Club` (name, clubNr) VALUES ('FREI', '0000');
