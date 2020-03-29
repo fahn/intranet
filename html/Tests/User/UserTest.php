@@ -2,8 +2,9 @@
 
 namespace Tests\integration\User;
 
+use PHPUnit\Framework\TestCase;
 
-class UserServiceTest extends BaseTestCase {
+class UserServiceTest extends TestCase {
     private static $id;
 
     public  function __construcotr() {
