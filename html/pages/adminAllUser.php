@@ -13,7 +13,7 @@
  ******************************************************************************/
 
 require_once '_options.php';
-include_once BASE_DIR .'/inc/html/brdbHtmlAdminAllUserPage.inc.php';
+include_once BASE_DIR .'/inc/html/admin/user.inc.php';
 
 $page = new BrdbHtmlAdminAllUserPage();
 $page->processPage();

@@ -20,21 +20,14 @@ include_once BASE_DIR .'/inc/logic/tools.inc.php';
 # libary
 require_once BASE_DIR .'/vendor/autoload.php';
 
-// Routing
-use Symfony\Component\Routing\Annotation\Route;
 
 
 
-# diff
 require_once BASE_DIR .'/inc/class.Diff.php';
 
 
 class BrdbHtmlTournamentPage extends BrdbHtmlPage {
     private $prgElementTournament;
-
-    private $tournamentType;
-
-    private $tournamenIniValues;
 
     public function __construct() {
         parent::__construct();
@@ -42,14 +35,9 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
         $this->tools = new Tools();
         $this->tools->secure_array($_GET);
 
-        $this->tournamenIniValues = $this->tools->getIniValue('tournament'); # array('NBV', 'FUN', 'OTHER');
-
+        // load pattern
         $this->prgElementTournament = new PrgPatternElementTournament($this->brdb, $this->prgPatternElementLogin);
         $this->prgPattern->registerPrg($this->prgElementTournament);
-
-        $this->variable['playerId']  = $this->prgElementTournament->getPrefixedName(PrgPatternElementTournament::FORM_INPUT_PLAYER);
-        $this->variable['partnerId'] = $this->prgElementTournament->getPrefixedName(PrgPatternElementTournament::FORM_INPUT_PARTNER);
-        $this->variable['disziplin'] = $this->prgElementTournament->getPrefixedName(PrgPatternElementTournament::FORM_INPUT_DISCIPLIN);
     }
 
     public function processPage() {
@@ -118,7 +106,7 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
 
 
     /**
-     * @Route("/tournamen/update/{id})
+     * @Route("/tournament/update/{id})
      *
      * @param [type] $actionId
      * @param string $action
@@ -134,6 +122,7 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
         if ($action == 'edit') {
             $actionId                     = $this->tools->get("id");
             $tournament                   = $this->brdb->getTournamentData($actionId);
+            print_r($tournament);
             $tournament['classification'] = unserialize($tournament['classification']);
             $tournament['discipline']     = unserialize($tournament['discipline']);
 
@@ -154,7 +143,7 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
             'reporterArr'       => $reportArr,
             'classificationArr' => $classificationArr,
             'disciplineArr'     => $disciplineArr,
-            'tournamentType'    => $this->tournamentType,
+            'tournamentType'    => $this->tools->getTournamentType(),
         ));
         return $this->smarty->fetch('tournament/TournamentUpdate.tpl');
     }
@@ -283,21 +272,22 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
      *
      */
     private function TMPL_backup() {
-      $diff = "";
-      $id   = $this->tools->get("id");
+      $diff    = "";
+      $id     = $this->tools->get("id");
+      $backup = $this->brdb->getTournamentBackup($id);
 
         $this->smarty->assign(array(
-            'backup' => $this->getTournamentBackup($id),
+            'backup' => $backup,
             'diff'   => $diff,
         ));
 
-        if (isset($id) && count($rows) > 1) {
-            $first  = $rows[0]['backupId'];
-            $second = $rows[1]['backupId'];
-            $res = $this->brdb->getTournamentBackupDiff($first, $second);
-            if ($res) {
+        if (isset($id) && count($backup) > 1) {
+            $first  = $backup[0]['backupId'];
+            $second = $backup[1]['backupId'];
+            $rows = $this->brdb->getTournamentBackupDiff($first, $second);
+            if (isset($backup) && is_array($backup)) {
                 $rows = array();
-                foreach ($res as $row) {
+                foreach ($backup as $row) {
                     $rows[] = unserialize($row['data']);
                 }
 
@@ -336,11 +326,13 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
         return $aReturn;
     }
 
-    private function getAllPlayerDataList() {
+    private function getAllPlayerDataList() 
+    {
         return $this->brdb->selectGetAllPlayer();
     }
 
-    private function getAllUser() {
+    private function getAllUser():array
+    {
         $data = array();
         $res = $this->brdb->selectAllUser(); //SortBy('lastName', 'ASC');
         foreach ($res as $item) {
@@ -350,12 +342,15 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
         return $data;
     }
 
-     private function getAllTournamentDataList() {
+     private function getAllTournamentDataList() 
+     {
         $tournamentList = $this->brdb->selectTournamentList();
         $data = array();
         
-        if (isset($tournamentList) && !empty($tournamentList)) {
-            foreach ($tournamentList as $dataSet) {
+        if (isset($tournamentList) && !empty($tournamentList)) 
+        {
+            foreach ($tournamentList as $dataSet) 
+            {
                 $dataSet['classification'] = $this->tools->formatClassification($dataSet['classification']);
                 $dataSet['calLink']        = $this->linkToCalander($dataSet['tournamentId']);
 
@@ -369,7 +364,8 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
         unset($data);
     }
 
-    private function linkToCalander(int $tournamentId) {
+    private function linkToCalander(int $tournamentId)
+    {
         return $this->tools->linkTo(array(
             'page'   => 'tournament.php',
             'action' => 'calendar',
@@ -378,13 +374,16 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
     }
 
 
-    private function getOldTournamentDataList() {
+    private function getOldTournamentDataList()
+    {
         $data = array();
         $tournamentList = $this->brdb->selectOldTournamentList();
 
-        if (isset($tournamentList) && !empty($tournamentList)) {
+        if (isset($tournamentList) && !empty($tournamentList)) 
+        {
             $data = array();
-            foreach ($tournamentList as $dataSet) {
+            foreach ($tournamentList as $dataSet)
+            {
                 $dataSet['classification'] = $this->tools->formatClassification($dataSet['classification']);
 
                 $data[] = $dataSet;
@@ -399,14 +398,18 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
      * @param unknown $actionId
      * @return unknown[]|string
      */
-    private function getPlayersByTournamentId($actionId) {
+    private function getPlayersByTournamentId(int $actionId):array
+    {
         $playerList = $this->brdb->getPlayersByTournamentId($actionId);
-        if (isset($playerList) && !empty($playerList)) {
+        if (isset($playerList) && !empty($playerList)) 
+        {
             $data = array();
-            foreach ($playerList as $dataSet) {
+            foreach ($playerList as $dataSet) 
+            {
                 // @TODO Change
 
-                if($this->isDouble($dataSet['classification'])) {
+                if ($this->isDouble($dataSet['classification'])) 
+                {
                     if($dataSet['partnerId'] > 0) {
                         $dataSet['partnerNr']   = $dataSet['partnerNr'];
                         $dataSet['partnerLink'] =  $this->tools->linkTo(array('page' => 'player.php', 'id' => $dataSet['partnerId']));
@@ -421,22 +424,24 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
                 }
 
                 // Links
-                $dataSet['linkPlayer'] = $this->tools->linkTo(array('page' => 'player.php', 'id' => $dataSet['playerId']));
+                $dataSet['linkPlayer']   = $this->tools->linkTo(array('page' => 'player.php', 'id' => $dataSet['playerId']));
                 $dataSet['linkReporter'] = $this->tools->linkTo(array('page' => 'user.php', 'id' => $dataSet['reporterId']));
-                $dataSet['linkDelete'] = $this->tools->linkTo(array('page' => 'tournament.php', 'action' => 'deletePlayer', 'id' => $dataSet['tournamentId'], 'tournamentPlayerId' => $dataSet['tournamentPlayerId']));
-                $dataSet['linkUnlock'] = $this->tools->linkTo(array('page' => 'tournament.php', 'action' => 'unlock', 'id' => $dataSet['tournamentId'], 'tournamentPlayerId' => $dataSet['tournamentPlayerId']));
-                $dataSet['linkLock'] = $this->tools->linkTo(array('page' => 'tournament.php', 'action' => 'lock', 'id' => $dataSet['tournamentId'], 'tournamentPlayerId' => $dataSet['tournamentPlayerId']));
+                $dataSet['linkDelete']   = $this->tools->linkTo(array('page' => 'tournament.php', 'action' => 'deletePlayer', 'id' => $dataSet['tournamentId'], 'tournamentPlayerId' => $dataSet['tournamentPlayerId']));
+                $dataSet['linkUnlock']   = $this->tools->linkTo(array('page' => 'tournament.php', 'action' => 'unlock', 'id' => $dataSet['tournamentId'], 'tournamentPlayerId' => $dataSet['tournamentPlayerId']));
+                $dataSet['linkLock']     = $this->tools->linkTo(array('page' => 'tournament.php', 'action' => 'lock', 'id' => $dataSet['tournamentId'], 'tournamentPlayerId' => $dataSet['tournamentPlayerId']));
 
-                $data[]         = $dataSet;
+                $data[]                  = $dataSet;
             }
 
             return $data;
         }
 
-        return "";
+        return array();
+        unset($playerList, $actionId, $dataSet, $data);
     }
 
-    private function getDisciplinesByTournamentId($actionId) {
+    private function getDisciplinesByTournamentId(int $actionId) 
+    {
         $disciplinesList = $this->brdb->getDisciplinesByTournamentId($actionId);
         if (isset($disciplinesList) && !empty($disciplinesList)) {
             $data = array();
@@ -450,14 +455,23 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage {
         return "";
     }
 
-    private function isDouble($value) {
+    /**
+     * Undocumented function
+     *
+     * @param string $value
+     * @return boolean
+     */
+    private function isDouble(string $value): bool
+    {
         try {
             $arr = explode(" ", $value);
-        } catch (Exception $e) {
+        } catch (Exception $e) 
+        {
             $arr = $value;
         }
         substr($arr[0], -1);
-        if (substr($arr[0], -1) == 'D') {
+        if (substr($arr[0], -1) == 'D') 
+        {
             return true;
         }
         return false;

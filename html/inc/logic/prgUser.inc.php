@@ -120,7 +120,8 @@ class PrgPatternElementUser extends APrgPatternElement {
 
         // default user
         $loginAction = strval(trim($this->getPostVariable(self::FORM_USER_ACTION)));
-        switch ($loginAction) {
+        switch ($loginAction) 
+        {
             case self::FORM_USER_ACTION_CHANGE_PASSWORD:
                 $this->processPostUpdateUserPassword();
                 return;

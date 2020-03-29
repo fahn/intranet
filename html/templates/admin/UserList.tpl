@@ -1,10 +1,6 @@
 <h1 class="display-2 mb-5">Benutzerverwaltung</h1>
-<div class="alert alert-info">
-    <p>Hier werden <strong>alle</strong> Benutzer vom Intranet aufgelistet. </p>
-</div>
-
 <p class="text-right">
-    <a class="btn btn-success" href="?action=add_player">Benutzer hinzufügen</a>
+    <a class="btn btn-success" href="?action=add_player"><i class="fas fa-plus"></i> Benutzer hinzufügen</a>
 </p>
 
 {if $pagination}
@@ -38,9 +34,9 @@
                 <td class="text-center"><a class="btn btn-info" href="?action=edit&id={$user.userId}">Editieren</a> <a class="btn btn-danger" href="?action=delete&id={$user.userId}">Löschen</a></td>
             </tr>
             {foreachelse}
-            <tr>
-                <td colspan="8">Failed to get all User from data base. Reason: {if $error} {$error} {/if}</td>
-            </tr>
+                <tr>
+                    <td colspan="8">Failed to get all User from data base. Reason: {if $error} {$error} {/if}</td>
+                </tr>
             {/foreach}
         </tbody>
     </table>

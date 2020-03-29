@@ -13,7 +13,7 @@
             </tr>
         </thead>
         <tbody>
-            {if isset($data) && count($data) > 1}
+            {if isset($data) && count($data) > 0}
                 {foreach item=tournament from=$data}
                 <tr>
                     <td>{$tournament.classification}</td>

@@ -12,9 +12,16 @@
  *
  ******************************************************************************/
 
-trait RankingDB {
+trait RankingDB 
+{
 
-    public function statementGetRanking() {
+    /**
+     * Get Ranking
+     *
+     * @return void
+     */
+    public function statementGetRanking() 
+    {
         $query = "SELECT elo.*, CONCAT_WS(' ', Player.firstName, Player.lastName) AS name FROM `EloRanking` AS elo
                     LEFT JOIN Player ON Player.playerId = elo.playerId
                     #WHERE elo.win != 0 OR elo.loss != 0
@@ -26,8 +33,12 @@ trait RankingDB {
     }
 
     /**
+     * Get all Matches
+     *
+     * @return array
      */
-    public function statementGetMatches() {
+    public function getMatches():array
+    {
         $query = "SELECT games.*, CONCAT_WS(' ', player.firstName, player.lastName) playerName, CONCAT_WS(' ', opponent.firstName, opponent.lastName) opponentName FROM `EloGames` AS games
                     LEFT JOIN Player AS player ON player.playerId = games.playerId
                     LEFT JOIN Player AS opponent ON opponent.playerId = games.opponentId
@@ -41,9 +52,12 @@ trait RankingDB {
     }
 
     /**
-     * get Games group by Date for stats
+     * Get Matches
+     *
+     * @return array
      */
-    public function statementGetMatchesGroupedByDate() {
+    public function getMatchesGroupedByDate(): array
+    {
         $query = "SELECT DATE(gameTime) AS gameTime, COUNT(gameId) AS games
                     FROM `EloGames`
                     WHERE hidden = '0'
@@ -56,9 +70,13 @@ trait RankingDB {
     }
 
     /**
-     * get Game by ID
+     * Get Game by Id
+     *
+     * @param integer $gameId
+     * @return array
      */
-    public function statementGetGameById($gameId) {
+    public function getGameById(int $gameId): array
+    {
         $query = "SELECT games.*, CONCAT_WS(' ', player.firstName, player.lastName) playerName, CONCAT_WS(' ', opponent.firstName, opponent.lastName) opponentName FROM `EloGames` AS games
                     LEFT JOIN Player AS player ON player.playerId = games.playerId
                     LEFT JOIN Player AS opponent ON opponent.playerId = games.opponentId
@@ -71,14 +89,18 @@ trait RankingDB {
 
     }
 
-    public function deleteRanking(){
-        $query = "TRUNCATE `EloRanking`";
-        $statement = $this->db->prepare($query);
-
-        return $statement->execute();
-    }
-
-    public function insertMatch($playerId, $b, $sets, $winnerId, $gameTime = false) {
+    /**
+     * Insert Match
+     *
+     * @param integer $playerId
+     * @param integer $oppentId
+     * @param String $sets
+     * @param integer $winnerId
+     * @param boolean $gameTime
+     * @return boolean
+     */
+    public function insertMatch(int $playerId, int $oppentId, String $sets, int $winnerId, bool $gameTime = false): bool
+    {
         $gameTime = $gameTime == false ? strtotime("now") : $gameTime;
         
         $query = "INSERT INTO `EloGames` (playerId, opponentId, sets, winnerId, gameTime) VALUES (:playerId, :oppentId, :sets, :winnerId, :gameTime)";
@@ -92,7 +114,14 @@ trait RankingDB {
         return $statement->execute();
     }
 
-    public function selectPoints($playerId) {
+    /**
+     * Get Points from Player
+     *
+     * @param integer $playerId
+     * @return array
+     */
+    public function selectPoints(int $playerId): array
+    {
         $query = "SELECT IFNULL( (SELECT points FROM `EloRanking` WHERE playerId = :playerId) , '0')";
         $statement = $this->db->prepare($query);
         $statement->bindParam('playerId', $playerId);
@@ -101,7 +130,17 @@ trait RankingDB {
         return $statement->fetchAll();
     }
 
-    public function updatePoints($playerId, $points, $win, $loss) {
+    /**
+     * Update points from player by Id
+     *
+     * @param integer $playerId
+     * @param integer $points
+     * @param string $win
+     * @param string $loss
+     * @return boolean
+     */
+    public function updatePoints(int $playerId, int $points, string $win, string $loss): bool
+    {
         $query = "INSERT INTO `EloRanking` (playerId, points) 
                     VALUES (playerId, points) ON DUPLICATE KEY UPDATE playerId= :playerId, points= points, win=win+:win, loss=loss+:loss, lastGame = NOW() ";
         $statement = $this->db->prepare($query);
@@ -113,7 +152,14 @@ trait RankingDB {
         return $statement->execute();
     }
 
-    public function selectLatestRankingGamesByPlayerId($actionId) {
+    /**
+     * Get latest Gamey by Player
+     *
+     * @param array $actionId
+     * @return void
+     */
+    public function selectLatestRankingGamesByPlayerId($actionId): array
+    {
         $query = "SELECT games.*, CONCAT_WS(' ', Player.firstName, Player.lastName) AS name FROM EloGames AS games
                                 LEFT JOIN Player ON Player.playerId = games.opponentId
                                 WHERE (games.playerId = :actionId OR games.opponentId = :actionId) AND games.hidden = 0
@@ -129,11 +175,29 @@ trait RankingDB {
     }
 
     /**
-     * delete game by ID
+     * Delete Match by Id
+     *
+     * @param integer $gameId
+     * @return boolean
      */
-    public function deleteMatch($gameId) {
+    public function deleteMatch(int $gameId): bool
+    {
         $query = "UPDATE `EloGames` SET hidden='1' WHERE gameId = ?";
+        $statement = $this->db->prepare($query);
         $statement->bindParam('gameId', $gameId);
+
+        return $statement->execute();
+    }
+
+    /**
+     * truncate Ranking
+     *
+     * @return boolean
+     */
+    public function truncateRanking(): bool
+    {
+        $query = "TRUNCATE `EloRanking`";
+        $statement = $this->db->prepare($query);
 
         return $statement->execute();
     }

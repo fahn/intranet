@@ -12,18 +12,32 @@
  *
  ******************************************************************************/
 
-trait NewsDB {
-
-    public function statementGetAllNews() {
+trait NewsDB 
+{
+    /**
+     * Get All News
+     *
+     * @return array
+     */
+    public function statementGetAllNews(): array
+    {
         $query = "SELECT News.*, Cat.title AS categoryTitle, CONCAT_WS(' ', User.firstName, User.lastName) as userName FROM `News`
                     LEFT JOIN `Category` AS `Cat` ON Cat.categoryId = News.categoryId
                     LEFT JOIN `User` ON User.userId = News.userId";
         $statement = $this->db->prepare($query);
+        $statement->execute();
 
-        return $statement->execute();
+        return $statement->fetchAll();
     }
 
-    public function selectLatestNews(int $max=5) {
+    /**
+     * Get N latest News
+     *
+     * @param integer $max
+     * @return array
+     */
+    public function selectLatestNews(int $max=5): array
+    {
         $query = "SELECT News.*, Cat.title as categoryTitle, Cat.categoryId FROM `News`
                     LEFT JOIN `Category` AS `Cat` ON Cat.categoryId = News.categoryId
                     LIMIT :max";
@@ -34,36 +48,65 @@ trait NewsDB {
         return $statement->fetchAll();
     }
 
-    public function statementGetNewsById(int $newsId) {
+    /**
+     * Get News by Id
+     *
+     * @param integer $newsId
+     * @return array
+     */
+    public function statementGetNewsById(int $newsId): array
+    {
         $query = "SELECT * FROM `News` WHERE newsId = :newsId";
         $statement = $this->db->prepare($query);
         $statement->bindParam('newsId', $newsId);
+        $statement->execute();
 
-        return $statement->execute();
+        return $statement->fetchAll();
     }
 
-    public function insertNews($title, $categoryId, $text) {
-        $query = "INSERT INTO `News` (title, categoryId, text) VALUES (?, ?, ?)";
+    /**
+     * Inser News with title, categoryID and Text
+     *
+     * @param News $news
+     * @return boolean
+     */
+    public function insertNews(News $news): bool
+    {
+        $query = "INSERT INTO `News` (`title`, `categoryId`, `text`) VALUES (:title, :categoryId, :newsText)";
         $statement = $this->db->prepare($query);
-        $statement->bindParam('title', $title);
-        $statement->bindParam('text', $text);
-        $statement->bindParam('categoryId', $categoryId);
+        $statement->bindParam('title', $news->getNewsTitle());
+        $statement->bindParam('newsText', $news->getNewsText());
+        $statement->bindParam('categoryId', $news->getNewsCategory());
 
         return $statement->execute();
     }
 
-    public function updateNewsById(int $newsId, $title, $categoryId, $text) {
-        $query = "UPDATE `News` set title = :title, categoryId = :categoryId, text = :text WHERE newsId = :newsId";
+    /**
+     * Update News by Id
+     *
+     * @param News $news
+     * @return boolean
+     */
+    public function updateNewsById(News $news): bool
+    {
+        $query = "UPDATE `News` set `title` = :title, `categoryId` = :categoryId, `text` = :newsText WHERE `newsId` = :newsId";
         $statement = $this->db->prepare($query);
-        $statement->bindParam('newsId', $newsId);
-        $statement->bindParam('title', $title);
-        $statement->bindParam('text', $text);
-        $statement->bindParam('categoryId', $categoryId);
+        $statement->bindParam('newsId', $news->getNewsId());
+        $statement->bindParam('title', $news->getNewsTitle());
+        $statement->bindParam('newsText', $news->getNewsText());
+        $statement->bindParam('categoryId', $news->getNewsCategory());
 
         return $statement->execute();
     }
 
-    public function deleteNews(int $newsId) {
+    /**
+     * Delete News by Id
+     *
+     * @param integer $newsId
+     * @return boolean
+     */
+    public function deleteNews(int $newsId): bool
+    {
         $query = "DELETE FROM `News` WHERE newsId = :newsId";
         $statement = $this->db->prepare($query);
         $statement->bindParam('newsId', $newsId);

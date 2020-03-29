@@ -78,7 +78,7 @@ class PrgPatternElementStaff extends APrgPatternElement {
         $this->prgElementLogin = $prgElementLogin;
 
         // load id
-        $this->id = Tools::get("id");
+        $this->id = $this->getGetVariable("id");
     }
 
     public function processPost() {
@@ -211,29 +211,7 @@ class PrgPatternElementStaff extends APrgPatternElement {
 
 
 
-    private function getConstant($field) {
-        $oClass = new ReflectionClass (__CLASS__);
-        $array = $oClass->getConstants();
-        return $array[$field];
-    }
 
-    private function checkRequiredFields() {
-        foreach($this->requiredFields as $field) {
-            if(!$this->issetPostVariable($this->getConstant($field))) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private function requiredFields2array() {
-        $arr = array();
-        foreach($this->requiredFields as $field) {
-            $arr[$this->getConstant($field)] = $this->getPostVariable($this->getConstant($field));
-        }
-
-        return $arr;
-    }
 }
 
 ?>

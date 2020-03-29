@@ -17,10 +17,12 @@ include_once BASE_DIR .'/inc/logic/prgSupport.inc.php';
 include_once BASE_DIR .'/inc/logic/tools.inc.php';
 
 
-class brdbHtmlSupport extends BrdbHtmlPage {
+class brdbHtmlSupport extends BrdbHtmlPage 
+{
     private $prgElementSupport;
 
-    public function __construct() {
+    public function __construct():void
+    {
         parent::__construct();
 
         $this->prgElementSupport = new PrgPatternElementSupport($this->brdb, $this->prgPatternElementLogin);
@@ -29,7 +31,8 @@ class brdbHtmlSupport extends BrdbHtmlPage {
         $this->tools = new Tools();
     }
 
-    public function processPage() {
+    public function processPage() 
+    {
         parent::processPage();
     }
 
@@ -45,12 +48,9 @@ class brdbHtmlSupport extends BrdbHtmlPage {
     }
 
 
-    private function loadContent($param1 = Null) {
-        if ($param1 == Null) {
-            $action = $this->tools->get('action');
-        } else {
-            $action = $param1;
-        }
+    private function loadContent($param1 = Null) 
+    {
+        $action = $param1 == Null ? $this->tools->get('action') : $param1;
 
         $message = "";
         $subject = "";
@@ -80,7 +80,8 @@ class brdbHtmlSupport extends BrdbHtmlPage {
         return $this->smarty->fetch('support.tpl');
     }
 
-    public function register() {
+    public function register() 
+    {
         return $this->loadContent('register');
     }
 }

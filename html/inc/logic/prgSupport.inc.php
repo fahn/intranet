@@ -11,6 +11,7 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
+declare(strict_types=1);
 include_once 'prgPattern.inc.php';
 
 include_once BASE_DIR .'/inc/db/brdb.inc.php';
@@ -22,7 +23,8 @@ include_once BASE_DIR .'/inc/logic/tools.inc.php';
  * @author philipp
  *
  */
-class PrgPatternElementSupport extends APrgPatternElement {
+class PrgPatternElementSupport extends APrgPatternElement 
+{
   // DB
   private $brdb;
   // TOOLS
@@ -39,7 +41,8 @@ class PrgPatternElementSupport extends APrgPatternElement {
 
   protected $prgElementLogin;
 
-  public function __construct(BrankDB $brdb, PrgPatternElementLogin $prgElementLogin) {
+  public function __construct(BrankDB $brdb, PrgPatternElementLogin $prgElementLogin): void
+  {
     parent::__construct("support");
 
     $this->brdb            = $brdb;
@@ -52,21 +55,25 @@ class PrgPatternElementSupport extends APrgPatternElement {
     $this->tools = new Tools();
   }
 
-    public function processPost() {
+    public function processPost(): void
+    {
         $this->prgElementLogin->redirectUserIfNotLoggindIn();
 
-        if (! $this->issetPostVariable(self::FORM_FIELD_ACTION)) {
+        if (! $this->issetPostVariable(self::FORM_FIELD_ACTION)) 
+        {
             $this->setFailedMessage("Kein Formular.");
             return;
         }
         
         $loginAction = strval(trim($this->getPostVariable(self::FORM_FIELD_ACTION)));
-        if (($loginAction === self::FORM_VALUE_ACTION_CONTACT_US)) {
+        if (($loginAction === self::FORM_VALUE_ACTION_CONTACT_US)) 
+        {
             $this->processPostContactUs();
         }
     }
 
-    public function processPostContactUs() {
+    public function processPostContactUs(): void 
+    {
         // Check that all information has been posted
         if (! $this->issetPostVariable(self::FORM_FIELD_SUBJECT) ||
             ! $this->issetPostVariable(self::FORM_FIELD_MESSAGE) ) {
@@ -85,7 +92,7 @@ class PrgPatternElementSupport extends APrgPatternElement {
 
         $message  .= "<h2>DEBUG:</h2>";
         $message  .= "Zeit: ". date("d.m.Y H:i") ."<br>";
-        $message  .= sprintf("IP: %s <br>", $this->getIP());
+        $message  .= sprintf("IP: %s <br>", $this->tools->getUserIPAdress());
         $message  .= sprintf('USER: <a href="%s">%s</a>', $this->tools->linkTo(array('page' => 'user.php', 'id' => $this->prgElementLogin->getLoggedInUser()->getID())), $this->prgElementLogin->getLoggedInUser()->getFullname());
 
         if (!$this->tools->sendMail($to, $name, $subject, $preheader, $message, false, false)) {
@@ -95,10 +102,6 @@ class PrgPatternElementSupport extends APrgPatternElement {
 
         $this->setSuccessMessage(self::SUCCESS_MESSAGE);
         return;
-    }
-
-    private function getIP() {
-        return isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
     }
 }
 

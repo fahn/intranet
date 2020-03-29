@@ -11,9 +11,11 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
-trait CategoryDB {
+trait CategoryDB 
+{
 
-    public function statementGetAllCategories() {
+    public function statementGetAllCategories(): array
+    {
         $query = "SELECT * FROM `Category` ORDER BY pid, title";
         $statement = $this->db->prepare($query);
         $statement->execute();
@@ -21,7 +23,8 @@ trait CategoryDB {
         return $statement->fetchAll();
     }
 
-    public function adminStatementGetAllCategories() {
+    public function adminStatementGetAllCategories(): array
+    {
         $query = "SELECT Category.*, C1.title AS pidName FROM `Category`
                     LEFT JOIN `Category` AS C1 ON C1.categoryId = Category.pid
                     ORDER BY Category.pid, Category.title";
@@ -31,7 +34,8 @@ trait CategoryDB {
         return $statement->fetchAll();
     }
 
-    public function insertCategory($title, $pid) {
+    public function insertCategory($title, $pid):bool
+    {
         $query = "INSERT INTO `Category` (pid, title) VALUES (:pid, :title)";
         $statement = $this->db->prepare($query);
         $statement->bindParam('pid', $pid);

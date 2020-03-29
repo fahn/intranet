@@ -19,22 +19,30 @@ class BrdbHtmlParseDownPage extends BrdbHtmlPage {
 
     protected $markDownFile;
 
-    public function __construct($markDownFile) {
+    public function __construct($markDownFile) 
+    {
         parent::__construct();
         $this->markDownFile = $markDownFile;
     }
 
-    public function processPage() {
+    public function processPage() 
+    {
         parent::processPage();
     }
 
 
-    protected function htmlBody() {
-        if(is_file($this->markDownFile)) {
+    protected function htmlBody() 
+    {
+        if (is_file($this->markDownFile)) 
+        {
             $mdfile = file_get_contents($this->markDownFile);
-        } else {
+        } 
+        else 
+        {
             $mdfile = "No file founded";
         }
+
+        
         $Parsedown = new Parsedown();
 
         $this->smarty->assign(array(

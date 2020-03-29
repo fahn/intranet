@@ -11,6 +11,8 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
+declare(strict_types=1);
+
 include_once 'prgPattern.inc.php';
 
 include_once BASE_DIR .'/inc/db/brdb.inc.php';
@@ -22,7 +24,8 @@ include_once BASE_DIR .'/inc/logic/tools.inc.php';
  * @author philipp
  *
  */
-class PrgPatternElementSync extends APrgPatternElement {
+class PrgPatternElementSync extends APrgPatternElement 
+{
     private $brdb;
     protected $prgElementLogin;
 
@@ -41,7 +44,8 @@ class PrgPatternElementSync extends APrgPatternElement {
     private $statistics = array('clubs' => '', 'player' => '', 'tournaments' => '');
 
 
-    public function __construct(BrankDB $brdb, PrgPatternElementLogin $prgElementLogin) {
+    public function __construct(BrankDB $brdb, PrgPatternElementLogin $prgElementLogin): void
+    {
         parent::__construct("sync");
         $this->brdb = $brdb;
         $this->prgElementLogin = $prgElementLogin;
@@ -54,7 +58,8 @@ class PrgPatternElementSync extends APrgPatternElement {
 
     }
 
-    public function processPost() {
+    public function processPost(): void
+    {
         $isUserLoggedIn = $this->prgElementLogin->isUserLoggedIn();
         $isUserAdmin    = $this->prgElementLogin->getLoggedInUser()->isAdmin();
 
@@ -63,21 +68,26 @@ class PrgPatternElementSync extends APrgPatternElement {
         }
     }
 
-    private function getBaseStats() {
+    private function getBaseStats(): array
+    {
         return array('new' => 0, 'updated' => 0, 'failed' => 0);
     }
+ 
+    private function getContentFromRemote($link) {
+        $file = file_get_contents($link, false, $this->arrContextOptions());
+        return json_decode($file);
+        unset($file);
+    }
     /**
-     *  sync clubs
+     * Get Clubs from remote API
+     *
+     * @return void
      */
-    private function syncClubs() {
+    private function syncClubs(): void
+    {
         $statistics = $this->getBaseStats();
 
-        $file = file_get_contents(self::API_LIST_CLUB, false, $this->arrContextOptions());
-        $data = json_decode($file);
-
-        unset($file);//prevent memory leaks for large json.
-
-
+        $data = $this->getContentFromRemote(self::API_LIST_CLUB);
         if (isset($data) && isset($data->records)) {
             $records = $data->records;
             foreach($records as $item) {
@@ -96,18 +106,13 @@ class PrgPatternElementSync extends APrgPatternElement {
             }
             $this->statistics['clubs'] = $statistics;
         }
-
-        return;
     }
 
 
     private function syncPlayer() {
         $statistics = $this->getBaseStats();
 
-        $file = file_get_contents(self::API_LIST_PLAYER, false, $this->arrContextOptions());
-        $data = json_decode($file);
-        unset($file);//prevent memory leaks for large json.
-
+        $data = $this->getContentFromRemote(self::API_LIST_PLAYER);
         $records = $data->records;
         if ($records) {
             foreach($records as $item) {
@@ -138,14 +143,9 @@ class PrgPatternElementSync extends APrgPatternElement {
     }
 
     private function syncTournament() {
-        return;
         $statistics = $this->getBaseStats();
 
-        $file = file_get_contents(self::API_LIST_TOURNAMENT, false, $this->arrContextOptions());
-        $data = json_decode($file);
-
-        unset($file);//prevent memory leaks for large json.
-
+        $data = $this->getContentFromRemote(self::API_LIST_TOURNAMENT);
         $records = $data->records;
         if ($records) {
             foreach($records as $item) {
@@ -176,7 +176,8 @@ class PrgPatternElementSync extends APrgPatternElement {
         return;
     }
 
-    private function arrContextOptions() {
+    private function arrContextOptions() 
+    {
         return  stream_context_create(array(
                     "ssl"=>array(
                         "verify_peer"=>false,
@@ -190,23 +191,22 @@ class PrgPatternElementSync extends APrgPatternElement {
     }
 
 
-    /**
-     *
-     * {@inheritDoc}
-     * @see IPrgPatternElement::processGet()
-     */
-    public function processGet() {
+ 
+    public function processGet():void
+    {
         $isUserLoggedIn = $this->prgElementLogin->isUserLoggedIn();
-        $isUserAdmin     = $this->prgElementLogin->getLoggedInUser()->isAdmin();
+        $isUserAdmin    = $this->prgElementLogin->getLoggedInUser()->isAdmin();
 
-        if (!$isUserLoggedIn && !$isUserAdmin ) {
+        if (!$isUserLoggedIn && !$isUserAdmin ) 
+        {
             return;
         }
 
         $action = strval(trim($this->getGetVariable('action')));
 
-        switch ($action) {
-            case 'sync':
+        switch ($action) 
+        {
+            case "sync":
                 $this->startSyncMode();
                 break;
 
@@ -216,7 +216,8 @@ class PrgPatternElementSync extends APrgPatternElement {
         return;
     }
 
-    private function startSyncMode() {
+    private function startSyncMode(): void
+    {
         // check if api is available
         stream_context_set_default( [
             'ssl' => [
@@ -250,7 +251,8 @@ class PrgPatternElementSync extends APrgPatternElement {
         $this->tools->customRedirect(array('page' => $this->page));
     }
 
-    public function getStatistics() {
+    public function getStatistics(): array
+    {
         return $this->statistics;
     }
 

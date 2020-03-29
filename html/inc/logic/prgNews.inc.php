@@ -11,8 +11,9 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
-include_once 'prgPattern.inc.php';
+declare(strict_types=1);
 
+include_once 'prgPattern.inc.php';
 include_once BASE_DIR .'/inc/db/brdb.inc.php';
 
 /**
@@ -21,7 +22,8 @@ include_once BASE_DIR .'/inc/db/brdb.inc.php';
  * @author philipp
  *
  */
-class PrgPatternElementNews extends APrgPatternElement {
+class PrgPatternElementNews extends APrgPatternElement 
+{
 
     private $brdb;
 
@@ -40,16 +42,19 @@ class PrgPatternElementNews extends APrgPatternElement {
 
     protected $prgElementLogin;
 
-    public function __construct(BrankDB $brdb, PrgPatternElementLogin $prgElementLogin) {
+    public function __construct(BrankDB $brdb, PrgPatternElementLogin $prgElementLogin): void
+    {
         parent::__construct("news");
         $this->brdb = $brdb;
         $this->prgElementLogin = $prgElementLogin;
+
         $this->registerPostSessionVariable(self::FORM_FIELD_TITLE);
         $this->registerPostSessionVariable(self::FORM_FIELD_CATEGORYID);
         $this->registerPostSessionVariable(self::FORM_FIELD_TEXT);
     }
 
-    public function processPost() {
+    public function processPost():void 
+    {
         $this->prgElementLogin->redirectUserIfNotLoggindIn();
         
         // ADMIN AREA
@@ -82,95 +87,103 @@ class PrgPatternElementNews extends APrgPatternElement {
 
     }
 
-    private function processPostDeleteNews() {
-        if (! $this->issetPostVariable(self::FORM_FIELD_ID)) {
+    private function processPostDeleteNews(): bool
+    {
+        $requireFields = array(self::FORM_FIELD_ID);
+        if (! $this->prgElementLogin->checkRequiredFields($requireFields)) 
+        {
             $this->setFailedMessage("keine ID übergeben");
-            return;
+            return false;
         }
 
-        $id = strval(trim($this->getPostVariable(self::FORM_FIELD_ID)));
+        $id = intval(trim($this->getPostVariable(self::FORM_FIELD_ID)));
 
         $this->brdb->deleteNews($id);
-        if ($this->brdb->hasError()) {
+        if ($this->brdb->hasError()) 
+        {
             $this->setFailedMessage($this->brdb->getError());
-            return;
+            return false;
         }
 
         $this->setSuccessMessage("News wurde gelöscht");
-        return;
-    }
-
-    public function processPostInsertNews() {
-        // Check that all information has been posted
-        if (! $this->issetPostVariable(self::FORM_FIELD_TITLE) ||
-            ! $this->issetPostVariable(self::FORM_FIELD_CATEGORYID) ||
-            ! $this->issetPostVariable(self::FORM_FIELD_TEXT) ) {
-                $this->setFailedMessage("News konnte nicht eingetragen werden");
-                return;
-        }
-
-        $title      = strval(trim($this->getPostVariable(self::FORM_FIELD_TITLE)));
-        $categoryId = strval(trim($this->getPostVariable(self::FORM_FIELD_CATEGORYID)));
-        $text       = strval(trim($this->getPostVariable(self::FORM_FIELD_TEXT)));
-
-
-        $this->brdb->insertNews($title, $categoryId, $text);
-
-        if ($this->brdb->hasError()) {
-            $this->setFailedMessage($this->brdb->getError());
-            return;
-        }
-
-        $this->setSuccessMessage("News wurde eingetragen");
-        return;
-    }
-
-
-
-    /**
-     * This post method just rpocesses if the admin match id is set.
-     * If it is the emthod asks the DB for a given game and reads it.
-     * It also stores the game information into the session, hence the
-     * insert game page will show the details.
-     */
-    public function processPostUpdateNews() {
-        // Check that all information has been posted
-        if (! $this->issetPostVariable(self::FORM_FIELD_TITLE) ||
-            ! $this->issetPostVariable(self::FORM_FIELD_CATEGORYID) ||
-            ! $this->issetPostVariable(self::FORM_FIELD_TEXT) ) {
-                $this->setFailedMessage("News konnte nicht aktualisiert werden.");
-                return;
-        }
-
-        if (! $this->issetPostVariable(self::FORM_FIELD_ID)) {
-            $this->setFailedMessage("keine ID übergeben");
-            return;
-        }
-
-        $id         = strval(trim($this->getPostVariable(self::FORM_FIELD_ID)));
-        $title      = strval(trim($this->getPostVariable(self::FORM_FIELD_TITLE)));
-        $categoryId = strval(trim($this->getPostVariable(self::FORM_FIELD_CATEGORYID)));
-        $text       = strval(trim($this->getPostVariable(self::FORM_FIELD_TEXT)));
-        #die($id);
-
-
-        // get the admin ID and try to read the corresponding game from the
-        // data base, process the rror in case of
-        $this->brdb->updateNewsById($id, $title, $categoryId, $text);
-        if ($this->brdb->hasError()) {
-            $this->setFailedMessage($this->brdb->getError());
-            return;
-        }
-
-        $this->setSuccessMessage("News wurde erfolgreich geändert.");
-        return;
+        return true;
     }
 
     /**
+     * Insert News
      *
-     * {@inheritDoc}
-     * @see IPrgPatternElement::processGet()
+     * @return boolean
      */
-    public function processGet() {}
+    public function processPostInsertNews(): bool
+    {
+        $requireFields = array(self::FORM_FIELD_TEXT, self::FORM_FIELD_CATEGORYID, self::FORM_FIELD_TEXT);
+
+        if (! $this->prgElementLogin->checkRequiredFields($requireFields)) 
+        {
+            $this->setFailedMessage("News konnte nicht eingetragen werden");
+            return false;
+        }
+
+        $newsArr = array
+        (
+            'newsTitle'      => strval(trim($this->getPostVariable(self::FORM_FIELD_TITLE))),
+            'newsCategoryId' => intval(trim($this->getPostVariable(self::FORM_FIELD_CATEGORYID))),
+            'newsText'       => strval(trim($this->getPostVariable(self::FORM_FIELD_TEXT))),
+        );
+        // create NewsObject
+        $newsObj = new News($newsArr);
+        
+        // insert
+        $this->brdb->insertNews($newsObj);
+        if ($this->brdb->hasError()) 
+        {
+            $this->setFailedMessage($this->brdb->getError());
+            return false;
+        }
+
+        $this->setSuccessMessage(sprintf("News '%s' wurde eingetragen",$newsObj->getNewsTitle()));
+        return true;
+    }
+
+
+
+    /**
+     * Update News
+     *
+     * @return boolean
+     */
+    public function processPostUpdateNews(): bool
+    {
+        // Check that all information has been posted
+        $requireFields = array(self::FORM_FIELD_ID, self::FORM_FIELD_TEXT, self::FORM_FIELD_CATEGORYID, self::FORM_FIELD_TEXT);
+
+        if (! $this->prgElementLogin->checkRequiredFields($requireFields)) 
+        {
+            $this->setFailedMessage("News konnte nicht aktualisiert werden.");
+            return false;
+        }
+
+        $newsArr = array
+        (
+            'newsId'         => strval(trim($this->getPostVariable(self::FORM_FIELD_ID))),
+            'newsTitle'      => strval(trim($this->getPostVariable(self::FORM_FIELD_TITLE))),
+            'newsCategoryId' => intval(trim($this->getPostVariable(self::FORM_FIELD_CATEGORYID))),
+            'newsText'       => strval(trim($this->getPostVariable(self::FORM_FIELD_TEXT))),
+        );
+
+        // create NewsObject
+        $newsObj = new News($newsArr);
+
+        // insert News Object
+        $this->brdb->updateNewsById($newsObj);
+        if ($this->brdb->hasError()) 
+        {
+            $this->setFailedMessage($this->brdb->getError());
+            return false;
+        }
+
+        $this->setSuccessMessage(sprintf("News '%s' wurde erfolgreich geändert.", $newsObj->getNewsTitle()));
+        return true;
+    }
 }
 ?>

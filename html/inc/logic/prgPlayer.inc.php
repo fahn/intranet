@@ -117,8 +117,8 @@ class PrgPatternElementPlayer extends APrgPatternElement {
         ! $this->issetPostVariable(self::FORM_PLAYER_FIRSTNAME) ||
         ! $this->issetPostVariable(self::FORM_PLAYER_LASTNAME) ||
         ! $this->issetPostVariable(self::FORM_PLAYER_BDAY) ||
-        ! $this->issetPostVariable(FORM_PLAYER_GENDER) ||
-        ! $this->issetPostVariable(FORM_PLAYER_PLAYERID) ||
+        ! $this->issetPostVariable(self::FORM_PLAYER_GENDER) ||
+        ! $this->issetPostVariable(self::FORM_PLAYER_PLAYERID) ||
         ! $this->issetPostVariable(self::FORM_PLAYER_CLUBID)
       ) {
           $this->setFailedMessage(self::ERROR_USER_UPDATE_MISSING_INFORMATION);
@@ -143,7 +143,7 @@ class PrgPatternElementPlayer extends APrgPatternElement {
       }
       $id = $this->brdb->insert_id();
 
-      if(!$this->processPostUpdateUserAccount($id)) {
+      if (!$this->processPostUpdateUserAccount($id)) {
           $this->setFailedMessage("Probleme beim anlegen. Bitte editieren Sie den Nutzer!");
           Tools::customRedirect(array(
             'page'   => "adminAllUser.php",
@@ -163,7 +163,7 @@ class PrgPatternElementPlayer extends APrgPatternElement {
 
     }
 
-    public function find($item) {
+    public function find(Player $item) {
         if ($item instanceof Player) {
             $playerNr = $item->getPlayerNr();
             $res      = $this->brdb->selectPlayerByPlayerNr($playerNr);

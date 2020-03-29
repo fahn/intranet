@@ -12,18 +12,22 @@
  *
  ******************************************************************************/
 
-trait NotificationDB {
+trait NotificationDB 
+{
+
     /**
      *  Get all notification by User
      * @param unknown $userId
      * @return unknown
      */
-    public function statementGetNotificationByUserId($userId) {
+    public function statementGetNotificationByUserId(int $userId): array
+    {
         $query = "SELECT * FROM `Notification` WHERE userId = ?";
         $statement = $this->db->prepare($query);
         $statement->bindParam('userId', $userId);
+        $statement->execute();
 
-        return $statement->execute();
+        return $statement->fetchAll();
     }
 
     /**
@@ -31,7 +35,8 @@ trait NotificationDB {
      * @param unknown $userId
      * @return unknown
      */
-    public function statementGetNonReadNotificationByUserId($userId) {
+    public function statementGetNonReadNotificationByUserId(int $userId): bool
+    {
         $query = "SELECT * FROM `Notification` WHERE userId = :userId and isRead = 0";
         $statement = $this->db->prepare($query);
         $statement->bindParam('userId', $userId);
@@ -45,7 +50,8 @@ trait NotificationDB {
      * @param unknown $userId
      * @return unknown
      */
-    public function statementReadNotificationByUserId($notificationId, $userId) {
+    public function statementReadNotificationByUserId(int $notificationId, int $userId): bool
+    {
         $query = "UPDATE `Notification` set isRead=1 WHERE notificationId = :notificationId AND userId = :userId";
         $statement = $this->db->prepare($query);
         $statement->bindParam('userId', $userId);
@@ -60,7 +66,8 @@ trait NotificationDB {
      * @param unknown $userId
      * @return unknown
      */
-    public function statementReadAllNotificationByUserId($userId) {
+    public function statementReadAllNotificationByUserId(int $userId):bool
+    {
         $query = "UPDATE `Notification` set isRead=1 WHERE userId = :userId";
         $statement = $this->db->prepare($query);
         $statement->bindParam('userId', $userId);

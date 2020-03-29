@@ -14,7 +14,8 @@ http://creativecommons.org/publicdomain/zero/1.0/legalcode
 */
 
 // A class containing functions for computing diffs and formatting the output.
-class Diff{
+class Diff
+{
 
   // define the constants
   const UNMODIFIED = 0;
@@ -38,29 +39,30 @@ class Diff{
 
     // initialise the sequences and comparison start and end positions
     $start = 0;
-    if ($compareCharacters){
-      $sequence1 = $string1;
-      $sequence2 = $string2;
-      $end1 = strlen($string1) - 1;
-      $end2 = strlen($string2) - 1;
-    }else{
-      $sequence1 = preg_split('/\R/', $string1);
-      $sequence2 = preg_split('/\R/', $string2);
-      $end1 = count($sequence1) - 1;
-      $end2 = count($sequence2) - 1;
+    if ($compareCharacters)
+    {
+        $sequence1 = $string1;
+        $sequence2 = $string2;
+        $end1 = strlen($string1) - 1;
+        $end2 = strlen($string2) - 1;
+    } 
+    else
+    {
+        $sequence1 = preg_split('/\R/', $string1);
+        $sequence2 = preg_split('/\R/', $string2);
+        $end1 = count($sequence1) - 1;
+        $end2 = count($sequence2) - 1;
     }
 
     // skip any common prefix
-    while ($start <= $end1 && $start <= $end2
-        && $sequence1[$start] == $sequence2[$start]){
-      $start ++;
+    while ($start <= $end1 && $start <= $end2 && $sequence1[$start] == $sequence2[$start]){
+        $start ++;
     }
 
     // skip any common suffix
-    while ($end1 >= $start && $end2 >= $start
-        && $sequence1[$end1] == $sequence2[$end2]){
-      $end1 --;
-      $end2 --;
+    while ($end1 >= $start && $end2 >= $start && $sequence1[$end1] == $sequence2[$end2]){
+        $end1 --;
+        $end2 --;
     }
 
     // compute the table of longest common subsequence lengths

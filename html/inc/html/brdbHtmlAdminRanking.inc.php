@@ -13,47 +13,50 @@
  ******************************************************************************/
 include_once('brdbHtmlPage.inc.php');
 
-include_once BASE_DIR .'/inc/logic/prgGame.inc.php';
+include_once BASE_DIR .'/inc/logic/prgRanking.inc.php';
 include_once BASE_DIR .'/inc/logic/tools.inc.php';
 
-class BrdbHtmlAdminRanking extends BrdbHtmlPage {
+class BrdbHtmlAdminRanking extends BrdbHtmlPage 
+{
     private $prgElementGame;
 
-    public function __construct() {
+    public function __construct(): void
+    {
         parent::__construct();
-        $this->prgElementGame = new PrgPatternElementGame($this->brdb, $this->prgPatternElementLogin);
-        $this->prgPattern->registerPrg($this->prgElementGame);
+        $this->prgElementRanking = new PrgPatternElementRanking($this->brdb, $this->prgPatternElementLogin);
+        $this->prgPattern->registerPrg($this->prgElementRanking);
 
         // TOOLS
         $this->tools = new Tools();
     }
 
-    public function processPage() {
+    public function processPage(): void
+    {
         // Call all prgs and process them all
         parent::processPage();
     }
 
-    protected function htmlBody() {
+    protected function htmlBody(): void
+    {
         $action = $this->tools->get("action");
 
-        switch ($action) {
-        case 'add':
-            $content = $this->TMPL_AddGame();
-            break;
+        switch ($action) 
+        {
+            case 'add':
+                $content = $this->TMPL_AddGame();
+                break;
 
-        case 'edit':
-            $content = $this->TMPL_EditGame();
-            break;
+            case 'edit':
+                $content = $this->TMPL_EditGame();
+                break;
 
-        case 'delete':
-            $content = $this->TMPL_deleteGame();
+            case 'delete':
+                $content = $this->TMPL_deleteGame();
 
-        default:
-            $content = $this->TMPL_ListGames();
-            break;
+            default:
+                $content = $this->TMPL_ListGames();
+                break;
         }
-
-        //
 
         $this->smarty->assign(array(
         'content' => $content,
@@ -62,13 +65,14 @@ class BrdbHtmlAdminRanking extends BrdbHtmlPage {
         $this->smarty->display('index.tpl');
     }
 
-    private function TMPL_AddGame() {
+    private function TMPL_AddGame(): string
+    {
         $this->smarty->assign(array(
             'players'  => $this->getAllPlayerDataList(),
             'reporter' => $this->prgPatternElementLogin->getLoggedInUser()->isReporter(),
             'game'     => array(
-            'datetime' => date("d.m.Y H:I"),
-            ),
+                'datetime' => date("d.m.Y H:I"),
+                ),
         ));
 
         return $this->smarty->fetch('ranking/updateGame.tpl');
@@ -77,28 +81,30 @@ class BrdbHtmlAdminRanking extends BrdbHtmlPage {
 
 
 
-    private function TMPL_EditGame() {
+    private function TMPL_EditGame(): string
+    {
         $id   = $this->tools->get("id");
-        $game = $this->brdb->selectGameById($id);
+        $game = $this->brdb->getGameById($id);
 
         $game['set1'] = $game['setA1'] .":". $game['setB1'];
         $game['set2'] = $game['setA2'] .":". $game['setB2'];
-        if(isset($game['setA3']) && $game['setA3'] > 0 && isset($game['setB3']) && $game['setB3'] > 0) {
+        if (isset($game['setA3']) && $game['setA3'] > 0 && isset($game['setB3']) && $game['setB3'] > 0) {
             $game['set3'] = $game['setA3'] .":". $game['setB3'];
         }
 
         $this->smarty->assign(array(
-        'players'  => $this->getAllPlayerDataList(),
-        'reporter' => $this->prgPatternElementLogin->getLoggedInUser()->isReporter(),
-        'game'     => $game,
-        'action'   => 'update',
+            'players'  => $this->getAllPlayerDataList(),
+            'reporter' => $this->prgPatternElementLogin->getLoggedInUser()->isReporter(),
+            'game'     => $game,
+            'action'   => 'update',
         ));
 
         return $this->smarty->fetch('ranking/updateGame.tpl');
     }
 
 
-    private function TMPL_ListGames() {
+    private function TMPL_ListGames(): string
+    {
         $this->smarty->assign(array(
             'games'      => $this->getRankedGames(),
             'error'      => $this->brdb->getError(),
@@ -108,7 +114,8 @@ class BrdbHtmlAdminRanking extends BrdbHtmlPage {
         return $this->smarty->fetch('ranking/list.tpl');
     }
 
-    private function TMPL_DeleteGame() {
+    private function TMPL_DeleteGame(): string
+    {
         $this->smarty->assign(array(
             'games'      => $this->getRankedGames(),
             'error'      => $this->brdb->getError(),
@@ -118,8 +125,9 @@ class BrdbHtmlAdminRanking extends BrdbHtmlPage {
         return $this->smarty->fetch('ranking/list.tpl');
     }
 
-    private function getAllPlayerDataList() {
-        $playerList = $this->brdb->selectAllPlayerByOurClub();
+    private function getAllPlayerDataList(): array
+    {
+        $playerList = $this->brdb->selectAllPlayerByOurClub($this->tools->getHomeClub());
         $data = array();
 
         if (isset($playerList) && !empty($playerList)) {
@@ -137,8 +145,9 @@ class BrdbHtmlAdminRanking extends BrdbHtmlPage {
     /**
         * Get all ranked Games
     */
-    private function getRankedGames() {
-        return $this->brdb->selectAllGames();
+    private function getRankedGames(): array
+    {
+        return $this->brdb->getMatches();
     }
 }
 

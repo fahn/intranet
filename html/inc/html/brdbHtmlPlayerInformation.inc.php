@@ -13,18 +13,22 @@
  ******************************************************************************/
 include_once('brdbHtmlPage.inc.php');
 
-class BrdbHtmlPlayerInformation extends BrdbHtmlPage {
+class BrdbHtmlPlayerInformation extends BrdbHtmlPage 
+{
     
-    public function __construct() {
+    public function __construct() 
+    {
         parent::__construct();
     }
     
-    public function processPage() {
+    public function processPage() 
+    {
         parent::processPage();
     }
     
     
-    protected function htmlBody() {
+    protected function htmlBody() 
+    {
         $content = $this->loadContent($this->tools->get('id'));
         
         $this->smarty->assign(array(
@@ -35,7 +39,8 @@ class BrdbHtmlPlayerInformation extends BrdbHtmlPage {
     }
     
     
-    private function loadContent(int $id) {
+    private function loadContent(int $id) 
+    {
         if (!isset($id) || !is_numeric($id)) {
             return "";
         }

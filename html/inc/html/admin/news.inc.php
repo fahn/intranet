@@ -11,6 +11,7 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
+declare(strict_types=1);
 $path=dirname(dirname(__FILE__));
 require_once($path .'/brdbHtmlPage.inc.php');
 
@@ -49,8 +50,8 @@ class BrdbHtmlAdminNewsPage extends BrdbHtmlPage {
 
 
     public function htmlBody() {
-        $action = $this->tools->get("action");
-        $id     = $this->tools->get("id");
+        $action = $this->prgPatternElementNews->issetGetVariable("action") ? $this->prgPatternElementNews->getGetVariable("action") : "";
+        $id     = $this->prgPatternElementNews->issetGetVariable("id") ? $this->prgPatternElementNews->getGetVariable("id") : 0;
 
         switch ($action) {
             case 'add':
@@ -80,29 +81,13 @@ class BrdbHtmlAdminNewsPage extends BrdbHtmlPage {
 
     private function TMPL_list() {
         $this->smarty->assign(array(
-            'NewsList'      => $this->loadList(),
+            'newsList'      => $this->loadList(),
         ));
+
         return $this->smarty->fetch('news/adminList.tpl');
     }
 
-
-    private function loadList() {
-        $data = array();
-        $newsList = $this->brdb->statementGetAllNews(); #($min, $max);
-        if (isset($newsList) && !empty($newsList)) {
-          foreach ($newsList as $dataSet) {
-            // links
-            $dataSet['editLink']   = $this->tools->linkTo(array('page' => $this->_page, 'action' => 'edit', 'id' => $dataSet['newsId']));
-            $dataSet['deleteLink'] = $this->tools->linkTo(array('page' => $this->_page, 'action' => 'delete', 'id' => $dataSet['newsId']));
-
-            $data[] = $dataSet; //new User($dataSet);
-          }
-        }
-        return $data;
-        unset($data, $dataSet, $newsList);
-    }
-
-    private function TMPL_update($action, $id) {
+    private function TMPL_update(String $action, int $id) {
         // load categories
         $cats = new BrdbHtmlAdminCategoryPage();
 
@@ -114,12 +99,34 @@ class BrdbHtmlAdminNewsPage extends BrdbHtmlPage {
         return $this->smarty->fetch('news/adminUpdate.tpl');
     }
 
-    private function getNewsById($id) {
-        return $id > 0 ? $this->brdb->statementGetNewsById($id) ? array();
+    private function loadList() {
+        $data = array();
+        $newsList = $this->brdb->statementGetAllNews(); #($min, $max);
+        if (isset($newsList) && !empty($newsList)) {
+            foreach ($newsList as $dataSet) {
+                // links
+                $dataSet['editLink']   = $this->tools->linkTo(array('page' => $this->_page, 'action' => 'edit', 'id' => $dataSet['newsId']));
+                $dataSet['deleteLink'] = $this->tools->linkTo(array('page' => $this->_page, 'action' => 'delete', 'id' => $dataSet['newsId']));
+
+                $data[] = $dataSet;
+            }
+        }
+
+        return $data;
+        unset($data, $dataSet, $newsList);
     }
 
-    /* DELETE */
-    private function TMPL_delete($id) {
+    private function getNewsById(int $id) {
+        return $id > 0 ? $this->brdb->statementGetNewsById($id) : array();
+    }
+
+    /**
+     * Template: Delete view
+     *
+     * @param int $id
+     * @return void
+     */
+    private function TMPL_delete(int $id) {
 
         $this->smarty->assign(array(
             'item' => $this->getNewsById($id),
@@ -129,4 +136,5 @@ class BrdbHtmlAdminNewsPage extends BrdbHtmlPage {
 
     }
 }
+
 ?>

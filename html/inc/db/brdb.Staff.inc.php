@@ -11,9 +11,10 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
-#declare(strict_types=1);
+declare(strict_types=1);
 
-trait StaffDB {
+trait StaffDB 
+{
     public function getStaffList() {
         $query = "SELECT US.*, CONCAT_WS(' ', User.firstName, User.lastName) AS name, User.image, User.gender FROM UserStaff AS US
                     LEFT JOIN User ON User.userId = US.userId

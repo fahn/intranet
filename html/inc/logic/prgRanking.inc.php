@@ -172,19 +172,23 @@ class PrgPatternElementRanking extends APrgPatternElement {
 
     }
 
-    private function deleteMatch() {
+    private function deleteMatch(): bool
+    {
         $id = strval(trim($this->getGetVariable('id')));
         if (! $id) {
             return;
         }
 
-
         $this->db->deleteMatch($id);
-        if ($this->db->hasError()) {
+
+        if ($this->db->hasError()) 
+        {
             $this->setFailedMessage("Das Spiel konnte nicht gelöscht werden");
             $this->tools->customRedirect(array('page' => 'ranking.php'));
         }
-        if (! $this->newRanking() ) {
+        
+        if (! $this->newRanking()) 
+        {
             $this->setFailedMessage("Die Rankgliste konnte nicht erstellt werden.");
             $this->tools->customRedirect(array('page' => 'ranking.php'));
         }
@@ -195,52 +199,59 @@ class PrgPatternElementRanking extends APrgPatternElement {
     }
 
     /********************************************** GET ***********************/
-    function processGet() {
+    function processGet(): void 
+    {
         $this->prgElementLogin->redirectUserIfNotLoggindIn();
 
-
-
         $action = $this->tools->get('action');
-        switch ($action) {
+        switch ($action) 
+        {
             case 'renewRanking':
                 // ADMIN AREA
                 $this->prgElementLogin->redirectUserIfnoRights(array('reporter', 'admin'), 'or');
                 
                 $this->getNewRanking();
                 break;
+
             default:
                 // code...
                 break;
         }
     }
 
-    private function getNewRanking() {
-        if ( ! $this->newRanking()) {
+    private function getNewRanking(): bool
+    {
+        if ( ! $this->newRanking()) 
+        {
             $this->setFailedMessage("Die Rankgliste konnte nicht erstellt werden.");
-        } else {
+        } 
+        else 
+        {
             $this->setSuccessMessage("Die Rangliste wurde neu erstellt.");
         }
         $this->tools->customRedirect(array('page' => 'ranking.php'));
         return true;
     }
 
-    private function getWinner($sets) {
+    private function getWinner(string $sets): bool
+    {
         $a = 0;
         $b = 0;
         $sets = unserialize($sets);
-        foreach($sets as $set) {
+        foreach ($sets as $set) 
+        {
             $set = explode(":", $set);
-            if ($set[0] > $set[1]) {
+            if ($set[0] > $set[1]) 
+            {
                 $a++;
-            } else {
+            } 
+            else 
+            {
                 $b++;
             }
-            if ($a == 2) {
-                return true;
-            } elseif ($b == 2) {
-                return false;
-            }
         }
+
+        return $a == 2 ? true : false;
     }
 
 
@@ -305,10 +316,10 @@ class PrgPatternElementRanking extends APrgPatternElement {
      */
     public function newRanking() {
         // clear Ranking
-        $this->db->deleteRanking();
+        $this->db->truncateRanking();
 
         // get all matches and recalc
-        $gameList = $this->db->statementGetMatches();
+        $gameList = $this->db->getMatches();
         if ( !isset($gameList) || empty($gameList) ) {
             return false;
         }

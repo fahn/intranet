@@ -1,12 +1,11 @@
 #
 # docker container for github intranet
 #
-FROM php:7.2-apache
+FROM php:7.3-apache
 
 LABEL maintainer="Stefan Metzner <stefan@weinekind.de>"
 LABEL version="1.0.6.4"
 
-ARG COMPOSER_MD5="baf1608c33254d00611ac1705c1d9958c817a1a33bce370c0595974b342601bd80b92a3f46067da89e3b06bff421f182"
 
 # install os requirements
 RUN apt-get update && apt-get install -y \
@@ -18,6 +17,7 @@ RUN apt-get update && apt-get install -y \
         msmtp \
         g++ \
         git \
+        wget \
         zip \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
@@ -43,8 +43,6 @@ WORKDIR /var/www/html/
 
 RUN rm -rf index.html
 
-RUN test -f index.html && rm index.html || true
-
 # COPY from html
 COPY html/ /var/www/html/
 
@@ -61,11 +59,14 @@ RUN rm -rf .git* \
 # set rights
 RUN chmod -R 755 . && chown -R www-data:www-data .
 
+RUN COMPOSER_MD5="$(wget -q -O - https://composer.github.io/installer.sig)" && \
+    echo $COMPOSER_MD5
+
 # install composer
-RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-RUN php -r "if (hash_file('sha384', 'composer-setup.php') === ${COMPOSER_MD5}) { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
-RUN php composer-setup.php --install-dir=/usr/local/bin --filename=composer
-RUN php -r "unlink('composer-setup.php');"
+RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
+    php -r "if (hash_file('sha384', 'composer-setup.php') === '${COMPOSER_MD5}') { unlink('composer-setup.php'); } echo PHP_EOL;" && \
+    php composer-setup.php --quiet --install-dir=/usr/local/bin --filename=composer  && \
+    php -r "unlink('composer-setup.php');"
 
 USER www-data
 WORKDIR /var/www/html/
@@ -75,13 +76,12 @@ WORKDIR /var/www/html/
 RUN composer install
 
 # Volumes
-VOLUME /var/www/html/inc/config.ini
-VOLUME /var/www/html/static/img/background.jpg
-VOLUME /var/www/html/static/img/background_mobil.jpg
+VOLUME [ "/var/www/html/inc/config.ini" ]
+VOLUME [ "/var/www/html/static/img/background.jpg" ]
+VOLUME [ "/var/www/html/static/img/background_mobil.jpg" ]
+VOLUME [ "/var/www/html/static/img/favicon" ]
+VOLUME [ "/etc/aliases" ]
+VOLUME [ "/etc/msmtprc" ]
 
 # Ports
 EXPOSE 80
-
-ENTRYPOINT [ "/usr/sbin/apache2ctl" ]
-
-CMD [ "-D", "FOREGROUND" ]

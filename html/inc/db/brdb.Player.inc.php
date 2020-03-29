@@ -11,13 +11,18 @@
 * Philipp M. Fischer <phil.m.fischer@googlemail.com>
 *
 ******************************************************************************/
+declare(strict_types=1);
 
-trait PlayerDB {
+trait PlayerDB 
+{
+
     /**
-     * get All Player
-     * @return unknown
+     * Get All Player
+     *
+     * @return array
      */
-    public function selectGetAllPlayer() {
+    public function selectGetAllPlayer(): array
+    {
         $query = "SELECT Player.*, CONCAT_WS(' ', Player.firstName, Player.lastName) as fullName, Club.name AS clubName FROM Player
                     LEFT JOIN `Club` ON Club.clubId = Player.clubId
                     ORDER BY Player.lastName ASC";
@@ -27,35 +32,74 @@ trait PlayerDB {
         return $statement->fetchAll();
     }
 
-
-    public function selectPlayerById(int $playerId) {
-        $query = "SELECT Player.*, Club.name AS clubName FROM Player
+    /**
+     * Get All Player in list between N and M
+     *
+     * @param integer $min
+     * @param integer $max
+     * @return array
+     */
+    public function selectGetAllPlayerMM(int $min=0, int $max=50): array
+    {
+        $query = "SELECT Player.*, CONCAT_WS(' ', Player.firstName, Player.lastName) as fullName, Club.name AS clubName FROM Player
                     LEFT JOIN `Club` ON Club.clubId = Player.clubId
-                    WHERE playerId = :playerId";
+                    ORDER BY Player.lastName ASC
+                    LIMIT :min, :max";
         $statement = $this->db->prepare($query);
-        $statement->bindParam('playerId', $playerId);
-        $statement->execute();
-        
-        return $statement->fetch();
-    }
-
-    public function selectPlayerByPlayerNr(int $playerNr) {
-        $query = "SELECT * FROM Player WHERE playerNr = :playerId";
-        $statement = $this->db->prepare($query);
-        $statement->bindParam('playerId', $playerId);
+        $statement->bindParam('min', $min, PDO::PARAM_INT);
+        $statement->bindParam('max', $max, PDO::PARAM_INT);
         $statement->execute();
         
         return $statement->fetchAll();
     }
 
+    /**
+     * Get Player by Id
+     *
+     * @param integer $playerId
+     * @return array
+     */
+    public function selectPlayerById(int $playerId): array
+    {
+        $query = "SELECT Player.*, Club.name AS clubName FROM Player
+                    LEFT JOIN `Club` ON Club.clubId = Player.clubId
+                    WHERE playerId = :playerId";
+        $statement = $this->db->prepare($query);
+        $statement->bindParam('playerId', $playerId, PDO::PARAM_INT);
+        $statement->execute();
+        
+        return $statement->fetch();
+    }
 
+    /**
+     * Get Player by PlayerNr
+     *
+     * @param String $playerNr
+     * @return array
+     */
+    public function selectPlayerByPlayerNr(String $playerNr): array
+    {
+        $query = "SELECT * FROM Player WHERE playerNr = :playerNr";
+        $statement = $this->db->prepare($query);
+        $statement->bindParam('playerNr', $playerNr, PDO::PARAM_STR);
+        $statement->execute();
+        
+        return $statement->fetchAll();
+    }
 
-    public function insertPlayer($data) {
+    /**
+     * Inser Player with Data
+     *
+     * @param array $data
+     * @return boolean
+     */
+    public function insertPlayer(array $data): bool 
+    {
         $query     = "INSERT INTO Player (playerNr, clubId, firstName, lastName, bday, gender) 
                         VALUES (:playerNr, :clubId, :firstName, :lastName, :gender)";
         $statement = $this->db->prepare($query);
         $statement->bindParam('playerNr', $data['playerNr']);
-        $statement->bindParam('clubId', $data['clubId']);
+        $statement->bindParam('clubId', $data['clubId'], PDO::PARAM_INT);
         $statement->bindParam('firstName', $data['firstName']);
         $statement->bindParam('lastName', $data['lastName']);
         $statement->bindParam('gender', $data['gender']);
@@ -64,14 +108,21 @@ trait PlayerDB {
         return $statement->execute();
     }
 
-    public function updatePlayer($data) {
+    /**
+     * Update Player
+     *
+     * @param array $data
+     * @return boolean
+     */
+    public function updatePlayer(array $data): bool
+    {
         try {
             extract($data);
             $query = "UPDATE Player set firstName = :firstName, lastName = :lastName, gender = :gender, bday = :bday, clubId = :clubId
                         WHERE playerNr = :playerNr";
             $statement = $this->db->prepare($query);
             $statement->bindParam('playerNr', $data['playerNr']);
-            $statement->bindParam('clubId', $data['clubId']);
+            $statement->bindParam('clubId', $data['clubId'], PDO::PARAM_INT);
             $statement->bindParam('firstName', $data['firstName']);
             $statement->bindParam('lastName', $data['lastName']);
             $statement->bindParam('gender', $data['gender']);
@@ -82,15 +133,24 @@ trait PlayerDB {
         }
     }
 
-    public function getPlayerByTerm($term) {
-        $term = $this->db->real_escape_string($term);
-        $term = "%".$term."%";
+    /**
+     * Get Player LIKE %term%
+     *
+     * @param String $term
+     * @return array
+     */
+    public function getPlayerByTerm(String $term): array
+    {
+        // preparing
+        $term = '%'. $term .'%';
+
+        // sql query
         $query = "SELECT Player.*, CONCAT_WS(', ', Player.lastName, Player.firstName) AS playerName, Club.name AS clubName FROM Player
                     LEFT JOIN Club ON Club.clubId = Player.clubId
                     WHERE CONCAT_WS(' ', Player.firstName, Player.lastName) LIKE :term
                     ORDER BY Player.lastName";
         $statement = $this->db->prepare($query);
-        $statement->bindParam('term', $data['term']);
+        $statement->bindParam('term', $term, PDO::PARAM_STR);
         $statement->execute();
         
         return $statement->fetchAll();

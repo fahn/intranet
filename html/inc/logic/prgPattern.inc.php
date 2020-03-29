@@ -186,8 +186,7 @@ abstract class APrgPatternElement implements IPrgPatternElement {
      * {@inheritDoc}
      * @see IPrgPatternElement::processGet()
      */
-    public function processGet() {
-    }
+    public function processGet() {}
 
     public function getPrefixedName($variableName) {
         $preparedVariableName = ucfirst(trim($variableName));
@@ -197,6 +196,19 @@ abstract class APrgPatternElement implements IPrgPatternElement {
 
     protected function registerPostSessionVariable($variableName) {
         array_push($this->variableNameArray, $variableName);
+    }
+
+    protected function registerPostSessionVariables($varArray, $status) {
+        if (isset($varArray) && !empty($varArray)) {
+            foreach ($varArray as $item) {
+                try {
+                    $this->registerPostSessionVariable($item);
+                } catch (Exception $e) {
+                    print_r("Cannot register POST-Variable: ". $item);
+                }
+            }
+
+        }
     }
 
     /**
@@ -275,11 +287,66 @@ abstract class APrgPatternElement implements IPrgPatternElement {
         } else {
             $value = "";
         }
-        return "";
+
+        return $value;
     }
 
     public function issetGetVariable($variableName) {
         return isset($_GET[$variableName]);
+    }
+
+    private function getConstant($field) {
+        $oClass = new ReflectionClass (__CLASS__);
+        $array = $oClass->getConstants();
+        return $array[$field];
+    }
+
+    /**
+     * check if all requiredFields are in POST
+     *
+     * @param array $requireFields
+     * @return boolean
+     */
+    public function checkRequiredFields(array $requireFields = null): bool
+    {
+        $requireFields = $requireFields == null ? $this->requiredFields : $requireFields;
+        try 
+        {
+            if (isset($this->requiredFields) && !empty($this->requiredFields)) 
+            {
+                foreach ($this->requiredFields as $field) 
+                {
+                    if (!$this->issetPostVariable($this->getConstant($field))) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        } 
+        catch (Exception $e) 
+        {
+            return false;
+        }
+        
+    }
+
+    /**
+     * Generate array of all constansts of a class
+     *
+     * @return array
+     */
+    public function requiredFields2array(): array
+    {
+        $arr = array();
+
+        if (isset($this->requiredFields) && !empty($this->requiredFields)) 
+        {
+            foreach ($this->requiredFields as $field) 
+            {
+                $arr[$this->getConstant($field)] = $this->getPostVariable($this->getConstant($field));
+            }
+        }
+        return $arr;
     }
 }
 

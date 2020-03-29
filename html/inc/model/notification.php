@@ -31,7 +31,8 @@ Class Notification {
         $this->isRead  = $dataSet['isRead'];
     }
 
-    public function isRead() {
+    public function isRead():bool
+    {
         return $this->isRead;
     }
 }

@@ -1,6 +1,6 @@
 <h1 class="display-2 mb-5">Vereine</h1>
 <p class="text-right">
-    <a class="btn btn-success" href="?action=add_club">Club hinzufügen</a>
+    <a class="btn btn-success" href="?action=add_club"><i class="fas fa-plus"></i> Club hinzufügen</a>
 </p>
 
 <div class="table-responsive">

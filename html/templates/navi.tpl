@@ -45,12 +45,23 @@
                             <div class="dropdown-divider"></div>
                             <!-- <a class="dropdown-item" href="settings.php"><i class="fas fa-wrench"></i> Einstellungen</a> -->
                             <a class="dropdown-item" href="/pages/log.php"><i class="fas fa-list"></i> Logs</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="/pages/adminSetup.php"><i class="fas fa-wrench"></i> Setup</a>
                         </div>
                     </li>
                 {/if}
             </ul>
 
             <ul class="nav navbar-nav navbar-right">
+                {if $notificationEnable == "on"}
+                    <li class="nav-item">
+                        {if isset($notification)}
+                            {include file="notification.tpl"}
+                        {else}
+                            <i class="fas fa-bell"></i>
+                        {/if}
+                    </li>
+                {/if}
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="avatar avatar-online"><img width="33px" style="border-radius: 1000px" src="{$currentUserImage}" alt="avatar"><i></i></span>
@@ -68,15 +79,7 @@
                         <a class="dropdown-item" href="logout.php"><i class="fas fa-power-off"></i> Logout</a>
                     </div>
                 </li>
-                {if $notificationEnable == "on"}
-                    <li class="nav-item">
-                        {if $notification}
-                            {include file="notification.tpl"}
-                        {else}
-                            <i class="fas fa-bell"></i>
-                        {/if}
-                    </li>
-                {/if}
+                
             </ul>
         </div>
     </nav>

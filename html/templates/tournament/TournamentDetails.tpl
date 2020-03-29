@@ -58,7 +58,8 @@
             <div class="dropdown-menu">
                 <a class="dropdown-item" href="?action=export&id={$tournament.tournamentId}"><i class="fas fa-bullhorn"></i> Meldung</a>
                 <a class="dropdown-item" href="?action=backup&id={$tournament.tournamentId}"><i class="fas fa-cloud"></i> Sicherungen</a>
-                <a class="dropdown-item" href="{$link.linkUnlock}"><i class="fas fa-lock-open"></i> Alle ungemeldet</a>
+                <a class="dropdown-item" href="?action=lock&id={$tournament.tournamentId}{$link.linkUnlockAll}"><i class="fas fa-lock"></i> Alle gemeldet</a>
+                <a class="dropdown-item" href="?action=unlock&id={$tournament.tournamentId}{$link.linkLockAll}"><i class="fas fa-lock-open"></i> Alle ungemeldet</a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="?action=edit_tournament&id={$tournament.tournamentId}"><i class="fas fa-edit"></i> Turnier bearbeiten</a>
             </div>
@@ -89,7 +90,7 @@
             <tr>
                 <td>
                     {if $player.locked == 1}
-                    <i class="fas fa-lock" data-toggle="tooltip" data-placement="bottom" title="Spieler wurde bereits gemeldet"></i>
+                        <i class="fas fa-lock" data-toggle="tooltip" data-placement="bottom" title="Spieler wurde bereits gemeldet"></i>
                     {/if}
                     <a href="{$player.linkPlayer}" title="Profil von {$player.playerName}">{$player.playerName}</a>
                     {if isset($player.partnerId)}//

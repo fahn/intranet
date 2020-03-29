@@ -16,10 +16,12 @@ include_once('brdbHtmlPage.inc.php');
 include_once BASE_DIR .'/inc/logic/prgPattern.inc.php';
 include_once BASE_DIR .'/inc/logic/tools.inc.php';
 
-class BrdbHtmlFaq extends BrdbHtmlPage {
+class BrdbHtmlFaq extends BrdbHtmlPage 
+{
     private $lcontent;
 
-    public function __construct() {
+    public function __construct(): void
+    {
         parent::__construct();
 
         $this->tools->secure_array($_GET);
@@ -31,11 +33,13 @@ class BrdbHtmlFaq extends BrdbHtmlPage {
         $this->smarty->assign('links', $links);
     }
 
-    public function processPage() {
+    public function processPage(): void
+    {
         parent::processPage();
     }
 
-    protected function htmlBody() {
+    protected function htmlBody(): void
+    {
         $this->TMPL_showFAQ();
         
         $this->smarty->assign(array(
@@ -43,18 +47,13 @@ class BrdbHtmlFaq extends BrdbHtmlPage {
         ));
         $this->smarty->display('index.tpl');
     }
-    
-    /*
-    private function TMPL_showCategory() {
-        $this->lcontent = "DAS";
-    }
-    */
 
-    private function TMPL_showFAQ() {
+    private function TMPL_showFAQ(): void
+    {
         $this->smarty->assign(array(
             'FaqGroupedByCategory' => $this->getFaqGroupedByCategory(),
             'FaqList'              => $this->getFaqGroupedByCategory(),
-            'Categories'             => $this->getCategory(),
+            'Categories'           => $this->getCategories(),
             //'CategoryHtmlOptions'  => $this->getCategoryHtmlOptions(),
         ));
 
@@ -62,13 +61,17 @@ class BrdbHtmlFaq extends BrdbHtmlPage {
         $this->lcontent = $this->smarty->fetch('faq/list.tpl');
     }
 
-    private function getFaqGroupedByCategory() {
+    private function getFaqGroupedByCategory(): array
+    {
         $data = array();
         $faqList = $this->brdb->statementGetFAQs();
         
-        if (isset($faqList) && !empy($faqList))) {    
-            foreach ($faqList as $dataSet) {
-                if (isset($dataSet['categoryId']) && !array_key_exists($dataSet['categoryId'], $data)) {
+        if (isset($faqList) && !empy($faqList))) {   
+
+            foreach ($faqList as $dataSet) 
+            {
+                if (isset($dataSet['categoryId']) && !array_key_exists($dataSet['categoryId'], $data)) 
+                {
                     $data[$dataSet['categoryId']] = array('title' => $dataSet['categoryTitle'], 'rows' => array());
                 }
                 $data[$dataSet['categoryId']]['rows'][] = $dataSet;
@@ -79,14 +82,15 @@ class BrdbHtmlFaq extends BrdbHtmlPage {
         unset($data, $faqList, $dataSet);
     }
 
-    private function getFaqList() {
+    private function getFaqList(): array
+    {
         $data = array();
         $faqList = $this->brdb->statementGetFAQs();
         
         if (isset($faqList) && !empy($faqList))) {    
             foreach ($faqList as $dataSet) {
                 // edit Link
-                $dataSet['editLink'] = "#". $dataSet['faqId'];
+                $dataSet['editLink']   = "#". $dataSet['faqId'];
                 $dataSet['deleteLink'] = "#". $dataSet['faqId'];
                 $data[] = $dataSet;
             }
@@ -96,15 +100,19 @@ class BrdbHtmlFaq extends BrdbHtmlPage {
         unset($data, $dataSet, $faqList);
     }
 
-    private function getCategory() {
+    private function getCategories(): array
+    {
         return $this->brdb->statementGetCategoryAndCountItems();
     }
 
-    private function getCategoryHtmlOptions() {
+    private function getCategoryHtmlOptions(): array
+    {
         $data = array();
-        $categoryList = $this->getCategory;
-        if (isset($categoryList) && !empty($categoryList)) {
-            foreach ($categoryList as $dataSet) {
+        $categoryList = $this->getCategories;
+        if (isset($categoryList) && !empty($categoryList)) 
+        {
+            foreach ($categoryList as $dataSet) 
+            {
                 $data[$dataSet['categoryId']] = $dataSet['title'];
             }
         }
@@ -113,7 +121,8 @@ class BrdbHtmlFaq extends BrdbHtmlPage {
         unset($data, $categoryList);
     }
     
-    private function getFaqByCategoryId($id) {
+    private function getFaqByCategoryId(int $id): array
+    {
         return $this->brdb->statementGetFaqByCategoryId($id);
     }
 }

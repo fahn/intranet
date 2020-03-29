@@ -89,17 +89,20 @@ class Game {
 		}
 	}
 
-	public function getDateHTML() {
+	public function getDateHTML():string
+	{
 		$date = date("Y-m-d", $this->dateTime);
 		return $date;
 	}
 
-	public function getDate() {
+	public function getDate():string
+	{
 		$date = date("d.m.Y", $this->dateTime);
 		return $date;
 	}
 
-	public function getTime() {
+	public function getTime():string
+	{
 		$time = date("H:i:s", $this->dateTime);
 		return $time;
 	}

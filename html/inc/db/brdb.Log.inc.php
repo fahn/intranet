@@ -12,16 +12,19 @@
  *
  ******************************************************************************/
 
- trait LogDB {
+ trait LogDB 
+ {
 
-    public function statementGetAllLogs() {
+    public function statementGetAllLogs(): array
+    {
         $query = "SELECT * FROM Log ORDER BY tstamp DESC";
         $statement = $this->db->prepare($query);
-
-        return $statement->execute();
+        $statement->execute();
+        return $statement->fetchAll();
     }
 
-    public function insertLog($table, $details, $logdata, $action, $userId = Null) {
+    public function insertLog($table, $details, $logdata, $action, $userId = Null): bool
+    {
         $query     = "INSERT `Log` (userId, action, fromTable, details, logdata) VALUES (:userId, :action, :fromTable, :details, :logdata)";
         $statement = $this->db->prepare($query);
         $statement->bindParam('userId', $userId);

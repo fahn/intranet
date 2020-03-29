@@ -114,7 +114,7 @@ class Ranking extends BrdbHtmlPage {
             $this->tools->customRedirect(array('page' => 'ranking.php'));
         }
         // get Game Data
-        $gameData  = $this->brdb->statementGetGameById($id);
+        $gameData  = $this->brdb->getGameById($id);
         
         $gameData['sets'] = $this->SetUnSerialize($gameData['sets']);
         $this->smarty->assign(array(
@@ -147,7 +147,7 @@ class Ranking extends BrdbHtmlPage {
      *  get Games
      */
     private function getGames() {
-        $gamesList  = $this->brdb->statementGetMatches();
+        $gamesList  = $this->brdb->getMatches();
         $data = array();
         if (isset($gamesList) && !empty($gamesList) ) {
             $rank = 1;
@@ -170,7 +170,7 @@ class Ranking extends BrdbHtmlPage {
     }
 
     private function getRankingGroupedByDate() {
-        $data   = $this->brdb->statementGetMatchesGroupedByDate();
+        $data   = $this->brdb->getMatchesGroupedByDate();
         $dates = array();
         $games = array();
 
@@ -187,12 +187,12 @@ class Ranking extends BrdbHtmlPage {
 
 
     private function downloadPDF() {
-      ob_start();
+        ob_start();
 
-      // load Options
-      $options = new Dompdf\Options();
-      $options->set('defaultFont', 'Helvetica');
-      $dompdf = new Dompdf\Dompdf($options);
+        // load Options
+            $options = new Dompdf\Options();
+            $options->set('defaultFont', 'Helvetica');
+            $dompdf = new Dompdf\Dompdf($options);
       // get css
       $css     = file_get_contents($this->cssPrint);
 

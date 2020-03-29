@@ -16,20 +16,22 @@ include_once('brdbHtmlPage.inc.php');
 include_once BASE_DIR .'/inc/logic/prgPattern.inc.php';
 include_once BASE_DIR .'/inc/logic/tools.inc.php';
 
-class BrdbHtmlSettings extends BrdbHtmlPage {
+class BrdbHtmlSettings extends BrdbHtmlPage 
+{
 
-    public function __construct() {
+    public function __construct() 
+    {
         parent::__construct();
-
-        //$this->tools->secure_array($_GET);
     }
 
-    public function processPage() {
+    public function processPage() 
+    {
         parent::processPage();
     }
 
 
-    protected function htmlBody() {
+    protected function htmlBody() 
+    {
         $content = $this->smarty->fetch("settings.tpl");
 
         $this->smarty->assign(array(

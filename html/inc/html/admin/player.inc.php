@@ -89,8 +89,6 @@ class BrdbHtmlAdminAllPlayer extends BrdbHtmlPage {
 
 
     private function TMPL_listPlayer() {
-        #$page = $this->tools->get("page");
-        #$page = isset($page) && is_numeric($page) && $page > 0 ? $page-1 : 0;
 
         $this->smarty->assign(array(
             'player'     => $this->loadPlayerList(),
@@ -105,8 +103,8 @@ class BrdbHtmlAdminAllPlayer extends BrdbHtmlPage {
 
         try {
             $this->info = $id > 0 ? $this->brdb->selectUserById($id) : array();
-        } except(Exception $e1) {
-            $this->info = array();;
+        } catch (Exception $e) {
+            $this->info = array();
         }
 
         $this->smarty->assign(array(
@@ -117,7 +115,7 @@ class BrdbHtmlAdminAllPlayer extends BrdbHtmlPage {
          ));
 
         return $this->smarty->fetch('player/adminUpdate.tpl');
-        usnet($id, $action);
+        unset($id, $action);
     }
 
 
@@ -148,11 +146,12 @@ class BrdbHtmlAdminAllPlayer extends BrdbHtmlPage {
     PAGINATION
     */
     private function loadPlayerList() {
-        #$this->countRows = $this->brdb->selectAllUser()->num_rows;
-        #$max = self::MAX_ENTRIES*(1+$page);
-        #$min = $max - self::MAX_ENTRIES;
+        $page = $this->prgPatternElementPlayer->issetGetVariable('page') ?  $this->prgPatternElementPlayer->getGetVariable('page') : 0;
+        echo $this->countRows = count($this->brdb->selectGetAllPlayer());
+        echo $max = self::MAX_ENTRIES*(1+$page);
+        echo $min = $max - self::MAX_ENTRIES;
 
-        $playerList = $this->brdb->selectGetAllPlayer();
+        $playerList = $this->brdb->selectGetAllPlayerMM($min, $max);
         $data = array();
         return (isset($playerList) && !empty($playerList)) ? $playerList : array();
     }

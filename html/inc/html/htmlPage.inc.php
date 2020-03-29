@@ -25,8 +25,14 @@ if ($stage == "development") {
 require_once BASE_DIR .'/smarty/libs/Smarty.class.php';
 require_once BASE_DIR .'/inc/logic/tools.inc.php';
 
+# libary
+require_once BASE_DIR .'/vendor/autoload.php';
 
-abstract class HtmlPageProcessor {
+#use Symfony\Bundle\FrameworkBundle\Controller\AbstractController; 
+use Symfony\Component\Routing\Annotation\Route;
+
+
+abstract class HtmlPageProcessor { # extends AbstractController {
     // smarty
     protected $smarty;
     // content
@@ -57,12 +63,13 @@ abstract class HtmlPageProcessor {
 
         $version = "1.0.7";
 
-        if ($this->stage == "development") {
+        if ($this->stage == "development1") {
             $this->smarty->setCacheDir(BASE_DIR  .'/cache');
             // @TODO: set debug bar
+            $this->smarty->clear_all_cache();
             $this->smarty->force_compile  = true;
             $this->smarty->debugging      = false;
-            $this->smarty->caching        = true;
+            $this->smarty->caching        = false;
             $this->smarty->cache_lifetime = 0;
             $version .="-dev";
         } else {

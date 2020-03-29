@@ -1,57 +1,49 @@
-version: '3.0'
+version: '2.0'
 
 services:
-  intranet:
-    image: badtra/intranet:latest
-    container_name: intranet
-    environment: 
-      - stage: "development"
-    ports:
-      - "8000:80"
-    volumes:
-      - "./data/config.ini:/var/www/html/inc/config.ini"
-      - "./data/img/background.jpg:/var/www/html/static/img/background.jpg"
-      - "./data/img/background_mobil.jpg:/var/www/html/static/img/background_mobil.jpg"
-      - "./data/img/logo.png:/var/www/html/static/img/logo.png"
-      - "./data/img/favicon:/var/www/html/static/img/favicon:ro"
-      # user upload image dir
-      - "./data/img/user:/var/www/html/static/img/user"
-      # Sending e-mail
-      - ./data/msmtp/msmtprc:/etc/msmtprc:ro
-      - ./data/msmtp/aliases:/etc/aliases:ro
-    links:
-      - db
+    intranet:
+        image: "badtra/intranet:latest"
+        environment: 
+            STAGE: "development"
+        volumes:
+            - "./data/config.ini:/var/www/html/inc/config.ini"
+            - "./data/img/background.jpg:/var/www/html/static/img/background.jpg"
+            - "./data/img/background_mobil.jpg:/var/www/html/static/img/background_mobil.jpg"
+            - "./data/img/logo.png:/var/www/html/static/img/logo.png"
+            - "./data/img/favicon:/var/www/html/static/img/favicon:ro"
+            # user upload image dir
+            - "./data/img/user:/var/www/html/static/img/user"
+            # Sending e-mail
+            - ./data/msmtp/msmtprc:/etc/msmtprc:ro
+            - ./data/msmtp/aliases:/etc/aliases:ro
+        depends_on:
+            - db
 
-  intranet-reminder:
-    image: "intranet"
-    environment: 
-      - stage: "development"
-      volumes:
-        - "./data/config.ini:/var/www/html/inc/config.ini"
-        # Sending e-mail
-        - ./data/msmtp/msmtprc:/etc/msmtprc:ro
-        - ./data/msmtp/aliases:/etc/aliases:ro
-      links:
-        - db
-      command: 
-        - php /var/www/html/api/index.php tournament
+    reminder:
+        image: badtra/intranet:latest
+        environment: 
+            STAGE: "development"
+        volumes:
+            - "./data/config.ini:/var/www/html/inc/config.ini"
+            # Sending e-mail
+            - ./data/msmtp/msmtprc:/etc/msmtprc:ro
+            - ./data/msmtp/aliases:/etc/aliases:ro
+        links:
+            - db
+        command: 
+            - php /var/www/html/api/index.php tournament
 
-  db:
-    image: mariadb:10
-    container_name: db
-    restart: always
-    environment:
-      - MYSQL_DATABASE=<DATABASE>
-      - MYSQL_USER=<USER>
-      - MYSQL_PASSWORD=<PASSWORD>
-      - MYSQL_RANDOM_ROOT_PASSWORD=yes
-    volumes:
-      - "./dump.sql:/docker-entrypoint-initdb.d/dump.sql"
-      - "./mysql/:/var/lib/mysql"
+    db:
+        image: mariadb:10
+        container_name: db
+        restart: always
+        environment:
+            - MYSQL_DATABASE=<DATABASE>
+            - MYSQL_USER=<USER>
+            - MYSQL_PASSWORD=<PASSWORD>
+            - MYSQL_RANDOM_ROOT_PASSWORD=yes
+        volumes:
+            - "./dump.sql:/docker-entrypoint-initdb.d/dump.sql"
+            - "./mysql/:/var/lib/mysql"
 
-  # debug
-  #adminer:
-  #  image: adminer
-  #  restart: always
-  #  ports:
-  #    - 8080:8080
+

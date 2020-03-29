@@ -45,7 +45,7 @@ class BdayWidget extends Widget {
 
     private function getNextBdays() {
         $data = array();
-        $res  = $this->brdb->selectNextBirthdays();
+        $res  = $this->brdb->getUpcomingBirthdays();
         if (! $this->brdb->hasError() ) {
             while ($dataSet = $res) {
                 $dataSet['linkToUser'] = $this->tools->linkTo(array('page' => 'user.php', 'id' => $dataSet['userId']));

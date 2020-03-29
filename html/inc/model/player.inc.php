@@ -31,10 +31,14 @@ class Player {
      * Conmstructor that knows how to retrieve all fields from a given data set
      * @param array $dataSet a data set prefrably directly from an SQL statement
      */
-    public function __construct($dataSet = null) {
-        if($dataSet) {
-            foreach($dataSet as $key => $value) {
-                if ( property_exists($this,$key) ) {
+    public function __construct($dataSet = null) 
+    {
+        if ($dataSet) 
+        {
+            foreach($dataSet as $key => $value) 
+            {
+                if (property_exists($this,$key)) 
+                {
                     $this->$key = $value;
                 }
             }
@@ -45,47 +49,58 @@ class Player {
      * Method to retrieve the full name consisting of first and last name
      * @return string the full name
      */
-    public function getFullName() {
+    public function getFullName():string
+    {
         return sprintf("%s %s", $this->firstName, $this->lastName);
     }
 
     /**
      * get PlayerId from Player
      *
-     * @return void
+     * @return integer
      */
-    public function getPlayerId() {
+    public function getPlayerId():int
+    {
         return $this->playerId;
     }
 
     /**
      * Get PlayerNr from Player
      *
-     * @return void
+     * @return string
      */
-    public function getPlayerNr() {
+    public function getPlayerNr(): string
+    {
         return $this->playerNr;
     }
 
     /**
      * Get ClubNr from PlayerId
      *
-     * @return void
+     * @return string
      */
-    public function getClubNr() {
+    public function getClubNr(): string
+    {
         return $this->clubNr;
     }
 
     /**
      * Ger Bday from Player
      *
-     * @return void
+     * @return string
      */
-    public function getBday() {
+    public function getBday():string
+    {
         return $this->bday;
     }
 
-    public function getSqlData() {
+    /**
+     * Undocumented function
+     *
+     * @return array
+     */
+    public function getSqlData():array
+    {
         return array(
             'playerNr'  => $this->playerNr,
             'clubId'    => $this->clubId,
@@ -96,7 +111,8 @@ class Player {
         );
     }
 
-    public function __toString() {
+    public function __toString():string
+    {
         return sprintf("%s %s: Gender %s; SpNr: %s\n", $this->firstName, $this->lastName, $this->gender, $this->playerNr);
     }
 }

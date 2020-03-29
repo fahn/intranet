@@ -15,19 +15,23 @@ include_once('brdbHtmlPage.inc.php');
 #include_once BASE_DIR .'/inc/logic/prgPattern.inc.php';
 #include_once BASE_DIR .'/inc/logic/tools.inc.php';
 
-class BrdbHtmlNotification extends BrdbHtmlPage {
+class BrdbHtmlNotification extends BrdbHtmlPage 
+{
 
-    public function __construct() {
+    public function __construct() 
+    {
         parent::__construct();
 
         $this->tools->secure_array($_GET);
     }
 
-    public function processPage() {
+    public function processPage() 
+    {
         parent::processPage();
     }
 
-    protected function htmlBody() {
+    protected function htmlBody() 
+    {
         $content = $this->TMPL_showList();
 
         $this->smarty->assign(array(
@@ -36,19 +40,22 @@ class BrdbHtmlNotification extends BrdbHtmlPage {
         $this->smarty->display('index.tpl');
     }
 
-    private function TMPL_showList() {
+    private function TMPL_showList() 
+    {
         $this->smarty->assign(array(
-            'row'    => $this->getTeam(),
+            'row'    => $this->getNotification(),
         ));
 
-        return $this->smarty->fetch('team/list.tpl');
+        return $this->smarty->fetch('notification/list.tpl');
     }
 
-    public function getNotification() {
+    public function getNotification() 
+    {
         $user = $this->prgPatternElementLogin->getLoggedInUser();
         
-        return $user->$userId > 0 ? $this->brdb->statementGetNotifationByUserId($user->userId) : array();
+        return $user->userId > 0 ? $this->brdb->statementGetNotificationByUserId($user->userId) : array();
     }
+
 
 }
 ?>

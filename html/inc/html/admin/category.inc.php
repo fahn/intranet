@@ -18,13 +18,13 @@ include_once BASE_DIR .'/inc/logic/prgCategory.inc.php';
 include_once BASE_DIR .'/inc/logic/tools.inc.php';
 
 class BrdbHtmlAdminCategoryPage extends BrdbHtmlPage {
-  private $prgPatternElementCategory;
+    // pattern
+    private $prgPatternElementCategory;
 
-  //
-  private $_page  = "";
-  private $_table = "Category";
+    private $_page  = "";
+    private $_table = "Category";
 
-  const MAX_ENTRIES = 50;
+    const MAX_ENTRIES = 50;
 
     public function __construct($page = null) {
         parent::__construct();
@@ -48,14 +48,11 @@ class BrdbHtmlAdminCategoryPage extends BrdbHtmlPage {
 
 
     public function htmlBody() {
-        $action = $this->tools->get("action");
-        $id     = $this->tools->get("id");
+        $action = $this->prgPatternElementCategory->issetGetVariable("action") ? $this->prgPatternElementCategory->getGetVariable("action") : "123";
+        $id     = $this->prgPatternElementCategory->issetGetVariable("id") ? $this->prgPatternElementCategory->getGetVariable("id") : 0;
 
         switch ($action) {
             case 'add':
-                $content = $this->TMPL_update($action, $id);
-                break;
-
             case 'edit':
                 $content = $this->TMPL_update($action, $id);
                 break;
@@ -76,6 +73,7 @@ class BrdbHtmlAdminCategoryPage extends BrdbHtmlPage {
         $this->smarty->display('index.tpl');
     }
 
+    /******************* VIEWS */
 
     private function TMPL_list() {
         $this->smarty->assign(array(
@@ -84,6 +82,23 @@ class BrdbHtmlAdminCategoryPage extends BrdbHtmlPage {
         return $this->smarty->fetch('category/adminList.tpl');
     }
 
+    private function TMPL_update(String $action, int $id) {
+        $this->smarty->assign(array(
+            'action'                 => $action,
+        ));
+
+        return $this->smarty->fetch('category/adminUpdate.tpl');
+    }
+
+    private function TMPL_delete(int $id) {
+        $this->smarty->assign(array(
+            'item' => $this->getNewsById($id),
+        ));
+
+        return $this->smarty->fetch('category/adminDelete.tpl');
+    }
+
+    /***************** FUNCTIONS */
 
     private function loadCategoryList() {
         $data = array();
@@ -94,76 +109,15 @@ class BrdbHtmlAdminCategoryPage extends BrdbHtmlPage {
                 $dataSet['editLink']   = $this->tools->linkTo(array('page' => $this->_page, 'action' => 'edit',   'id' => $dataSet['categoryId']));
                 $dataSet['deleteLink'] = $this->tools->linkTo(array('page' => $this->_page, 'action' => 'delete', 'id' => $dataSet['categoryId']));
 
-                $data[] = $dataSet; //new User($dataSet);
+                $data[] = $dataSet;
             }
         }
         return $data;
         unset($data, $categoryList, $dataSet);
     }
 
-    private function TMPL_update($action, $id) {
-        $this->smarty->assign(array(
-            'action'                 => $action,
-            'categoryHtmlOptions'    => $this->getCategories(),
-            'item'                   => $this->getNewsById($id),
-        ));
-        return $this->smarty->fetch('category/adminUpdate.tpl');
-    }
-
-    private function getNewsById(int $id) {
-        return $id > 0  ? $this->brdb->statementGetNewsById($id) : array();
-    }
-
-    public function getCategories() {
-        $data = array();
-        $categoryList = $this->brdb->statementGetAllCategories();
-        if (!isset(categoryList) && !empty(categoryList) {
-            foreach ($categoryList as $dataSet) {
-                if ($dataSet['pid'] > 0) {
-                    if (!array_key_exists($dataSet['pid'], $data)) {
-                        $data[$dataSet['pid']]['records'] = array();
-                    }
-                    $data[$dataSet['pid']]['records'][$dataSet['categoryId']] =  array('title' => $dataSet['title'], 'records' => array());
-                } else {
-                    $data[$dataSet['categoryId']] = array('title' =>$dataSet['title']);
-                }
-            }
-        }
-
-        return $this->reformHtmlOptions($data);
-    }
-
-    private function reformHtmlOptions($dataArr, $rec = 0) {
-        if (!is_array($dataArr) || count($dataArr) == 0 || $rec >= 99) {
-            return;
-        }
-        $data = array();
-
-        foreach ($dataArr as $key => $value) {
-            $pre = str_repeat("-", $rec);
-            $pre .= strlen($pre) > 0 ? ">" : "";
-            $title = $pre . $value['title'];
-            $data[$key] = $title;
-            if (is_array($value['records']) && count($value['records']) > 0) {
-                $tmp = $this->reformHtmlOptions($value['records'], $rec+1);
-                if(is_array($tmp)) {
-                    $data += $tmp;
-                }
-            }
-        }
-
-        return $data;
-    }
-
-    /* DELETE */
-    private function TMPL_delete($id) {
-
-        $this->smarty->assign(array(
-            'item' => $this->getNewsById($id),
-        ));
-
-        return $this->smarty->fetch('category/adminDelete.tpl');
-
+    private function getCategoryById(int $id) {
+        return $id > 0  ? $this->brdb->statementGetCategoryById($id) : array();
     }
 }
 ?>

@@ -29,14 +29,14 @@ require_once $path ."/inc/logic/tools.inc.php";
 try {
     if (isset($_POST["playerSearch"])) {
         $brdb = new BrankDB();
-        $_term = strval(trim(strip_tags($_POST['playerSearch'])));
-        $playerList = $brdb->getPlayerByTerm($_term);
+        $term = strval(trim(strip_tags($_POST['playerSearch'])));
+        $playerList = $brdb->getPlayerByTerm($term);
 
         if (isset($playerList) && !empty($playerList)) {
             $data = array();
             foreach ($playerList as $row) {
                 $data['results'][] = array(
-                    'id'   => $playerId,
+                    'id'   => $row['playerId'],
                     'text' => sprintf("%s (SpNr.: %s; Verein: %s)", $row['playerName'], $row['playerNr'], $row['clubName'])
                 );
 

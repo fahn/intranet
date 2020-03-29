@@ -276,34 +276,38 @@ class PrgPatternElementLogin extends APrgPatternElement {
 
         // Now see if there is a user in the data base with correct
         // email and hashed password. Passwords are hashed with php hash functionality
-        $dataSet = $this->brdb->selectUserByEmail($email);
+        $dataSet = $this->brdb->selectUserByEmail($email)[0];
         if ($this->brdb->hasError()) {
             $this->tools->log('User', 'Login try', $email, 'POST');
             $this->setFailedMessage($this->brdb->getError());
             return;
         }
 
-        $this->brdb->selectUserById(99);
-
         if ($dataSet == true) {
             // fetch the dataset there is only one and try to verify the passowrd
             $loadedUser = new User($dataSet);
             if (password_verify($pass, $loadedUser->passHash)) {
-              $this->setSessionVariable(self::SESSION_LOGIN_USER_ID, intval($dataSet->{User::USER_CLM_ID}));
-              // unset post var
-              $this->unsetPostVariable(self::FORM_LOGIN_PASSWORD);
-              // set success message
-              $this->setSuccessMessage(self::SUCCESS_LOGIN);
+                $userId = intval($dataSet->{User::USER_CLM_ID});
 
-              // ref
-              if(isset($_SESSION['ref']) && strpos($_SESSION['ref'],$this->tools->getBaseUrl()) === true) {
-                  $link = $_SESSION['ref'];
-                  unset($_SESSION['ref']);
-              } else {
-                  $link = $this->tools->getBaseUrl();
-              }
-              $this->tools->customRedirect($link);
-              return;
+                // set lastLogin
+                $this->brdb->setUserLastLogin($userId);
+
+                // SET SESSION
+                $this->setSessionVariable(self::SESSION_LOGIN_USER_ID, $userId);
+                // unset post var
+                $this->unsetPostVariable(self::FORM_LOGIN_PASSWORD);
+                // set success message
+                $this->setSuccessMessage(self::SUCCESS_LOGIN);
+
+                // ref
+                if (isset($_SESSION['ref']) && strpos($_SESSION['ref'], $this->tools->getBaseUrl()) === true) {
+                    $link = $_SESSION['ref'];
+                    unset($_SESSION['ref']);
+                } else {
+                    $link = $this->tools->getBaseUrl();
+                }
+                $this->tools->customRedirect($link);
+                return;
             }
             // Make an potential attacker wait for us
             sleep(self::PASSWORD_WAIT_FOR_WRONG);

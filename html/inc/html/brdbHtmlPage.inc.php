@@ -13,12 +13,15 @@
  ******************************************************************************/
 include_once('htmlLoginPage.inc.php');
 
-class BrdbHtmlPage extends AHtmlLoginPage {
-    public function __construct() {
+class BrdbHtmlPage extends AHtmlLoginPage 
+{
+    public function __construct() 
+    {
         parent::__construct();
     }
 
-  public function processPage() {
+    public function processPage() 
+    {
         // Call all prgs and process them all
         $this->prgPattern->processPRG();
 

@@ -19,17 +19,20 @@ include_once BASE_DIR .'/inc/logic/tools.inc.php';
 class BrdbHtmlTeam extends BrdbHtmlPage {
 
 
-    public function __construct() {
+    public function __construct():void
+    {
         parent::__construct();
 
         $this->tools->secure_array($_GET);
     }
 
-    public function processPage() {
+    public function processPage():void
+    {
         parent::processPage();
     }
 
-    protected function htmlBody() {
+    protected function htmlBody(): void
+    {
         $content = $this->TMPL_showTeam();
 
         $this->smarty->assign(array(
@@ -39,7 +42,8 @@ class BrdbHtmlTeam extends BrdbHtmlPage {
         unset($content);
     }
 
-    private function TMPL_showTeam() {
+    private function TMPL_showTeam()
+    {
         $this->smarty->assign(array(
             'row'    => $this->getTeam(),
         ));
@@ -47,21 +51,24 @@ class BrdbHtmlTeam extends BrdbHtmlPage {
         return $this->smarty->fetch('team/list.tpl');
     }
 
-    private function getTeam() {
+    private function getTeam():array
+    {
         $teamList = $this->brdb->getStaffList();
         $data = array();
 
-        if (isset($teamList) && !empty($teamList)) {
-            foreach ($teamList as $dataSet) {
-              #error_log(print_r($dataSet));
-                if(isset($dataSet['row']) && $dataSet['row'] > 0) {
+        if (isset($teamList) && !empty($teamList)) 
+        {
+            foreach ($teamList as $dataSet) 
+            {
+                if(isset($dataSet['row']) && $dataSet['row'] > 0) 
+                {
                     $data[$dataSet['row']][] = $dataSet;
                 }
             }
         }
 
         return $data;
-        usnet($data, $dataSet, $teamList);
+        unset($data, $dataSet, $teamList);
     }
 
 }

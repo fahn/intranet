@@ -14,36 +14,40 @@ declare(strict_types=1);
  *
  ******************************************************************************/
 
-trait ClubDB {
-    /**
-     * get club by clubId
-     * @param unknown $id
-     * @return unknown
-     */
-    public function selectGetClubById($clubId) {
+trait ClubDB 
+{
+    
+    public function selectGetClubById(int $clubId): array
+    {
         $query = "SELECT * FROM Club WHERE clubId = :clubId LIMIT 1";
         $statement = $this->db->prepare($query);
         $statement->bindParam('clubId', $clubId);
-        
-        return $statement->execute();
+        $statement->execute();
+
+        return  $statement->fetchAll();
     }
 
-    public function selectClubByClubNr(string $clubNr) {
+    public function selectClubByClubNr(string $clubNr): array
+    {
         $query = "SELECT * FROM Club WHERE clubNr = :clubNr";
         $statement = $this->db->prepare($query);
         $statement->bindParam('clubNr', $clubNr);
+        $statement->execute();
 
-        return $statement->execute();
+        return  $statement->fetchAll();
     }
 
+
     /**
-     * insert club
-     * @param unknown $name
-     * @param unknown $number
-     * @param unknown $association
-     * @return unknown
+     * Inser Club with name, nr & association
+     *
+     * @param string $clubName
+     * @param string $clubNr
+     * @param string $association
+     * @return boolean
      */
-    public function insertClub($clubName, $clubNr, $association) {
+    public function insertClub(string $clubName, string $clubNr, string $association): bool
+    {
         $query = "INSERT INTO Club (name, clubNr, association) VALUES (:clubName, :clubNr, :association)";
         $statement = $this->db->prepare($query);
         $statement->bindParam('clubName', $clubName);
@@ -65,15 +69,17 @@ trait ClubDB {
      */
 
 
-    /**
-     * update club by Id
-     * @param unknown $clubId
-     * @param unknown $name
-     * @param unknown $number
-     * @param unknown $association
-     * @return unknown
-     */
-    public function updateClubById($clubId, $clubName, $clubNr, $association) {
+     /**
+      * Update Club
+      *
+      * @param integer $clubId
+      * @param string $clubName
+      * @param string $clubNr
+      * @param string $association
+      * @return boolean
+      */
+    public function updateClubById(int $clubId, string $clubName, string $clubNr, string $association): bool 
+    {
         $query = "UPDATE Club set name = :name, clubNr = :clubNr, association = :association WHERE clubId = :clubId";
         $statement = $this->db->prepare($query);
         $statement->bindParam('clubId', $clubId);
@@ -84,7 +90,16 @@ trait ClubDB {
         return $statement->execute();
     }
 
-    public function updateClubByClubNr($clubNr, $clubName, $association) {
+    /**
+     * Undocumented function
+     *
+     * @param string $clubNr
+     * @param string $clubName
+     * @param string $association
+     * @return boolean
+     */
+    public function updateClubByClubNr(string $clubNr, string $clubName, string $association): bool
+    {
         $query = "UPDATE Club set name = :clubName, association = :association WHERE clubNr = :clubNr";
         $statement = $this->db->prepare($query);
         $statement->bindParam('clubName', $clubName);
@@ -95,12 +110,14 @@ trait ClubDB {
     }
 
     /**
-     * Select all Clubs
-     * @param number $min
-     * @param number $max
-     * @return unknown
+     * Select all Clubs between min and max
+     *
+     * @param integer $min
+     * @param integer $max
+     * @return array
      */
-    public function selectAllClubs($min = 0, $max = 0) {
+    public function selectAllClubs(int $min = 0, int $max = 0): array
+    {
         $limit = $min != $max ? "LIMIT :min, :max" : "ASC";
         $query = "SELECT * FROM Club ORDER by sort, name $limit";
         $statement = $this->db->prepare($query);
@@ -112,11 +129,13 @@ trait ClubDB {
     }
 
     /**
-     * delete club
-     * @param unknown $clubId
-     * @return unknown
+     * Delete Club with ID
+     *
+     * @param integer $clubId
+     * @return boolean
      */
-    public function deleteClubById($clubId) {
+    public function deleteClubById(int $clubId): bool
+    {
         $query = "DELETE Club  WHERE clubId = ?";
         $statement = $this->db->prepare($query);
         $statement->bindParam('clubId', $clubId);

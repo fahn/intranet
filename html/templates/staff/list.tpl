@@ -1,6 +1,6 @@
 <h1 class="display-2 mb-5">Staff</h1>
 <p class="text-right">
-    <a class="btn btn-success" href="?action=add">Staff hinzufügen</a>
+    <a class="btn btn-success" href="?action=add"><i class="fas fa-plus"></i> Staff hinzufügen</a>
 </p>
 <div class="table-responsive">
     <table class="table table-striped table-hover" data-toggle="table" data-pagination="false" data-search="true">
@@ -14,16 +14,16 @@
         <tbody>
             {foreach item=user from=$staff}
             <tr>
-                <td>{$user.lastName}, {$user.firstName}</td>
-                <td>{$user.row} / {$user.positon}</td>
+                <td>{$user.name}</td>
+                <td>{$user.row} / {$user.position}</td>
                 <td class="text-center">
-                    <a class="btn btn-info" href="?action=edit&id={$user.staffId}">Editieren</a>
-                    <a class="btn btn-danger" href="?action=delete&id={$user.staffId}">Löschen</a>
+                    <a class="btn btn-info" href="?action=edit&id={$user.staffId}"><i class="fas fa-pencil-alt"></i> Editieren</a>
+                    <a class="btn btn-danger" href="?action=delete&id={$user.staffId}"><i class="fas fa-trash-alt"></i> Löschen</a>
                 </td>
             </tr>
             {foreachelse}
             <tr>
-                <td colspan="8" class="text-center">Failed to get Staff from data base. {if $error}Reason: {$error} {/if}</td>
+                <td colspan="3" class="text-center">Failed to get Staff from data base. {if $error}Reason: {$error} {/if}</td>
             </tr>
             {/foreach}
         </tbody>

@@ -40,8 +40,6 @@ class PrgPatternElementTournament extends APrgPatternElement {
 
     }
 
-
-
     public function processPost() {}
 
 

@@ -1,4 +1,12 @@
 <h1 class="display-1 mb-5">Kategorien</h1>
+{if isset($links.add)}
+    <div class="row mb-5">
+        <div class="col-lg-12 text-right">
+            <a class="btn btn-success" href="{$links.add}" role="button"><i class="fas fa-plus"></i> Hinzufügen</a>
+        </div>
+    </div>
+{/if}
+
 <div class="alert alert-warning fade in alert-dismissible show">
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true" style="font-size:20px">×</span>

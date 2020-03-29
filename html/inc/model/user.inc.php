@@ -58,27 +58,33 @@ class User {
         if (!isset($dataSet) || $dataSet == null) {
             die("NO USER MODELL");
         }
-
         
-
-        if (is_array($dataSet)) {
-            $this->userId     = intval($dataSet[self::USER_CLM_ID]);
-            $this->email      = strval($dataSet[self::USER_CLM_EMAIL]);
-            $this->firstName  = strval($dataSet[self::USER_CLM_FNAME]);
-            $this->lastName   = strval($dataSet[self::USER_CLM_LNAME]);
-            $this->gender     = strval($dataSet[self::USER_CLM_GENDER]);
-            $this->isAdmin    = boolval($dataSet[self::USER_CLM_ADMIN]);
-            $this->isPlayer   = boolval($dataSet[self::USER_CLM_PLAYER]);
-            $this->isReporter = boolval($dataSet[self::USER_CLM_REPORTER]);
-            $this->passHash   = strval($dataSet[self::USER_CLM_PASS]);
-            $this->playerId   = strval($dataSet[self::USER_CLM_PLAYERID]);
-            //$this->clubId     = intval($dataSet->self::USER_CLM_CLUBID]);
-            $this->phone      = strval($dataSet[self::USER_CLM_PHONE]);
-            $this->bday       = strval($dataSet[self::USER_CLM_BDAY]);
-            $this->clubName   = "";
-            $this->userImage  = strval($dataSet[self::USER_CLM_IMAGE]);
+        
+        if (isset($dataSet) && is_array($dataSet)) {
+            try {
+                #throw new Exception("hi");
+                #print_r($dataSet);
+                
+                $this->userId     = intval($dataSet[self::USER_CLM_ID]);
+                $this->email      = strval($dataSet[self::USER_CLM_EMAIL]);
+                $this->firstName  = strval($dataSet[self::USER_CLM_FNAME]);
+                $this->lastName   = strval($dataSet[self::USER_CLM_LNAME]);
+                $this->gender     = strval($dataSet[self::USER_CLM_GENDER]);
+                $this->isAdmin    = boolval($dataSet[self::USER_CLM_ADMIN]);
+                $this->isPlayer   = boolval($dataSet[self::USER_CLM_PLAYER]);
+                $this->isReporter = boolval($dataSet[self::USER_CLM_REPORTER]);
+                $this->passHash   = strval($dataSet[self::USER_CLM_PASS]);
+                $this->playerId   = strval($dataSet[self::USER_CLM_PLAYERID]);
+                //$this->clubId     = intval($dataSet->self::USER_CLM_CLUBID]);
+                $this->phone      = strval($dataSet[self::USER_CLM_PHONE]);
+                $this->bday       = strval($dataSet[self::USER_CLM_BDAY]);
+                $this->clubName   = "";
+                $this->userImage  = strval($dataSet[self::USER_CLM_IMAGE]);
+            } catch (Exception $e) {
+                print_r($e);
+                die();
+            }
         } else {
-            echo gettype($dataSet);
             die(gettype($dataSet));
             $this->userId     = intval($dataSet->{self::USER_CLM_ID});
             $this->email      = strval($dataSet->{self::USER_CLM_EMAIL});
@@ -119,50 +125,77 @@ class User {
      * Method to retrieve the full name consisting of first and last name
      * @return string the full name
      */
-    public function getFullName() {
+    public function getFullName():string
+    {
         return sprintf("%s %s", $this->firstName, $this->lastName);
     }
 
 
-    public function getUserImage() {
+    public function getUserImage():string
+    {
         $file = self::USER_IMAGE_PATH ."/". $this->userImage;
         return strlen($this->userImage) > 0 && file_exists($_SERVER['DOCUMENT_ROOT'] .'/'. $file) ? $file : $this->getDefaultUserImage();
     }
 
-    public function getUserThumbnailImage() {
+    public function getUserThumbnailImage():string
+    {
         $file = self::USER_IMAGE_PATH ."/thumb_". $this->userImage;
         return strlen($this->userImage) > 0 && file_exists($_SERVER['DOCUMENT_ROOT'] .'/'. $file) ? $file : $this->getDefaultUserImage();
     }
 
-    public function getDefaultUserImage() {
+    public function getDefaultUserImage():string
+    {
         $file = self::USER_IMAGE_PATH  .'/'. ($this->gender == 'Male' ? self::USER_IMAGE_MALE : self::USER_IMAGE_FEMALE);
         return $file;
     }
 
-    public function getID() {
+    public function getID():int
+    {
         return $this->userId;
     }
 
-    public function getPlayerId() {
+    public function getPlayerId():string
+    {
         return $this->playerId;
     }
 
     /**
-     * get UserId
+     * return userid of user
+     *
+     * @return integer
      */
-    public function getUserId() {
+    public function getUserId():int
+    {
         return $this->userId;
     }
 
-    public function isAdmin() {
+    /**
+     * return true if user is admin
+     *
+     * @return boolean
+     */
+    public function isAdmin():bool
+    {
         return $this->isAdmin == true;
     }
 
-    public function isPlayer() {
+    /**
+     * return if user is player
+     *
+     * @return boolean
+     */
+    public function isPlayer():bool
+    {
         return $this->isPlayer == true;
     }
 
-    public function isReporter() {
+    /**
+     * return if user is reporter.
+     *
+     * @return boolean
+     */
+    public function isReporter():bool
+    {
         return $this->isReporter == true;
     }
 

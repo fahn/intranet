@@ -31,19 +31,23 @@ class Club {
 
     }
 
-    public function getClubNr() {
+    public function getClubNr():string 
+    {
         return $this->clubNr;
     }
 
-    public function getClubName() {
+    public function getClubName():string
+    {
         return $this->clubName;
     }
 
-    public function getAssociation() {
+    public function getAssociation():string
+    {
         return $this->association;
     }
 
-    public function getClubArray() {
+    public function getClubArray():array 
+    {
         return array(
             'clubNr'      => $this->getClubNr(),
             'clubName'    => $this->getClubName(),
@@ -54,7 +58,8 @@ class Club {
     /**
      * Print Club
      */
-    public function __toString() {
+    public function __toString():string
+    {
         return sprintf("%s => %s [ID: %i]\n", $this->clubNr, $this->clubName, $this->clubId);
     }
 }

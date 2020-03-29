@@ -11,13 +11,15 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
+declare(strict_types=1);
 trait SettingsDB
 {
 
     /**
      * loadSettings @TODO: upcoming feature
      */
-    public function loadSettings() {
+    public function loadSettings(): array
+    {
         $query = "SELECT * FROM Settings";
         $statement = $this->db->prepare($query);
 

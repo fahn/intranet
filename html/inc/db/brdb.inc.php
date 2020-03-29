@@ -35,7 +35,8 @@ include_once 'brdb.Tournament.inc.php';
 include_once 'brdb.User.inc.php';
 
 
-class BrankDB {
+class BrankDB 
+{
 
     private $db;
 
@@ -76,30 +77,36 @@ class BrankDB {
     // load Category
     use CategoryDB;
 
-
     // load Api
     use ApiDB;
 
 
 
-    public function __construct() {
-        if (!defined('PDO::ATTR_DRIVER_NAME')) {
+    public function __construct() 
+    {
+        if (!defined('PDO::ATTR_DRIVER_NAME')) 
+        {
             throw new Exception\Badtra("123");
         }
         // load connection
         $this->db = $this->connection();
     }
 
-    private function connection() {
-        if ($this->db == NULL) {
-            try {
+    private function connection() 
+    {
+        if ($this->db == NULL) 
+        {
+            try 
+            {
                 $tools    = new Tools();
 
                 $database = sprintf('mysql:host=%s;dbname=%s', $tools->getIniValue('db_host'), $tools->getIniValue('db_name'));
 
                 return new \PDO($database, $tools->getIniValue('db_user'), $tools->getIniValue('db_pass'));
 
-            } catch (Exception $e) {
+            } 
+            catch (Exception $e) 
+            {
                 echo "<pre>";
                 $this->setError($e);
                 print_r($e);
@@ -111,7 +118,8 @@ class BrankDB {
     /**
      * Destructor that closes the DB connection
      */
-    public function __destruct() {
+    public function __destruct() 
+    {
         #$this->db->close();
     }
 
@@ -120,7 +128,8 @@ class BrankDB {
      *
      * @return boolean true in case there is an error pending
      */
-    public function hasError() {
+    public function hasError() 
+    {
         return $this->hasError;
     }
 
@@ -131,7 +140,8 @@ class BrankDB {
      *
      * @return unknown
      */
-    public function getError() {
+    public function getError() 
+    {
         $this->hasError = false;
         return $this->error;
     }
@@ -142,12 +152,14 @@ class BrankDB {
      * @param string $error
      *            the error to be set
      */
-    private function setError($error) {
+    private function setError($error) 
+    {
         $this->hasError = true;
         $this->error = $error;
     }
 
-    public function insert_id() {
+    public function insert_id(): int
+    {
         return $this->db->insert_id;
     }
 
@@ -159,15 +171,68 @@ class BrankDB {
      *            the prepared and bound statement to be executed
      * @return mysqli_result the result of the executed statement
      */
-    public function executeStatement($statement) {
+    public function executeStatement($statement) 
+    {
         if (! $statement->execute()) {
             $this->setError($statement->error);
         }
         return $statement->get_result();
     }
 
-    public function countRows() {
-        return $this->rowCount();
+    public function countRows($statement): int
+    {
+        return $statement->rowCount();
+    }
+    /*
+    private function doPrepareBind($param) 
+    {
+        try {
+            foreach($param as $par){
+                switch($par[2]):
+                    case 'int':
+                        $query->bindParam($par[0], $par[0], PDO::PARAM_INT);
+                    break;
+
+                    case 'str':
+                        $query->bindParam($par[0], $par[0], PDO::PARAM_STR);
+                    break;
+
+                    case 'blob':
+                        $query->bindParam($par[0], $par[0], PDO::PARAM_LOB);
+                    break;
+
+                    default:
+                        $query->bindParam($par[0], $par[0], PDO::PARAM_STR);
+                    break;
+
+                endswitch;
+            }
+
+            return $query;
+        } catch(PDOException $e) {
+            throw new myPdoException($e);
+        }
+    } */
+
+    private function executeFetchAll($statement) 
+    {
+        if (!$statement->execute()) {
+            $this->setError($statement->error);
+        }
+        return $statement->fetchAll();
+    }
+
+    private function executeFetch($statement) 
+    {
+        if (!$statement->execute()) {
+            $this->setError($statement->error);
+        }
+        return $statement->fetch();
+    }
+
+    private function debug($statement) 
+    {
+        return $statement->debugDumpParams();
     }
 
     

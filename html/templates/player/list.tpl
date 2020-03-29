@@ -25,16 +25,13 @@
                 <td>{$user.clubName}</td>
                 <td class="text-center">{if $user.gender == "Male"}<i class="fas fa-male"></i>{else}<i class="fas fa-female"></i>{/if}</td>
                 <td class="text-center">
-                    <!--
-                    <a class="btn btn-info" href="?action=edit&id={$user.playerId}">Editieren</a>
-                    <a class="btn btn-danger" href="?action=delete&id={$user.playerId}">Löschen</a>
-                    -->
-                    coming soon
+                    <a class="btn btn-info" href="?action=edit&id={$user.playerId}"><i class="fas fa-pencil-alt"></i> Editieren</a>
+                    <a class="btn btn-danger" href="?action=delete&id={$user.playerId}"><i class="fas fa-trash-alt"></i> Löschen</a>
                 </td>
             </tr>
             {foreachelse}
             <tr>
-                <td class="text-center" colspan="5">No Player available</td>
+                <td class="text-center" colspan="6">No Player available</td>
             </tr>
             {/foreach}
         </tbody>
