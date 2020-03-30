@@ -248,6 +248,7 @@ class PrgPatternElementUser extends APrgPatternElement {
         $lastName   = strval(trim($this->getPostVariable(self::FORM_USER_LNAME)));
         $gender     = strval(trim($this->getPostVariable(self::FORM_USER_GENDER)));
         $playerId   = strval(trim($this->getPostVariable(self::FORM_USER_PLAYERID)));
+        $bday       = $this->issetPostVariable(self::FORM_USER_BDAY) ? date("Y-m-d", strtotime($this->getPostVariable(self::FORM_USER_BDAY))) : "";
 
         // First filter the email before continue
         if (! $this->tools->validEMail($email) ) {
@@ -343,7 +344,7 @@ class PrgPatternElementUser extends APrgPatternElement {
             return;
         }
 
-        $email      = $this->getPostVariable(self::FORM_USER_EMAIL);
+        $email      = strval($this->getPostVariable(self::FORM_USER_EMAIL));
         $firstName  = $this->getPostVariable(self::FORM_USER_FNAME);
         $lastName   = $this->getPostVariable(self::FORM_USER_LNAME);
         $gender     = $this->getPostVariable(self::FORM_USER_GENDER);
@@ -387,7 +388,7 @@ class PrgPatternElementUser extends APrgPatternElement {
         }
 
         // Check that it is not my email, which is allowed to be set!
-        $dataSetUser = new User(user);
+        $dataSetUser = new User($user);
         if ($dataSetUser->userId != $userId) {
             $this->setFailedMessage(self::ERROR_USER_EMAIL_EXISTS);
             return;
