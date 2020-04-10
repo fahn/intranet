@@ -17,7 +17,6 @@ include_once BASE_DIR .'/inc/logic/prgTournament.inc.php';
 
 # libary
 require_once BASE_DIR .'/vendor/autoload.php';
-require_once BASE_DIR .'/inc/class.Diff.php';
 
 class BrdbHtmlTournamentPage extends BrdbHtmlPage 
 {
@@ -314,6 +313,18 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage
           }
         }
         return $aReturn;
+
+        /*
+            use SebastianBergmann\Diff\Differ;
+            use SebastianBergmann\Diff\Output\DiffOnlyOutputBuilder;
+
+            $builder = new DiffOnlyOutputBuilder(
+                "--- Original\n+++ New\n"
+            );
+
+            $differ = new Differ($builder);
+            print $differ->diff('foo', 'bar');
+                 */
     }
 
     private function getAllUser():array
