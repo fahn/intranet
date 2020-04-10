@@ -6,11 +6,11 @@ README.sh
 
 # Requirements
 Folgende Sachen werden benötigt:
-- Webserver
+-  Webserver
 Auf diesem Webserver werden folgende Komponentent benötigt:
-- apache2/nginx
-- php
-- composer (inkl. der composer-libaries die in der Datei .composer.json enthalten sind)
+-  apache2/nginx
+-  php
+-  composer (inkl. der composer-libaries die in der Datei .composer.json enthalten sind)
 
 ## Docker container
 Alternativ kann der Docker-container (<https://github.com/fahn/rangliste_docker>) genutzt werden
@@ -36,7 +36,7 @@ Folgende Bibliotheken wurde hier eingesetzt:
 | erusev/parsedown   | 1.7.3   | MIT         | (<https://github.com/erusev/parsedown>)     |
 
 ## weitere Hilfsmittel
-- <https://mapmarker.io/documentation>: Erstellung Google Maps Marker
+-  <https://mapmarker.io/documentation>: Erstellung Google Maps Marker
 
 # Docker
 ## Build des Images
@@ -50,4 +50,4 @@ Folgende Bibliotheken wurde hier eingesetzt:
 ```
 
 # Programmierer
-- Stefan Metzner
+-  Stefan Metzner

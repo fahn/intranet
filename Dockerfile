@@ -85,7 +85,5 @@ VOLUME [ "/var/www/html/static/img/favicon" ]
 VOLUME [ "/etc/aliases" ]
 VOLUME [ "/etc/msmtprc" ]
 
-USER root
-
 # Ports
 EXPOSE 80
