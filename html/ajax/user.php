@@ -48,7 +48,7 @@ try {
 
     }
 } catch(Exception $e){
-    die("ERROR: Could not able to execute" . $e->getMessage());
+    sprintf("ERROR: Could not able to execute :%s", $e->getMessage());
 }
 
 ?>

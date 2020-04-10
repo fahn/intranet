@@ -452,7 +452,7 @@ abstract class APrgPatternElement implements IPrgPatternElement
             echo 'Details'. $details;
             echo 'Data:'. $data;
             echo '</pre>';
-            die();
+            exit(99);
         }
     }
 
@@ -590,7 +590,7 @@ abstract class APrgPatternElement implements IPrgPatternElement
         catch (Exception $e) 
         {
             sprintf("HARD ERROR WITH %s", serialize($url));
-            die();
+            exit(98);
         }
     }
 
@@ -948,7 +948,7 @@ abstract class APrgPatternElement implements IPrgPatternElement
     public function dump($var) {
         echo "<pre>";
         var_dump($var);
-        die();
+        exit(1);
     }
 
     /**

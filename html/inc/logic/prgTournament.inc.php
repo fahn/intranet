@@ -409,7 +409,6 @@ class PrgPatternElementTournament extends APrgPatternElement {
                 $tmp = array();
                 foreach ($players as $player) {
                     $playerData   = $this->brdb->selectPlayerById($player);
-                    die(print_r($playerData));
                     array_push($tmp, sprintf("%s %s", $playerData['firstName'], $playerData['lastName']));
                 }
                 $playerString = implode(", ", $tmp);
@@ -418,7 +417,6 @@ class PrgPatternElementTournament extends APrgPatternElement {
             
             // get User Information
             $user   = $this->brdb->selectUserById($id);
-            die($user);
             if (!isset($user['email']) || !filter_var($user['email'], FILTER_VALIDATE_EMAIL)) {
                 return false;
             }

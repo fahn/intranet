@@ -56,7 +56,7 @@ class User {
      */
     public function __construct($dataSet = null) {
         if (!isset($dataSet) || $dataSet == null) {
-            die("NO USER MODELL");
+            throw new Exception("NO USER MODELL");
         }
         
         
@@ -82,10 +82,9 @@ class User {
                 $this->userImage  = strval($dataSet[self::USER_CLM_IMAGE]);
             } catch (Exception $e) {
                 print_r($e);
-                die();
+                exit(33);
             }
         } else {
-            die(gettype($dataSet));
             $this->userId     = intval($dataSet->{self::USER_CLM_ID});
             $this->email      = strval($dataSet->{self::USER_CLM_EMAIL});
             $this->firstName  = strval($dataSet->{self::USER_CLM_FNAME});

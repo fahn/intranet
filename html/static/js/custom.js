@@ -47,7 +47,6 @@ $(document).ready(function() {
 
     $("#mySelector").change(function() {
         var selection = $(this).val();
-        console.log(selection);
         $("table")[selection ? "show" : "hide"]();
 
         if (selection) {
