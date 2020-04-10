@@ -9,14 +9,13 @@ if (!defined("BASE_DIR")) {
 $stage = getenv('STAGE', true) ?: getenv('STAGE');
 
 
-if($stage == "production") {
+#if ($stage == "production") {
   $url = "/pages";
   header('Location: '. $url);
   exit();
-}
-
-
-/************************ TESTING AREA  */
+#}
+ 
+/*
 require_once BASE_DIR .'/vendor/autoload.php';
 use App\Controller\BlogController;
 use Symfony\Component\Routing\Generator\UrlGenerator;
@@ -33,7 +32,7 @@ require_once (BASE_DIR .'/inc/html/brdbHtmlTournamentPage.inc.php');
 $routeTournament = new Route('/ttt',
   ['_controller' => BrdbHtmlTournamentPage::class ]/*,
   [ 'action'      => '' ],
-  [ 'id'          =>  '[0-9]'] */
+  [ 'id'          =>  '[0-9]'] 
 );
 $routes->add('tournament', $routeTournament);
 
@@ -47,4 +46,7 @@ $matcher = new UrlMatcher($routes, $context);
 
 print_r($matcher);
 print_r($context);
+?>
+
+*/
 ?>
