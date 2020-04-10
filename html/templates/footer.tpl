@@ -5,7 +5,9 @@
           <a class="navbar-brand" href="https://badtra.de">Badtra</a>
           <div class="collapse navbar-collapse" id="navbarCollapse">
               <ul class="navbar-nav mr-auto">
-                  <li class="nav-item"><a class="nav-link" href="https://docs.badtra.de">Manual</a></li>
+                {if isset($links.docs)}
+                      <li class="nav-item"><a class="nav-link" href="https://docs.badtra.de">Manual</a></li>
+                {/if}
                   <li class="nav-item"><a class="nav-link disabled" href="#">Version: {$version|default:"1.0.7"}</a></li>
               </ul>
               </div>

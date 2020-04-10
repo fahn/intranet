@@ -1,4 +1,4 @@
-<form action="{$formTO}" method="post" >
+<form action="" method="post" >
   <input type="hidden" name="loginFormLoginAction" id="loginFormLoginAction" value="Log In">
   <div class="login-form">
     {include file="messages.tpl"}
@@ -7,17 +7,17 @@
       <div class="input-group-prepend">
         <div class="input-group-text"><i class="fas fa-at"></i></div>
       </div>
-       <input type="email" class="form-control login-field" value="" placeholder="E-Mail-Adresse" id="{$variableNameEmail}" name="{$variableNameEmail}" required autofocus>
+       <input type="email" class="form-control login-field" value="" placeholder="E-Mail-Adresse" id="loginFormLoginEmail" name="loginFormLoginEmail" required autofocus>
     </div>
 
     <div class="input-group mb-2 mr-sm-2">
       <div class="input-group-prepend">
         <div class="input-group-text"><i class="fas fa-key"></i></div>
       </div>
-      <input type="password" class="form-control login-field" value="" placeholder="Password" id="{$variableNamePassw}" name="{$variableNamePassw}" required>
+      <input type="password" class="form-control login-field" value="" placeholder="Password" id="loginFormLoginPass" name="loginFormLoginPass" required>
     </div>
 
-    <input type="submit" name="{$variableNameAction}" class="btn btn-success btn-block " value="{$variableNameActionLogin}">
+    <input type="submit" name="loginFormLoginAction" class="btn btn-success btn-block " value="Log In">
 
     <div class="row">
         <div class="col-md-{if $registerEnabled}6{else}12{/if}">

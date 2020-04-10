@@ -16,34 +16,34 @@
         {/if}
     </div>
     <div class="col-lg-4 col-lg-push-8">
-        {if $rankingEnable == "on" and $widgetRankingLatestGames}
+        {if isset($widgetRankingLatestGames) && $rankingEnable == "on"}
             {$widgetRankingLatestGames}
         {/if}
 
 
-        {if $widgetShowTeam && isset($team)}
+        {if isset($widgetShowTeam) && isset($team)}
             {$team|default:""}
         {/if}
 
-        {if $isAdmin}
+        {if isset($isAdmin)}
             {$widgetShowBdays}
         {/if}
 
-        {if $social.socialHomepage || $social.socialFacebook || $social.socialYoutube || $social.socialTwitter}
+        {if isset($social.socialHomepage) || isset($social.socialFacebook) || isset($social.socialYoutube) || isset($social.socialTwitter)}
             <div class="card mt-4 mb-4">
                 <h5 class="card-header">Social</h5>
                 <div class="card-body">
                     <p class="card-text text-center">
-                        {if $social.socialHomepage}
+                        {if isset($social.socialHomepage)}
                             <a href="{$social.socialHomepage}" target="_blank"><i class="fas fa-home fa-2x" aria-hidden="true"></i></a>&nbsp;&nbsp;
                         {/if}
-                        {if $social.socialFacebook}
+                        {if isset($social.socialFacebook)}
                             <a href="{$social.socialFacebook}" target="_blank"><i class="fab fa-facebook fa-2x" aria-hidden="true"></i></a>&nbsp;&nbsp;
                         {/if}
-                        {if $social.socialYoutube}
+                        {if isset($social.socialYoutube)}
                             <a href="{$social.socialYoutube}" target="_blank"><i class="fab fa-youtube fa-2x" aria-hidden="true"></i></a>&nbsp;&nbsp;
                         {/if}
-                        {if $social.socialTwitter}
+                        {if isset($social.socialTwitter)}
                             <a href="{$social.socialTwitter}" target="_blank"><i class="fab fa-twitter fa-2x" aria-hidden="true"></i></a>&nbsp;&nbsp;
                         {/if}
                     </p>

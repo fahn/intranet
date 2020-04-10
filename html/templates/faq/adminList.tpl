@@ -15,8 +15,8 @@
     <tbody>
         {foreach item=item from=$FaqList}
         <tr>
-            <th scope="row">{$item.title}</th>
-            <th scope="row">{$item.categoryTitle}</th>
+            <td scope="row">{$item.title}</td>
+            <td scope="row">{$item.categoryTitle}</td>
             <td class="text-center"><a class="btn btn-info" href="{$item.editLink}">editieren</a> <a class="btn btn-danger" href="{$item.deleteLink}">Löschen</a></td>
         </tr>
         {/foreach}

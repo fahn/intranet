@@ -102,7 +102,7 @@ $(document).ready(function() {
             data: function(params) {
                 var query = {
                     playerSearch: params.term,
-                }
+                };
                 return query;
             },
             processResults: function(data) {

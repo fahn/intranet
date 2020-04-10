@@ -43,7 +43,7 @@
                             <a class="dropdown-item" href="/pages/adminNews.inc.php"><i class="fas fa-newspaper"></i> News</a>
                             <a class="dropdown-item" href="/pages/adminCategory.inc.php"><i class="far fa-list-alt"></i> Kategorien</a>
                             <div class="dropdown-divider"></div>
-                            <!-- <a class="dropdown-item" href="settings.php"><i class="fas fa-wrench"></i> Einstellungen</a> -->
+                            <a class="dropdown-item" href="/pages/adminSettings.php"><i class="fas fa-wrench"></i> Einstellungen</a>
                             <a class="dropdown-item" href="/pages/log.php"><i class="fas fa-list"></i> Logs</a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="/pages/adminSetup.php"><i class="fas fa-wrench"></i> Setup</a>

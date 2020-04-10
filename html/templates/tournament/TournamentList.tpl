@@ -14,8 +14,9 @@
 
 <div class="tab-content">
   <div id="home" class="tab-pane container active">
-
-    <div id="map" class="mb-5" style="width: 100%; height: 400px !important"></div>
+    {if isset($tournamentList) && $tournamentList|count > 0}
+        <div id="map" class="mb-5" style="width: 100%; height: 400px !important"></div>
+    {/if}
 
 
     <div class="row">
@@ -41,7 +42,7 @@
 
   </div>
   
-   <div id="calendar" class="tab-pane container">
+  <div id="calendar" class="tab-pane container">
       <h2 class="display-2 mt-5">Kalender</h2>
       {include file="tournament/calendar.tpl" data=$calendar}
   </div>
@@ -114,15 +115,15 @@ var map;
           });
 
           contentString = '<div id="infowindow">'+
-           '<div id="siteNotice">'+
-           '</div>'+
-           '<h1 id="firstHeading" class="firstHeading">'+ feature.name +'</h1>'+
-           '<div id="bodyContent">'+
-           '<p>Von '+ feature.start +' - '+ feature.end +' ('+ feature.deadline +')</p>'+
-           '<p>Ort: '+ feature.place +'</p>'+
-           '<p><a href="/pages/rankingTournament.php?action=details&id='+ feature.id +'">Details</a></p>'+
-           '</div>'+
-           '</div>';
+          '<div id="siteNotice">'+
+          '</div>'+
+          '<h1 id="firstHeading" class="firstHeading">'+ feature.name +'</h1>'+
+          '<div id="bodyContent">'+
+          '<p>Von '+ feature.start +' - '+ feature.end +' ('+ feature.deadline +')</p>'+
+          '<p>Ort: '+ feature.place +'</p>'+
+          '<p><a href="/pages/rankingTournament.php?action=details&id='+ feature.id +'">Details</a></p>'+
+          '</div>'+
+          '</div>';
 
           google.maps.event.addListener(marker, 'click', function(){
                   if (feature.id) {
@@ -130,10 +131,10 @@ var map;
                   } else {
                     content = "<div id='infowindow'>"+ feature.name +" in "+ feature.place +"</div>";
                   }
-                   infowindow.close(); // Close previously opened infowindow
-                   infowindow.setContent(content);
-                   infowindow.open(map, marker);
-               });
+                  infowindow.close(); // Close previously opened infowindow
+                  infowindow.setContent(content);
+                  infowindow.open(map, marker);
+              });
         });
       }
 
