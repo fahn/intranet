@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -19,6 +19,7 @@ include_once(BASE_DIR .'/inc/db/brdb.inc.php');
 // Logic
 include_once(BASE_DIR .'/inc/logic/prgLogin.inc.php');
 include_once(BASE_DIR .'/inc/logic/prgUser.inc.php');
+include_once(BASE_DIR .'/inc/logic/prgSettings.inc.php');
 
 // load widgets
 include_once(BASE_DIR .'/inc/widget/ranking.widget.php');
@@ -43,10 +44,15 @@ include_once(BASE_DIR .'/inc/widget/news.widget.php');
  * @author philipp
  *
  */
-abstract class AHtmlLoginPage extends HtmlPageProcessor {
-    protected $brdb;
-    protected $prgPattern;
-    protected $prgPatternElementLogin;
+abstract class AHtmlLoginPage extends HtmlPageProcessor 
+{
+    protected BrankDB $brdb;
+    protected PrgPattern $prgPattern;
+    protected PrgPatternElementLogin $prgPatternElementLogin;
+
+    protected int $id;
+    protected string $action;
+    protected string $page;
 
     /**
      * Standard Constructor for the HTML Login page. It
@@ -55,37 +61,52 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
      * $brdb. it is protected and therefore accessible by all derived
      * classes (pages)
      */
-    public function __construct() {
+    public function __construct() 
+    {
         parent::__construct();
-
-
-        // check maintenance
-        #if ($this->tools->isMaintenance()) {
-        #    $this->tools->customRedirect('maintenance.php');
-        #}
-
+        
         /* SQL CONNECTION */
         $this->brdb = new BrankDB();
 
         /* Login pattern */
         $this->prgPatternElementLogin = new PrgPatternElementLogin($this->brdb);
-
-
+        
         $this->prgPattern = new PrgPattern();
         $this->prgPattern->registerPrg($this->prgPatternElementLogin);
 
+        try {
+            $this->id     = intval(trim($this->prgPatternElementLogin->getGetVariable("id")));
+            $this->action = strval(trim($this->prgPatternElementLogin->getGetVariable("action")));
+            $this->page = intval(trim($this->prgPatternElementLogin->getGetVariable("page")));
+        } catch (Exception $e) {
+            $details = sprintf("Cannot transfer GET-VAR");
+            $message = sprintf("Message: %s", $e->getMessage());
+            $this->prgPatternElementLogin->log("GENERELL", $details, $message, "GET");
+            unset($details, $message);
+        }
+
+        // load smarty
+        $this->smarty = new Smarty();
+
+
+
+        // check maintenance
+        #if ($this->prgPatternElementLogin->isMaintenance()) {
+        #    $this->prgPatternElementLogin->customRedirectArray('maintenance.php');
+        #}
 
         /* LOAD SETTINGS */
-        //$this->settings = $this->loadSettings();
+        //$this->settings = $this->brdb->loadAllSettings();
 
         /* goto Login */
         $basename = basename($_SERVER['PHP_SELF']);
 
         $isUserLoggedIn = $this->prgPatternElementLogin->isUserLoggedIn();
 
-        if($basename != "index.php" && $isUserLoggedIn === false) {
+        if ($basename != "index.php" && $isUserLoggedIn === false) 
+        {
             $_SESSION['ref'] = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
-            $this->tools->customRedirect(array(
+            $this->PrgPatternElementLogin->customRedirectArray(array(
               'page' => 'index.php',
             ));
         }
@@ -95,12 +116,49 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
     public function processPage() {
         $this->getMessages();
 
-        $isUserLoggedIn = $this->prgPatternElementLogin->isUserLoggedIn();
-        if($isUserLoggedIn AND $this->smarty) {
-            $currentUserName = $this->prgPatternElementLogin->getLoggedInUser()->getFullName();
-            $currentUserImage = $this->prgPatternElementLogin->getLoggedInUser()->getUserThumbnailImage();
+        // load version
+        $this->version = $this->prgPatternElementLogin->getSettingString('VERSION');
 
+        
+
+        $this->smarty->setTemplateDir(BASE_DIR .'/templates');
+        $this->smarty->setCompileDir(BASE_DIR  .'/templates_c');
+        $this->smarty->setConfigDir(BASE_DIR  .'/smarty/configs');
+
+        
+
+        if ($this->prgPatternElementLogin->isDeployment()) 
+        {
+            $this->smarty->setCacheDir(BASE_DIR  .'/cache');
+            // @TODO: set debug bar
+            $this->smarty->clear_all_cache();
+            $this->smarty->force_compile  = true;
+            $this->smarty->debugging      = false;
+            $this->smarty->caching        = false;
+            $this->smarty->cache_lifetime = 0;
+            $$this->version .="-dev";
+        } 
+        else 
+        {
+            // remove notice
+            $this->smarty->error_reporting = E_ALL & ~E_NOTICE;
+        }
+
+        $this->smarty->assign(array(
+            'pageTitle' => $this->prgPatternElementLogin->getSettingString('SITE_NAME'),
+            'logoTitle' => $this->prgPatternElementLogin->getSettingString('SITE_NAME'),
+            'baseUrl'   => $this->prgPatternElementLogin->getSettingString('BADTRA_URL'),
+            'version'   => $this->version,
+        ));
+
+        $isUserLoggedIn = $this->prgPatternElementLogin->isUserLoggedIn();
+        if ($isUserLoggedIn AND $this->smarty) 
+        {
+            // user
             $user = $this->prgPatternElementLogin->getLoggedInUser();
+            // get User Image
+            $currentUserName  = $user->getFullName();
+            $currentUserImage = $user->getUserThumbnailImage();
             $this->smarty->registerObject('user', $user);
 
             // Notification
@@ -116,13 +174,13 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
                     'isReporter'         => $this->prgPatternElementLogin->getLoggedInUser()->isReporter(),
                     'userId'             => $this->prgPatternElementLogin->getLoggedInUser()->getId(),
                     // ini values
-                    'rankingEnable'      => $this->tools->getIniValue('RankingEnabled'),
-                    'tournamentEnable'   => $this->tools->getIniValue('tournamentEnable'),
-                    'faqEnabled'         => $this->tools->getIniValue('faqEnabled'),
-                    'social'             => $this->tools->getIniValue('Social'),
-                    'notificationEnable' => $this->tools->getIniValue('notificationEnable'),
-                    'newsEnable'         => $this->tools->getIniValue('newsEnable'),
+                    'rankingEnable'      => $this->prgPatternElementLogin->getSettingBool('RANKING_ENABLE'),
+                    'tournamentEnable'   => $this->prgPatternElementLogin->getSettingBool('TOURNAMENT_ENABLE'),
+                    'faqEnabled'         => $this->prgPatternElementLogin->getSettingBool('FAQ_ENABLE'),
+                    'social'             => $this->prgPatternElementLogin->getSettingArray('SOCIAL_LINK'),
+                    'newsEnable'         => $this->prgPatternElementLogin->getSettingBool('NEWS_ENABLE'),
                     #$notification->getNotification(),
+
             ));
         }
 
@@ -157,64 +215,58 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
         // get Messages
         $this->getMessages();
 
-        if ($isUserLoggedIn) {
+        if ($isUserLoggedIn) 
+        {
             $this->smarty->assign(array(
                     'content'      => $this->loadContent(),
                     #'notification' => $this->getNotification(),
             ));
             $this->smarty->display('index.tpl');
-        } else {
-            $action = $this->tools->get("action");
+        } 
+        else 
+        {
+            $action = $this->prgPatternElementLogin->getGetVariable("action");
             $request = isset($action) ? $action : '';
 
-            switch ($request) {
-              case 'request_password':
-                  $this->content = $this->smarty->fetch('login/request_password.tpl');
-                  break;
+            
 
-              case 'change_password':
-                  $token = $this->tools->get("token");
-                  $mail  = $this->tools->get("mail");
-                  $this->smarty->assign(array(
-                      'token' => $token,
-                      'mail'  => $mail,
-                  ));
-                  $this->content = $this->smarty->fetch('login/change_password.tpl');
-                  break;
+            $links = array(
+                'docs'            => $this->prgPatternElementLogin->getSettingString('BADTRA_MANUAL'),
+                'imprint'         => $this->prgPatternElementLogin->getSettingString('IMPRINT_LINK'),
+                'disclaimer'      => $this->prgPatternElementLogin->getSettingString('DISCLAIMER_LINK'),
+                'registerEnabled' => $this->prgPatternElementLogin->getSettingBool('REGISTER_ENABLE'),
+            );
 
-              case 'register':
-                  require_once BASE_DIR .'/inc/html/brdbHtmlSupport.inc.php';
-                  $support = new brdbHtmlSupport();
-                  $this->content = $support->register();
-                  break;
+            switch ($request) 
+            {
+                case 'request_password':
+                    $this->content = $this->smarty->fetch('login/request_password.tpl');
+                    break;
 
-              default:
-                // if there is no user logged in, then show the content to
-                // to perform a new login
-                $variableNameEmail              = $this->prgPatternElementLogin->getPrefixedName(PrgPatternElementLogin::FORM_LOGIN_EMAIL);
-                #$variableNameEmailValue         = $this->prgPatternElementLogin->safeGetSessionVariable(PrgPatternElementLogin::FORM_LOGIN_EMAIL);
-                $variableNamePassw              = $this->prgPatternElementLogin->getPrefixedName(PrgPatternElementLogin::FORM_LOGIN_PASSWORD);
-                $variableNameAction             = $this->prgPatternElementLogin->getPrefixedName(PrgPatternElementLogin::FORM_LOGIN_ACTION);
-                $variableNameActionLogin        = PrgPatternElementLogin::FORM_LOGIN_ACTION_LOGIN;
+                case 'change_password':
+                    $token = $this->PrgPatternElementLogin->getGetVariable("token");
+                    $mail  = $this->PrgPatternElementLogin->getGetVariable("mail");
+                    $this->smarty->assign(array(
+                        'token' => $token,
+                        'mail'  => $mail,
+                    ));
+                    $this->content = $this->smarty->fetch('login/change_password.tpl');
+                    break;
 
-                $this->smarty->assign(array(
-                    'variableNameEmail'       => $variableNameEmail,
-                    'variableNamePassw'       => $variableNamePassw,
-                    'formTO'                  => '',
-                    'variableNameAction'      => $variableNameAction,
-                    'variableNameActionLogin' => $variableNameActionLogin,
-                    'imprint'                 => $this->tools->getIniValue('imprint'), # ["Links"]
-                    'disclaimer'              => $this->tools->getIniValue('disclaimer'), #["Links"]
-                    'registerEnabled'         => $this->tools->getIniValue('registerEnabled') == 'on' ? true : false,
+                case 'register':
+                    require_once BASE_DIR .'/inc/html/brdbHtmlSupport.inc.php';
+                    $support = new brdbHtmlSupport();
+                    $this->content = $support->register();
+                    break;
 
-                ));
-
-                $this->content =  $this->smarty->fetch('login/login_form.tpl');
-                break;
+                default:
+                    $this->smarty->assign('links', $links);
+                    $this->content =  $this->smarty->fetch('login/login_form.tpl');
+                    break;
             }
 
             $this->smarty->assign(array(
-              'content' => $this->content,
+                'content' => $this->content,
             ));
             $this->smarty->display('login.tpl');
         }
@@ -251,5 +303,7 @@ abstract class AHtmlLoginPage extends HtmlPageProcessor {
 
         return $this->smarty->fetch('default.tpl');
     }
+
+    
 }
 ?>

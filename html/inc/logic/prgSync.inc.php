@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -11,26 +11,12 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
-declare(strict_types=1);
-
 include_once 'prgPattern.inc.php';
 
-include_once BASE_DIR .'/inc/db/brdb.inc.php';
-include_once BASE_DIR .'/inc/logic/tools.inc.php';
-
-/**
- * This prg pattern ahndles all the post and get actions
- * to insert, delete or update a game in the data base.
- * @author philipp
- *
- */
 class PrgPatternElementSync extends APrgPatternElement 
 {
-    private $brdb;
-    protected $prgElementLogin;
-
-    private $prgPatternElementClub;
-    private $prgPatternElementPlayer;
+    private PrgPatternElementClub $prgPatternElementClub;
+    private PrgPatternElementPlayer $prgPatternElementPlayer;
 
     private $page = 'adminSync.php';
 
@@ -44,16 +30,17 @@ class PrgPatternElementSync extends APrgPatternElement
     private $statistics = array('clubs' => '', 'player' => '', 'tournaments' => '');
 
 
-    public function __construct(BrankDB $brdb, PrgPatternElementLogin $prgElementLogin): void
+    public function __construct(PrgPatternElementLogin $prgElementLogin)
     {
         parent::__construct("sync");
-        $this->brdb = $brdb;
+
         $this->prgElementLogin = $prgElementLogin;
 
-        #$this->statistics
-        $this->prgPatternElementClub = new PrgPatternElementClub($this->brdb, $this->prgElementLogin);
+        // Club
+        $this->prgPatternElementClub = new PrgPatternElementClub($this->prgElementLogin);
 
-        $this->prgPatternElementPlayer = new PrgPatternElementPlayer($this->brdb, $this->prgElementLogin);
+        // Player
+        $this->prgPatternElementPlayer = new PrgPatternElementPlayer($this->prgElementLogin);
 
 
     }
@@ -248,7 +235,7 @@ class PrgPatternElementSync extends APrgPatternElement
         $this->setSuccessMessage($this->statistics);
 
         // redirect
-        $this->tools->customRedirect(array('page' => $this->page));
+        $this->customRedirectArray(array('page' => $this->page));
     }
 
     public function getStatistics(): array

@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -15,7 +15,6 @@ $path=dirname(dirname(__FILE__));
 require_once($path .'/brdbHtmlPage.inc.php');
 
 include_once BASE_DIR .'/inc/logic/prgCategory.inc.php';
-include_once BASE_DIR .'/inc/logic/tools.inc.php';
 
 class BrdbHtmlAdminCategoryPage extends BrdbHtmlPage {
     // pattern
@@ -29,36 +28,36 @@ class BrdbHtmlAdminCategoryPage extends BrdbHtmlPage {
     public function __construct($page = null) {
         parent::__construct();
 
+        $this->prgPatternElementCategory = new prgPatternElementCategory($this->prgPatternElementLogin);
+        $this->prgPattern->registerPrg($this->prgPatternElementCategory);
+
         if ($page != null) {
              $this->_page = $page;
         }
 
+
         # load links
         $links = array(
-            'add' => $this->tools->linkTo(array('page' => $this->_page, 'action' => 'add')),
-            'list' => $this->tools->linkTo(array('page' => $this->_page, 'action' => 'add')),
-            'home' => $this->tools->linkTo(array('page' => $this->_page)),
+            'add'  => $this->prgPatternElementCategory->linkTo(array('page' => $this->_page, 'action' => 'add')),
+            'list' => $this->prgPatternElementCategory->linkTo(array('page' => $this->_page, 'action' => 'add')),
+            'home' => $this->prgPatternElementCategory->linkTo(array('page' => $this->_page)),
         );
 
         $this->smarty->assign('links', $links);
-
-        $this->prgPatternElementCategory = new prgPatternElementCategory($this->brdb, $this->prgPatternElementLogin);
-        $this->prgPattern->registerPrg($this->prgPatternElementCategory);
     }
 
 
-    public function htmlBody() {
-        $action = $this->prgPatternElementCategory->issetGetVariable("action") ? $this->prgPatternElementCategory->getGetVariable("action") : "123";
-        $id     = $this->prgPatternElementCategory->issetGetVariable("id") ? $this->prgPatternElementCategory->getGetVariable("id") : 0;
-
-        switch ($action) {
+    public function htmlBody(): void
+    {
+        switch ($this->action) 
+        {
             case 'add':
             case 'edit':
-                $content = $this->TMPL_update($action, $id);
+                $content = $this->TMPL_update($this->action);
                 break;
 
             case 'delete':
-                $content = $this->TMPL_delete($id);
+                $content = $this->TMPL_delete();
                 break;
 
             default:
@@ -82,7 +81,7 @@ class BrdbHtmlAdminCategoryPage extends BrdbHtmlPage {
         return $this->smarty->fetch('category/adminList.tpl');
     }
 
-    private function TMPL_update(String $action, int $id) {
+    private function TMPL_update(String $action) {
         $this->smarty->assign(array(
             'action'                 => $action,
         ));
@@ -90,9 +89,15 @@ class BrdbHtmlAdminCategoryPage extends BrdbHtmlPage {
         return $this->smarty->fetch('category/adminUpdate.tpl');
     }
 
-    private function TMPL_delete(int $id) {
+    /**
+     * Delete Category
+     *
+     * @return string
+     */
+    private function TMPL_delete(): string
+    {
         $this->smarty->assign(array(
-            'item' => $this->getNewsById($id),
+            'item' => $this->getCategoryById($this->id),
         ));
 
         return $this->smarty->fetch('category/adminDelete.tpl');
@@ -106,8 +111,8 @@ class BrdbHtmlAdminCategoryPage extends BrdbHtmlPage {
         if (isset($categoryList) && !empty($categoryList)) {
             foreach ($categoryList as $dataSet) {
                 // links
-                $dataSet['editLink']   = $this->tools->linkTo(array('page' => $this->_page, 'action' => 'edit',   'id' => $dataSet['categoryId']));
-                $dataSet['deleteLink'] = $this->tools->linkTo(array('page' => $this->_page, 'action' => 'delete', 'id' => $dataSet['categoryId']));
+                $dataSet['editLink']   = $this->prgPatternElementCategory->linkTo(array('page' => $this->_page, 'action' => 'edit',   'id' => $dataSet['categoryId']));
+                $dataSet['deleteLink'] = $this->prgPatternElementCategory->linkTo(array('page' => $this->_page, 'action' => 'delete', 'id' => $dataSet['categoryId']));
 
                 $data[] = $dataSet;
             }

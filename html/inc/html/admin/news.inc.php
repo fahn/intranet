@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -16,7 +16,6 @@ $path=dirname(dirname(__FILE__));
 require_once($path .'/brdbHtmlPage.inc.php');
 
 include_once BASE_DIR .'/inc/logic/prgNews.inc.php';
-include_once BASE_DIR .'/inc/logic/tools.inc.php';
 
 include_once BASE_DIR .'/inc/html/admin/category.inc.php';
 
@@ -35,35 +34,32 @@ class BrdbHtmlAdminNewsPage extends BrdbHtmlPage {
              $this->_page = $page;
         }
 
+        $this->prgPatternElementNews = new prgPatternElementNews($this->brdb, $this->prgPatternElementLogin);
+        $this->prgPattern->registerPrg($this->prgPatternElementNews);
+
         # load links
         $links = array(
-            'add' => $this->tools->linkTo(array('page' => $this->_page, 'action' => 'add')),
-            'list' => $this->tools->linkTo(array('page' => $this->_page, 'action' => 'add')),
-            'home' => $this->tools->linkTo(array('page' => $this->_page)),
+            'add' => $this->prgPatternElementNews->linkTo(array('page' => $this->_page, 'action' => 'add')),
+            'list' => $this->prgPatternElementNews->linkTo(array('page' => $this->_page, 'action' => 'add')),
+            'home' => $this->prgPatternElementNews->linkTo(array('page' => $this->_page)),
         );
 
         $this->smarty->assign('links', $links);
-
-        $this->prgPatternElementNews = new prgPatternElementNews($this->brdb, $this->prgPatternElementLogin);
-        $this->prgPattern->registerPrg($this->prgPatternElementNews);
     }
 
 
     public function htmlBody() {
-        $action = $this->prgPatternElementNews->issetGetVariable("action") ? $this->prgPatternElementNews->getGetVariable("action") : "";
-        $id     = $this->prgPatternElementNews->issetGetVariable("id") ? $this->prgPatternElementNews->getGetVariable("id") : 0;
-
-        switch ($action) {
+        switch ($this->action) {
             case 'add':
-                $content = $this->TMPL_update($action, $id);
+                $content = $this->TMPL_update();
                 break;
 
             case 'edit':
-                $content = $this->TMPL_update($action, $id);
+                $content = $this->TMPL_update();
                 break;
 
             case 'delete':
-                $content = $this->TMPL_delete($id);
+                $content = $this->TMPL_delete();
                 break;
 
             default:
@@ -87,14 +83,19 @@ class BrdbHtmlAdminNewsPage extends BrdbHtmlPage {
         return $this->smarty->fetch('news/adminList.tpl');
     }
 
-    private function TMPL_update(String $action, int $id) {
+    /**
+     * update News
+     *
+     * @return string
+     */
+    private function TMPL_update(): string
+    {
         // load categories
         $cats = new BrdbHtmlAdminCategoryPage();
 
         $this->smarty->assign(array(
-            'action'                 => $action,
-            'categoryHtmlOptions'    => $cats->getCategories(),
-            'item'                   => $this->getNewsById($id),
+            'action'                 => $this->action,
+            'item'                   => $this->getNewsById($this->id),
         ));
         return $this->smarty->fetch('news/adminUpdate.tpl');
     }
@@ -105,8 +106,8 @@ class BrdbHtmlAdminNewsPage extends BrdbHtmlPage {
         if (isset($newsList) && !empty($newsList)) {
             foreach ($newsList as $dataSet) {
                 // links
-                $dataSet['editLink']   = $this->tools->linkTo(array('page' => $this->_page, 'action' => 'edit', 'id' => $dataSet['newsId']));
-                $dataSet['deleteLink'] = $this->tools->linkTo(array('page' => $this->_page, 'action' => 'delete', 'id' => $dataSet['newsId']));
+                $dataSet['editLink']   = $this->prgPatternElementNews->linkTo(array('page' => $this->_page, 'action' => 'edit', 'id' => $dataSet['newsId']));
+                $dataSet['deleteLink'] = $this->prgPatternElementNews->linkTo(array('page' => $this->_page, 'action' => 'delete', 'id' => $dataSet['newsId']));
 
                 $data[] = $dataSet;
             }
@@ -126,10 +127,10 @@ class BrdbHtmlAdminNewsPage extends BrdbHtmlPage {
      * @param int $id
      * @return void
      */
-    private function TMPL_delete(int $id) {
+    private function TMPL_delete() {
 
         $this->smarty->assign(array(
-            'item' => $this->getNewsById($id),
+            'item' => $this->getNewsById($this->id),
         ));
 
         return $this->smarty->fetch('news/adminDelete.tpl');

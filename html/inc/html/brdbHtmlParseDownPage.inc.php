@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -12,10 +12,10 @@
  *
  ******************************************************************************/
 include_once('brdbHtmlPage.inc.php');
-
 require_once BASE_DIR .'/vendor/autoload.php';
 
-class BrdbHtmlParseDownPage extends BrdbHtmlPage {
+class BrdbHtmlParseDownPage extends BrdbHtmlPage 
+{
 
     protected $markDownFile;
 
@@ -25,13 +25,7 @@ class BrdbHtmlParseDownPage extends BrdbHtmlPage {
         $this->markDownFile = $markDownFile;
     }
 
-    public function processPage() 
-    {
-        parent::processPage();
-    }
-
-
-    protected function htmlBody() 
+    protected function htmlBody(): void 
     {
         if (is_file($this->markDownFile)) 
         {

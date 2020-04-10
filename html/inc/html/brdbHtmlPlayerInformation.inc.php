@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -21,15 +21,9 @@ class BrdbHtmlPlayerInformation extends BrdbHtmlPage
         parent::__construct();
     }
     
-    public function processPage() 
+    protected function htmlBody(): void
     {
-        parent::processPage();
-    }
-    
-    
-    protected function htmlBody() 
-    {
-        $content = $this->loadContent($this->tools->get('id'));
+        $content = $this->loadContent();
         
         $this->smarty->assign(array(
             'content'              => $content,
@@ -39,14 +33,10 @@ class BrdbHtmlPlayerInformation extends BrdbHtmlPage
     }
     
     
-    private function loadContent(int $id) 
+    private function loadContent(): string
     {
-        if (!isset($id) || !is_numeric($id)) {
-            return "";
-        }
-        
         $this->smarty->assign(array(
-            'player'       => $this->brdb->selectPlayerById($id),
+            'player'       => $this->brdb->selectPlayerById($this->id),
         ));
         
         return $this->smarty->fetch('player/profil.tpl');

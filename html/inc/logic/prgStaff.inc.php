@@ -2,7 +2,7 @@
 
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -12,22 +12,11 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
-
-include_once BASE_DIR .'/inc/db/brdb.inc.php';
-#include_once BASE_DIR .'/inc/model/staff.inc.php';
 include_once BASE_DIR .'/inc/logic/prgPattern.inc.php';
-include_once BASE_DIR .'/inc/logic/tools.inc.php';
+#include_once BASE_DIR .'/inc/model/staff.inc.php';
 
-/*
-`staffId` int(11) NOT NULL,
-`userId` int(11) NOT NULL,
-`position` varchar(200) NOT NULL,
-`description` text NOT NULL,
-`row` int(11) NOT NULL,
-`sort` int(11) NOT NULL
-*/
-
-class PrgPatternElementStaff extends APrgPatternElement {
+class PrgPatternElementStaff extends APrgPatternElement 
+{
     // TABLE
     const FORM_STAFF_STAFFID     = "staffId";
     const FORM_STAFF_USERID      = "userId";
@@ -56,25 +45,15 @@ class PrgPatternElementStaff extends APrgPatternElement {
     const ERROR_STAFF_DELETE = "Succesfully deleted User from Staff!";
     const ERROR_STAFF_UPDATE_MISSING_INFORMATION = "Please provide all required information!";
 
-    protected $prgElementLogin;
-
-    protected $brdb;
 
     private $page = "adminStaff.inc.php";
     private $id;
 
     private $requiredFields = array('FORM_STAFF_USERID', 'FORM_STAFF_POSTION', 'FORM_STAFF_DESCRIPTION', 'FORM_STAFF_ROW');
 
-    public function __construct(BrankDB $brdb, PrgPatternElementLogin $prgElementLogin) {
+    public function __construct(PrgPatternElementLogin $prgElementLogin) {
         parent::__construct("staff");
 
-        $this->registerPostSessionVariables($this->requiredFields, true);
-        #$this->registerPostSessionVariables(self::FORM_STAFF_STAFFID);
-
-        // load DB
-        $this->brdb = $brdb;
-
-        // load Login
         $this->prgElementLogin = $prgElementLogin;
 
         // load id
@@ -143,7 +122,7 @@ class PrgPatternElementStaff extends APrgPatternElement {
             $this->setFailedMessage(self::ERROR_STAFF_INSERT);
         }
 
-        Tools::customRedirect(array(
+        $this->customRedirectArray(array(
           'page'   => "adminAllUser.php",
         ));
         return;
@@ -168,7 +147,7 @@ class PrgPatternElementStaff extends APrgPatternElement {
           $this->setFailedMessage(self::ERROR_STAFF_UPDATE);
       }
 
-      Tools::customRedirect(array(
+      $this->customRedirectArray(array(
         'page'   => $this->page,
         'action' => 'edit',
         'id'     => $this->id,
@@ -185,7 +164,7 @@ class PrgPatternElementStaff extends APrgPatternElement {
             $this->setSuccessMessage(self::SUCCESS_STAFF_DELETE);
         }
 
-        Tools::customRedirect(array(
+        $this->customRedirectArray(array(
             'page' => $this->page,
         ));
         return true;

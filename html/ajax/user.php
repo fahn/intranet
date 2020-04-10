@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -24,7 +24,6 @@ $path=dirname(dirname(__FILE__));
 define("BASE_DIR", $path);
 
 require_once $path ."/inc/db/brdb.inc.php";
-require_once $path ."/inc/logic/tools.inc.php";
 
 try {
     if (isset($_POST["userSearch"])) {

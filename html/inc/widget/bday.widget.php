@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -46,9 +46,11 @@ class BdayWidget extends Widget {
     private function getNextBdays() {
         $data = array();
         $res  = $this->brdb->getUpcomingBirthdays();
-        if (! $this->brdb->hasError() ) {
-            while ($dataSet = $res) {
-                $dataSet['linkToUser'] = $this->tools->linkTo(array('page' => 'user.php', 'id' => $dataSet['userId']));
+        if (! $this->brdb->hasError() ) 
+        {
+            while ($dataSet = $res) 
+            {
+                $dataSet['linkToUser'] = $this->linkTo(array('page' => 'user.php', 'id' => $dataSet['userId']));
                 $dataSet['years']      = $this->calculate_age($dataSet['bday']);
 
                 $data[] = $dataSet;

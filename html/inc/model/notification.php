@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -13,14 +13,16 @@
  ******************************************************************************/
 
 Class Notification {
-    public $id;
-    public $userId;
-    public $created;
-    public $text;
-    public $isRead;
+    public int    $id;
+    public int    $userId;
+    public string $created;
+    public string $text;
+    public bool   $isRead;
 
-    public function __construct($dataSet = null) {
-        if ($dataSet == null) {
+    public function __construct($dataSet = null) 
+    {
+        if ($dataSet == null) 
+        {
             break;
         }
 
@@ -31,7 +33,7 @@ Class Notification {
         $this->isRead  = $dataSet['isRead'];
     }
 
-    public function isRead():bool
+    public function isRead(): bool
     {
         return $this->isRead;
     }

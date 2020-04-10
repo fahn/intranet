@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -11,55 +11,38 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
-declare(strict_types=1);
 include_once 'prgPattern.inc.php';
 
-include_once BASE_DIR .'/inc/db/brdb.inc.php';
-include_once BASE_DIR .'/inc/logic/tools.inc.php';
-
-/**
- * This prg pattern ahndles all the post and get actions
- * to insert, delete or update a game in the data base.
- * @author philipp
- *
- */
 class PrgPatternElementSupport extends APrgPatternElement 
 {
-  // DB
-  private $brdb;
-  // TOOLS
-  private $tools;
+    const FORM_FIELD_SUBJECT            = "subject";
+    const FORM_FIELD_MESSAGE            = "message";
+    const FORM_FIELD_ACTION             = "formAction";
+    const FORM_VALUE_ACTION_CONTACT_US  = "Contact Us";
 
-  const FORM_FIELD_SUBJECT            = "subject";
-  const FORM_FIELD_MESSAGE            = "message";
-  const FORM_FIELD_ACTION             = "formAction";
-  const FORM_VALUE_ACTION_CONTACT_US  = "Contact Us";
+    // Errors that can be set by methods of this class
+    const SUCCESS_MESSAGE     = "Deine Anfrage wurde versendet.";
+    const ERROR_MESSAGE       = "Please provide all required information!";
 
-  // Errors that can be set by methods of this class
-  const SUCCESS_MESSAGE     = "Deine Anfrage wurde versendet.";
-  const ERROR_MESSAGE       = "Please provide all required information!";
+    protected PrgPatternElementLogin $prgElementLogin;
 
-  protected $prgElementLogin;
 
-  public function __construct(BrankDB $brdb, PrgPatternElementLogin $prgElementLogin): void
-  {
-    parent::__construct("support");
+    public function __construct(PrgPatternElementLogin $prgElementLogin)
+    {
+        parent::__construct("support");
 
-    $this->brdb            = $brdb;
-    $this->prgElementLogin = $prgElementLogin;
+        $this->prgElementLogin = $prgElementLogin;
 
-    $this->registerPostSessionVariable(self::FORM_FIELD_SUBJECT);
-    $this->registerPostSessionVariable(self::FORM_FIELD_MESSAGE);
-
-    // tools
-    $this->tools = new Tools();
-  }
+        $this->registerPostSessionVariable(self::FORM_FIELD_SUBJECT);
+        $this->registerPostSessionVariable(self::FORM_FIELD_MESSAGE);
+    }
 
     public function processPost(): void
     {
         $this->prgElementLogin->redirectUserIfNotLoggindIn();
 
-        if (! $this->issetPostVariable(self::FORM_FIELD_ACTION)) 
+        $requireFields = array(self::FORM_FIELD_ACTION);
+        if (! $this->prgElementLogin->checkRequiredFields($requireFields)) 
         {
             $this->setFailedMessage("Kein Formular.");
             return;
@@ -72,36 +55,47 @@ class PrgPatternElementSupport extends APrgPatternElement
         }
     }
 
-    public function processPostContactUs(): void 
+    public function processPostContactUs(): bool 
     {
-        // Check that all information has been posted
-        if (! $this->issetPostVariable(self::FORM_FIELD_SUBJECT) ||
-            ! $this->issetPostVariable(self::FORM_FIELD_MESSAGE) ) {
+        $requireFields = array(self::FORM_FIELD_SUBJECT, self::FORM_FIELD_MESSAGE, self::FORM_FIELD_MESSAGE);
+        if (! $this->prgElementLogin->checkRequiredFields($requireFields)) 
+        {
             $this->setFailedMessage(self::ERROR_MESSAGE);
-            return;
+            return false;
         }
+        
+        try {
+            // page title
+            $pageTitle = $this->settings->getSettingInt('SITE_NAME');
+            // get ini values
+            $supporter = $this->settings->getSettingInt('SUPPORT_USER');
+            $user = $this->brdb->selectUserById($supporter);
 
-        // get ini values
-        $supportIni = $this->tools->getIniValue('Support');
+            $subject   = sprintf("%s %s", $pageTitle, $this->getPostVariableString(self::FORM_FIELD_SUBJECT));
+            $message   = sprintf("<p>%s</p>", $this->getPostVariableString(self::FORM_FIELD_MESSAGE));
+            $to        = $user['email'];
+            $name      = $user['fullname']; 
+            $preheader = "Anfrage über den Support";
 
-        $subject   = $this->tools->getIniValue('pageTitle') . strval(trim($this->getPostVariable(self::FORM_FIELD_SUBJECT)));
-        $message   = "<p>". strval(trim($this->getPostVariable(self::FORM_FIELD_MESSAGE))) ."</p>";
-        $to        = $supportIni['receiverEmail'];
-        $name      = $supportIni['receiverName'];
-        $preheader = "Anfrage über den Support";
+            $message  .= "<h2>DEBUG:</h2>";
+            $message  .= "Zeit: ". date("d.m.Y H:i") ."<br>";
+            $message  .= sprintf("IP: %s <br>", $this->getUserIPAdress());
+            $message  .= sprintf('USER: <a href="%s">%s</a>', $this->linkTo(array('page' => 'user.php', 'id' => $this->prgElementLogin->getLoggedInUser()->getID())), $this->prgElementLogin->getLoggedInUser()->getFullname());
 
-        $message  .= "<h2>DEBUG:</h2>";
-        $message  .= "Zeit: ". date("d.m.Y H:i") ."<br>";
-        $message  .= sprintf("IP: %s <br>", $this->tools->getUserIPAdress());
-        $message  .= sprintf('USER: <a href="%s">%s</a>', $this->tools->linkTo(array('page' => 'user.php', 'id' => $this->prgElementLogin->getLoggedInUser()->getID())), $this->prgElementLogin->getLoggedInUser()->getFullname());
+            if (!$this->sendMail($to, $name, $subject, $preheader, $message, false, false)) 
+            {
+                throw new Exception("Die Nachricht konnte nicht versendet werden.");
+            }
 
-        if (!$this->tools->sendMail($to, $name, $subject, $preheader, $message, false, false)) {
-            $this->setFailedMessage('Die Nachricht konnte nicht versendet werden.');
-            return;
-        }
+            $this->setSuccessMessage(self::SUCCESS_MESSAGE);
+            return true;
 
-        $this->setSuccessMessage(self::SUCCESS_MESSAGE);
-        return;
+        } catch (Exception $e) 
+        {
+            $this->log($this->__TABLE__, sprintf("Cannot add new SupportCase. Details %s",$e->getMessage()), "", "POST", "");
+            $this->setFailedMessage("Die Nachricht konnte nicht versendet werden.");
+            return false;
+        } 
     }
 }
 

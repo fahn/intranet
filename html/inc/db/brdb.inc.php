@@ -1,7 +1,7 @@
 <?php 
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -15,9 +15,6 @@
 
 // load BASE_DIR
 require_once(dirname(dirname(__FILE__)) .'/config.php');
-
-require_once(BASE_DIR . '/inc/logic/tools.inc.php');
-
 require_once(BASE_DIR .'/inc/exception/badtra.exception.php');
 
 include_once 'brdb.Api.inc.php';
@@ -68,6 +65,9 @@ class BrankDB
     // load Notification
     use NotificationDB;
 
+    // load Settings
+    use SettingsDB;
+
     // load Staff
     use StaffDB;
 
@@ -84,10 +84,11 @@ class BrankDB
 
     public function __construct() 
     {
+        /*
         if (!defined('PDO::ATTR_DRIVER_NAME')) 
         {
             throw new Exception\Badtra("123");
-        }
+        } */
         // load connection
         $this->db = $this->connection();
     }
@@ -98,11 +99,9 @@ class BrankDB
         {
             try 
             {
-                $tools    = new Tools();
+                $database = sprintf('mysql:host=%s;dbname=%s', $this->getEnv('MYSQL_HOST'), $this->getEnv('MYSQL_DATABASE'));
 
-                $database = sprintf('mysql:host=%s;dbname=%s', $tools->getIniValue('db_host'), $tools->getIniValue('db_name'));
-
-                return new \PDO($database, $tools->getIniValue('db_user'), $tools->getIniValue('db_pass'));
+                return new \PDO($database, $this->getEnv('MYSQL_PASSWORD'), $this->getEnv('MYSQL_PASSWORD'));
 
             } 
             catch (Exception $e) 
@@ -113,6 +112,11 @@ class BrankDB
                 return NULL;
             }
         }
+    }
+
+    private function getEnv(string $envvarname): string
+    {
+        return getenv($envvarname, true) ?: getenv($envvarname);
     }
 
     /**
@@ -140,7 +144,7 @@ class BrankDB
      *
      * @return unknown
      */
-    public function getError() 
+    public function getError(): string
     {
         $this->hasError = false;
         return $this->error;
@@ -152,7 +156,7 @@ class BrankDB
      * @param string $error
      *            the error to be set
      */
-    private function setError($error) 
+    private function setError(string $error): void
     {
         $this->hasError = true;
         $this->error = $error;
@@ -171,7 +175,7 @@ class BrankDB
      *            the prepared and bound statement to be executed
      * @return mysqli_result the result of the executed statement
      */
-    public function executeStatement($statement) 
+    public function executeStatement(string $statement): bool
     {
         if (! $statement->execute()) {
             $this->setError($statement->error);
@@ -179,7 +183,7 @@ class BrankDB
         return $statement->get_result();
     }
 
-    public function countRows($statement): int
+    public function countRows(string $statement): int
     {
         return $statement->rowCount();
     }
@@ -214,15 +218,16 @@ class BrankDB
         }
     } */
 
-    private function executeFetchAll($statement) 
+    private function executeFetchAll(string $statement): array
     {
-        if (!$statement->execute()) {
+        if (!$statement->execute()) 
+        {
             $this->setError($statement->error);
         }
         return $statement->fetchAll();
     }
 
-    private function executeFetch($statement) 
+    private function executeFetch(string $statement): array
     {
         if (!$statement->execute()) {
             $this->setError($statement->error);
@@ -230,12 +235,9 @@ class BrankDB
         return $statement->fetch();
     }
 
-    private function debug($statement) 
+    private function debug(string $statement): array
     {
         return $statement->debugDumpParams();
-    }
-
-    
+    }    
 }
-
 ?>

@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -12,7 +12,8 @@
  *
  ******************************************************************************/
 
-class Http {
+class Http 
+{
 	const SERVER_REQUEST_METHOD = "REQUEST_METHOD";
 	const SERVER_REQUEST_URI 	= "REQUEST_URI";
 

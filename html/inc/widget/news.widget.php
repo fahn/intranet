@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -46,7 +46,7 @@ class NewsWidget extends Widget {
         $newsList = $this->brdb->selectLatestNews(5);
         if (isset($newsList) && !empty($newsList)) {
             foreach ($newsList as $dataSet) {
-                $dataSet['linkTo']         = $this->tools->linkTo(array('page' => 'news.php', 'action' => 'details', 'id' => $dataSet['tournamentId']));
+                $dataSet['linkTo']         = $this->linkTo(array('page' => 'news.php', 'action' => 'details', 'id' => $dataSet['tournamentId']));
 
                 $tmp[]                    = $dataSet;
             }

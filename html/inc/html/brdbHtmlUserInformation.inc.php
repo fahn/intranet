@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -16,28 +16,22 @@ include_once('brdbHtmlPage.inc.php');
 // load logic
 include_once BASE_DIR .'/inc/logic/prgUser.inc.php';
 
-// load widgets
-include_once BASE_DIR .'/inc/widget/tournament.widget.php';
-include_once BASE_DIR .'/inc/widget/ranking.widget.php';
 
-
-class BrdbHtmlUserInformation extends BrdbHtmlPage {
+class BrdbHtmlUserInformation extends BrdbHtmlPage 
+{
     private $prgElementUser;
 
-    public function __construct() {
+    public function __construct() 
+    {
         parent::__construct();
 
         $this->prgElementUser = new PrgPatternElementUser($this->brdb, $this->prgPatternElementLogin);
         $this->prgPattern->registerPrg($this->prgElementUser);
     }
 
-    public function processPage() {
-        parent::processPage();
-    }
-
-
-    protected function htmlBody() {
-        $content  = $this->loadContent($this->tools->get('id'));
+    protected function htmlBody(): void
+    {
+        $content  = $this->loadContent();
 
         // widget
         $widgetTournament = new TournamentWidget();
@@ -53,29 +47,22 @@ class BrdbHtmlUserInformation extends BrdbHtmlPage {
     }
 
 
-    private function loadContent($id) {
-        if(!isset($id) or !is_numeric($id)) {
-            return "";
-        }
-
-        $user = $this->brdb->selectUserById($id);
+    private function loadContent(): string
+    {
+        $user = $this->brdb->selectUserById($this->id);
         //$club = $this->brdb->selectGetClubById($user['clubId']);
         $this->smarty->assign(array(
             'user'       => $user,
             //'club'       => $club,
-            'tournament' => $this->getLatestTournamentFromUserId($id),
+            'tournament' => $this->getLatestTournamentFromUserId($this->id),
             #'games'      => $this->getRankedGamesByUser(),
         ));
 
         return $this->smarty->fetch('user/profil.tpl');
     }
 
-
-    public function getGetVariable($variableName) {
-        return Tools::escapeInput($_GET[$variableName]);
-    }
-
-    public function getLatestTournamentFromUserId($id) {
+    public function getLatestTournamentFromUserId($id): array
+    {
         return $this->brdb->selectGetLatestTournamentFromUserId($id);
     }
 

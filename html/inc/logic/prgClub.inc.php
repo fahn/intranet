@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -21,9 +21,9 @@ include_once BASE_DIR .'/inc/db/brdb.inc.php';
  * @author philipp
  *
  */
-class PrgPatternElementClub extends APrgPatternElement {
-
-    private $brdb;
+class PrgPatternElementClub extends APrgPatternElement 
+{
+    const __TABLE__              = "club";
     const FORM_FIELD_ID          = "clubId";
     const FORM_FIELD_NAME        = "name";
     const FORM_FIELD_NUMBER      = "clubNr";
@@ -46,28 +46,36 @@ class PrgPatternElementClub extends APrgPatternElement {
 
     protected $prgElementLogin;
 
-    public function __construct(BrankDB $brdb, PrgPatternElementLogin $prgElementLogin) {
+    
+
+    public function __construct(PrgPatternElementLogin $prgElementLogin)
+    {
         parent::__construct("club");
-        $this->brdb = $brdb;
+
         $this->prgElementLogin = $prgElementLogin;
+
         $this->registerPostSessionVariable(self::FORM_FIELD_NAME);
         $this->registerPostSessionVariable(self::FORM_FIELD_NUMBER);
         $this->registerPostSessionVariable(self::FORM_FIELD_ASSOCIATION);
     }
 
-    public function processPost() {
+    public function processPost(): void
+    {
         // check rights
         $this->prgElementLogin->redirectUserIfNotLoggindIn();
         $this->prgElementLogin->redirectUserIfNonReporter();
         #$this->prgElementLogin->redirectUserIfNonAdmin();
 
-        if (! $this->issetPostVariable(self::FORM_CLUB_ACTION)) {
+        if (! $this->issetPostVariable(self::FORM_CLUB_ACTION)) 
+        {
             $this->setFailedMessage("Kein Formular gewählt");
             return;
         }
 
         $loginAction = strval(trim($this->getPostVariable(self::FORM_CLUB_ACTION)));
-        switch ($loginAction) {
+
+        switch ($loginAction) 
+        {
             case self::FORM_CLUB_ACTION_INSERT_GAME:
                 $this->processPostInsertClub();
                 break;
@@ -86,32 +94,36 @@ class PrgPatternElementClub extends APrgPatternElement {
         }
     }
 
-    public function processPostDeleteClub() {
+    public function processPostDeleteClub(): void
+    {
             $this->setFailedMessage(self::ERROR_NO_IMPLEMENTATION);
     }
 
-    public function processPostInsertClub() {
-        // Check that all information has been posted
-        if ($this->issetPostVariable(self::FORM_FIELD_NAME) &&
-            $this->issetPostVariable(self::FORM_FIELD_NUMBER) &&
-            $this->issetPostVariable(self::FORM_FIELD_ASSOCIATION)) {
-
-            $name              = strval(trim($this->getPostVariable(self::FORM_FIELD_NAME)));
-            $number          = strval(trim($this->getPostVariable(self::FORM_FIELD_NUMBER)));
-            $assosiation     = strval(trim($this->getPostVariable(self::FORM_FIELD_ASSOCIATION)));
-
-            $this->brdb->insertClub($name, $number, $assosiation);
-
-            if ($this->brdb->hasError()) {
-                $this->setFailedMessage($this->brdb->getError());
-                return;
-            }
-
-            $this->setSuccessMessage(self::SUCCESS_CLUB_INSERT);
-            return;
-
-        } else {
+    public function processPostInsertClub(): bool
+    {
+        $requireFields = array(self::FORM_FIELD_NAME, self::FORM_FIELD_NUMBER, self::FORM_FIELD_ASSOCIATION);
+        if (! $this->prgElementLogin->checkRequiredFields($requireFields)) 
+        {
             $this->setFailedMessage(self::ERROR_CLUB_MISSING_INFORMATION);
+            return false;
+        }
+
+        try {
+            $club = new Club();
+            $club->setClubNr($this->getPostVariableString(self::FORM_FIELD_NUMBER));
+            $club->setClubName($this->getPostVariableString(self::FORM_FIELD_NAME));
+            $club->setAssociation($this->getPostVariableString(self::FORM_FIELD_ASSOCIATION));
+
+            $this->brdb->insertClub($club);
+            $this->setSuccessMessage(self::SUCCESS_CLUB_INSERT);
+            return true;
+
+        } 
+        catch (Exception $e) 
+        {
+            $this->log($this->__TABLE__, sprintf("Cannot insert Club. ID: %s. Details %s", $club, $e->getMessage()), "", "POST", "");
+            $this->setFailedMessage("Der Club konnte nicht eingetragen werden.");
+            return false;
         }
     }
 
@@ -123,35 +135,33 @@ class PrgPatternElementClub extends APrgPatternElement {
      * It also stores the game information into the session, hence the
      * insert game page will show the details.
      */
-    public function processPostUpdateClub() {
+    public function processPostUpdateClub(): bool
+    {
         // Check that all information has been posted
-        if ($this->issetPostVariable(self::FORM_FIELD_ID) &&
-            $this->issetPostVariable(self::FORM_FIELD_NAME) &&
-                $this->issetPostVariable(self::FORM_FIELD_NUMBER) &&
-                $this->issetPostVariable(self::FORM_FIELD_ASSOCIATION)) {
+        $requireFields = array(self::FORM_FIELD_ID, self::FORM_FIELD_NAME, self::FORM_FIELD_NUMBER, self::FORM_FIELD_ASSOCIATION);
+        if (! $this->prgElementLogin->checkRequiredFields($requireFields)) 
+        {
+            $this->setFailedMessage(self::ERROR_CLUB_MISSING_INFORMATION);
+            return false;
+        }
 
-            $id           = intval(trim($this->getPostVariable(self::FORM_FIELD_ID)));
-            $name              = strval(trim($this->getPostVariable(self::FORM_FIELD_NAME)));
-            $number          = strval(trim($this->getPostVariable(self::FORM_FIELD_NUMBER)));
-            $association     = strval(trim($this->getPostVariable(self::FORM_FIELD_ASSOCIATION)));
+        try {
+            $club = new Club();
+            $club->setClubId($this->getPostVariableInt(self::FORM_FIELD_ID));
+            $club->setClubNr($this->getPostVariableString(self::FORM_FIELD_NUMBER));
+            $club->setClubName($this->getPostVariableString(self::FORM_FIELD_NAME));
+            $club->setAssociation($this->getPostVariableString(self::FORM_FIELD_ASSOCIATION));
 
-            // get the admin ID and try to read the corresponding game from the
-            // data base, process the rror in case of
-            $this->brdb->updateClubById($id, $name, $number, $association);
-            if ($this->brdb->hasError()) {
-                $this->setFailedMessage($this->brdb->getError());
-                return;
-            }
-
-            // if no error occurred than read the game and write the
-            // results to the session of the server
-
-            //$this->setSessionVariable(self::FORM_GAME_WINNER    , $game->winner);
+            $this->brdb->updateClubById($club);
 
             $this->setSuccessMessage(self::SUCCESS_CLUB_UPDATED);
-            return;
-        } else {
-            $this->setFailedMessage(self::ERROR_CLUB_MISSING_INFORMATION);
+            return true;
+        } 
+        catch (Exception $e) 
+        {
+            $this->log($this->__TABLE__, sprintf("Canno insert Club ID: %i. Details %s", $club->getClubId(), $e->getMessage()), "", "POST", "");
+            $this->setFailedMessage("Der Club konnte nicht geupdatet werden.");
+            return false;
         }
     }
 
@@ -160,65 +170,45 @@ class PrgPatternElementClub extends APrgPatternElement {
      * {@inheritDoc}
      * @see IPrgPatternElement::processGet()
      */
-    public function processGet() {
+    public function processGet():void 
+    {
     }
 
-    public function getClubs() {
+    public function getClubs(): ?array
+    {
         return $this->brdb->selectAllClubs();
     }
 
-    public function find($item) {
-        if ($item instanceof Club) {
-            $clubNr = $item->getClubNr();
-            $res    = $this->brdb->selectClubByClubNr($clubNr);
-            if ($this->brdb->hasError()) {
-                return false;
-            }
-
-            return $res->num_rows > 0 ? true : false;
+    public function find(Club $club): bool
+    {
+        try {
+            return count($this->brdb->selectClubByClubNr($club->getClubNr())) > 0 ? true : false ;
         }
-        return false;
+        catch (Exception $e) {
+            return false;
+        }
     }
 
     /**
      * Insert club Data
      *
-     * @param [type] $club
+     * @param Club $club
      * @return void
      */
-    public function insert($club) {
-        if ($club instanceof Club) {
-            $item = $club->getClubArray();
-            
-            // insert club data
-            $this->brdb->insertClub($item['clubName'], $item['clubNr'], $item['association']);
-            if ($this->brdb->hasError()) {
-                return false;
-            }
-            return true;
-        }
-        return false;
+    public function insert(Club $club) 
+    {
+        return $this->brdb->insertClub($club);
     }
 
     /**
      * Update Club by Id
      *
-     * @param [type] $item
-     * @return void
+     * @param Club $club
+     * @return boolean
      */
-    public function update($item) {
-        if ($item instanceof Club) {
-            $clubNr      = $item->getClubNr();
-            $clubName    = $item->getClubName();
-            $association = $item->getAssociation();
-
-            $this->brdb->updateClubByClubNr($clubNr, $clubName, $association);
-            if ($this->brdb->hasError()) {
-                return false;
-            }
-            return true;
-        }
-        return false;
+    public function update(Club $club): bool
+    {
+        return $this->brdb->updateClubByClubNr($club);
     }
 }
 ?>

@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -12,23 +12,22 @@
  *
  ******************************************************************************/
 include_once('brdbHtmlPage.inc.php');
-
 include_once BASE_DIR .'/inc/logic/prgUser.inc.php';
-include_once BASE_DIR .'/inc/logic/tools.inc.php';
 
-class BrdbHtmlMyAccountPage extends BrdbHtmlPage {
+class BrdbHtmlMyAccountPage extends BrdbHtmlPage 
+{
     private $prgElementUser;
-
-    const INPUT_RADIO_ATTRIBUTE_CHECKED = 'checked = "checked"';
-
-    public function __construct() {
+    
+    public function __construct() 
+    {
         parent::__construct();
 
         $this->prgElementUser = new PrgPatternElementUser($this->brdb, $this->prgPatternElementLogin);
         $this->prgPattern->registerPrg($this->prgElementUser);
     }
 
-    public function htmlBody() {
+    public function htmlBody(): void
+    {
         $variableName['Email']          = $this->prgElementUser->getPrefixedName(PrgPatternElementUser::FORM_USER_EMAIL);
         $variableName['FName']          = $this->prgElementUser->getPrefixedName(PrgPatternElementUser::FORM_USER_FNAME);
         $variableName['LName']          = $this->prgElementUser->getPrefixedName(PrgPatternElementUser::FORM_USER_LNAME);
@@ -43,12 +42,11 @@ class BrdbHtmlMyAccountPage extends BrdbHtmlPage {
         $variableName['FNameValue']     = strval($this->prgPatternElementLogin->getLoggedInUser()->firstName);
         $variableName['LNameValue']     = strval($this->prgPatternElementLogin->getLoggedInUser()->lastName);
         $variableName['playerIdValue']  = strval($this->prgPatternElementLogin->getLoggedInUser()->playerId);
-        $variableName['clubIdValue']    = strval($this->prgPatternElementLogin->getLoggedInUser()->clubId);
         $variableName['phoneValue']     = strval($this->prgPatternElementLogin->getLoggedInUser()->phone);
         $variableName['bdayValue']      = strval($this->prgPatternElementLogin->getLoggedInUser()->bday);
         $variableName['genderValue']    = strval($this->prgPatternElementLogin->getLoggedInUser()->gender);
 
-        $content = $this->loadContent($variableName);
+        $content = $this->TMPL_editOwnAccount($variableName);
 
         $this->smarty->assign(array(
             'content' => $content,
@@ -57,10 +55,12 @@ class BrdbHtmlMyAccountPage extends BrdbHtmlPage {
         $this->smarty->display('index.tpl');
     }
 
-    private function loadContent($vars) {
+    private function TMPL_editOwnAccount(array $vars): string
+    {
         $this->smarty->assign(array(
             'vars' => $vars,
         ));
+        
         return $this->smarty->fetch('user/myAccount.tpl');
     }
 

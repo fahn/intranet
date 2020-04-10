@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -12,9 +12,9 @@
  *
  ******************************************************************************/
 require_once '_options.php';
-include_once BASE_DIR .'/inc/html/brdbHtmlSettings.inc.php';
+include_once BASE_DIR .'/inc/html/admin/settings.inc.php';
 
-$page = new BrdbHtmlSettings();
+$page = new BrdbHtmlAdminSettings(basename(__FILE__));
 $page->processPage();
 
 ?>

@@ -13,16 +13,15 @@
  ******************************************************************************/
 
 
-class News 
+class Faq 
 {
     
-    private int    $newsId;
+    private int    $faqId;
     private int    $categoryId;
     private string $title;
     private string $text;
     private string $createdBy;
     private string $lastEdited;
-    private int    $userId;
 
 
     /**
@@ -30,9 +29,9 @@ class News
      *
      * @return integer
      */
-    public function getNewsId(): int 
+    public function getFaqId(): int 
     {
-        return $this->newsId;
+        return $this->faqId;
     }
 
     /**
@@ -41,13 +40,13 @@ class News
      * @param integer $id
      * @return void
      */
-    public function setNewsId(int $id): void
+    public function setFaqId(int $id): void
     {
         if ($id < 1) {
             throw new Exception("id <= 0");
         }
 
-        $this->newsId = $id;
+        $this->faqId = $id;
     }
 
     /**
@@ -181,31 +180,6 @@ class News
             $this->faqId,
             $this->title,
             $this->text);
-    }
-
-    /**
-     * get ID
-     *
-     * @return integer
-     */
-    public function getUserId(): int 
-    {
-        return $this->userId;
-    }
-
-    /**
-     * set ID
-     *
-     * @param integer $id
-     * @return void
-     */
-    public function setUsersId(int $id): void
-    {
-        if ($id < 1) {
-            throw new Exception("id <= 0");
-        }
-
-        $this->userId = $id;
     }
 
 }

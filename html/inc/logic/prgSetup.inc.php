@@ -2,7 +2,7 @@
 
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -12,30 +12,18 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
+include_once('prgSetup.inc.php');
 
-include_once BASE_DIR .'/inc/db/brdb.inc.php';
-include_once BASE_DIR .'/inc/logic/prgPattern.inc.php';
-include_once BASE_DIR .'/inc/logic/tools.inc.php';
-
-class PrgPatternElementSetup extends APrgPatternElement {
-    
-    protected $prgElementLogin;
-
-    protected $brdb;
+class PrgPatternElementSetup extends APrgPatternElement 
+{
 
     private $page = "adminSetup.inc.php";
 
     //private $requiredFields = array('FORM_STAFF_USERID', 'FORM_STAFF_POSTION', 'FORM_STAFF_DESCRIPTION', 'FORM_STAFF_ROW');
 
-    public function __construct(BrankDB $brdb, PrgPatternElementLogin $prgElementLogin) {
-        parent::__construct("staff");
+    public function __construct(PrgPatternElementLogin $prgElementLogin) {
+        parent::__construct("setup");
 
-        #$this->registerPostSessionVariables($this->requiredFields, true);
-
-        // load DB
-        $this->brdb = $brdb;
-
-        // load Login
         $this->prgElementLogin = $prgElementLogin;
 
     }

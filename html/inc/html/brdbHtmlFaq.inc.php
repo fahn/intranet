@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -12,24 +12,24 @@
  *
  ******************************************************************************/
 include_once('brdbHtmlPage.inc.php');
-
-include_once BASE_DIR .'/inc/logic/prgPattern.inc.php';
-include_once BASE_DIR .'/inc/logic/tools.inc.php';
+include_once(BASE_DIR .'/inc/logic/prgFaq.inc.php');
 
 class BrdbHtmlFaq extends BrdbHtmlPage 
 {
-    private $lcontent;
+    private PrgPatternElementFaq $prgPatternElementFaq;
 
-    public function __construct(): void
+    public function __construct()
     {
         parent::__construct();
 
-        $this->tools->secure_array($_GET);
-        
+        $this->prgPatternElementFaq = new PrgPatternElementFaq($this->prgPatternElementLogin);
+        $this->prgPattern->registerPrg($this->prgPatternElementFaq);
+       
         // list
         $links = array(
-            'list'     => $this->tools->linkTo(array('page' => 'faq.php', 'action' => 'list')),
+            'list'     => $this->prgPatternElementFaq->linkTo(array('page' => 'faq.php', 'action' => 'list')),
         );
+
         $this->smarty->assign('links', $links);
     }
 
@@ -40,15 +40,14 @@ class BrdbHtmlFaq extends BrdbHtmlPage
 
     protected function htmlBody(): void
     {
-        $this->TMPL_showFAQ();
-        
         $this->smarty->assign(array(
-            'content' => $this->lcontent,
+            'content' => $this->TMPL_showFAQ(),
         ));
+
         $this->smarty->display('index.tpl');
     }
 
-    private function TMPL_showFAQ(): void
+    private function TMPL_showFAQ(): string
     {
         $this->smarty->assign(array(
             'FaqGroupedByCategory' => $this->getFaqGroupedByCategory(),
@@ -58,15 +57,16 @@ class BrdbHtmlFaq extends BrdbHtmlPage
         ));
 
 
-        $this->lcontent = $this->smarty->fetch('faq/list.tpl');
+        return $this->smarty->fetch('faq/list.tpl');
     }
 
     private function getFaqGroupedByCategory(): array
     {
         $data = array();
-        $faqList = $this->brdb->statementGetFAQs();
+        $faqList = $this->brdb->statementGetAllFaq();
         
-        if (isset($faqList) && !empy($faqList))) {   
+        if (isset($faqList) && !empty($faqList) && !is_array($faqList)) 
+        {   
 
             foreach ($faqList as $dataSet) 
             {
@@ -85,9 +85,9 @@ class BrdbHtmlFaq extends BrdbHtmlPage
     private function getFaqList(): array
     {
         $data = array();
-        $faqList = $this->brdb->statementGetFAQs();
+        $faqList = $this->brdb->statementGetAllFaq();
         
-        if (isset($faqList) && !empy($faqList))) {    
+        if (isset($faqList) && !empty($faqList) && !is_array($faqList)) {
             foreach ($faqList as $dataSet) {
                 // edit Link
                 $dataSet['editLink']   = "#". $dataSet['faqId'];

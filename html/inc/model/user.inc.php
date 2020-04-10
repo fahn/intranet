@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -34,21 +34,21 @@ class User {
     const USER_IMAGE_MALE   = "default_m.png";
     const USER_IMAGE_FEMALE = "default_w.png";
 
-    public $userId;
-    public $email;
-    public $firstName;
-    public $lastName;
-    public $gender;
-    private $isAdmin;
-    private $isPlayer;
-    private $isReporter;
-    public $passHash;
-    public $playerId;
-    public $clubId;
-    public $clubName;
-    public $phone;
-    public $bday;
-    private $userImage;
+    public int $userId;
+    public string $email;
+    public string $firstName;
+    public string $lastName;
+    public string $gender;
+    private bool $isAdmin = false;
+    private bool $isPlayer = false;
+    private bool $isReporter = false; 
+    public string $passHash;
+    public string $playerId;
+    public int $clubId;
+    public string $clubName;
+    public string $phone;
+    public string $bday;
+    private string $userImage;
 
     /**
      * Conmstructor that knows how to retrieve all fields from a given data set
@@ -130,33 +130,80 @@ class User {
         return sprintf("%s %s", $this->firstName, $this->lastName);
     }
 
+    /**
+     * get firstName
+     *
+     * @return string
+     */
+    public function getFirstName(): string
+    {
+        return $this->firstName;
+    }
 
-    public function getUserImage():string
+    public function setFirstName(string $firstName): void
+    {
+        $this->firstName = $firstName;
+    }
+
+    /**
+     * get lastname
+     *
+     * @return string
+     */
+    public function getLastName(): string
+    {
+        return $this->lastName;
+    }
+
+    /**
+     * set Lastname
+     *
+     * @param string $lastName
+     * @return void
+     */
+    public function setLastName(string $lastName): void
+    {
+        $this->lastName = $lastName;
+    }
+
+
+    public function getUserImage(): string
     {
         $file = self::USER_IMAGE_PATH ."/". $this->userImage;
         return strlen($this->userImage) > 0 && file_exists($_SERVER['DOCUMENT_ROOT'] .'/'. $file) ? $file : $this->getDefaultUserImage();
     }
 
-    public function getUserThumbnailImage():string
+    public function getUserThumbnailImage(): string
     {
         $file = self::USER_IMAGE_PATH ."/thumb_". $this->userImage;
         return strlen($this->userImage) > 0 && file_exists($_SERVER['DOCUMENT_ROOT'] .'/'. $file) ? $file : $this->getDefaultUserImage();
     }
 
-    public function getDefaultUserImage():string
+    public function getDefaultUserImage(): string
     {
         $file = self::USER_IMAGE_PATH  .'/'. ($this->gender == 'Male' ? self::USER_IMAGE_MALE : self::USER_IMAGE_FEMALE);
         return $file;
     }
 
-    public function getID():int
+    public function getID(): int
     {
         return $this->userId;
     }
 
-    public function getPlayerId():string
+    public function getPlayerId(): string
     {
         return $this->playerId;
+    }
+
+    /**
+     * set playerId
+     *
+     * @param string $playerId
+     * @return void
+     */
+    public function setPlayerId(string $playerId): void
+    {
+        $this->playerId = $playerId;
     }
 
     /**
@@ -164,9 +211,19 @@ class User {
      *
      * @return integer
      */
-    public function getUserId():int
+    public function getUserId(): int
     {
         return $this->userId;
+    }
+
+    public function setUserId(int $userId): void
+    {
+        if ($userId <= 0) 
+        {
+            throw new Exception("id <= 0");
+        }
+
+        $this->userId = $userId;
     }
 
     /**
@@ -174,9 +231,20 @@ class User {
      *
      * @return boolean
      */
-    public function isAdmin():bool
+    public function isAdmin(): bool
     {
-        return $this->isAdmin == true;
+        return $this->isAdmin;
+    }
+
+    /**
+     * set status 
+     *
+     * @param boolean $status
+     * @return void
+     */
+    public function setAdmin(bool $status): void
+    {
+        $this->isAdmin = $status;
     }
 
     /**
@@ -186,7 +254,18 @@ class User {
      */
     public function isPlayer():bool
     {
-        return $this->isPlayer == true;
+        return $this->isPlayer;
+    }
+
+    /**
+     * set status true is User is a player
+     *
+     * @param boolean $status
+     * @return void
+     */
+    public function setPlayer(bool $status):void
+    {
+        $this->isPlayer = $status;
     }
 
     /**
@@ -196,7 +275,18 @@ class User {
      */
     public function isReporter():bool
     {
-        return $this->isReporter == true;
+        return $this->isReporter;
+    }
+
+    /**
+     * set status for Reporter
+     *
+     * @param boolean $status
+     * @return void
+     */
+    public function setReporter(bool $status): void
+    {
+        $this->isReporter = $status;
     }
 
 }

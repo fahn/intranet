@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -24,10 +24,10 @@ class BrdbHtmlMaintenance extends HtmlPageProcessor {
 
     protected function htmlBody() {
         $this->smarty->assign(array(
-            'headline' => $this->tools->getIniValue('maintenanceHeadline'), #$ini["Maintenance"]['maintenanceHeadline'],
-            'text'     => $this->tools->getIniValue('maintenanceText'), #$ini["Maintenance"]['maintenanceText'],
-            'date'     => $this->tools->getIniValue('maintenanceDate'),  #$ini["Maintenance"]['maintenanceDate'],
-            'link'     => $this->tools->linkTo(array('page' => 'index.php')),
+            'headline' => $this->settings->getSettingString('MAINTENANCE_TITLE'),
+            'text'     => $this->settings->getSettingString('MAINTENANCE_TEXT'),
+            'date'     => $this->settings->getSettingString('MAINTENANCE_DATE'),
+            'link'     => $this->prgPatternElementLogin->linkTo(array('page' => 'index.php')),
         ));
 
         $content = $this->smarty->fetch('maintenance.tpl');

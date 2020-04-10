@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -13,25 +13,14 @@
  ******************************************************************************/
 include_once 'prgPattern.inc.php';
 
-// DB
-include_once BASE_DIR .'/inc/db/brdb.inc.php';
-
 // Model
 include_once BASE_DIR .'/inc/model/user.inc.php';
 
-// Tools
-include_once BASE_DIR .'/inc/logic/tools.inc.php';
 
-// Smarty
-include_once BASE_DIR .'/smarty/libs/Smarty.class.php';
-
-class PrgPatternElementLogin extends APrgPatternElement {
-    // database
-    private $brdb;
-
-    // tools
-    private $tools;
-
+class PrgPatternElementLogin extends APrgPatternElement 
+{
+    
+    const __TABLE__ = "Login";
     // user
     private $loggedInUser;
 
@@ -65,26 +54,25 @@ class PrgPatternElementLogin extends APrgPatternElement {
     public function __construct($brdb) {
         parent::__construct("login");
 
-        // load db
-        $this->brdb = $brdb;
-
         $this->registerPostSessionVariable(self::FORM_LOGIN_ACTION);
         $this->registerPostSessionVariable(self::FORM_LOGIN_EMAIL);
 
         $server_scriptname = $_SERVER['PHP_SELF'];
-        if(strstr($server_scriptname, 'pages/logout.php', true)) {
+        if (strstr($server_scriptname, 'pages/logout.php', true)) 
+        {
             $this->processPostLogout();
         }
 
-        // set
-        $this->tools = new Tools();
     }
 
-    public function processPost() {
-        if ($this->issetPostVariable(self::FORM_LOGIN_ACTION)) {
-            $loginAction = strval(trim($this->getPostVariable(self::FORM_LOGIN_ACTION)));
+    public function processPost(): void 
+    {
+        if ($this->issetPostVariable(self::FORM_LOGIN_ACTION)) 
+        {
+            $loginAction = $this->getPostVariableString(self::FORM_LOGIN_ACTION);
 
-            switch ($loginAction) {
+            switch ($loginAction) 
+            {
                 case self::FORM_ACTION_REQUEST_PASS:
                 $this->processPostRequestPassword();
                 break;
@@ -111,31 +99,28 @@ class PrgPatternElementLogin extends APrgPatternElement {
     public function processGet() {}
 
 
-    /** Request Password
-      *
-      *
-      */
-    private function processPostRequestPassword() {
+    private function processPostRequestPassword(): bool
+    {
         if ($this->isUserLoggedIn()) {
             $this->setFailedMessage("Du bist bereits angemeldet.");
-            return;
+            return false;
         }
 
         if (!$this->issetPostVariable(self::FORM_LOGIN_EMAIL)) {
             $this->setFailedMessage("no valid mail address");
-            return;
+            return false;
         }
 
         // check if mail is valid and exists
-        $mail = strval(trim($this->getPostVariable(self::FORM_LOGIN_EMAIL)));
-        if (! $this->tools->validEmail($mail)) {
+        $mail = $this->getPostVariableString(self::FORM_LOGIN_EMAIL);
+        if (! $this->validEmail($mail)) {
             $this->setFailedMessage("no valid mail address1");
-            return;
+            return false;
         }
         $res = $this->brdb->selectUserByEmail($mail);
         if($res->num_rows != 1) {
             $this->setFailedMessage("Bitte bei dem Support melden.");
-            return;
+            return false;
         }
         $userData = $res->fetch_array();
 
@@ -148,13 +133,13 @@ class PrgPatternElementLogin extends APrgPatternElement {
         $this->brdb->insertUserPassHash($userData['userId'], $token, $ip);
         if($this->brdb->hasError()) {
           $this->setFailedMessage("Bitte bei dem Support melden.");
-          return;
+          return false;
         }
 
         $name      = $userData['firstName'];
         $subject   = "Dein Password wurde angefordert.";
 
-        $link = $this->tools->linkTo(array(
+        $link = $this->linkTo(array(
           'page'   => 'index.php',
           'action' => 'change_password',
           'token'  => $token,
@@ -164,19 +149,19 @@ class PrgPatternElementLogin extends APrgPatternElement {
         $assign    = array(
             'name'    => $name,
             'link'    => $link,
-            'baseUrl' => $this->tools->getIniValue('baseUrl'),
+            'baseUrl' => $this->settings->getSettingString('SITE_URL'),
         );
 
         $message   = '';
-        if(!$this->tools->sendMail($mail, $name, $subject, 'Dein Passwort wurde angefordert', $message, $assign, 'htmlmail/request_password.tpl')) {
+        if(!$this->sendMail($mail, $name, $subject, 'Dein Passwort wurde angefordert', $message, $assign, 'htmlmail/request_password.tpl')) {
             $this->setFailedMessage("Fehler beim E-Mail-Versand.");
-            return;
+            return false;
         }
 
 
         $this->setSuccessMessage("Ihr Password wurde angefordert.");
-        $this->tools->customRedirect($this->tools->getBaseUrl());
-        return;
+        $this->customRedirectString($this->getBaseUrl());
+        return true;
 
     }
 
@@ -184,64 +169,63 @@ class PrgPatternElementLogin extends APrgPatternElement {
      * Change Password
      */
     private function processPostChangePassword() {
-      // check if variables set
-      if (!$this->issetPostVariable(self::FORM_LOGIN_EMAIL) ||
-          !$this->issetPostVariable(self::FORM_LOGIN_TOKEN) ||
-          !$this->issetPostVariable(self::FORM_LOGIN_PASSWORD)  ||
-          !$this->issetPostVariable(self::FORM_LOGIN_PASSWORD2)) {
-        $this->setFailedMessage("Formulardaten sind falsch.");
-        return;
-      }
-      $mail  = base64_decode($this->getPostVariable(self::FORM_LOGIN_EMAIL));
+        $requireFields = array(self::FORM_LOGIN_EMAIL, self::FORM_LOGIN_TOKEN, self::FORM_LOGIN_PASSWORD, self::FORM_LOGIN_PASSWORD2);
+        if (! $this->prgElementLogin->checkRequiredFields($requireFields)) 
+        {
+            $this->setFailedMessage("Formulardaten sind falsch.");
+            return false;
+        }
 
-      $token = strval(trim($this->getPostVariable(self::FORM_LOGIN_TOKEN)));
-      $pass  = strval(trim($this->getPostVariable(self::FORM_LOGIN_PASSWORD)));
-      $pass2 = strval(trim($this->getPostVariable(self::FORM_LOGIN_PASSWORD2)));
+        $mail  = base64_decode($this->getPostVariable(self::FORM_LOGIN_EMAIL));
 
-      // valid mail
-      if (! $this->tools->validEmail($mail)) {
-        $this->setFailedMessage("no valid mail address");
-        return;
-      }
+        $token = strval(trim($this->getPostVariable(self::FORM_LOGIN_TOKEN)));
+        $pass  = strval(trim($this->getPostVariable(self::FORM_LOGIN_PASSWORD)));
+        $pass2 = strval(trim($this->getPostVariable(self::FORM_LOGIN_PASSWORD2)));
 
-      // check if Password = Password2
-      if(strlen($pass) == 0) {
-        $this->setFailedMessage("Bitte gebe ein Passwort ein.");
-        return false;
-      }
-      if ($pass != $pass2) {
-        $this->setFailedMessage("Passwörter stimmen nicht überein.");
-        return false;
-      }
+        // valid mail
+        if (! $this->validEmail($mail)) {
+            $this->setFailedMessage("no valid mail address");
+            return;
+        }
 
-      // check if token exists
-      $res = $this->brdb->GetUserPassHash($mail, $token);
-      if($this->brdb->hasError() || $res->num_rows != 1) {
-          $this->setFailedMessage("Bitte bei dem Support melden.");
-          return false;
-      }
+        // check if Password = Password2
+        if(strlen($pass) == 0) {
+            $this->setFailedMessage("Bitte gebe ein Passwort ein.");
+            return false;
+        }
+        if ($pass != $pass2) {
+                $this->setFailedMessage("Passwörter stimmen nicht überein.");
+                return false;
+        }
 
-      $data     = $res->fetch_array();
-      $passHash = $this->tools->createPasswordHash($pass);
+        // check if token exists
+        $res = $this->brdb->GetUserPassHash($mail, $token);
+        if($this->brdb->hasError() || $res->num_rows != 1) {
+            $this->setFailedMessage("Bitte bei dem Support melden.");
+            return false;
+        }
+
+        $data     = $res->fetch_array();
+        $passHash = $this->createPasswordHash($pass);
 
 
-      // delete token
-      $this->brdb->DeleteUserPassHash($data['userId'], $token);
-      if($this->brdb->hasError()){
-          $this->setFailedMessage("Bitte bei dem Support melden.");
-          return false;
-      }
+        // delete token
+        $this->brdb->DeleteUserPassHash($data['userId'], $token);
+        if($this->brdb->hasError()){
+            $this->setFailedMessage("Bitte bei dem Support melden.");
+            return false;
+        }
 
-      // set new password
-      $this->brdb->updateUserPassword($data['userId'], $passHash);
-      if($this->brdb->hasError()){
-          $this->setFailedMessage("Bitte bei dem Support melden.");
-          return false;
-      }
+        // set new password
+        $this->brdb->updateUserPassword($data['userId'], $passHash);
+        if($this->brdb->hasError()){
+            $this->setFailedMessage("Bitte bei dem Support melden.");
+            return false;
+        }
 
-      $this->setSuccessMessage("Passwort wurde geändert. Bitte nun einloggen");
-      $this->tools->customRedirect($this->tools->getBaseUrl());
-      return true;
+        $this->setSuccessMessage("Passwort wurde geändert. Bitte nun einloggen");
+        $this->customRedirectString($this->getBaseUrl());
+        return true;
     }
 
 
@@ -249,73 +233,85 @@ class PrgPatternElementLogin extends APrgPatternElement {
      * Login via POST-Form
      */
     private function processPostLogin() {
-        if ($this->tools->isProductiv() && isset($_SESSION['badlogin']) && $_SESSION['badlogin'] >= 5) {
+        if ($this->isBadLogin()) {
             $this->setFailedMessage('Kein Login möglich. Bitte versuchen Sie es später noch einmal');
             return;
         }
 
-        $_SESSION['badlogin'] = !isset($_SESSION['badlogin']) ? 0 : $_SESSION['badlogin']+1;
-
-        // In case of a post check if the entered information
-        // is valid and does not inject wired stuff. (Avoid SQL injection here)
-        if (! $this->issetPostVariable(self::FORM_LOGIN_EMAIL) ||
-            ! $this->issetPostVariable(self::FORM_LOGIN_PASSWORD)) {
-            $this->setFailedMessage(self::ERROR_LOGIN_INVALID_EMAIL);
+        $requireFields = array(self::FORM_LOGIN_EMAIL, self::FORM_LOGIN_PASSWORD);
+        if (! $this->checkRequiredFields($requireFields)) 
+        {
+            $this->setFailedMessage(self::ERROR_LOGIN_INVALID_EMAIL ."1");
             return false;
         }
 
-        $email     = $this->getPostVariable(self::FORM_LOGIN_EMAIL);
-        $pass      = $this->getPostVariable(self::FORM_LOGIN_PASSWORD);
+        $email     = strval($this->getPostVariable(self::FORM_LOGIN_EMAIL));
+        $pass      = strval($this->getPostVariable(self::FORM_LOGIN_PASSWORD));
 
         // filter the email to avoid having other wired stuff being
         // injected to the php code or the database maybe
-        if (! $this->tools->validEmail($email)) {
-            $this->setFailedMessage(self::ERROR_LOGIN_INVALID_EMAIL);
-            return;
-        }
-
+        
         // Now see if there is a user in the data base with correct
         // email and hashed password. Passwords are hashed with php hash functionality
-        $dataSet = $this->brdb->selectUserByEmail($email)[0];
-        if ($this->brdb->hasError()) {
-            $this->tools->log('User', 'Login try', $email, 'POST');
-            $this->setFailedMessage($this->brdb->getError());
-            return;
-        }
-
-        if ($dataSet == true) {
-            // fetch the dataset there is only one and try to verify the passowrd
-            $loadedUser = new User($dataSet);
-            if (password_verify($pass, $loadedUser->passHash)) {
-                $userId = intval($dataSet->{User::USER_CLM_ID});
-
-                // set lastLogin
-                $this->brdb->setUserLastLogin($userId);
-
-                // SET SESSION
-                $this->setSessionVariable(self::SESSION_LOGIN_USER_ID, $userId);
-                // unset post var
-                $this->unsetPostVariable(self::FORM_LOGIN_PASSWORD);
-                // set success message
-                $this->setSuccessMessage(self::SUCCESS_LOGIN);
-
-                // ref
-                if (isset($_SESSION['ref']) && strpos($_SESSION['ref'], $this->tools->getBaseUrl()) === true) {
-                    $link = $_SESSION['ref'];
-                    unset($_SESSION['ref']);
-                } else {
-                    $link = $this->tools->getBaseUrl();
-                }
-                $this->tools->customRedirect($link);
-                return;
+        try {
+            if (! $this->validEmail($email)) {
+                throw new Exception(self::ERROR_LOGIN_INVALID_EMAIL);
             }
-            // Make an potential attacker wait for us
-            sleep(self::PASSWORD_WAIT_FOR_WRONG);
+
+            $dataSet = $this->brdb->selectUserByEmail($email);
+            if (!isset($dataSet) || !is_array($dataSet)) {
+                throw new Exception("User not exists");
+            }
+
+            $loadedUser = new User($dataSet);
+            if (!password_verify($pass, $loadedUser->passHash)) {
+                throw new Exception("Password not matches");
+            }
+
+            $userId = intval($loadedUser->getUserId());
+            // set lastLogin
+            
+            $this->brdb->setUserLastLogin($userId);
+
+            // SET SESSION
+            $this->setSessionVariable(self::SESSION_LOGIN_USER_ID, $userId);
+            // unset post var
+            $this->unsetPostVariable(self::FORM_LOGIN_PASSWORD);
+            // set success message
+            $this->setSuccessMessage(self::SUCCESS_LOGIN);
+
+            // ref
+            if (isset($_SESSION['ref']) && strpos($_SESSION['ref'], $this->getBaseUrl()) === true) {
+                $link = $_SESSION['ref'];
+                unset($_SESSION['ref']);
+            } else {
+                $link = $this->getBaseUrl();
+            }
+            $this->customRedirectString($link);
+            return true;
+
+
+        } catch (Exception $e) 
+        {
+            $this->log('User', 'Login try', sprintf("User: %s; Details %s", $email, $e->getMessage()), 'POST');
+            return false;
         }
 
-        $this->tools->log('User', 'Login try', $email, 'POST');
-        $this->setFailedMessage(self::ERROR_LOGIN_UNKNOWN_EMAIL_PASSWORD);
+    }
 
+    private function isBadLogin(): bool 
+    {
+        if (! $this->isProductiv()) 
+        {
+            return false;
+        }
+        // set 
+        $_SESSION['badlogin'] = !isset($_SESSION['badlogin']) ? 0 : $_SESSION['badlogin']+1;
+
+        // return
+        return isset($_SESSION['badlogin']) && $_SESSION['badlogin'] >= 5 ? true : false;
+
+        
     }
 
     private function processPostLogout() {
@@ -363,7 +359,7 @@ class PrgPatternElementLogin extends APrgPatternElement {
     public function redirectUserIfNonAdmin() {
         if ( ! $this->loggedInUser->isAdmin()) {
             $this->setFailedMessage("User does not have the expected permissions.");
-            $this->tools->customRedirect(array(
+            $this->customRedirectArray(array(
                 'page' => 'index.php',
             ));
         }
@@ -372,7 +368,7 @@ class PrgPatternElementLogin extends APrgPatternElement {
     public function redirectUserIfNonReporter() {
         if ( ! $this->loggedInUser->isReporter()) {
             $this->setFailedMessage("User does not have the expected permissions.");
-            $this->tools->customRedirect(array(
+            $this->customRedirectArray(array(
                 'page' => 'index.php',
             ));
         }
@@ -402,7 +398,7 @@ class PrgPatternElementLogin extends APrgPatternElement {
                         $status = $this->loggedInUser->isReporter();
                         break;
                     default:
-                        continue;
+                        return;
                         break;
                 }
 
@@ -416,7 +412,7 @@ class PrgPatternElementLogin extends APrgPatternElement {
 
         if (! $status) {
             $this->setFailedMessage("User does not have the expected permissions.");
-            $this->tools->customRedirect(array(
+            $this->customRedirectArray(array(
                 'page' => 'index.php',
             ));
         }
@@ -426,7 +422,7 @@ class PrgPatternElementLogin extends APrgPatternElement {
     public function redirectUserIfNotLoggindIn() {
         if ( ! $this->isUserLoggedIn()) {
             $this->setFailedMessage("No login. No access.");
-            $this->tools->customRedirect(array(
+            $this->customRedirectArray(array(
                 'page' => 'index.php',
             ));
         }

@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -13,14 +13,23 @@
  ******************************************************************************/
 require_once('default.widget.php');
 
+
 class TournamentWidget extends Widget {
-    private $linkToTournament;
+    private string $linkToTournament;
+
+    /* private APrgPatternElement $prgPatternElement; */
 
     public function __construct() {
         parent::__construct();
 
+        /*$this->prgPatternElement = new APrgPatternElement();
+
+        $this->prgElementTournament = new PrgPatternElementTournament($this->prgPatternElementLogin);
+        $this->prgPattern->registerPrg($this->prgElementTournament);
+        */
+
         // set link
-        $this->linkToTournament = $this->tools->linkTo(array(
+        $this->linkToTournament = $this->linkTo(array(
             'page' => 'tournament.php',
         ));
     }
@@ -70,10 +79,12 @@ class TournamentWidget extends Widget {
         $data = array();
         $tournamtList = $this->brdb->selectLatestTournamentList(5);
 
-        if (isset($tournamtList) && !empty($tournamtList)) {
-            foreach ($tournamtList as $dataSet) {
-                $dataSet['classification'] = $this->tools->formatClassification($dataSet['classification']);
-                $dataSet['linkTo']         = $this->tools->linkTo(array('page' => 'tournament.php', 'action' => 'details', 'id' => $dataSet['tournamentId']));
+        if (isset($tournamtList) && !empty($tournamtList)) 
+        {
+            foreach ($tournamtList as $dataSet) 
+            {
+                $dataSet['classification'] = $this->formatClassification($dataSet['classification']);
+                $dataSet['linkTo']         = $this->linkTo(array('page' => 'tournament.php', 'action' => 'details', 'id' => $dataSet['tournamentId']));
 
                 $data[]                    = $dataSet;
             }
@@ -86,10 +97,12 @@ class TournamentWidget extends Widget {
         $data = array();
         $tournamtList = $this->brdb->selectUpcomingTournamentList(5);
         
-        if (isset($tournamtList) && !empty($tournamtList)) {
-            foreach ($tournamtList as $dataSet) {
-                $dataSet['classification'] = $this->tools->formatClassification($dataSet['classification']);
-                $dataSet['linkTo']         = $this->tools->linkTo(array('page' => 'tournament.php', 'action' => 'details', 'id' => $dataSet['tournamentId']));
+        if (isset($tournamtList) && !empty($tournamtList)) 
+        {
+            foreach ($tournamtList as $dataSet) 
+            {
+                $dataSet['classification'] = $this->formatClassification($dataSet['classification']);
+                $dataSet['linkTo']         = $this->linkTo(array('page' => 'tournament.php', 'action' => 'details', 'id' => $dataSet['tournamentId']));
                 // get unique player
                 $players = $this->brdb->selectUpcomingTournamentPlayer($dataSet['tournamentId']);
                 

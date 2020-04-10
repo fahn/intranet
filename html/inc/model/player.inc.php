@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -12,38 +12,18 @@
  *
  ******************************************************************************/
 
-/**
- * This class implements a user object to simplyfy access to the data base
- * @author philipp
- *
- */
-class Player {
-    private $playerId;
-    private $playerNr;
-    private $firstName;
-    private $lastName;
-    private $gender;
-    private $bday;
-    private $clubId;
-    private $clubNr;
+class Player 
+{
+    private int $playerId;
+    private string $playerNr;
+    private string $firstName;
+    private string $lastName;
+    private string $gender;
+    private string $bday;
 
-    /**
-     * Conmstructor that knows how to retrieve all fields from a given data set
-     * @param array $dataSet a data set prefrably directly from an SQL statement
-     */
-    public function __construct($dataSet = null) 
-    {
-        if ($dataSet) 
-        {
-            foreach($dataSet as $key => $value) 
-            {
-                if (property_exists($this,$key)) 
-                {
-                    $this->$key = $value;
-                }
-            }
-        }
-    }
+    // Club
+    private int $clubId;
+    private string $clubNr; // obsolete
 
     /**
      * Method to retrieve the full name consisting of first and last name
@@ -55,6 +35,39 @@ class Player {
     }
 
     /**
+     * get firstname of player
+     *
+     * @return string
+     */
+    public function getFirstname(): string 
+    {
+        return $this->firstName;
+    }
+
+    public function setFirstname(string $firstname): void 
+    {
+        $this->firstName = $firstname;
+    }
+
+    /**
+     * get Lastname of player
+     *
+     * @return string
+     */
+    public function getLastname(): string 
+    {
+        return $this->lastName;
+    }
+
+
+    public function setLastname(string $lastname): void 
+    {
+        $this->lastName = $lastname;
+    }
+
+
+
+    /**
      * get PlayerId from Player
      *
      * @return integer
@@ -62,6 +75,11 @@ class Player {
     public function getPlayerId():int
     {
         return $this->playerId;
+    }
+
+    public function setPlayerId(int $playerId): void
+    {
+        $this->playerId = $playerId;
     }
 
     /**
@@ -75,6 +93,17 @@ class Player {
     }
 
     /**
+     * Set PlayerNr
+     *
+     * @param string $playerNr
+     * @return void
+     */
+    public function setPlayerNr(string $playerNr): void
+    {
+        $this->playerNr = $playerNr;
+    }
+
+    /**
      * Get ClubNr from PlayerId
      *
      * @return string
@@ -82,6 +111,32 @@ class Player {
     public function getClubNr(): string
     {
         return $this->clubNr;
+    }
+
+    /**
+     * set clubNr
+     *
+     * @param string $clubNr
+     * @return void
+     */
+    public function setClubNr(string $clubNr): void
+    {
+        $this->clubNr = $clubNr;
+    }
+
+    /**
+     * get ClubId
+     *
+     * @return integer
+     */
+    public function getClubId(): int
+    {
+        return $this->clubId;
+    }
+
+    public function setClubId(int $clubId): void
+    {
+        $this->clubId = $clubId;
     }
 
     /**
@@ -94,21 +149,34 @@ class Player {
         return $this->bday;
     }
 
-    /**
-     * Undocumented function
-     *
-     * @return array
-     */
-    public function getSqlData():array
+    public function setBday(string $bday):void
     {
-        return array(
-            'playerNr'  => $this->playerNr,
-            'clubId'    => $this->clubId,
-            'firstName' => $this->firstName,
-            'lastName'  => $this->lastName,
-            'gender'    => $this->gender,
-            //'bday'      => $this->bday,
-        );
+        $this->bday = $bday;
+    }
+
+    /**
+     * return gender
+     *
+     * @return string Female|Male
+     */
+    public function getGender(): string 
+    {
+        return $this->gender;
+    }
+
+    /**
+     * Set Gender
+     *
+     * @param string $gender
+     * @return void
+     */
+    public function setGender(string $gender): void {
+        $genderOptions = new Gender();
+        if (!in_array($gender, $genderOptions->getGenderArray())) {
+            throw new Exception("No valid Gender");
+        }
+        $this->gender = $gender;
+        unset($gender);
     }
 
     public function __toString():string

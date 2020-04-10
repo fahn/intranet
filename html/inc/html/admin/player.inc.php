@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -16,30 +16,28 @@ require_once($path .'/brdbHtmlPage.inc.php');
 
 include_once BASE_DIR .'/inc/logic/prgPlayer.inc.php';
 include_once BASE_DIR .'/inc/logic/prgClub.inc.php';
-include_once BASE_DIR .'/inc/logic/tools.inc.php';
 
-class BrdbHtmlAdminAllPlayer extends BrdbHtmlPage {
-    private $prgPatternElementPlayer;
+class BrdbHtmlAdminAllPlayer extends BrdbHtmlPage 
+{
+    private PrgPatternElementPlayer $prgPatternElementPlayer;
 
-    private $info;
-
-    const MAX_ENTRIES = 50;
-
-    private $page;
+    private array $info;
+    private $_page;
 
 
     public function __construct($page = null) {
         parent::__construct();
 
         if ($page != null) {
-            $this->page = $page;
+            $this->_page = $page;
         }
 
-        $this->prgPatternElementPlayer = new PrgPatternElementPlayer($this->brdb, $this->prgPatternElementLogin);
+        $this->prgPatternElementPlayer = new PrgPatternElementPlayer($this->prgPatternElementLogin);
         $this->prgPattern->registerPrg($this->prgPatternElementPlayer);
 
         // load Club
-        $this->prgPatternElementClub = new PrgPatternElementClub($this->brdb, $this->prgPatternElementLogin);
+        $this->prgPatternElementClub = new PrgPatternElementClub($this->prgPatternElementLogin);
+        $this->prgPattern->registerPrg($this->prgPatternElementClub);
 
         $this->info  = array('firstName', 'lastName', 'email', 'gender', 'bday', 'phone', 'playerId', 'clubId');
     }
@@ -57,14 +55,9 @@ class BrdbHtmlAdminAllPlayer extends BrdbHtmlPage {
             return;
         }
 
-        $action = $this->tools->get('action');
-        switch ($action) {
+        switch ($this->action) {
             case 'add_player':
                 $content = $this->TMPL_updatePlayer('add');
-                break;
-
-            case 'sync':
-                $content = $this->TMPL_sync();
                 break;
 
             case 'edit':
@@ -88,7 +81,8 @@ class BrdbHtmlAdminAllPlayer extends BrdbHtmlPage {
     }
 
 
-    private function TMPL_listPlayer() {
+    private function TMPL_listPlayer():string
+    {
 
         $this->smarty->assign(array(
             'player'     => $this->loadPlayerList(),
@@ -98,11 +92,10 @@ class BrdbHtmlAdminAllPlayer extends BrdbHtmlPage {
         return $this->smarty->fetch('player/list.tpl');
     }
 
-    private function TMPL_updatePlayer($action = 'add') {
-         $id  = $this->tools->get('id');
-
+    private function TMPL_updatePlayer($action = 'add'):string
+    {
         try {
-            $this->info = $id > 0 ? $this->brdb->selectUserById($id) : array();
+            $this->info = $this->id > 0 ? $this->brdb->selectUserById($this->id) : array();
         } catch (Exception $e) {
             $this->info = array();
         }
@@ -110,8 +103,8 @@ class BrdbHtmlAdminAllPlayer extends BrdbHtmlPage {
         $this->smarty->assign(array(
             'clubs'  => $this->prgPatternElementClub->list(),
             'info'   => $this->info,
-            'hidden' => $action == 'add' ? $this->prgPatternElementPlayer::FORM_PLAYER_ACTION_INSERT : $this->prgPatternElementPlayer::FORM_PLAYER_ACTION_UPDATE,
-            'task'   => $action,
+            'hidden' => $this->action == 'add' ? $this->prgPatternElementPlayer::FORM_PLAYER_ACTION_INSERT : $this->prgPatternElementPlayer::FORM_PLAYER_ACTION_UPDATE,
+            'task'   => $this->action,
          ));
 
         return $this->smarty->fetch('player/adminUpdate.tpl');
@@ -119,9 +112,9 @@ class BrdbHtmlAdminAllPlayer extends BrdbHtmlPage {
     }
 
 
-    private function TMPL_deletePlayer() {
-        $id  = $this->tools->get('id');
-        $user = $this->brdb->selectUserById($id);
+    private function TMPL_deletePlayer(): string
+    {
+        $user = $this->brdb->selectUserById($this->id);
         if (isset($user) && !empty($user) ) {
             $this->smarty->assign(array(
                 'user'   => $this->user,
@@ -134,26 +127,10 @@ class BrdbHtmlAdminAllPlayer extends BrdbHtmlPage {
         }
     }
 
-    private function TMPL_sync() {
-        $this->smarty->assign(array(
-            'statistics'   => $this->syncPlayer(),
-        ));
+    private function loadPlayerList(): ?array
+    {
+        return $this->brdb->selectGetAllPlayer();
 
-        return $this->smarty->fetch('player/adminSync.tpl');
-    }
-
-    /**
-    PAGINATION
-    */
-    private function loadPlayerList() {
-        $page = $this->prgPatternElementPlayer->issetGetVariable('page') ?  $this->prgPatternElementPlayer->getGetVariable('page') : 0;
-        echo $this->countRows = count($this->brdb->selectGetAllPlayer());
-        echo $max = self::MAX_ENTRIES*(1+$page);
-        echo $min = $max - self::MAX_ENTRIES;
-
-        $playerList = $this->brdb->selectGetAllPlayerMM($min, $max);
-        $data = array();
-        return (isset($playerList) && !empty($playerList)) ? $playerList : array();
     }
 }
 ?>

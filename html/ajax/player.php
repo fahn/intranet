@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -24,32 +24,38 @@ $path=dirname(dirname(__FILE__));
 define("BASE_DIR", $path);
 
 require_once $path ."/inc/db/brdb.inc.php";
-require_once $path ."/inc/logic/tools.inc.php";
 
-try {
-    if (isset($_POST["playerSearch"])) {
+
+if (isset($_POST) && is_array($_POST) && isset($_POST['playerSearch'])) 
+{
+    try 
+    {
         $brdb = new BrankDB();
-        $term = strval(trim(strip_tags($_POST['playerSearch'])));
+        $term = strval(trim(stripslashes(strip_tags($_POST['playerSearch']))));
         $playerList = $brdb->getPlayerByTerm($term);
 
-        if (isset($playerList) && !empty($playerList)) {
-            $data = array();
-            foreach ($playerList as $row) {
-                $data['results'][] = array(
-                    'id'   => $row['playerId'],
-                    'text' => sprintf("%s (SpNr.: %s; Verein: %s)", $row['playerName'], $row['playerNr'], $row['clubName'])
-                );
-
-            }
-        } else {
-            $data['message'] = "No matches found";
+        if (!isset($playerList) ||empty($playerList)) {
+            throw new Exception("No matches found");
         }
+
+        $data = array();
+        foreach ($playerList as $row) 
+        {
+            $data['results'][] = array(
+                'id'   => $row['playerId'],
+                'text' => sprintf("%s (SpNr.: %s; Verein: %s)", $row['playerName'], $row['playerNr'], $row['clubName'])
+            );
+
+        }
+
         echo json_encode($data);
-        unset($brdb, $_term, $data, $playerList, $row);
+        unset($brdb, $term, $data, $playerList, $row);
 
     }
-} catch(Exception $e){
-    die("ERROR: Could not able to execute" . $e->getMessage());
-}
+    catch(Exception $e)
+    {
+        print_r("ERROR: Could not able to execute" . $e->getMessage());
+    }
+} 
 
 ?>

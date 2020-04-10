@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -39,20 +39,18 @@ trait ClubDB
 
 
     /**
-     * Inser Club with name, nr & association
+     * Insert Club with name, nr & association
      *
-     * @param string $clubName
-     * @param string $clubNr
-     * @param string $association
+     * @param Club $club
      * @return boolean
      */
-    public function insertClub(string $clubName, string $clubNr, string $association): bool
+    public function insertClub(Club $club): bool
     {
         $query = "INSERT INTO Club (name, clubNr, association) VALUES (:clubName, :clubNr, :association)";
         $statement = $this->db->prepare($query);
-        $statement->bindParam('clubName', $clubName);
-        $statement->bindParam('association', $association);
-        $statement->bindParam('clubNr', $clubNr);
+        $statement->bindParam('clubName', $club->getClubName());
+        $statement->bindParam('association', $club->getAssociation());
+        $statement->bindParam('clubNr', $club->getClubNr());
 
         return $statement->execute();
     }
@@ -72,39 +70,34 @@ trait ClubDB
      /**
       * Update Club
       *
-      * @param integer $clubId
-      * @param string $clubName
-      * @param string $clubNr
-      * @param string $association
+      * @param Club $club
       * @return boolean
       */
-    public function updateClubById(int $clubId, string $clubName, string $clubNr, string $association): bool 
+    public function updateClubById(Club $club): bool 
     {
-        $query = "UPDATE Club set name = :name, clubNr = :clubNr, association = :association WHERE clubId = :clubId";
+        $query = "UPDATE `Club` SET `name` = :name, `clubNr` = :clubNr, `association` = :association WHERE `clubId` = :clubId";
         $statement = $this->db->prepare($query);
-        $statement->bindParam('clubId', $clubId);
-        $statement->bindParam('clubName', $clubName);
-        $statement->bindParam('association', $association);
-        $statement->bindParam('clubNr', $clubNr);
+        $statement->bindParam('clubId', $club->getclubId());
+        $statement->bindParam('clubName', $club->getClubName());
+        $statement->bindParam('association', $club->getAssociation());
+        $statement->bindParam('clubNr', $club->getClubNr());
 
         return $statement->execute();
     }
 
     /**
-     * Undocumented function
+     * Update Club by ClubNr
      *
-     * @param string $clubNr
-     * @param string $clubName
-     * @param string $association
+     * @param Club $club
      * @return boolean
      */
-    public function updateClubByClubNr(string $clubNr, string $clubName, string $association): bool
+    public function updateClubByClubNr(Club $club): bool
     {
-        $query = "UPDATE Club set name = :clubName, association = :association WHERE clubNr = :clubNr";
+        $query = "UPDATE Club SET `name` = :clubName, association = :association WHERE clubNr = :clubNr";
         $statement = $this->db->prepare($query);
-        $statement->bindParam('clubName', $clubName);
-        $statement->bindParam('association', $association);
-        $statement->bindParam('clubNr', $clubNr);
+        $statement->bindParam('clubName', $club->getClubName());
+        $statement->bindParam('association', $club->getAssociation());
+        $statement->bindParam('clubNr', $club->getClubNr());
 
         return $statement->execute();
     }

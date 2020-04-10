@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
 * Badminton Intranet System
-* Copyright 2017-2019
+* Copyright 2017-2020
 * All Rights Reserved
 *
 * Copying, distribution, usage in any form is not
@@ -93,17 +93,18 @@ trait PlayerDB
      * @param array $data
      * @return boolean
      */
-    public function insertPlayer(array $data): bool 
+    public function insertPlayer(Player $player): bool 
     {
         $query     = "INSERT INTO Player (playerNr, clubId, firstName, lastName, bday, gender) 
-                        VALUES (:playerNr, :clubId, :firstName, :lastName, :gender)";
+                        VALUES (:playerNr, :clubId, :firstName, :lastName, :bday, :gender)";
         $statement = $this->db->prepare($query);
-        $statement->bindParam('playerNr', $data['playerNr']);
-        $statement->bindParam('clubId', $data['clubId'], PDO::PARAM_INT);
-        $statement->bindParam('firstName', $data['firstName']);
-        $statement->bindParam('lastName', $data['lastName']);
-        $statement->bindParam('gender', $data['gender']);
-        $statement->bindParam('bday', $data['bday']);
+       
+        $statement->bindParam('playerNr', $player->getPlayerNr());
+        $statement->bindParam('clubId', $player->getClubId(), PDO::PARAM_INT);
+        $statement->bindParam('firstName', $player->getFirstname());
+        $statement->bindParam('lastName', $player->getLastName());
+        $statement->bindParam('gender', $player->getGender());
+        $statement->bindParam('bday', $player->getBday());
 
         return $statement->execute();
     }
@@ -111,26 +112,41 @@ trait PlayerDB
     /**
      * Update Player
      *
-     * @param array $data
+     * @param Player $player
      * @return boolean
      */
-    public function updatePlayer(array $data): bool
+    public function updatePlayer(Player $player): bool
     {
         try {
-            extract($data);
-            $query = "UPDATE Player set firstName = :firstName, lastName = :lastName, gender = :gender, bday = :bday, clubId = :clubId
-                        WHERE playerNr = :playerNr";
+            $query = "UPDATE `Player` SET firstName = :firstName, lastName = :lastName, gender = :gender, bday = :bday, clubId = :clubId, playerNr = :playerNr
+                        WHERE playerId = :playerId";
             $statement = $this->db->prepare($query);
-            $statement->bindParam('playerNr', $data['playerNr']);
-            $statement->bindParam('clubId', $data['clubId'], PDO::PARAM_INT);
-            $statement->bindParam('firstName', $data['firstName']);
-            $statement->bindParam('lastName', $data['lastName']);
-            $statement->bindParam('gender', $data['gender']);
+            $statement->bindParam('playerId', $player->getPlayerId());
+            $statement->bindParam('clubId', $player->getClubId(), PDO::PARAM_INT);
+            $statement->bindParam('firstName', $player->getFirstname());
+            $statement->bindParam('lastName', $player->getLastName());
+            $statement->bindParam('gender', $player->getGender());
+            $statement->bindParam('bday', $player->getBday());
+            $statement->bindParam('playerNr', $player->getPlayerNr());
             
             return $statement->execute();
         } catch (Exception $e) {
             return false;
         }
+    }
+
+    /**
+     * delete player hy playerId
+     *
+     * @param integer $playerId
+     * @return boolean
+     */
+    public function deletePlayer(int $playerId): bool {
+        $query = "DELETE * FROM `Player` WHERE playerId = :playerId";
+        $statement = $this->db->prepare($query);
+        $statement->bindParam('playerNr', $playerId);
+
+        return $statement->execute();
     }
 
     /**

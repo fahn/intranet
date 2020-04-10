@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -14,15 +14,11 @@
 include_once 'prgPattern.inc.php';
 
 include_once BASE_DIR .'/inc/db/brdb.inc.php';
-include_once BASE_DIR .'/inc/model/user.inc.php';
-include_once BASE_DIR .'/inc/logic/tools.inc.php';
+
 
 class PrgPatternElementRanking extends APrgPatternElement {
-    // DB
-    private $db;
-
-    // tools
-    private $tools;
+    // const
+    const __TABLE__ = "Ranking";
 
     protected $prgElementLogin;
 
@@ -46,20 +42,17 @@ class PrgPatternElementRanking extends APrgPatternElement {
     /**
      * construct
      */
-    public function __construct() {
+    public function __construct(PrgPatternElementLogin $prgElementLogin) {
         parent::__construct("ranking");
-        // load DB
-        $this->db = new BrankDB();
 
-        // load Tools
-        $this->tools = new Tools();
+        $this->prgElementLogin = $prgElementLogin;
 
         $this->registerPostSessionVariable(self::FORM_FORM_ACTION);
         $this->registerPostSessionVariable(self::FORM_INSERT_MATCH);
     }
 
-    public function __loadPattern($prgElementLogin) {
-        $this->prgElementLogin = $prgElementLogin;
+    public function __loadPattern() {
+        
     }
 
     /********************************************* POST ***********************/
@@ -167,34 +160,67 @@ class PrgPatternElementRanking extends APrgPatternElement {
         }
 
         $this->setSuccessMessage("Das Spiel wurde eingetragen und die Punkte wurden berechnet.");
-        $this->tools->customRedirect(array('page' => 'ranking.php'));
+        $this->customRedirectArray(array('page' => 'ranking.php'));
         return true;
 
     }
 
     private function deleteMatch(): bool
     {
-        $id = strval(trim($this->getGetVariable('id')));
-        if (! $id) {
-            return;
+        try {
+
+            $id = intval(trim($this->getGetVariable('id')));
+            if (! $id) {
+                throw new Exception("Cannot identify id %s". strval($id));
+            }
+        }
+        catch (Exception $e) 
+        {
+            // LOG EVENT
+            $this->log($this->__TABLE__, $e->getMessage(), "", "GET", "");
+
+            $this->setFailedMessage("Das Spiel konnte nicht gelöscht werden");
+            $this->customRedirectArray(array('page' => 'ranking.php'));
+            return false;
         }
 
-        $this->db->deleteMatch($id);
-
-        if ($this->db->hasError()) 
+        try {
+            
+            if (!$this->db->deleteMatch($id)) 
+            {
+                throw new Exception("Cannot delete Event");
+            }
+        } 
+        catch (Exception $e) 
         {
+            // LOG EVENT
+            $this->log($this->__TABLE__, sprintf("Cannot delete Match. ID: %i. Details %s", $id, $e->getMessage()), "", "GET", "");
+
             $this->setFailedMessage("Das Spiel konnte nicht gelöscht werden");
-            $this->tools->customRedirect(array('page' => 'ranking.php'));
+            $this->customRedirectArray(array('page' => 'ranking.php'));
+            return false;
         }
         
-        if (! $this->newRanking()) 
-        {
-            $this->setFailedMessage("Die Rankgliste konnte nicht erstellt werden.");
-            $this->tools->customRedirect(array('page' => 'ranking.php'));
-        }
 
+        try {
+            if (! $this->newRanking())  {
+                throw new Exception("Cannot renew Ranking");
+            }
+
+        }
+        catch (Exception $e) 
+        {
+            $this->log($this->__TABLE__, sprintf("Cannot delete Match. ID: %i. Details %s", $id, $e->getMessage()), "", "GET", "");
+
+            $this->setFailedMessage("Die Rankgliste konnte nicht erstellt werden.");
+            $this->customRedirectArray(array('page' => 'ranking.php'));
+            return false;
+
+        }
+        
         $this->setSuccessMessage("Das Spiel wurde gelöscht & die Rangliste wurde neu erstellt.");
-        $this->tools->customRedirect(array('page' => 'ranking.php'));
+        $this->customRedirectArray(array('page' => 'ranking.php'));
+
         return true;
     }
 
@@ -203,7 +229,7 @@ class PrgPatternElementRanking extends APrgPatternElement {
     {
         $this->prgElementLogin->redirectUserIfNotLoggindIn();
 
-        $action = $this->tools->get('action');
+        $action = $this->getGetVariable('action');
         switch ($action) 
         {
             case 'renewRanking':
@@ -229,7 +255,7 @@ class PrgPatternElementRanking extends APrgPatternElement {
         {
             $this->setSuccessMessage("Die Rangliste wurde neu erstellt.");
         }
-        $this->tools->customRedirect(array('page' => 'ranking.php'));
+        $this->customRedirectArray(array('page' => 'ranking.php'));
         return true;
     }
 

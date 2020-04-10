@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -13,8 +13,6 @@
  ******************************************************************************/
 $path=dirname(dirname(__FILE__));
 require($path .'/brdbHtmlPage.inc.php');
-
-include_once BASE_DIR .'/inc/logic/tools.inc.php';
 
 class BrdbHtmlAdminShowLog extends BrdbHtmlPage {
   //
@@ -29,10 +27,9 @@ class BrdbHtmlAdminShowLog extends BrdbHtmlPage {
     }
 
 
-    public function htmlBody() {
-        $action = $this->tools->get("action");
-
-        switch ($action) {
+    public function htmlBody(): void
+    {
+        switch ($this->action) {
             default:
                 $content = $this->loadContent();
                 break;
@@ -45,17 +42,21 @@ class BrdbHtmlAdminShowLog extends BrdbHtmlPage {
         $this->smarty->display('index.tpl');
     }
 
-    private function loadContent() {
+    private function loadContent(): string
+    {
         $this->smarty->assign('logList', $this->getLogs());
 
         return $this->smarty->fetch('log/list.tpl');
     }
 
-    private function getLogs() {
+    private function getLogs(): array
+    {
         $data = array();
         $logList = $this->brdb->statementGetAllLogs(); #($min, $max);
-        if (isset($logList) && !empty($logList)) {
-            while ($dataSet = $res) {
+        if (isset($logList) && !empty($logList)) 
+        {
+            foreach ($logList as $dataSet) 
+            {
                 $dataSet['logdata'] = unserialize($dataSet['logdata']);
                 $data[] = $dataSet;
             }

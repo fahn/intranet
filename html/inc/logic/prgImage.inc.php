@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -12,9 +12,6 @@
  *
  ******************************************************************************/
 include_once 'prgPattern.inc.php';
-
-include_once BASE_DIR .'/inc/db/brdb.inc.php';
-include_once BASE_DIR .'/inc/logic/tools.inc.php';
 
 /**
  * This prg pattern ahndles all the post and get actions
@@ -30,9 +27,9 @@ class PrgPatternElementImage extends APrgPatternElement {
     
     const _USER_IMAGE_PATH_   = "/static/img/user/";
 
-    public function __construct(BrankDB $brdb, PrgPatternElementLogin $prgElementLogin) {
+    public function __construct(PrgPatternElementLogin $prgElementLogin) {
         parent::__construct("image");
-        $this->brdb = $brdb;
+
         $this->prgElementLogin = $prgElementLogin;
     }
 
@@ -98,7 +95,7 @@ class PrgPatternElementImage extends APrgPatternElement {
         }
 
         $this->setSuccessMessage("Das Bild wurde gelöscht.");
-        Tools::customRedirect(array('page' => 'adminAllImages.php'));
+        $this->customRedirectArray(array('page' => 'adminAllImages.php'));
         return true;
     }
     

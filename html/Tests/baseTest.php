@@ -7,9 +7,6 @@ class BaseTestCase extends \PHPUnit\Framework\TestCase {
     private static $db;
 
     public function runApp() {
-
-        $db = new Tools();
-
     }
 }
 

@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -15,7 +15,6 @@ $path=dirname(dirname(__FILE__));
 require($path .'/brdbHtmlPage.inc.php');
 
 include_once BASE_DIR .'/inc/logic/prgImage.inc.php';
-include_once BASE_DIR .'/inc/logic/tools.inc.php';
 
 class BrdbHtmlAdminAllImagesPage extends BrdbHtmlPage {
   private $prgPatternElementImage;
@@ -30,27 +29,25 @@ class BrdbHtmlAdminAllImagesPage extends BrdbHtmlPage {
     public function __construct($page = null) {
         parent::__construct();
 
+        $this->prgPatternElementImage = new PrgPatternElementImage($this->prgPatternElementLogin);
+        $this->prgPattern->registerPrg($this->prgPatternElementImage);
+
         if ($page != null) {
              $this->_page = $page;
         }
 
         # load links
         $links = array(
-            'add' => $this->tools->linkTo(array('page' => $this->_page, 'action' => 'add')),
-            'list' => $this->tools->linkTo(array('page' => $this->_page, 'action' => 'add')),
+            'add' => $this->prgPatternElementImage->linkTo(array('page' => $this->_page, 'action' => 'add')),
+            'list' => $this->prgPatternElementImage->linkTo(array('page' => $this->_page, 'action' => 'add')),
         );
 
         $this->smarty->assign('links', $links);
-
-        $this->prgPatternElementImage = new PrgPatternElementImage($this->brdb, $this->prgPatternElementLogin);
-        $this->prgPattern->registerPrg($this->prgPatternElementImage);
     }
 
 
     public function htmlBody() {
-        $action = $this->tools->get("action");
-
-        switch ($action) {
+        switch ($this->action) {
           default:
             $content = $this->loadContent();
             break;
@@ -89,7 +86,7 @@ class BrdbHtmlAdminAllImagesPage extends BrdbHtmlPage {
             $searchString = "default";
             $pos = stripos($tmpImage, $searchString);
             
-            $deleteLink = $this->tools->linkTo(array('page' => $this->_page, 'action' => 'delete', 'id' => basename($tmpImage)));
+            $deleteLink = $this->prgPatternElementImage->linkTo(array('page' => $this->_page, 'action' => 'delete', 'id' => basename($tmpImage)));
             if ($pos !== false) {
                 $deleteLink = "";
             }

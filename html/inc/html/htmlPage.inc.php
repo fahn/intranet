@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -11,7 +11,6 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
-
 error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
 
 $stage = getenv('INTRANET_STAGE', true) ?: getenv('INTRANET_STAGE');
@@ -21,10 +20,7 @@ if ($stage == "development") {
     error_reporting(E_ALL);
 }
 
-
 require_once BASE_DIR .'/smarty/libs/Smarty.class.php';
-require_once BASE_DIR .'/inc/logic/tools.inc.php';
-
 # libary
 require_once BASE_DIR .'/vendor/autoload.php';
 
@@ -34,56 +30,21 @@ use Symfony\Component\Routing\Annotation\Route;
 
 abstract class HtmlPageProcessor { # extends AbstractController {
     // smarty
-    protected $smarty;
+    protected Smarty $smarty;
+   
     // content
-    protected $content;
-    // tools
-    protected $tools;
+    protected string $content;
 
     // stage
-    protected $stage;
+    protected string $stage;
+
 
     /**
      * Standard constructor which gets called
      * by some derived classes
      */
     public function __construct() {
-        // load tools
-        $this->tools = new Tools;
 
-        // set stage
-        $this->stage = getenv('INTRANET_STAGE', true) ?: getenv('INTRANET_STAGE');
-
-        // load smarty
-        $this->smarty = new Smarty;
-
-        $this->smarty->setTemplateDir(BASE_DIR .'/templates');
-        $this->smarty->setCompileDir(BASE_DIR  .'/templates_c');
-        $this->smarty->setConfigDir(BASE_DIR  .'/smarty/configs');
-
-        $version = "1.0.7";
-
-        if ($this->stage == "development1") {
-            $this->smarty->setCacheDir(BASE_DIR  .'/cache');
-            // @TODO: set debug bar
-            $this->smarty->clear_all_cache();
-            $this->smarty->force_compile  = true;
-            $this->smarty->debugging      = false;
-            $this->smarty->caching        = false;
-            $this->smarty->cache_lifetime = 0;
-            $version .="-dev";
-        } else {
-            // remove notice
-            $this->smarty->error_reporting = E_ALL & ~E_NOTICE;
-        }
-
-        
-        $this->smarty->assign(array(
-            'pageTitle' => $this->tools->getIniValue('pageTitle'),
-            'logoTitle' => $this->tools->getIniValue('logoTitle'),
-            'baseUrl'   => $this->tools->getIniValue('baseUrl'),
-            'version'   => $version,
-        ));
     }
 
 

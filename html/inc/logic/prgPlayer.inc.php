@@ -2,7 +2,7 @@
 
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -13,11 +13,9 @@
  *
  ******************************************************************************/
 include_once('prgPattern.inc.php');
-
 include_once BASE_DIR .'/inc/db/brdb.inc.php';
 include_once BASE_DIR .'/inc/model/player.inc.php';
 
-include_once BASE_DIR .'/inc/logic/tools.inc.php';
 
 class PrgPatternElementPlayer extends APrgPatternElement {
     const FORM_PLAYER_PLAYERID    = "playerId";
@@ -49,12 +47,12 @@ class PrgPatternElementPlayer extends APrgPatternElement {
     const SUCCESS_USER_DELETE                    = "Succesfully deleted User!";
 
 
-    protected $prgElementLogin;
+    protected PrgPatternElementLogin $prgElementLogin;
 
-    protected $brdb;
-
-    public function __construct(BrankDB $brdb, PrgPatternElementLogin $prgElementLogin) {
+    public function __construct(PrgPatternElementLogin $prgElementLogin) {
         parent::__construct("player");
+
+        $this->prgElementLogin = $prgElementLogin;
 
         $this->registerPostSessionVariable(self::FORM_PLAYER_PLAYERID);
         $this->registerPostSessionVariable(self::FORM_PLAYER_PLAYERNR);
@@ -63,13 +61,6 @@ class PrgPatternElementPlayer extends APrgPatternElement {
         $this->registerPostSessionVariable(self::FORM_PLAYER_BDAY);
         $this->registerPostSessionVariable(self::FORM_PLAYER_CLUBID);
         $this->registerPostSessionVariable(self::FORM_PLAYER_GENDER);
-
-        // load DB
-        $this->brdb = $brdb;
-
-        // load Login
-        $this->prgElementLogin = $prgElementLogin;
-
     }
 
     public function processPost() {
@@ -94,12 +85,11 @@ class PrgPatternElementPlayer extends APrgPatternElement {
                 break;
 
             case self::FORM_PLAYER_ACTION_UPDATE:
-                $id = Tools::get("id");
-                $this->processPostUpdateUserAccount($id);
+                $this->processPostUpdatePlayer();
                 break;
 
             case  self::FORM_PLAYER_ACTION_DELETE:
-
+                $this->processPostDeletePlayer();
                 break;
 
             default:
@@ -110,99 +100,153 @@ class PrgPatternElementPlayer extends APrgPatternElement {
 
     public function processGet() {}
 
-    private function processPostInsertPlayer() {
+    /**
+     * Insert Player
+     *
+     * @return boolean
+     */
+    private function processPostInsertPlayer(): bool
+    {
       // Check that all information has been posted
-
-      if (
-        ! $this->issetPostVariable(self::FORM_PLAYER_FIRSTNAME) ||
-        ! $this->issetPostVariable(self::FORM_PLAYER_LASTNAME) ||
-        ! $this->issetPostVariable(self::FORM_PLAYER_BDAY) ||
-        ! $this->issetPostVariable(self::FORM_PLAYER_GENDER) ||
-        ! $this->issetPostVariable(self::FORM_PLAYER_PLAYERID) ||
-        ! $this->issetPostVariable(self::FORM_PLAYER_CLUBID)
-      ) {
-          $this->setFailedMessage(self::ERROR_USER_UPDATE_MISSING_INFORMATION);
-          return;
-      }
-
-
-
-      $data = array(
-          'clubId'    => $this->getPostVariable(self::FORM_PLAYER_CLUBID),
-          'firstName' => $this->getPostVariable(self::FORM_PLAYER_FIRSTNAME),
-          'lastName'  => $this->getPostVariable(self::FORM_PLAYER_LASTNAME),
-          'gender'    => $this->getPostVariable(self::FORM_PLAYER_GENDER),
-          'playerNr'  => $this->getPostVariable(self::FORM_PLAYER_PLAYERNR),
-          'bday'      => $this->getPostVariable(self::FORM_PLAYER_BDAY),
-      );
-
-      $this->brdb->insertPlayer($data);
-      if ($this->brdb->hasError()) {
-          $this->setFailedMessage($this->brdb->getError());
-          return;
-      }
-      $id = $this->brdb->insert_id();
-
-      if (!$this->processPostUpdateUserAccount($id)) {
-          $this->setFailedMessage("Probleme beim anlegen. Bitte editieren Sie den Nutzer!");
-          Tools::customRedirect(array(
-            'page'   => "adminAllUser.php",
-            'action' => 'edit',
-            'id'     => $id,
-          ));
-          return;
-      }
-
-      $this->setSuccessMessage("Nutzer wurde angelegt");
-      Tools::customRedirect(array(
-        'page'   => "adminAllUser.php",
-        'action' => 'edit',
-        'id'     => $id,
-      ));
-      return;
-
-    }
-
-    public function find(Player $item) {
-        if ($item instanceof Player) {
-            $playerNr = $item->getPlayerNr();
-            $res      = $this->brdb->selectPlayerByPlayerNr($playerNr);
-            if ($this->brdb->hasError()) {
-                return false;
-            }
-
-            return $res->num_rows == 1 ? true : false;
+        $requireFields = array(self::FORM_PLAYER_FIRSTNAME, self::FORM_PLAYER_LASTNAME, self::FORM_PLAYER_BDAY, self::FORM_PLAYER_GENDER, self::FORM_PLAYER_PLAYERID, self::FORM_PLAYER_CLUBID);
+        if (! $this->prgElementLogin->checkRequiredFields($requireFields)) 
+        {
+            $this->setFailedMessage(self::ERROR_USER_UPDATE_MISSING_INFORMATION);
+            return false;
         }
-        return false;
 
-    }
+        try {
+            $player = new Player();
+            $player->setFirstname(strval(trim($this->getPostVariable(self::FORM_PLAYER_FIRSTNAME))));
+            $player->setLastname(strval(trim($this->getPostVariable(self::FORM_PLAYER_LASTNAME))));
+            $player->setGender(strval(trim($this->getPostVariable(self::FORM_PLAYER_GENDER))));
+            $player->setBday(strval(trim($this->getPostVariable(self::FORM_PLAYER_BDAY))));
+            $player->setPlayerNr(strval(trim($this->getPostVariable(self::FORM_PLAYER_PLAYERNR))));
+            $player->setClubId(intval(trim($this->getPostVariable(self::FORM_PLAYER_CLUBID))));
 
+            $this->brdb->insertPlayer($player);
 
-
-    public function insert($player) {
-        if ($player instanceof Player) {
-            $arr = $player->getSqlData();
-            
-            // insert player
-            $this->brdb->insertPlayer($arr);
-            if ($this->brdb->hasError()) {
-                return false;
-            }
+            $this->setSuccessMessage("Spieler wurde angelegt");
+            $this->customRedirectArray(array(
+                'page'   => "adminAllUser.php",
+            ));
             return true;
-        }
-        return false;
+
+        } 
+        catch (Exception $e) 
+        {
+            $this->log($this->__TABLE__, sprintf("Cannot insert Player. %s Details %s", $player, $e->getMessage()), "", "POST", "");
+            $this->setFailedMessage("Spieler konnte nicht eingetragen werden");
+            return false;
+        }  
     }
 
-    public function update($item) {
-        if ($item instanceof Player) {
-            
-            $this->brdb->updatePlayer($item->getSqlData());
-            if ($this->brdb->hasError()) {
-                return false;
-            }
-            return true;
+    /**
+     * Update Player
+     *
+     * @return boolean
+     */
+    private function processPostUpdatePlayer(): bool
+    {
+        // Check that all information has been posted
+        $requireFields = array(self::FORM_PLAYER_PLAYERID, self::FORM_PLAYER_FIRSTNAME, self::FORM_PLAYER_LASTNAME, self::FORM_PLAYER_BDAY, self::FORM_PLAYER_GENDER, self::FORM_PLAYER_PLAYERID, self::FORM_PLAYER_CLUBID);
+        if (! $this->prgElementLogin->checkRequiredFields($requireFields)) 
+        {
+            $this->setFailedMessage(self::ERROR_USER_UPDATE_MISSING_INFORMATION);
+            return false;
         }
-        return false;
+
+        try {
+            $id = intval(trim($this->getPostVariable(self::FORM_PLAYER_PLAYERID)));
+
+            $player = new Player();
+            $player->setPlayerId($id);
+            $player->setFirstname(strval(trim($this->getPostVariable(self::FORM_PLAYER_FIRSTNAME))));
+            $player->setLastname(strval(trim($this->getPostVariable(self::FORM_PLAYER_LASTNAME))));
+            $player->setGender(strval(trim($this->getPostVariable(self::FORM_PLAYER_GENDER))));
+            $player->setBday(strval(trim($this->getPostVariable(self::FORM_PLAYER_BDAY))));
+            $player->setPlayerNr(strval(trim($this->getPostVariable(self::FORM_PLAYER_PLAYERNR))));
+            $player->setClubId(intval(trim($this->getPostVariable(self::FORM_PLAYER_CLUBID))));
+
+            $this->brdb->updatePlayer($player);
+
+            $this->setSuccessMessage("Spieler wurde editiert");
+            $this->customRedirectArray(array(
+                'page'   => "adminAllUser.php",
+            ));
+            return true;
+
+        } 
+        catch (Exception $e) 
+        {
+            $this->log($this->__TABLE__, sprintf("Cannot update Player. %s Details %s", $player, $e->getMessage()), "", "POST", "");
+            $this->setFailedMessage("Spieler konnte nicht eingetragen werden");
+            return false;
+        }  
+    }
+
+    private function processPostDeletePlayer() {
+        // Check that all information has been posted
+        $requireFields = array(self::FORM_PLAYER_PLAYERID);
+        if (! $this->prgElementLogin->checkRequiredFields($requireFields)) 
+        {
+            $this->setFailedMessage(self::ERROR_USER_UPDATE_MISSING_INFORMATION);
+            return false;
+        }
+
+        try {
+            $id = intval(trim($this->getPostVariable(self::FORM_PLAYER_PLAYERID)));
+
+            $this->brdb->deletePlayer($id);
+        } 
+        catch (Exception $e) 
+        {
+            $this->log($this->__TABLE__, sprintf("Cannot delete Player. %d Details %s", $id, $e->getMessage()), "", "POST", "");
+            $this->setFailedMessage("Spieler konnte nicht eingetragen werden");
+            return false;
+        }  
+
+    }
+
+    /**
+     * find a player
+     *
+     * @param Player $player
+     * @return void
+     */
+    public function find(Player $player): bool
+    {
+        try {
+            
+            return count($this->brdb->selectPlayerByPlayerNr($player->getPlayerNr())) > 0 ? true : false;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+
+    /**
+     * insert
+     *
+     * @param Player $player
+     * @return boolean
+     */
+    public function insert(Player $player): bool
+    {
+        try {
+            return $this->brdb->insertPlayer($player);
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    public function update(Player $player): bool
+    {
+        try {
+            return $this->brdb->updatePlayer($player);
+        } catch (Exception $e) {
+            return false;
+        }
     }
 }
 

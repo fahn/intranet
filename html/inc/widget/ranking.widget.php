@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -41,7 +41,7 @@ class RankingWidget extends Widget {
 
         $this->smarty->assign(array(
           'data' => $data,
-          'link' => $this->tools->linkTo(array('page' => 'ranking.php')),
+          'link' => $this->linkTo(array('page' => 'ranking.php')),
         ));
 
         return $this->smarty->fetch('ranking/widgetShowLatestGames.tpl');

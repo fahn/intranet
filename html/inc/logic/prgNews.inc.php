@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -25,7 +25,7 @@ include_once BASE_DIR .'/inc/db/brdb.inc.php';
 class PrgPatternElementNews extends APrgPatternElement 
 {
 
-    private $brdb;
+    const __TABLE__             = "News";
 
     // FORMS
     const FORM_FIELD_ID         = "newsId";
@@ -39,10 +39,11 @@ class PrgPatternElementNews extends APrgPatternElement
     const FORM_UPDATE = "Update";
     const FORM_DELETE = "Delete";
 
+    private BrankDB $brdb;
 
-    protected $prgElementLogin;
+    protected PrgPatternElementLogin $prgElementLogin;
 
-    public function __construct(BrankDB $brdb, PrgPatternElementLogin $prgElementLogin): void
+    public function __construct(BrankDB $brdb, PrgPatternElementLogin $prgElementLogin)
     {
         parent::__construct("news");
         $this->brdb = $brdb;
@@ -92,21 +93,22 @@ class PrgPatternElementNews extends APrgPatternElement
         $requireFields = array(self::FORM_FIELD_ID);
         if (! $this->prgElementLogin->checkRequiredFields($requireFields)) 
         {
-            $this->setFailedMessage("keine ID übergeben");
+            $this->setFailedMessage("keine News-ID übergeben");
             return false;
         }
 
-        $id = intval(trim($this->getPostVariable(self::FORM_FIELD_ID)));
+        try {
+            $id = intval(trim($this->getPostVariable(self::FORM_FIELD_ID)));
+            $this->brdb->deleteNews($id);
+            $this->setSuccessMessage("FAQ wurde gelöscht");
+            return true;
 
-        $this->brdb->deleteNews($id);
-        if ($this->brdb->hasError()) 
+        } catch (Exception $e) 
         {
             $this->setFailedMessage($this->brdb->getError());
             return false;
         }
-
-        $this->setSuccessMessage("News wurde gelöscht");
-        return true;
+        unset($requireFields, $id);
     }
 
     /**
@@ -116,33 +118,31 @@ class PrgPatternElementNews extends APrgPatternElement
      */
     public function processPostInsertNews(): bool
     {
-        $requireFields = array(self::FORM_FIELD_TEXT, self::FORM_FIELD_CATEGORYID, self::FORM_FIELD_TEXT);
-
+        $requireFields = array(self::FORM_FIELD_TITLE, self::FORM_FIELD_CATEGORYID, self::FORM_FIELD_TEXT);
         if (! $this->prgElementLogin->checkRequiredFields($requireFields)) 
         {
             $this->setFailedMessage("News konnte nicht eingetragen werden");
             return false;
         }
 
-        $newsArr = array
-        (
-            'newsTitle'      => strval(trim($this->getPostVariable(self::FORM_FIELD_TITLE))),
-            'newsCategoryId' => intval(trim($this->getPostVariable(self::FORM_FIELD_CATEGORYID))),
-            'newsText'       => strval(trim($this->getPostVariable(self::FORM_FIELD_TEXT))),
-        );
-        // create NewsObject
-        $newsObj = new News($newsArr);
-        
-        // insert
-        $this->brdb->insertNews($newsObj);
-        if ($this->brdb->hasError()) 
+        try {
+            $news = new News();
+            $news->setTitle(strval(trim($this->getPostVariable(self::FORM_FIELD_TITLE))));
+            $news->setCategoryId(intval(trim($this->getPostVariable(self::FORM_FIELD_CATEGORYID))));
+            $news->setText(strval(trim($this->getPostVariable(self::FORM_FIELD_TEXT))));
+
+            $this->brdb->insertNews($news);
+
+            $this->setSuccessMessage(sprintf("News '%s' wurde eingetragen", $news->getTitle()));
+            return true;
+
+        } 
+        catch (Exception $e) 
         {
-            $this->setFailedMessage($this->brdb->getError());
+            $this->log($this->__TABLE__, sprintf("Cannot insert News. %s Details %s", $news, $e->getMessage()), "", "POST");
+            $this->setFailedMessage("News konnte nicht eingetragen werden");
             return false;
         }
-
-        $this->setSuccessMessage(sprintf("News '%s' wurde eingetragen",$newsObj->getNewsTitle()));
-        return true;
     }
 
 
@@ -155,35 +155,31 @@ class PrgPatternElementNews extends APrgPatternElement
     public function processPostUpdateNews(): bool
     {
         // Check that all information has been posted
-        $requireFields = array(self::FORM_FIELD_ID, self::FORM_FIELD_TEXT, self::FORM_FIELD_CATEGORYID, self::FORM_FIELD_TEXT);
-
+        $requireFields = array(self::FORM_FIELD_ID, self::FORM_FIELD_TITLE, self::FORM_FIELD_CATEGORYID, self::FORM_FIELD_TEXT);
         if (! $this->prgElementLogin->checkRequiredFields($requireFields)) 
         {
             $this->setFailedMessage("News konnte nicht aktualisiert werden.");
             return false;
         }
 
-        $newsArr = array
-        (
-            'newsId'         => strval(trim($this->getPostVariable(self::FORM_FIELD_ID))),
-            'newsTitle'      => strval(trim($this->getPostVariable(self::FORM_FIELD_TITLE))),
-            'newsCategoryId' => intval(trim($this->getPostVariable(self::FORM_FIELD_CATEGORYID))),
-            'newsText'       => strval(trim($this->getPostVariable(self::FORM_FIELD_TEXT))),
-        );
+        try {
+            $news = new News();
+            $news->setNewsId(intval(trim($this->getPostVariable(self::FORM_FIELD_ID))));
+            $news->setTitle(strval(trim($this->getPostVariable(self::FORM_FIELD_TITLE))));
+            $news->setCategoryId(intval(trim($this->getPostVariable(self::FORM_FIELD_CATEGORYID))));
+            $news->setText(strval(trim($this->getPostVariable(self::FORM_FIELD_TEXT))));
 
-        // create NewsObject
-        $newsObj = new News($newsArr);
+            $this->brdb->updateNewsById($news);
 
-        // insert News Object
-        $this->brdb->updateNewsById($newsObj);
-        if ($this->brdb->hasError()) 
+            $this->setSuccessMessage("News wurde erfolgreich geändert.");
+            return true;
+        } 
+        catch (Exception $e) 
         {
-            $this->setFailedMessage($this->brdb->getError());
+            $this->log($this->__TABLE__, sprintf("Cannot update News. %s Details %s", $news, $e->getMessage()), "", "POST", "");
+            $this->setFailedMessage("FAQ konnte nicht aktualisiert werden");
             return false;
         }
-
-        $this->setSuccessMessage(sprintf("News '%s' wurde erfolgreich geändert.", $newsObj->getNewsTitle()));
-        return true;
     }
 }
 ?>

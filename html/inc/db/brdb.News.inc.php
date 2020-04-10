@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -74,9 +74,9 @@ trait NewsDB
     {
         $query = "INSERT INTO `News` (`title`, `categoryId`, `text`) VALUES (:title, :categoryId, :newsText)";
         $statement = $this->db->prepare($query);
-        $statement->bindParam('title', $news->getNewsTitle());
-        $statement->bindParam('newsText', $news->getNewsText());
-        $statement->bindParam('categoryId', $news->getNewsCategory());
+        $statement->bindParam('title', $news->getTitle());
+        $statement->bindParam('newsText', $news->getText());
+        $statement->bindParam('categoryId', $news->getCategoryId());
 
         return $statement->execute();
     }
@@ -92,9 +92,9 @@ trait NewsDB
         $query = "UPDATE `News` set `title` = :title, `categoryId` = :categoryId, `text` = :newsText WHERE `newsId` = :newsId";
         $statement = $this->db->prepare($query);
         $statement->bindParam('newsId', $news->getNewsId());
-        $statement->bindParam('title', $news->getNewsTitle());
-        $statement->bindParam('newsText', $news->getNewsText());
-        $statement->bindParam('categoryId', $news->getNewsCategory());
+        $statement->bindParam('title', $news->getTitle());
+        $statement->bindParam('newsText', $news->getText());
+        $statement->bindParam('categoryId', $news->getCategoryId());
 
         return $statement->execute();
     }

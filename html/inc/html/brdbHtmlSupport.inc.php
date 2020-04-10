@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -14,30 +14,23 @@
 include_once('brdbHtmlPage.inc.php');
 
 include_once BASE_DIR .'/inc/logic/prgSupport.inc.php';
-include_once BASE_DIR .'/inc/logic/tools.inc.php';
 
 
 class brdbHtmlSupport extends BrdbHtmlPage 
 {
     private $prgElementSupport;
 
-    public function __construct():void
+    public function __construct()
     {
         parent::__construct();
 
-        $this->prgElementSupport = new PrgPatternElementSupport($this->brdb, $this->prgPatternElementLogin);
+        $this->prgElementSupport = new PrgPatternElementSupport($this->prgPatternElementLogin);
         $this->prgPattern->registerPrg($this->prgElementSupport);
 
-        $this->tools = new Tools();
     }
 
-    public function processPage() 
+    protected function htmlBody(): void
     {
-        parent::processPage();
-    }
-
-
-    protected function htmlBody() {
         $content = $this->loadContent();
 
         $this->smarty->assign(array(
@@ -48,14 +41,15 @@ class brdbHtmlSupport extends BrdbHtmlPage
     }
 
 
-    private function loadContent($param1 = Null) 
+    private function loadContent(?string $param1 = null): string
     {
-        $action = $param1 == Null ? $this->tools->get('action') : $param1;
+        $action = $param1 == null ? $this->prgElementSupport->get('action') : $param1;
 
         $message = "";
         $subject = "";
 
-        switch ($action) {
+        switch ($action) 
+        {
             case 'new_player':
                 $message = sprintf('Hallo,&#13;ich möchte hiermit folgenden SpielerIn melden.&#13;&#13;Name:???&#13;Spielernummer:???&#13;Verein:???&#13;Vereinsnummer:???&#13;');
                 $subject = "Neuer Spieler";
@@ -80,7 +74,7 @@ class brdbHtmlSupport extends BrdbHtmlPage
         return $this->smarty->fetch('support.tpl');
     }
 
-    public function register() 
+    public function register(): string
     {
         return $this->loadContent('register');
     }

@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -13,17 +13,9 @@
  ******************************************************************************/
 include_once 'prgPattern.inc.php';
 
-include_once BASE_DIR .'/inc/db/brdb.inc.php';
-
-/**
- * This prg pattern ahndles all the post and get actions
- * to insert, delete or update a game in the data base.
- * @author philipp
- *
- */
-class PrgPatternElementFaq extends APrgPatternElement {
-
-    private $brdb;
+class PrgPatternElementFaq extends APrgPatternElement 
+{
+    const __TABLE__             = "FAQ";
 
     // FORMS
     const FORM_FIELD_ID         = "faqId";
@@ -37,32 +29,37 @@ class PrgPatternElementFaq extends APrgPatternElement {
     const FORM_UPDATE = "Update";
     const FORM_DELETE = "Delete";
 
+    protected PrgPatternElementLogin $prgElementLogin;
 
-    protected $prgElementLogin;
 
-    public function __construct(BrankDB $brdb, PrgPatternElementLogin $prgElementLogin) {
+    public function __construct(PrgPatternElementLogin $prgElementLogin)
+    {
         parent::__construct("faq");
-        $this->brdb = $brdb;
+        
         $this->prgElementLogin = $prgElementLogin;
+
         $this->registerPostSessionVariable(self::FORM_FIELD_TITLE);
         $this->registerPostSessionVariable(self::FORM_FIELD_CATEGORYID);
         $this->registerPostSessionVariable(self::FORM_FIELD_TEXT);
     }
 
-    public function processPost() {
+    public function processPost(): void
+    {
         $this->prgElementLogin->redirectUserIfNotLoggindIn();
         
         // ADMIN AREA
         $this->prgElementLogin->redirectUserIfnoRights(array('reporter', 'admin'), 'or');
 
-        if (!$this->issetPostVariable(self::FORM_ACTION)) {
+        if (!$this->issetPostVariable(self::FORM_ACTION)) 
+        {
             $this->setFailedMessage("Kein Formular.");
             return;
         }
 
         $action = strval(trim($this->getPostVariable(self::FORM_ACTION)));
 
-        switch ($action) {
+        switch ($action) 
+        {
             case self::FORM_INSERT:
                 $this->processPostInsertFaq();
                 break;
@@ -82,86 +79,94 @@ class PrgPatternElementFaq extends APrgPatternElement {
 
     }
 
-    private function processPostDeleteFaq() {
-        if (! $this->issetPostVariable(self::FORM_FIELD_ID)) {
-            $this->setFailedMessage("keine ID übergeben");
-            return;
+    private function processPostDeleteFaq(): bool
+    {
+
+        $requireFields = array(self::FORM_FIELD_ID);
+        if (! $this->prgElementLogin->checkRequiredFields($requireFields)) 
+        {
+            $this->setFailedMessage("keine FAQ-ID übergeben");
+            return false;
         }
 
-        $id = strval(trim($this->getPostVariable(self::FORM_FIELD_ID)));
+        try {
+            $id = $this->getPostVariableInt(self::FORM_FIELD_ID);
+            $this->brdb->deleteFaq($id);
+            $this->setSuccessMessage("FAQ wurde gelöscht");
+            return true;
 
-        $this->brdb->deleteFaq($id);
-
-        if ($this->brdb->hasError()) {
+        } catch (Exception $e) 
+        {
             $this->setFailedMessage($this->brdb->getError());
-            return;
+            return false;
         }
-
-        $this->setSuccessMessage("FAQ wurde gelöscht");
-        return;
+        unset($requireFields, $id);
     }
 
-    public function processPostInsertFaq() {
-        // Check that all information has been posted
-        if (! $this->issetPostVariable(self::FORM_FIELD_TITLE) ||
-            ! $this->issetPostVariable(self::FORM_FIELD_CATEGORYID) ||
-            ! $this->issetPostVariable(self::FORM_FIELD_TEXT) ) {
-                $this->setFailedMessage("FAQ konnte nicht eingetragen werden");
-                return;
+    public function processPostInsertFaq(): bool
+    {
+        $requireFields = array(self::FORM_FIELD_TITLE, self::FORM_FIELD_CATEGORYID, self::FORM_FIELD_TEXT);
+        if (! $this->prgElementLogin->checkRequiredFields($requireFields)) 
+        {
+            $this->setFailedMessage("FAQ konnte nicht eingetragen werden");
+            return false;
         }
 
-        $title      = strval(trim($this->getPostVariable(self::FORM_FIELD_TITLE)));
-        $categoryId = strval(trim($this->getPostVariable(self::FORM_FIELD_CATEGORYID)));
-        $text       = strval(trim($this->getPostVariable(self::FORM_FIELD_TEXT)));
+        try {
+            $faq = new Faq();
+            $faq->setTitle($this->getPostVariableString(self::FORM_FIELD_TITLE));
+            $faq->setCategoryId($this->getPostVariableInt(self::FORM_FIELD_CATEGORYID));
+            $faq->setText($this->getPostVariableString(self::FORM_FIELD_TEXT));
 
+            $this->brdb->insertFaq($faq);
 
-        $this->brdb->insertFaq($title, $categoryId, $text);
+            $this->setSuccessMessage("FAQ wurde eingetragen");
+            return true;
 
-        if ($this->brdb->hasError()) {
-            $this->setFailedMessage($this->brdb->getError());
-            return;
-        }
-
-        $this->setSuccessMessage("FAQ wurde eingetragen");
-        return;
+        } 
+        catch (Exception $e) 
+        {
+            $this->log($this->__TABLE__, sprintf("Cannot insert FAQ. %s Details %s", $faq, $e->getMessage()), "", "POST", "");
+            $this->setFailedMessage("FAQ konnte nicht eingetragen werden");
+            return false;
+        }        
     }
 
 
 
     /**
-     * This post method just rpocesses if the admin match id is set.
-     * If it is the emthod asks the DB for a given game and reads it.
-     * It also stores the game information into the session, hence the
-     * insert game page will show the details.
+     * Update Faq
+     *
+     * @return boolean
      */
-    public function processPostUpdateFaq() {
+    public function processPostUpdateFaq(): bool
+    {
         // Check that all information has been posted
-        if (! $this->issetPostVariable(self::FORM_FIELD_TITLE) ||
-            ! $this->issetPostVariable(self::FORM_FIELD_CATEGORYID) ||
-            ! $this->issetPostVariable(self::FORM_FIELD_TEXT) ) {
-                $this->setFailedMessage("FAQ konnte nicht aktualisiert werden.");
-                return;
+        $requireFields = array(self::FORM_FIELD_ID, self::FORM_FIELD_TITLE, self::FORM_FIELD_CATEGORYID, self::FORM_FIELD_TEXT);
+        if (! $this->prgElementLogin->checkRequiredFields($requireFields)) 
+        {
+            $this->setFailedMessage("FAQ konnte nicht aktualisiert werden.");
+            return false;
         }
 
-        if (! $this->issetPostVariable(self::FORM_FIELD_ID)) {
-            $this->setFailedMessage("keine ID übergeben");
-            return;
+        try {
+            $faq = new Faq();
+            $faq->setFaqId($this->getPostVariableInt(self::FORM_FIELD_ID));
+            $faq->setTitle($this->getPostVariableString(self::FORM_FIELD_TITLE));
+            $faq->setCategoryId($this->getPostVariableInt(self::FORM_FIELD_CATEGORYID));
+            $faq->setText($this->getPostVariableString(self::FORM_FIELD_TEXT));
+
+            $this->brdb->updateFaqById($faq);
+
+            $this->setSuccessMessage("FAQ wurde erfolgreich geändert.");
+            return true;
+        } 
+        catch (Exception $e) 
+        {
+            $this->log($this->__TABLE__, sprintf("Cannot update FAQ. %s Details %s", $faq, $e->getMessage()), "", "POST", "");
+            $this->setFailedMessage("FAQ konnte nicht aktualisiert werden");
+            return false;
         }
-
-        $id         = strval(trim($this->getPostVariable(self::FORM_FIELD_ID)));
-        $title      = strval(trim($this->getPostVariable(self::FORM_FIELD_TITLE)));
-        $categoryId = strval(trim($this->getPostVariable(self::FORM_FIELD_CATEGORYID)));
-        $text       = strval(trim($this->getPostVariable(self::FORM_FIELD_TEXT)));
-
-
-        $this->brdb->updateFaqById($id, $title, $categoryId, $text);
-        if ($this->brdb->hasError()) {
-            $this->setFailedMessage($this->brdb->getError());
-            return;
-        }
-        
-        $this->setSuccessMessage("FAQ wurde erfolgreich geändert.");
-        return;
     }
 
     /**

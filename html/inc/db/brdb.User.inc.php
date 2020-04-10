@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -15,7 +15,8 @@
 require_once(BASE_DIR .'/inc/exception/badtra.exception.php');
 
 
-trait UserDB {
+trait UserDB 
+{
 
     /**
      * Call this method to hand back the User with the given email from the data base
@@ -24,7 +25,8 @@ trait UserDB {
      *            the email to look for as string
      * @return mysqli_result
      */
-    public function selectUserByEmail($email) {
+    public function selectUserByEmail(string $email): ?array
+    {
         $query     = "SELECT * FROM `User` WHERE email = :email LIMIT 1";
         $statement = $this->db->prepare($query);
         $statement->bindParam('email', $email);
@@ -34,7 +36,8 @@ trait UserDB {
     }
 
 
-    public function getUserByTerm($term) {
+    public function getUserByTerm(string $term): ?array
+    {
         // preparing
         $term = '%'. $term .'%';
         
@@ -46,7 +49,8 @@ trait UserDB {
         return $statement->fetchAll();
     }
 
-    public function setUserLastLogin(int $userId) {
+    public function setUserLastLogin(int $userId): bool
+    {
         $query = "UPDATE `USER` set last_login = NOW() WHERE userId = :userId";
         $statement = $this->db->prepare($query);
         $statement->bindParam('userId', $userId, PDO::PARAM_INT);
@@ -59,10 +63,11 @@ trait UserDB {
      * Get a user from the data base by a given Id
      *
      * @param integer $userId
-     *            The user ID as integer
-     * @return mysqli_result the user from the database as SQL Result
+     * @return array
      */
-    public function selectUserById(int $userId) {
+    public function selectUserById(int $userId): ?array
+    {
+        
         $query = "SELECT * FROM `User` WHERE userId = :id";
         $statement = $this->db->prepare($query);
         $statement->bindParam('id', $userId);
@@ -78,7 +83,8 @@ trait UserDB {
      *            the id of the user to be deleted
      * @return mysqli_result result of the sql execution
      */
-    public function deleteUserById(int $userId) {
+    public function deleteUserById(int $userId): bool
+    {
         $query = "UPDATE `User` SET email = '', password = '', reporter = 0, admin = 0 WHERE userId = :userId";
         $statement = $this->db->prepare($query);
         $statement->bindParam('userId', $userId);
@@ -91,14 +97,17 @@ trait UserDB {
      *
      * @return mysqli_result all users from the database as SQL Result
      */
-    public function selectAllUser(){
+    public function selectAllUser(): array 
+    {
         $query = "SELECT *, CONCAT_WS(' ', User.firstName, User.lastName) as fullName FROM `User`";
         $statement = $this->db->prepare($query);
+        $statement->execute();
 
-        return $this->executeFetchAll($statement);
+        return $statement->fetchAll();
     }
 
-    public function selectAllUserSortBy($sort, $order = 'ASC') {
+    public function selectAllUserSortBy($sort, $order = 'ASC'): ?array
+    {
         $query = "SELECT * FROM `User` ORDER BY :sort :order";
         $statement = $this->db->prepare($query);
         $statement->bindParam('sort', $sort);
@@ -109,7 +118,7 @@ trait UserDB {
     }
 
 
-    public function selectAllUserPagination(int $min = 0, int $max = 50): array
+    public function selectAllUserPagination(int $min = 0, int $max = 50): ?array
     {
         $query = "SELECT * FROM `User` ORDER BY `lastName` LIMIT :min,:max";
         $statement = $this->db->prepare($query);
@@ -120,7 +129,7 @@ trait UserDB {
         return $statement->fetchAll();
     }
 
-    public function GetActiveAndReporterOrAdminPlayer(): array
+    public function GetActiveAndReporterOrAdminPlayer(): ?array
     {
         $query     = "SELECT * FROM `User` WHERE `activePlayer` = 1 AND (`admin` = 1 OR `reporter` = 1) ORDER BY `lastName` ASC";
         $statement = $this->db->prepare($query);

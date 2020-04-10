@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -18,9 +18,6 @@ include_once BASE_DIR .'/inc/db/brdb.inc.php';
 
 // Model
 include_once BASE_DIR .'/inc/model/user.inc.php';
-
-// Tools
-include_once BASE_DIR .'/inc/logic/tools.inc.php';
 
 // vendor
 require_once BASE_DIR .'/vendor/autoload.php';
@@ -77,15 +74,13 @@ class PrgPatternElementUser extends APrgPatternElement {
 
     protected $prgElementLogin;
 
-    protected $brdb;
-
-    private $tools;
-
     private $uploadImageFileName;
     private $IMAGE_PATH;
 
     public function __construct(BrankDB $brdb, PrgPatternElementLogin $prgElementLogin) {
         parent::__construct("userRegister");
+
+        $this->prgElementLogin = $prgElementLogin;
 
         $this->registerPostSessionVariable(self::FORM_USER_EMAIL);
         $this->registerPostSessionVariable(self::FORM_USER_FNAME);
@@ -99,14 +94,7 @@ class PrgPatternElementUser extends APrgPatternElement {
 
         // set Image Path
         $this->IMAGE_PATH = BASE_DIR .'static/img/user/';
-
-        // load DB
-        $this->brdb = $brdb;
-
-        // load User
-        $this->prgElementLogin = $prgElementLogin;
-
-        $this->tools = new Tools();
+        
     }
 
     public function processPost() {
@@ -119,7 +107,7 @@ class PrgPatternElementUser extends APrgPatternElement {
         }
 
         // default user
-        $loginAction = strval(trim($this->getPostVariable(self::FORM_USER_ACTION)));
+        $loginAction = $this->getPostVariableString(self::FORM_USER_ACTION);
         switch ($loginAction) 
         {
             case self::FORM_USER_ACTION_CHANGE_PASSWORD:
@@ -151,7 +139,7 @@ class PrgPatternElementUser extends APrgPatternElement {
                 break;
 
             case self::FORM_USER_ACTION_UPDATE_ACCOUNT:
-                $this->processPostUpdateUserAccount($this->tools->get("id"));
+                $this->processPostUpdateUserAccount($this->getGetVariable("id"));
                 break;
 
             default:
@@ -162,16 +150,17 @@ class PrgPatternElementUser extends APrgPatternElement {
         return;
     }
 
-    public function processGet() {
+    public function processGet(): void
+    {
         // check if user is login
         $this->prgElementLogin->redirectUserIfNotLoggindIn();
 
-        $action = $this->tools->get("action");
+        $action = $this->getGetVariable("action");
 
         switch ($action) {
             case 'delete':
                 $this->prgElementLogin->redirectUserIfnoRights('admin');
-                $id = $this->tools->get("id");
+                $id = $this->getGetVariable("id");
                 $this->processGetDeleteUserAccount($id);
                 break;
 
@@ -182,78 +171,84 @@ class PrgPatternElementUser extends APrgPatternElement {
     }
 
     private function processPostInsertUserAccount() {
-      // Check that all information has been posted
-      if (
-        ! $this->issetPostVariable(self::FORM_USER_FNAME) ||
-        ! $this->issetPostVariable(self::FORM_USER_LNAME) ||
-        ! $this->issetPostVariable(self::FORM_USER_GENDER) ||
-        ! $this->issetPostVariable(self::FORM_USER_EMAIL)
-      ) {
-          $this->setFailedMessage(self::ERROR_USER_UPDATE_MISSING_INFORMATION);
-          return;
-      }
+        // Check that all information has been posted
+        $requireFields = array(self::FORM_USER_FNAME, self::FORM_USER_LNAME, self::FORM_USER_GENDER, self::FORM_USER_EMAIL);
+        if (! $this->prgElementLogin->checkRequiredFields($requireFields)) 
+        {
+            $this->setFailedMessage(self::ERROR_USER_UPDATE_MISSING_INFORMATION);
+            return false;
+        }
 
-      $email      = strtolower(strval(trim($this->getPostVariable(self::FORM_USER_EMAIL))));
-      $firstName  = strval(trim($this->getPostVariable(self::FORM_USER_FNAME)));
-      $lastName   = strval(trim($this->getPostVariable(self::FORM_USER_LNAME)));
-      $gender     = strval(trim($this->getPostVariable(self::FORM_USER_GENDER)));
+        $email      = strtolower($this->getPostVariableString(self::FORM_USER_EMAIL));
+        $firstName  = $this->getPostVariableString(self::FORM_USER_FNAME);
+        $lastName   = $this->getPostVariableString(self::FORM_USER_LNAME);
+        $gender     = $this->getPostVariableString(self::FORM_USER_GENDER);
 
-      if (! $this->tools->validEMail($email) ) {
-        $this->setFailedMessage(self::ERROR_USER_UPDATE_INVALID_EMAIL);
-        return;
-      }
+        if (! $this->validEMail($email) ) 
+        {
+            $this->setFailedMessage(self::ERROR_USER_UPDATE_INVALID_EMAIL);
+            return;
+        }
 
       
-      $this->brdb->insertUser($email, $firstName, $lastName, $gender);
-      if ($this->brdb->hasError()) {
-          $this->setFailedMessage($this->brdb->getError());
-          return;
-      }
-      $id = $this->brdb->insert_id();
+        $this->brdb->insertUser($email, $firstName, $lastName, $gender);
+        if ($this->brdb->hasError()) 
+        {
+            $this->setFailedMessage($this->brdb->getError());
+            return;
+        }
+        $id = $this->brdb->insert_id();
 
-      if(!$this->processPostUpdateUserAccount($id)) {
-          $this->setFailedMessage("Probleme beim anlegen. Bitte editieren Sie den Nutzer!");
-          $this->tools->customRedirect(array(
+        if(!$this->processPostUpdateUserAccount($id)) {
+            $this->setFailedMessage("Probleme beim anlegen. Bitte editieren Sie den Nutzer!");
+            $this->customRedirectArray(array(
+                'page'   => "adminAllUser.php",
+                'action' => 'edit',
+                'id'     => $id,
+            ));
+            return;
+        }
+
+        $this->setSuccessMessage(sprintf("Nutzer '%s %s' wurde angelegt", $firstName, $lastName));
+        $this->customRedirectArray(array(
             'page'   => "adminAllUser.php",
             'action' => 'edit',
             'id'     => $id,
-          ));
-          return;
-      }
-
-      $this->setSuccessMessage("Nutzer wurde angelegt");
-      $this->tools->customRedirect(array(
-        'page'   => "adminAllUser.php",
-        'action' => 'edit',
-        'id'     => $id,
-      ));
-      return;
+        ));
+        return;
 
     }
 
     public function processPostRegisterUser() {
-        // Check that all information has been posted
-        if (
-            !$this->issetPostVariable(self::FORM_USER_EMAIL) ||
-            !$this->issetPostVariable(self::FORM_USER_FNAME) ||
-            !$this->issetPostVariable(self::FORM_USER_LNAME) ||
-            !$this->issetPostVariable(self::FORM_USER_GENDER)) {
-
+        $requireFields = array(self::FORM_USER_FNAME, self::FORM_USER_LNAME, self::FORM_USER_GENDER, self::FORM_USER_EMAIL);
+        if (! $this->prgElementLogin->checkRequiredFields($requireFields)) 
+        {
             $this->setFailedMessage(self::ERROR_USER_UPDATE_MISSING_INFORMATION);
-            return;
+            return false;
         }
 
-        $email      = strtolower(strval(trim($this->getPostVariable(self::FORM_USER_EMAIL))));
-        $firstName  = strval(trim($this->getPostVariable(self::FORM_USER_FNAME)));
-        $lastName   = strval(trim($this->getPostVariable(self::FORM_USER_LNAME)));
-        $gender     = strval(trim($this->getPostVariable(self::FORM_USER_GENDER)));
-        $playerId   = strval(trim($this->getPostVariable(self::FORM_USER_PLAYERID)));
+        try {
+            $user = new User();
+            
+        }
+        catch (Exception $e) 
+        {
+            $this->log($this->__TABLE__, sprintf("Cannot Register User. %s Details %s", $user, $e->getMessage()), "", "POST", "");
+            $this->setFailedMessage($e->getMessage());
+            return false;
+        }    
+
+        $email      = strtolower($this->getPostVariableString(self::FORM_USER_EMAIL));
+        $firstName  = $this->getPostVariableString(self::FORM_USER_FNAME);
+        $lastName   = $this->getPostVariableString(self::FORM_USER_LNAME);
+        $gender     = $this->getPostVariableString(self::FORM_USER_GENDER);
+        $playerId   = $this->getPostVariableString(self::FORM_USER_PLAYERID);
         $bday       = $this->issetPostVariable(self::FORM_USER_BDAY) ? date("Y-m-d", strtotime($this->getPostVariable(self::FORM_USER_BDAY))) : "";
 
         // First filter the email before continue
-        if (! $this->tools->validEMail($email) ) {
-          $this->setFailedMessage(self::ERROR_USER_UPDATE_INVALID_EMAIL);
-          return;
+        if (! $this->validEMail($email) ) {
+            $this->setFailedMessage(self::ERROR_USER_UPDATE_INVALID_EMAIL);
+            return;
         }
         // Check if the user is already registered
         // In case it is we have to throw an error
@@ -291,9 +286,9 @@ class PrgPatternElementUser extends APrgPatternElement {
 
         // check if User is God
         $userId = intval($this->getPostVariable(self::FORM_USER_ADMIN_USER_ID));
-        if ($this->tools->isUserGod($userId)) {
+        if ($this->isUserGod($userId)) {
             $this->setFailedMessage("User is protected");
-            $this->tools->customRedirect(array(
+            $this->customRedirectArray(array(
               'page' => "adminAllUser.php",
             ));
             return;
@@ -310,11 +305,12 @@ class PrgPatternElementUser extends APrgPatternElement {
     /** Delete Player: Delete E-Mail, Password and rights
       *
       */
-    private function processGetDeleteUserAccount($userId) {
+    private function processGetDeleteUserAccount(int $userId) {
         // check if User is God
-        if ($this->tools->isUserGod($userId)) {
+        if ($this->isUserGod($userId)) 
+        {
             $this->setFailedMessage("User is protected");
-            $this->tools->customRedirect(array(
+            $this->customRedirectArray(array(
               'page' => "adminAllUser.php",
             ));
             return;
@@ -326,7 +322,7 @@ class PrgPatternElementUser extends APrgPatternElement {
         }
 
         $this->setSuccessMessage(self::SUCCESS_USER_DELETE);
-        $this->tools->customRedirect(array(
+        $this->customRedirectArray(array(
           'page' => "adminAllUser.php",
         ));
         return true;
@@ -335,19 +331,21 @@ class PrgPatternElementUser extends APrgPatternElement {
     /**
      * Update User
      */
-    public function processPostUpdateUserAccount($userId) {
+    public function processPostUpdateUserAccount(int $userId) 
+    {
         $userLogginIn = $this->prgElementLogin->getLoggedInUser()->userId;
 
         // check if edit user is god and
-        if ($this->tools->isUserGod($userId) && ! $this->tools->isUserGod($userLogginIn)) {
+        if ($this->isUserGod($userId) && ! $this->isUserGod($userLogginIn)) 
+        {
             $this->setFailedMessage("Sorry, aber ein Superadmin kann dies tun.");
             return;
         }
 
-        $email      = strval($this->getPostVariable(self::FORM_USER_EMAIL));
-        $firstName  = $this->getPostVariable(self::FORM_USER_FNAME);
-        $lastName   = $this->getPostVariable(self::FORM_USER_LNAME);
-        $gender     = $this->getPostVariable(self::FORM_USER_GENDER);
+        $email      = $this->getPostVariableString(self::FORM_USER_EMAIL);
+        $firstName  = $this->getPostVariableString(self::FORM_USER_FNAME);
+        $lastName   = $this->getPostVariableString(self::FORM_USER_LNAME);
+        $gender     = $this->getPostVariableString(self::FORM_USER_GENDER);
 
         // is Admin
         $isAdmin = $this->issetPostVariable(self::FORM_USER_IS_ADMIN) ? $this->getPostVariable(self::FORM_USER_IS_ADMIN) : 0;
@@ -374,7 +372,7 @@ class PrgPatternElementUser extends APrgPatternElement {
         }
 
         // First filter the email before continue
-        if (!isset($email) || !$this->tools->validEMail($email) ) {
+        if (!isset($email) || !$this->validEMail($email) ) {
             $this->setFailedMessage(self::ERROR_USER_UPDATE_INVALID_EMAIL);
             return;
         }
@@ -411,127 +409,118 @@ class PrgPatternElementUser extends APrgPatternElement {
         #}
     }
 
-    public function processPostUpdateUserMyAccount() {
+    public function processPostUpdateUserMyAccount() 
+    {
         // Check that all information has been posted
-        if (! $this->issetPostVariable(self::FORM_USER_EMAIL) ||
-            ! $this->issetPostVariable(self::FORM_USER_FNAME) ||
-            ! $this->issetPostVariable(self::FORM_USER_LNAME) ||
-            ! $this->issetPostVariable(self::FORM_USER_NEW_PASSWORD) ||
-            ! $this->issetPostVariable(self::FORM_USER_REPEAT_NEW_PASSWORD)) {
-              $this->setFailedMessage(self::ERROR_USER_UPDATE_MISSING_INFORMATION);
+        $requireFields = array(self::FORM_USER_EMAIL, self::FORM_USER_FNAME, self::FORM_USER_LNAME, self::FORM_USER_NEW_PASSWORD, self::FORM_USER_REPEAT_NEW_PASSWORD);
+        if (! $this->prgElementLogin->checkRequiredFields($requireFields)) 
+        {
+            $this->setFailedMessage(self::ERROR_USER_UPDATE_MISSING_INFORMATION);
+            return false;
         }
 
-        $userId    = intval($this->prgElementLogin->getLoggedInUser()->userId);
-        $email     = strval(trim($this->getPostVariable(self::FORM_USER_EMAIL)));
-        $firstName = strval(trim($this->getPostVariable(self::FORM_USER_FNAME)));
-        $lastName  = strval(trim($this->getPostVariable(self::FORM_USER_LNAME)));
-        $pass      = strval(trim($this->getPostVariable(self::FORM_USER_NEW_PASSWORD)));
-        $pass2     = strval(trim($this->getPostVariable(self::FORM_USER_REPEAT_NEW_PASSWORD)));
-        $passHash  = password_hash($pass, PASSWORD_DEFAULT);
-        $email     = strtolower($email);
-        $phone     = strval(trim($this->getPostVariable(self::FORM_USER_PHONE)));
-        $gender    = strval(trim($this->getPostVariable(self::FORM_USER_GENDER)));
-        $bday      = strval(trim($this->getPostVariable(self::FORM_USER_BDAY)));
+        try {
+            $userId    = intval($this->prgElementLogin->getLoggedInUser()->userId);
+            $email     = strtolower($this->getPostVariableString(self::FORM_USER_EMAIL));
+            $firstName = $this->getPostVariableString(self::FORM_USER_FNAME);
+            $lastName  = $this->getPostVariableString(self::FORM_USER_LNAME);
+            $pass      = $this->getPostVariableString(self::FORM_USER_NEW_PASSWORD);
+            $pass2     = $this->getPostVariableString(self::FORM_USER_REPEAT_NEW_PASSWORD);
+            $passHash  = password_hash($pass, PASSWORD_DEFAULT);
+            $phone     = $this->getPostVariableString(self::FORM_USER_PHONE);
+            $gender    = $this->getPostVariableString(self::FORM_USER_GENDER);
+            $bday      = date("Y-m-d", strtotime($this->getPostVariableString(self::FORM_USER_BDAY)));
 
-        if(!empty($pass) && !empty($pass2)) {
-          // Check if passwords are the same
-          if ($pass != $pass2) {
-            $this->setFailedMessage(self::ERROR_USER_UPDATE_PASSWORD_MISSMATCH);
-            return;
-          }
-          $this->brdb->updateUserPassword($userId, $passHash);
-          if ($this->brdb->hasError()) {
-            $this->setFailedMessage($this->brdb->getError());
-            return;
-          }
-        }
+            if (!empty($pass) && !empty($pass2) && $pass != $pass2) 
+            {
+                throw new Exception("self::ERROR_USER_UPDATE_PASSWORD_MISSMATCH");
+            }
+        
+            $this->brdb->updateUserPassword($userId, $passHash);
 
-        // First filter the email before continue
-        if (! $this->tools->validEMail($email) ) {
-            $this->setFailedMessage(self::ERROR_USER_UPDATE_INVALID_EMAIL);
-            return;
-        }
+            // First filter the email before continue
+            if (! $this->validEMail($email)) 
+            {
+                throw new Exception(self::ERROR_USER_UPDATE_INVALID_EMAIL);
+            }
 
-        // Check if the user is already registered
-        // In case it is we have to throw an error
-        $user = $this->brdb->selectUserbyEmail($email);
-        if ($this->brdb->hasError()) {
-          $this->setFailedMessage($this->brdb->getError());
-          return;
-        }
+            // Check if the user is already registered
+            // In case it is we have to throw an error
+            $user = $this->brdb->selectUserbyEmail($email);
 
-        // Check that it is not my email, which is allowed to be set!
-        $dataSetUser = new User($user);
-        if ($dataSetUser->userId != $userId) {
-        $this->setFailedMessage(self::ERROR_USER_EMAIL_EXISTS);
-        return;
-        }
 
-        // now everything is checked and the command for adding
-        // the user can be called
-        $bday = strval(trim($this->getPostVariable(self::FORM_USER_BDAY)));
-        $bday = date("Y-m-d", strtotime($bday));
+            // Check that it is not my email, which is allowed to be set!
+            $dataSetUser = new User($user);
+            if ($dataSetUser->userId != $userId) 
+            {
+                throw new Exception(self::ERROR_USER_EMAIL_EXISTS);
+            }
 
-        $phone = strval(trim($this->getPostVariable(self::FORM_USER_PHONE)));
+            $this->brdb->updateUser($userId, $email, $firstName, $lastName, $gender, $phone, $bday);
 
-        $res = $this->brdb->updateUser($userId, $email, $firstName, $lastName, $gender, $phone, $bday);
-        if ($this->brdb->hasError()) {
-          $this->setFailedMessage($this->brdb->getError());
-          return;
-        }
+            $this->setSuccessMessage(self::SUCCESS_USER_UPDATE);
+            return true;
+        } 
+        catch (Exception $e) 
+        {
+            $this->log($this->__TABLE__, sprintf("Cannot Update User Information. Details %s", $e->getMessage()), "", "POST", "");
+            $this->setFailedMessage($e->getMessage());
+            return false;
+        }   
 
-        $this->setSuccessMessage(self::SUCCESS_USER_UPDATE);
-        return;
+        
     }
 
     /**
      * Change Password from loggedInUser
      */
-    private function processPostUpdateUserPassword() {
-        if (! $this->issetPostVariable(self::FORM_USER_PASSWORD) ||
-            ! $this->issetPostVariable(self::FORM_USER_NEW_PASSWORD) ||
-            ! $this->issetPostVariable(self::FORM_USER_REPEAT_NEW_PASSWORD)
-        ) {
-              $this->setFailedMessage(self::ERROR_USER_UPDATE_MISSING_INFORMATION);
-              return;
-        }
-
-        $userId    = intval($this->prgElementLogin->getLoggedInUser()->userId);
-        // old pass
-        $oldPassword = strval(trim($this->getPostVariable(self::FORM_USER_PASSWORD)));
-        $newPassword = strval(trim($this->getPostVariable(self::FORM_USER_NEW_PASSWORD)));
-        $repeatNewPassword = strval(trim($this->getPostVariable(self::FORM_USER_REPEAT_NEW_PASSWORD)));
-
-        if(empty($oldPassword) || empty($newPassword) || empty($repeatNewPassword)) {
+    private function processPostUpdateUserPassword(): bool
+    {
+        $requireFields = array(self::FORM_USER_PASSWORD, self::FORM_USER_NEW_PASSWORD, self::FORM_USER_REPEAT_NEW_PASSWORD);
+        if (! $this->prgElementLogin->checkRequiredFields($requireFields)) 
+        {
             $this->setFailedMessage(self::ERROR_USER_UPDATE_MISSING_INFORMATION);
-            return;
-        }
-        $user = $this->brdb->selectUserById($userId);
-        if (!isset($user) || empty ($user)) {
-            $this->setFailedMessage("Missing Information. Go to support");
-            return;
+            return false;
         }
 
-          // fetch the dataset there is only one and try to verify the passowrd
-        if (!password_verify($oldPassword, $user['password'])) {
-            $this->setFailedMessage("Das alte Passwort stimmt nicht.");
-            return;
-        }
+        try {
+            $userId    = intval($this->prgElementLogin->getLoggedInUser()->userId);
+            // old pass
+            $oldPassword       = $this->getPostVariableString(self::FORM_USER_PASSWORD);
+            $newPassword       = $this->getPostVariableString(self::FORM_USER_NEW_PASSWORD);
+            $repeatNewPassword = $this->getPostVariableString(self::FORM_USER_REPEAT_NEW_PASSWORD);
 
-        if(strcmp($newPassword, $repeatNewPassword) != 0 ) {
-            $this->setFailedMessage("Das neue und das zu wiederholende Passwort stimmen nicht überein.");
-            return;
-        }
+            if(empty($oldPassword) || empty($newPassword) || empty($repeatNewPassword)) {
+                throw new Exception(self::ERROR_USER_UPDATE_MISSING_INFORMATION);
+            }
 
-        $hashNewPassword = password_hash($newPassword, PASSWORD_DEFAULT);
-        $res = $this->brdb->updateUserPassword($userId, $hashNewPassword);
-        if ($this->brdb->hasError()) {
-            $this->setFailedMessage($this->brdb->getError());
-            return;
-        }
+            $user = $this->brdb->selectUserById($userId);
+            if (!isset($user) || empty ($user)) {
+                throw new Exception("Missing Information. Go to support");
+            }
 
-        $this->setSuccessMessage("Passwort wurde erfolgreich geändert.");
-        return;
+            // fetch the dataset there is only one and try to verify the passowrd
+            if (!password_verify($oldPassword, $user['password'])) {
+                throw new Exception("Das alte Passwort stimmt nicht.");
+            }
+
+            if(strcmp($newPassword, $repeatNewPassword) != 0 ) {
+                throw new Exception("Das neue und das zu wiederholende Passwort stimmen nicht überein.");
+            }
+
+            $hashNewPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+            $this->brdb->updateUserPassword($userId, $hashNewPassword);
+
+            $this->setSuccessMessage("Passwort wurde erfolgreich geändert.");
+            return true;
+
+        }
+        catch (Exception $e) 
+        {
+            $this->log($this->__TABLE__, sprintf("Cannot Update User Information. Details %s", $e->getMessage()), "", "POST", "");
+            $this->setFailedMessage($e->getMessage());
+            return false;
+        }   
     }
 
     private function processPostUploadImage() {
@@ -575,8 +564,7 @@ class PrgPatternElementUser extends APrgPatternElement {
         // Doing the deed
         list($files, $headers) = $fileupload->processAll();
         $debug_export = print_r($fileupload, true);
-        $tool = new Tools();
-        $tool->sendMail("stefan@weinekind.de", "das", "DEBUG image upload", "", $debug_export);
+        $this->sendMail("stefan@weinekind.de", "das", "DEBUG image upload", "", $debug_export);
 
 
         if (! is_array($files) || count($files) != 1) {

@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -232,43 +232,29 @@ trait TournamentDB
     }
 
     /**
-     * Insert Tournament
+     * inset Tournmanent
      *
-     * @param string $name
-     * @param string $place
-     * @param string $startdate
-     * @param string $enddate
-     * @param string $deadline
-     * @param string $link
-     * @param string $classification
-     * @param string $additionalClassification
-     * @param string $discipline
-     * @param string $reporterId
-     * @param string $tournamentType
-     * @param string $latitude
-     * @param string $longitude
-     * @param string $description
+     * @param Tournament $tournament
      * @return boolean
      */
-    public function insertTournament(string $name, string $place, string $startdate, string $enddate, string $deadline, string $link, string $classification, string $additionalClassification, string $discipline, string $reporterId, string $tournamentType, string $latitude, string $longitude, string $description): bool
-    {
+    public function insertTournament(Tournament $tournament): bool {
         $query = "INSERT INTO Tournament (name, place, startdate, enddate, deadline, link, classification, additionalClassification, discipline, reporterId, tournamentType, latitude, longitude, description) 
                     VALUES (:name, :place, :startdate, :enddate, :deadline, :link, :classification, :additionalClassification, :discipline, :reporterId, :tournamentType, :latitude, :longitude, :description)";
         $statement = $this->db->prepare($query);
-        $statement->bindParam('name', $name);
-        $statement->bindParam('place', $place);
-        $statement->bindParam('startdate', $startdate);
-        $statement->bindParam('enddate', $enddate);
-        $statement->bindParam('deadline', $deadline);
-        $statement->bindParam('link', $link);
-        $statement->bindParam('classification', $classification);
-        $statement->bindParam('additionalClassification', $additionalClassification);
-        $statement->bindParam('discipline', $discipline);
-        $statement->bindParam('reporterId', $reporterId);
-        $statement->bindParam('tournamentType', $tournamentType);
-        $statement->bindParam('latitude', $latitude);
-        $statement->bindParam('longitude', $longitude);
-        $statement->bindParam('description', $description);
+        $statement->bindParam('name', $tournament->getName());
+        $statement->bindParam('place', $tournament->getPlace());
+        $statement->bindParam('startdate', $tournament->getStartdate());
+        $statement->bindParam('enddate', $tournament->getEndDate());
+        $statement->bindParam('deadline', $tournament->getDeadline());
+        $statement->bindParam('link', $tournament->getLink());
+        $statement->bindParam('classification', $tournament->getClassification());
+        $statement->bindParam('additionalClassification', $tournament->getAdditionalClassification());
+        $statement->bindParam('discipline', $tournament->getDiscipline());
+        $statement->bindParam('reporterId', $tournament->getReporterId());
+        $statement->bindParam('tournamentType', $tournament->getTournamentType());
+        $statement->bindParam('latitude', $tournament->getLatitude());
+        $statement->bindParam('longitude', $tournament->getLongitude());
+        $statement->bindParam('description', $tournament->getDescription());
 
         return $statement->execute();
     }
@@ -304,12 +290,12 @@ trait TournamentDB
      * @param integer $playerId
      * @return boolean
      */
-    public function deletePlayersFromTournamentId(int $tournamentId, int $playerId): bool
+    public function deletePlayersFromTournamentId(int $tournamentId, int $tournamentPlayerId): bool
     {
-        $query = "UPDATE TournamentPlayer set visible = 0 WHERE tournamentId = :tournamentId AND tournamentPlayerId = :playerId";
+        $query = "UPDATE TournamentPlayer set visible = 0 WHERE tournamentId = :tournamentId AND tournamentPlayerId = :tournamentPlayerId";
         $statement = $this->db->prepare($query);
         $statement->bindParam('tournamentId', $tournamentId);
-        $statement->bindParam('playerId', $playerId);
+        $statement->bindParam('tournamentPlayerId', $tournamentPlayerId);
 
         return $statement->execute();
     }
@@ -357,47 +343,35 @@ trait TournamentDB
     }
 
     /**
-     * Update tournament by Id
+     * Update Tournament by id
      *
-     * @param integer $tournamentId
-     * @param string $name
-     * @param string $place
-     * @param string $startdate
-     * @param [type] $enddate
-     * @param [type] $deadline
-     * @param [type] $link
-     * @param [type] $classification
-     * @param [type] $additionalClassification
-     * @param [type] $discipline
-     * @param [type] $reporterId
-     * @param [type] $tournamentType
-     * @param [type] $latitude
-     * @param [type] $longitude
-     * @param [type] $description
+     * @param Tournament $tournament
      * @return boolean
      */
-    public function updateTournamentById(int $tournamentId, string $name, string $place, string $startdate, $enddate, $deadline, $link, $classification, $additionalClassification, $discipline, $reporterId, $tournamentType, $latitude, $longitude, $description): bool
+    public function updateTournamentById(Tournament $tournament): bool
     {
-        $query = "UPDATE Tournament 
-                    set name = :name, place= :place, startdate=:startdate, enddate=:enddate, deadline=:deadline, link=:link, classification = :classification, additionalClassification = :additionalClassification, 
-                    discipline = :discipline, reporterId = :reporterId, tournamentType = :tournamentType, latitude = :latitude, longitude = :longitude, description = :description
-                    WHERE tournamentId = :tournamentId";
+        $query = "UPDATE `Tournament` 
+                    SET `name` = :name, `place`= :place, startdate=:startdate, enddate=:enddate, deadline=:deadline, link=:link, 
+                    classification = :classification, additionalClassification = :additionalClassification, 
+                    discipline = :discipline, reporterId = :reporterId, tournamentType = :tournamentType, latitude = :latitude, 
+                    longitude = :longitude, `description` = :description
+                    WHERE `tournamentId` = :tournamentId";
         $statement = $this->db->prepare($query);
-        $statement->bindParam('tournamentId', $tournamentId);
-        $statement->bindParam('name', $name);
-        $statement->bindParam('place', $place);
-        $statement->bindParam('startdate', $startdate);
-        $statement->bindParam('enddate', $enddate);
-        $statement->bindParam('deadline', $deadline);
-        $statement->bindParam('link', $link);
-        $statement->bindParam('classification', $classification);
-        $statement->bindParam('additionalClassification', $additionalClassification);
-        $statement->bindParam('discipline', $discipline);
-        $statement->bindParam('reporterId', $reporterId);
-        $statement->bindParam('tournamentType', $tournamentType);
-        $statement->bindParam('latitude', $latitude);
-        $statement->bindParam('longitude', $longitude);
-        $statement->bindParam('description', $description);
+        $statement->bindParam('tournamentId', $tournament->getTournamentId());
+        $statement->bindParam('name', $tournament->getName());
+        $statement->bindParam('place', $tournament->getPlace());
+        $statement->bindParam('startdate', $tournament->getStartdate());
+        $statement->bindParam('enddate', $tournament->getEnddate());
+        $statement->bindParam('deadline', $tournament->getDeadline());
+        $statement->bindParam('link', $tournament->getLink());
+        $statement->bindParam('classification', $tournament->getClassification());
+        $statement->bindParam('additionalClassification', $tournament->getAdditionalClassification());
+        $statement->bindParam('discipline', $tournament->getDiscipline());
+        $statement->bindParam('reporterId', $tournament->getReporterId());
+        $statement->bindParam('tournamentType', $tournament->getTournamentType());
+        $statement->bindParam('latitude', $tournament->getLatitude());
+        $statement->bindParam('longitude', $tournament->getLongitude());
+        $statement->bindParam('description', $tournament->getDescription());
 
         return $statement->execute();
     }

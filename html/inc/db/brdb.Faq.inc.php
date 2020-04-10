@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -80,18 +80,16 @@ trait FaqDB
     /**
      * Insert FAQ by Id
      *
-     * @param string $title
-     * @param integer $categoryId
-     * @param string $text
+     * @param Faq $faq
      * @return boolean
      */
-    public function insertFaq(string $title, int $categoryId, string $text): bool
+    public function insertFaq(Faq $faq): bool
     {
         $query = "INSERT INTO `Faq` (`title`, `categoryId`, `text`) VALUES (:title, :categoryId, :text)";
         $statement = $this->db->prepare($query);
-        $statement->bindParam('title', $title);
-        $statement->bindParam('categoryId', $categoryId);
-        $statement->bindParam('text', $text);
+        $statement->bindParam('title', $faq->getTitle());
+        $statement->bindParam('categoryId', $faq->getCategoryId());
+        $statement->bindParam('text', $faq->getText());
         
         return $statement->execute();
     }
@@ -99,20 +97,17 @@ trait FaqDB
     /**
      * Update FAQ by Id
      *
-     * @param integer $faqId
-     * @param string $title
-     * @param integer $categoryId
-     * @param string $text
+     * @param Faq $faq
      * @return boolean
      */
-    public function updateFaqById(int $faqId, string $title, int $categoryId, string $text): bool
+    public function updateFaqById(Faq $faq): bool
     {
-        $query = "UPDATE `Faq` set title = :title, categoryId = :categoryId, text = :text WHERE faqId = :faqId";
+        $query = "UPDATE `Faq` SET `title` = :title, `categoryId` = :categoryId, `text` = :text WHERE `faqId` = :faqId";
         $statement = $this->db->prepare($query);
-        $statement->bindParam('title', $title);
-        $statement->bindParam('categoryId', $categoryId);
-        $statement->bindParam('text', $text);
-        $statement->bindParam('faqId', $faqId);
+        $statement->bindParam('title', $faq->getTitle());
+        $statement->bindParam('categoryId', $faq->getCategoryId());
+        $statement->bindParam('text', $faq->getText());
+        $statement->bindParam('faqId', $faq->getFaqId());
 
         return $statement->execute();
     }

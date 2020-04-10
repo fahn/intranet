@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -12,23 +12,15 @@
  *
  ******************************************************************************/
 include_once('brdbHtmlPage.inc.php');
-
 include_once BASE_DIR .'/inc/logic/prgPattern.inc.php';
-include_once BASE_DIR .'/inc/logic/tools.inc.php';
 
-class BrdbHtmlTeam extends BrdbHtmlPage {
+class BrdbHtmlTeam extends BrdbHtmlPage 
+{
 
 
-    public function __construct():void
+    public function __construct()
     {
         parent::__construct();
-
-        $this->tools->secure_array($_GET);
-    }
-
-    public function processPage():void
-    {
-        parent::processPage();
     }
 
     protected function htmlBody(): void
@@ -38,11 +30,12 @@ class BrdbHtmlTeam extends BrdbHtmlPage {
         $this->smarty->assign(array(
             'content' => $content,
         ));
+
         $this->smarty->display('index.tpl');
         unset($content);
     }
 
-    private function TMPL_showTeam()
+    private function TMPL_showTeam(): string
     {
         $this->smarty->assign(array(
             'row'    => $this->getTeam(),
@@ -51,7 +44,7 @@ class BrdbHtmlTeam extends BrdbHtmlPage {
         return $this->smarty->fetch('team/list.tpl');
     }
 
-    private function getTeam():array
+    private function getTeam(): array
     {
         $teamList = $this->brdb->getStaffList();
         $data = array();

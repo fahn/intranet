@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -13,8 +13,6 @@
  ******************************************************************************/
 include_once 'prgPattern.inc.php';
 
-include_once BASE_DIR .'/inc/db/brdb.inc.php';
-
 /**
  * This prg pattern ahndles all the post and get actions
  * to insert, delete or update a game in the data base.
@@ -23,9 +21,9 @@ include_once BASE_DIR .'/inc/db/brdb.inc.php';
  */
 class PrgPatternElementCategory extends APrgPatternElement {
 
-    private $brdb;
-
+    const __TABLE__             = "Category";
     // FORMS
+    const FORM_FIELD_ID         = "id";
     const FORM_FIELD_PID        = "pid";
     const FORM_FIELD_TITLE      = "title";
 
@@ -35,15 +33,18 @@ class PrgPatternElementCategory extends APrgPatternElement {
     const FORM_UPDATE = "Update";
     const FORM_DELETE = "Delete";
 
+    private BrankDB $brdb;
+
 
     protected $prgElementLogin;
 
-    private $requiredFields = array('FORM_FIELD_PID', 'FORM_FIELD_CATEGORYID', 'FORM_FIELD_TITLE', 'FORM_FIELD_TEXT');
-
-    public function __construct(BrankDB $brdb, PrgPatternElementLogin $prgElementLogin) {
+    public function __construct(PrgPatternElementLogin $prgElementLogin) {
         parent::__construct("category");
-        $this->brdb = $brdb;
+        
+        // set pattern
         $this->prgElementLogin = $prgElementLogin;
+
+        $this->registerPostSessionVariable(self::FORM_FIELD_ID);
         $this->registerPostSessionVariable(self::FORM_FIELD_PID);
         $this->registerPostSessionVariable(self::FORM_FIELD_TITLE);
     }
@@ -71,7 +72,7 @@ class PrgPatternElementCategory extends APrgPatternElement {
                 break; */
 
             case self::FORM_UPDATE:
-                $this->processPostUpdate();
+                $this->processPostUpdateCategory();
                 break;
 
             default:
@@ -80,32 +81,73 @@ class PrgPatternElementCategory extends APrgPatternElement {
         }
     }
 
-    private function processPostInsertCategory() {
+    private function processPostInsertCategory(): bool
+    {
         // Check that all information has been posted
-        
-        if (! $this->checkRequiredFields(array('FORM_FIELD_PID', 'FORM_FIELD_CATEGORYID', 'FORM_FIELD_TITLE', 'FORM_FIELD_TEXT');)) {
-            $this->setFailedMessage("Kategory konnte nicht eingetragen werden");
-            return;
+        $requireFields = array(self::FORM_FIELD_PID, self::FORM_FIELD_TITLE);
+        if (! $this->prgElementLogin->checkRequiredFields($requireFields)) 
+        {
+            $this->setFailedMessage("Kategorie konnte nicht eingetragen werden");
+            return false;
         }
 
-        $title      = strval(trim($this->getPostVariable(self::FORM_FIELD_TITLE)));
-        $pid        = strval(trim($this->getPostVariable(self::FORM_FIELD_PID)));
+        try {
+            $cat = new Category();
+            $cat->setTitle($this->getPostVariableString(self::FORM_FIELD_TITLE));
+            $cat->setPid($this->getPostVariableInt(self::FORM_FIELD_PID));
 
-        $this->brdb->insertCategory($pid, $title);
+            $this->brdb->insertCategory($cat);
 
-        if ($this->brdb->hasError()) {
-            $this->setFailedMessage($this->brdb->getError());
-            return;
+            $this->setSuccessMessage("Kategorie wurde eingetragen");
+            return true;
         }
 
-        $this->setSuccessMessage("Kategory wurde eingetragen");
-        return;
+        catch (Exception $e) 
+        {
+            $this->log($this->__TABLE__, sprintf("Cannot insert Kategorie. %s Details %s", $cat, $e->getMessage()), "", "POST", "");
+            $this->setFailedMessage("Kategorie konnte nicht eingetragen werden");
+            return false;
+        } 
     }
 
-    private function processPostUpdate() {
-        return false;
+    private function processPostUpdateCategory(): bool
+    {
+        $requireFields = array(self::FORM_FIELD_ID, self::FORM_FIELD_PID, self::FORM_FIELD_TITLE);
+        if (! $this->prgElementLogin->checkRequiredFields($requireFields)) 
+        {
+            return false;
+        }
+
+        try {
+            $cat = new Category();
+            $cat->setTitle($this->getPostVariableString(self::FORM_FIELD_TITLE));
+            $cat->setPid($this->getPostVariableInt(self::FORM_FIELD_PID));
+            $cat->setId($this->getPostVariableInt(self::FORM_FIELD_ID));
+
+            $this->brdb->updateCategory($cat);
+
+            $this->setSuccessMessage("Kategorie wurde aktualisiert");
+            return true;
+        }
+
+        catch (Exception $e) 
+        {
+            $this->log($this->__TABLE__, sprintf("Cannot update Kategorie. %s Details %s", $cat, $e->getMessage()), "", "POST", "");
+            $this->setFailedMessage("Kategorie konnte nicht aktualisiert werden");
+            return false;
+        } 
     }
 
+
+    private function processPostDeleteCategory(): bool
+    {
+        $requireFields = array(self::FORM_FIELD_ID, self::FORM_FIELD_PID, self::FORM_FIELD_TITLE);
+        if (! $this->prgElementLogin->checkRequiredFields($requireFields)) 
+        {
+            return false;
+        }
+
+    }
 
 
 

@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -12,38 +12,34 @@
  *
  ******************************************************************************/
 include_once('brdbHtmlPage.inc.php');
-
 include_once BASE_DIR .'/inc/logic/prgClub.inc.php';
-include_once BASE_DIR .'/inc/logic/tools.inc.php';
 
 class BrdbHtmlAdminAllClubPage extends BrdbHtmlPage 
 {
-  private $prgPatternElementClub;
+    private PrgPatternElementClub $prgPatternElementClub;
 
-  const MAX_ENTRIES = 50;
+    //private int MAX_ENTRIES = 50;
 
-    public function __construct(): void
+    public function __construct()
     {
         parent::__construct();
 
-        $this->prgPatternElementClub = new PrgPatternElementClub($this->brdb, $this->prgPatternElementLogin);
+        $this->prgPatternElementClub = new PrgPatternElementClub($this->prgPatternElementLogin);
         $this->prgPattern->registerPrg($this->prgPatternElementClub);
     }
 
 
     public function htmlBody(): void
     {
-        $action = $this->tools->get("action");
-        $id     = $this->tools->get("id");
 
-        switch ($action) 
+        switch ($this->action) 
         {
             case 'add_club':
-              $content = $this->loadContentAddEdit($action, $id);
+              $content = $this->loadContentAddEdit();
               break;
 
             case 'edit':
-                $content = $this->loadContentAddEdit($action, $id);
+                $content = $this->loadContentAddEdit();
                 break;
 
             default:
@@ -61,22 +57,20 @@ class BrdbHtmlAdminAllClubPage extends BrdbHtmlPage
 
     private function loadContent(): string 
     {
-        $page = $this->tools->get("page");
-        $page = isset($page) && is_numeric($page) && $page > 0 ? $page-1 : 0;
         $this->smarty->assign(array(
-            'clubs'      => $this->loadClubList($page),
-            'pagination' => $this->tools->getPageination($page, $this->countRows),
+            'clubs'      => $this->loadClubList($this->page),
+            'pagination' => $this->prgPatternElementClub->getPageination($this->page, $this->countRows),
         ));
 
         return $this->smarty->fetch('admin/ClubList.tpl');
     }
 
-    private function loadContentAddEdit(string $action, int $id): string
+    private function loadContentAddEdit(): string
     {
       $this->smarty->assign(array(
-          'action'   => $action,
+          'action'   => $this->action,
           'clubs'    => $this->loadClubList(),
-          'variable' => $this->getClubById($id),
+          'variable' => $this->getClubById($this->id),
       ));
       return $this->smarty->fetch('admin/ClubEdit.tpl');
     }
@@ -101,9 +95,9 @@ class BrdbHtmlAdminAllClubPage extends BrdbHtmlPage
      * @param integer $id
      * @return array
      */
-    private function getClubById(int $id): array
+    private function getClubById(): array
     {
-        return $id > 0 ? $this->brdb->selectGetClubById($id) : array();
+        return $this->brdb->selectGetClubById($this->id);
     }
 
 }

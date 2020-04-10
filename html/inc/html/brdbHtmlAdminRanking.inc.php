@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -12,35 +12,23 @@
  *
  ******************************************************************************/
 include_once('brdbHtmlPage.inc.php');
-
-include_once BASE_DIR .'/inc/logic/prgRanking.inc.php';
-include_once BASE_DIR .'/inc/logic/tools.inc.php';
+include_once(BASE_DIR .'/inc/logic/prgRanking.inc.php');
 
 class BrdbHtmlAdminRanking extends BrdbHtmlPage 
 {
-    private $prgElementGame;
+    private PrgPatternElementRanking $prgElementRanking;
 
-    public function __construct(): void
+    public function __construct()
     {
         parent::__construct();
-        $this->prgElementRanking = new PrgPatternElementRanking($this->brdb, $this->prgPatternElementLogin);
+
+        $this->prgElementRanking = new PrgPatternElementRanking($this->prgPatternElementLogin);
         $this->prgPattern->registerPrg($this->prgElementRanking);
-
-        // TOOLS
-        $this->tools = new Tools();
     }
-
-    public function processPage(): void
-    {
-        // Call all prgs and process them all
-        parent::processPage();
-    }
-
     protected function htmlBody(): void
     {
-        $action = $this->tools->get("action");
 
-        switch ($action) 
+        switch ($this->action) 
         {
             case 'add':
                 $content = $this->TMPL_AddGame();
@@ -83,8 +71,7 @@ class BrdbHtmlAdminRanking extends BrdbHtmlPage
 
     private function TMPL_EditGame(): string
     {
-        $id   = $this->tools->get("id");
-        $game = $this->brdb->getGameById($id);
+        $game = $this->brdb->getGameById($this->id);
 
         $game['set1'] = $game['setA1'] .":". $game['setB1'];
         $game['set2'] = $game['setA2'] .":". $game['setB2'];
@@ -127,7 +114,8 @@ class BrdbHtmlAdminRanking extends BrdbHtmlPage
 
     private function getAllPlayerDataList(): array
     {
-        $playerList = $this->brdb->selectAllPlayerByOurClub($this->tools->getHomeClub());
+        // @todo update this to backend Setting
+        $playerList = $this->brdb->selectAllPlayerByOurClub(2);
         $data = array();
 
         if (isset($playerList) && !empty($playerList)) {

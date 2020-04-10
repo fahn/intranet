@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -13,13 +13,11 @@
  ******************************************************************************/
 $path=dirname(dirname(__FILE__));
 require($path .'/brdbHtmlPage.inc.php');
-
 include_once BASE_DIR .'/inc/logic/prgSetup.inc.php';
-include_once BASE_DIR .'/inc/logic/tools.inc.php';
 
 
 class BrdbHtmlAdminSetup extends BrdbHtmlPage {
-    private $prgPatternElementSync;
+    private $PrgPatternElementSetup;
 
     private $_page;
 
@@ -30,25 +28,28 @@ class BrdbHtmlAdminSetup extends BrdbHtmlPage {
              $this->_page = $page;
         }
 
+        $this->prgPatternElementSetup = new PrgPatternElementSetup($this->prgPatternElementLogin);
+        $this->prgPattern->registerPrg($this->prgPatternElementSetup);
+
         # load links
         $links = array(
-            'startSync' => $this->tools->linkTo(array('page' => $this->_page, 'action' => 'sync')),
+            'startSync' => $this->PrgPatternElementSetup->linkTo(array('page' => $this->_page, 'action' => 'sync')),
         );
 
         $this->smarty->assign('links', $links);
-
-        $this->prgPatternElementSetup = new PrgPatternElementSetup($this->brdb, $this->prgPatternElementLogin);
-        $this->prgPattern->registerPrg($this->prgPatternElementSetup);
-
     }
 
+    public function htmlBody(): void
+    {
 
-    public function htmlBody() {
-        $action = $this->tools->get("action");
+        switch ($this->action) {
+            case 'setup':
+                $content = "INSTALL MODE";
+                break;
 
-        switch ($action) {
-            case 'sync':
-                #die(print_r($this->prgPatternElementSync->getStatistics()));
+            case 'update':
+                $content = "UPDATE MODE";
+                break;
 
             default:
                 $content = $this->loadContent();
@@ -63,10 +64,8 @@ class BrdbHtmlAdminSetup extends BrdbHtmlPage {
     }
 
 
-    private function loadContent() {
-        $this->smarty->assign(array(
-
-        ));
+    private function loadContent(): string
+    {
         return $this->smarty->fetch('setup/overview.tpl');
     }
 

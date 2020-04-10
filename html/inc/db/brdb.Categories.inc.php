@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2019
+ * Copyright 2017-2020
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -34,12 +34,33 @@ trait CategoryDB
         return $statement->fetchAll();
     }
 
-    public function insertCategory($title, $pid):bool
+    public function statementGetCategoryById(int $id): array
     {
-        $query = "INSERT INTO `Category` (pid, title) VALUES (:pid, :title)";
+        $query = "SELECT * FROM `Category` WHERE id = :id";
         $statement = $this->db->prepare($query);
-        $statement->bindParam('pid', $pid);
-        $statement->bindParam('title', $title);
+        $statement->bindParam('id', $id);
+        $statement->execute();
+        
+        return $statement->fetchAll();
+    }
+
+    public function insertCategory(Category $cat):bool
+    {
+        $query = "INSERT INTO `Category` (`pid`, `title`) VALUES (:pid, :title)";
+        $statement = $this->db->prepare($query);
+        $statement->bindParam('pid', $cat->getPid());
+        $statement->bindParam('title', $cat->getTitle());
+
+        return $statement->execute();
+    }
+
+    public function updateCategory(Category $cat):bool
+    {
+        $query = "UPDATE `Category` SET `pid` = :pid `title` = :title WHERE `id` = :id";
+        $statement = $this->db->prepare($query);
+        $statement->bindParam('pid', $cat->getPid());
+        $statement->bindParam('title', $cat->getTitle());
+        $statement->bindParam('id', $cat->getId());
 
         return $statement->execute();
     }
