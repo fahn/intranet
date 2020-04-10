@@ -1,7 +1,7 @@
 #
 # docker container for github intranet
 #
-FROM php:7.3-apache
+FROM php:7.4-apache
 
 LABEL maintainer="Stefan Metzner <stefan@weinekind.de>"
 LABEL version="1.0.6.4"
@@ -12,26 +12,24 @@ RUN apt-get update && apt-get install -y \
         libfreetype6-dev \
         libjpeg62-turbo-dev \
         libpng-dev \
-        zlib1g-dev \
         libicu-dev \
+        libonig-dev \
+        libzip-dev \
         msmtp \
         g++ \
         git \
         wget \
         zip \
+        zlib1g-dev \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-# install php requirements
-RUN docker-php-ext-install -j$(nproc) iconv \
-    && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
+    && rm -rf /var/lib/apt/lists/* \
+    && docker-php-ext-install -j$(nproc) iconv \
+    && docker-php-ext-configure gd \
     && docker-php-ext-install -j$(nproc) gd \
     && docker-php-ext-install zip intl pdo_mysql mbstring\
     && docker-php-ext-configure intl \
-    && docker-php-ext-enable pdo_mysql
-
-# create log for msmtp
-RUN touch /var/log/msmtp.log
+    && docker-php-ext-enable pdo_mysql \
+    && touch /var/log/msmtp.log
 
 # copy custom php ini
 COPY build/php/* /usr/local/etc/php/conf.d/
@@ -54,7 +52,10 @@ RUN rm -rf .git* \
     /var/www/html/static/img/background.jpg \
     /var/www/html/static/img/background_mobil.jpg \
     /var/www/html/static/img/user \
-    /var/www/html/static/img/favicon
+    /var/www/html/static/img/favicon && \
+    mkdir -p /var/www/html/templates_c && \
+    chmod 777 /var/www/html/templates_c
+
 
 # set rights
 RUN chmod -R 755 . && chown -R www-data:www-data .
@@ -68,7 +69,8 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" &&
     php composer-setup.php --quiet --install-dir=/usr/local/bin --filename=composer  && \
     php -r "unlink('composer-setup.php');"
 
-USER www-data
+HEALTHCHECK --interval=60s --timeout=30s CMD nc -zv localhost 80 || exit 1
+
 WORKDIR /var/www/html/
 
 # install composer requiredments
@@ -82,6 +84,8 @@ VOLUME [ "/var/www/html/static/img/background_mobil.jpg" ]
 VOLUME [ "/var/www/html/static/img/favicon" ]
 VOLUME [ "/etc/aliases" ]
 VOLUME [ "/etc/msmtprc" ]
+
+USER root
 
 # Ports
 EXPOSE 80

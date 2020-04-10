@@ -4,3 +4,5 @@ templates_c
 .remote-sync.json
 .vscode
 .settings
+html/vendor
+html/composer.lock
