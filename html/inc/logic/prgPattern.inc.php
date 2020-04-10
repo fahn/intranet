@@ -311,7 +311,7 @@ abstract class APrgPatternElement implements IPrgPatternElement
     public function getPostVariable(string $variableName): ?string
     {
         $prefixedVariableName = $this->getPrefixedName($variableName);
-        if(isset($_POST) && isset($_POST[$prefixedVariableName])) 
+        if (isset($_POST) && isset($_POST[$prefixedVariableName])) 
         {
             $data = $_POST[$prefixedVariableName];
             if (!is_array($data)) 
@@ -327,6 +327,11 @@ abstract class APrgPatternElement implements IPrgPatternElement
     public function getPostVariableString(string $variableName): ?string
     {
         return strval(trim($this->getPostVariable($variableName)));
+    }
+
+    public function getPostVariableArray(string $variableName): ?array
+    {
+        return $this->getPostVariable($variableName);
     }
 
     public function getPostVariableInt(string $variableName): ?int
@@ -630,7 +635,7 @@ abstract class APrgPatternElement implements IPrgPatternElement
         $aC = substr($a,0,1);
         $bC = substr($b,0,1);
 
-        if($aC = $bC) {
+        if ($aC = $bC) {
             $aCR = substr($a,1);
             $bCR = substr($b,1);
             if ($aCR == $bCR) {
@@ -679,7 +684,7 @@ abstract class APrgPatternElement implements IPrgPatternElement
             }
         }
 
-        if($i == $tmpArrC) 
+        if ($i == $tmpArrC) 
         {
             $ageGroup = reset($tmpArr) ."-". end($tmpArr);
         } 

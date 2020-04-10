@@ -57,7 +57,7 @@ class RankingWidget extends Widget {
         try {
         while ($dataSet = $res) {
             // chicken
-            if($this->userId == $dataSet['winnerId']) {
+            if ($this->userId == $dataSet['winnerId']) {
                 $chicken = '<i class="fas fa-arrow-circle-up text-success"></i>';
             } else {
                 $chicken = '<i class="fas fa-arrow-circle-down text-danger"></i>';

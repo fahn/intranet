@@ -12,7 +12,6 @@
  *
  ******************************************************************************/
 include_once('prgPattern.inc.php');
-include_once(BASE_DIR .'/inc/db/brdb.inc.php');
 
 class PrgPatternElemenSettings extends APrgPatternElement 
 {

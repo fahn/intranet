@@ -116,7 +116,7 @@ class PrgPatternElementStaff extends APrgPatternElement
         $data[self::FORM_STAFF_STAFFID] = $id;
 
         //
-        if($this->update($data)) {
+        if ($this->update($data)) {
             $this->setSuccessMessage(self::SUCCESS_STAFF_INSERT);
         } else {
             $this->setFailedMessage(self::ERROR_STAFF_INSERT);
@@ -137,11 +137,10 @@ class PrgPatternElementStaff extends APrgPatternElement
       }
       // create data array
       $data = $this->requiredFields2array();
-      print_r($data);
       $data[self::FORM_STAFF_STAFFID] = $this->getPostVariable(self::FORM_STAFF_STAFFID);
 
 
-      if($this->update($data)) {
+      if ($this->update($data)) {
           $this->setSuccessMessage(self::SUCCESS_STAFF_UPDATE);
       } else {
           $this->setFailedMessage(self::ERROR_STAFF_UPDATE);

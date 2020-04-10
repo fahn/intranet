@@ -217,7 +217,7 @@ class PrgPatternElementSync extends APrgPatternElement
         ]);
 
         $file_headers = @get_headers(self::API_HOST, 1);
-        if(!$file_headers || $file_headers[0] == 'HTTP/1.1 404 Not Found') {
+        if (!$file_headers || $file_headers[0] == 'HTTP/1.1 404 Not Found') {
             $this->setFailedMessage("REMOTE HOST not available");
             return;
         }

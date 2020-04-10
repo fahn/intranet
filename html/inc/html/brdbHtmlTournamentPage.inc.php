@@ -199,7 +199,7 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage
         $tournament                   = $this->brdb->getTournamentData($this->id);
         $tournament['classification'] = $this->prgElementTournament->formatClassification($tournament['classification']);
         $tournament['discipline']     = $this->prgElementTournament->formatDiscipline($tournament['discipline']);
-        if(isset($tournament['additionalClassification'])) {
+        if (isset($tournament['additionalClassification'])) {
           $tournament['additionalClassification'] = unserialize($tournament['additionalClassification']);
         }
 
@@ -224,7 +224,7 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage
         $tournament = $this->brdb->getTournamentData($this->id);
         $disciplines = "";
 
-        if(isset($tournament['classification']) && isset($tournament['discipline'])) {
+        if (isset($tournament['classification']) && isset($tournament['discipline'])) {
           $classifications = unserialize($tournament['classification']);
           $disciplines     = unserialize($tournament['discipline']);
           $additionalClassification     = unserialize($tournament['additionalClassification']);
@@ -406,7 +406,7 @@ class BrdbHtmlTournamentPage extends BrdbHtmlPage
 
                 if ($this->isDouble($dataSet['classification'])) 
                 {
-                    if($dataSet['partnerId'] > 0) {
+                    if ($dataSet['partnerId'] > 0) {
                         $dataSet['partnerNr']   = $dataSet['partnerNr'];
                         $dataSet['partnerLink'] =  $this->prgElementTournament->linkTo(array('page' => 'player.php', 'id' => $dataSet['partnerId']));
                     } else {

@@ -55,6 +55,7 @@ if (isset($_POST) && is_array($_POST) && isset($_POST['playerSearch']))
     catch(Exception $e)
     {
         print_r("ERROR: Could not able to execute" . $e->getMessage());
+        exit(99);
     }
 } 
 

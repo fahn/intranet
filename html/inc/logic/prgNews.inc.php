@@ -11,17 +11,8 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
-declare(strict_types=1);
-
 include_once 'prgPattern.inc.php';
-include_once BASE_DIR .'/inc/db/brdb.inc.php';
 
-/**
- * This prg pattern ahndles all the post and get actions
- * to insert, delete or update a game in the data base.
- * @author philipp
- *
- */
 class PrgPatternElementNews extends APrgPatternElement 
 {
 

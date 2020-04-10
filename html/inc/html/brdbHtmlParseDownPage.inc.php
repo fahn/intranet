@@ -25,6 +25,14 @@ class BrdbHtmlParseDownPage extends BrdbHtmlPage
         $this->markDownFile = $markDownFile;
     }
 
+    public function processPage() 
+    {
+        // Call all prgs and process them all
+        $this->prgPattern->processPRG();
+
+        parent::processPage();
+    }
+
     protected function htmlBody(): void 
     {
         if (is_file($this->markDownFile)) 

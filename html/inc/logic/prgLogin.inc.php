@@ -118,7 +118,7 @@ class PrgPatternElementLogin extends APrgPatternElement
             return false;
         }
         $res = $this->brdb->selectUserByEmail($mail);
-        if($res->num_rows != 1) {
+        if ($res->num_rows != 1) {
             $this->setFailedMessage("Bitte bei dem Support melden.");
             return false;
         }
@@ -131,7 +131,7 @@ class PrgPatternElementLogin extends APrgPatternElement
 
         // insert token and userid
         $this->brdb->insertUserPassHash($userData['userId'], $token, $ip);
-        if($this->brdb->hasError()) {
+        if ($this->brdb->hasError()) {
           $this->setFailedMessage("Bitte bei dem Support melden.");
           return false;
         }
@@ -153,7 +153,7 @@ class PrgPatternElementLogin extends APrgPatternElement
         );
 
         $message   = '';
-        if(!$this->sendMail($mail, $name, $subject, 'Dein Passwort wurde angefordert', $message, $assign, 'htmlmail/request_password.tpl')) {
+        if (!$this->sendMail($mail, $name, $subject, 'Dein Passwort wurde angefordert', $message, $assign, 'htmlmail/request_password.tpl')) {
             $this->setFailedMessage("Fehler beim E-Mail-Versand.");
             return false;
         }
@@ -189,7 +189,7 @@ class PrgPatternElementLogin extends APrgPatternElement
         }
 
         // check if Password = Password2
-        if(strlen($pass) == 0) {
+        if (strlen($pass) == 0) {
             $this->setFailedMessage("Bitte gebe ein Passwort ein.");
             return false;
         }
@@ -200,7 +200,7 @@ class PrgPatternElementLogin extends APrgPatternElement
 
         // check if token exists
         $res = $this->brdb->GetUserPassHash($mail, $token);
-        if($this->brdb->hasError() || $res->num_rows != 1) {
+        if ($this->brdb->hasError() || $res->num_rows != 1) {
             $this->setFailedMessage("Bitte bei dem Support melden.");
             return false;
         }
@@ -211,14 +211,14 @@ class PrgPatternElementLogin extends APrgPatternElement
 
         // delete token
         $this->brdb->DeleteUserPassHash($data['userId'], $token);
-        if($this->brdb->hasError()){
+        if ($this->brdb->hasError()){
             $this->setFailedMessage("Bitte bei dem Support melden.");
             return false;
         }
 
         // set new password
         $this->brdb->updateUserPassword($data['userId'], $passHash);
-        if($this->brdb->hasError()){
+        if ($this->brdb->hasError()){
             $this->setFailedMessage("Bitte bei dem Support melden.");
             return false;
         }
@@ -357,7 +357,7 @@ class PrgPatternElementLogin extends APrgPatternElement
     }
 
     public function redirectUserIfNonAdmin() {
-        if ( ! $this->loggedInUser->isAdmin()) {
+        if (! $this->loggedInUser->isAdmin()) {
             $this->setFailedMessage("User does not have the expected permissions.");
             $this->customRedirectArray(array(
                 'page' => 'index.php',
@@ -366,7 +366,7 @@ class PrgPatternElementLogin extends APrgPatternElement
     }
 
     public function redirectUserIfNonReporter() {
-        if ( ! $this->loggedInUser->isReporter()) {
+        if (! $this->loggedInUser->isReporter()) {
             $this->setFailedMessage("User does not have the expected permissions.");
             $this->customRedirectArray(array(
                 'page' => 'index.php',
@@ -375,7 +375,7 @@ class PrgPatternElementLogin extends APrgPatternElement
     }
 
     public function redirectUserIfnoRights($rights, $relationship = false) {
-        if ( !is_array($rights) && is_string($rights)) {
+        if (!is_array($rights) && is_string($rights)) {
             try {
                 $tmp = array();
                 $tmp[]= $rights;
@@ -420,7 +420,7 @@ class PrgPatternElementLogin extends APrgPatternElement
     }
 
     public function redirectUserIfNotLoggindIn() {
-        if ( ! $this->isUserLoggedIn()) {
+        if (! $this->isUserLoggedIn()) {
             $this->setFailedMessage("No login. No access.");
             $this->customRedirectArray(array(
                 'page' => 'index.php',

@@ -11,7 +11,6 @@
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
  *
  ******************************************************************************/
-
 require_once '_options.php';
 include_once BASE_DIR .'/inc/html/brdbHtmlParseDownPage.inc.php';
 

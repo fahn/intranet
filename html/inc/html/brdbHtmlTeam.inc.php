@@ -53,7 +53,7 @@ class BrdbHtmlTeam extends BrdbHtmlPage
         {
             foreach ($teamList as $dataSet) 
             {
-                if(isset($dataSet['row']) && $dataSet['row'] > 0) 
+                if (isset($dataSet['row']) && $dataSet['row'] > 0) 
                 {
                     $data[$dataSet['row']][] = $dataSet;
                 }

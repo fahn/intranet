@@ -78,7 +78,7 @@ class BrdbHtmlAdminAllImagesPage extends BrdbHtmlPage {
         foreach($images as $image) {
             $tmpImage = str_replace($servPath, "", $image);
             $query = "thumb_";
-            if(substr(basename($tmpImage), 0, strlen($query)) === $query) {
+            if (substr(basename($tmpImage), 0, strlen($query)) === $query) {
                 continue;
             }
             

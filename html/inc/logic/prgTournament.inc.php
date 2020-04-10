@@ -23,12 +23,6 @@ use Box\Spout\Writer\WriterFactory;
 use Box\Spout\Common\Type;
 use Symfony\Component\VarExporter\Internal\Exporter;
 
-/**
- * This prg pattern ahndles all the post and get actions
- * to insert, delete or update a game in the data base.
- * @author philipp
- *
- */
 class PrgPatternElementTournament extends APrgPatternElement {
 
     const __TABLE__ = "Tournament";
@@ -108,7 +102,7 @@ class PrgPatternElementTournament extends APrgPatternElement {
         // check if user is login
         $this->prgElementLogin->redirectUserIfNotLoggindIn();
 
-        if(! $this->issetPostVariable(self::FORM_FORM_ACTION)) {
+        if (! $this->issetPostVariable(self::FORM_FORM_ACTION)) {
             $this->setFailedMessage("no form");
             return;
         }
@@ -269,7 +263,7 @@ class PrgPatternElementTournament extends APrgPatternElement {
         } 
 
         // check player p2
-        if(isset($tmp_partner) && $tmp_partner > 0) {
+        if (isset($tmp_partner) && $tmp_partner > 0) {
             $p2 = $this->brdb->selectPlayerById($tmp_partner);
             if (! $this->checkPlayerAndDisciplin($p2, $tmp_disziplin, 2)) {
                 $this->setFailedMessage(sprintf("Falsche Diziplin für Spieler %s %s", $p2['firstName'], $p2['lastName']));
@@ -453,7 +447,7 @@ class PrgPatternElementTournament extends APrgPatternElement {
 
             // delete Tournament
             $this->brdb->deleteTournamentById($id);
-            if($this->brdb->hasError()) {
+            if ($this->brdb->hasError()) {
                 $this->setFailedMessage("Turnier konnte nicht gelöscht werden (3/3).");
                 return;
             }
@@ -531,13 +525,13 @@ class PrgPatternElementTournament extends APrgPatternElement {
     }
 
     public function processGet() {
-        if($this->issetGetVariable("action")) {
+        if ($this->issetGetVariable("action")) {
             $action = $this->getGetVariable("action");
             $id = $this->getGetVariable("id");
 
             switch ($action) {
                 case 'deletePlayer':
-                    if($this->issetGetVariable("id") && $this->issetGetVariable("tournamentPlayerId")) {
+                    if ($this->issetGetVariable("id") && $this->issetGetVariable("tournamentPlayerId")) {
                       $this->deletePlayersFromTournamentId($this->getGetVariable("id"), $this->getGetVariable("tournamentPlayerId"));
                     }
                     break;
@@ -623,7 +617,7 @@ class PrgPatternElementTournament extends APrgPatternElement {
       */
     private function export($id): bool
     {
-        if(!isset($id) || !is_numeric($id) || $id < 1) {
+        if (!isset($id) || !is_numeric($id) || $id < 1) {
           return false;
         }
 
@@ -661,7 +655,7 @@ class PrgPatternElementTournament extends APrgPatternElement {
 
     private function reportExcelNBV(array $tournament, int $id): void
     {
-        if(isset($tournament['name']) && $tournament['deadline']) {
+        if (isset($tournament['name']) && $tournament['deadline']) {
             $fileName   = sprintf("%s_%d.xlsx", addslashes($tournament['name']), date("d.m.Y", strtotime($tournament['deadline'])));
         } else {
             $fileName = "random.xlsx";
@@ -716,7 +710,7 @@ class PrgPatternElementTournament extends APrgPatternElement {
         if (isset($players) && !empty($players)) {
             foreach ($players as $row) {
                 /* MIXED */
-                if(strpos($row['classification'], 'GD') !== false) {
+                if (strpos($row['classification'], 'GD') !== false) {
                     $writer->setCurrentSheet($mixed);
                     $add       = True;
                     $rowEinzel = '';
@@ -725,7 +719,7 @@ class PrgPatternElementTournament extends APrgPatternElement {
                     $counter = ++$mixedCount;
 
                 /* Doppel */
-                } else if(strpos($row['classification'], 'DD') !== false || strpos($row['classification'], 'HD') !== false ||
+                } else if (strpos($row['classification'], 'DD') !== false || strpos($row['classification'], 'HD') !== false ||
                         strpos($row['classification'], 'JD') !== false || strpos($row['classification'], 'MD') !== false ) {
                     $writer->setCurrentSheet($doppel);
                     $add       = True;
@@ -771,7 +765,7 @@ class PrgPatternElementTournament extends APrgPatternElement {
 
 
                 if ($add) {
-                    if($row['p2FirstName'] != NULL && $row['p2LastName'] != NULL) {
+                    if ($row['p2FirstName'] != NULL && $row['p2LastName'] != NULL) {
                         $firstName = $row['p2FirstName'];
                         $lastName  = $row['p2LastName'];
                         $gender    = $this->transformGenderToNBVExport($row['p2Gender']);
@@ -838,7 +832,7 @@ class PrgPatternElementTournament extends APrgPatternElement {
 
 
     private function exportDefault($tournament, $id) {
-        if(isset($tournament['name']) && $tournament['deadline']) {
+        if (isset($tournament['name']) && $tournament['deadline']) {
             $fileName   = sprintf("%s_%d.xlsx", addslashes($tournament['name']), date("d.m.Y", strtotime($tournament['deadline'])));
         } else {
             $fileName = "random.xlsx";
@@ -872,7 +866,7 @@ class PrgPatternElementTournament extends APrgPatternElement {
         $counter = 0;
 
         $players    = $this->brdb->getPlayersByTournamentIdToExport($id);
-        if(isset($players) && !empty($players)) {
+        if (isset($players) && !empty($players)) {
             foreach ($players as $row) {
                 $gender = $this->transformGenderToNBVExport($row['p1Gender']);
                 $bday   = $this->tranformBday($row['p1Bday']);
@@ -920,7 +914,7 @@ class PrgPatternElementTournament extends APrgPatternElement {
     private function createBackup($id) {
         $playerList = $this->brdb->getPlayersByTournamentId($id);
         $backup = array();
-        if(isset($playerList) && !empty($playerList)) {
+        if (isset($playerList) && !empty($playerList)) {
             foreach ($playerList as $dataSet) {
                 $backup[substr($dataSet['classification'], 0, 2)][] = array(
                     'playerId'       => $dataSet['playerId'],
@@ -928,9 +922,9 @@ class PrgPatternElementTournament extends APrgPatternElement {
                     'classification' => $dataSet['classification'],
                 );
             }
-            if(isset($backup) && is_array($backup) && count($backup) > 0) {
+            if (isset($backup) && is_array($backup) && count($backup) > 0) {
                 $backupS = serialize($backup);
-                if(! $this->brdb->insertTournamentBackup($id, $backupS)) {
+                if (! $this->brdb->insertTournamentBackup($id, $backupS)) {
                   return false;
                 }
                 return true;

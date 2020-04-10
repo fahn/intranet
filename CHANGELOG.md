@@ -17,7 +17,7 @@ All notable changes to this project will be documented in this file.
 **Date:** 2019-11-14
 
 - UPDATE: Smarty version to 3.1.33
-- ADD Dockerfile 
+- ADD Dockerfile
 - CHANGE: set all webfiles to subfolder html
 - CHANGE Infrastructure
 

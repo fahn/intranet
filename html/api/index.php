@@ -50,7 +50,7 @@ class Api extends APrgPatternElement
       $tournamentList = $this->brdb->APIGetTournamentFromToday();
       if (isset($tournamentList) && !empty($tournamentList)) {
           foreach($tournamentList as $row) {
-              if(isset($row) && isset($row['email']) && filter_var($row['email'], FILTER_VALIDATE_EMAIL)) {
+              if (isset($row) && isset($row['email']) && filter_var($row['email'], FILTER_VALIDATE_EMAIL)) {
                   $subject   = sprintf("Meldeschluss für %s", $row['name']);
                   // content
                   $toUser    = $row['email'];
@@ -66,7 +66,7 @@ class Api extends APrgPatternElement
                       $row['mail'] = "success";
                   }
 
-                  if(isset($row) && is_array($row) && count($row) > 0) {
+                  if (isset($row) && is_array($row) && count($row) > 0) {
                       $this->content .= implode(", ", $row);
                   }
               }

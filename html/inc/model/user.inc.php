@@ -62,8 +62,6 @@ class User {
         
         if (isset($dataSet) && is_array($dataSet)) {
             try {
-                #throw new Exception("hi");
-                #print_r($dataSet);
                 
                 $this->userId     = intval($dataSet[self::USER_CLM_ID]);
                 $this->email      = strval($dataSet[self::USER_CLM_EMAIL]);

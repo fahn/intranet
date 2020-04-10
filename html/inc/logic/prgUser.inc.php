@@ -13,16 +13,14 @@
  ******************************************************************************/
 include_once 'prgPattern.inc.php';
 
-// DB
-include_once BASE_DIR .'/inc/db/brdb.inc.php';
-
 // Model
 include_once BASE_DIR .'/inc/model/user.inc.php';
 
 // vendor
 require_once BASE_DIR .'/vendor/autoload.php';
 
-class PrgPatternElementUser extends APrgPatternElement {
+class PrgPatternElementUser extends APrgPatternElement
+{
     const FORM_USER_ADMIN_USER_ID = "accountAdminUserId";
     const FORM_USER_EMAIL         = "accountEmail";
     const FORM_USER_FNAME         = "accountFirstName";
@@ -77,7 +75,7 @@ class PrgPatternElementUser extends APrgPatternElement {
     private $uploadImageFileName;
     private $IMAGE_PATH;
 
-    public function __construct(BrankDB $brdb, PrgPatternElementLogin $prgElementLogin) {
+    public function __construct(PrgPatternElementLogin $prgElementLogin) {
         parent::__construct("userRegister");
 
         $this->prgElementLogin = $prgElementLogin;
@@ -101,14 +99,15 @@ class PrgPatternElementUser extends APrgPatternElement {
         // check if user is login
         $this->prgElementLogin->redirectUserIfNotLoggindIn();
 
-        if ( ! $this->issetPostVariable(self::FORM_USER_ACTION) ) {
+        if (! $this->issetPostVariable(self::FORM_USER_ACTION) )
+        {
             $this->setFailedMessage("Kein Formular gewählt");
             return;
         }
 
         // default user
         $loginAction = $this->getPostVariableString(self::FORM_USER_ACTION);
-        switch ($loginAction) 
+        switch ($loginAction)
         {
             case self::FORM_USER_ACTION_CHANGE_PASSWORD:
                 $this->processPostUpdateUserPassword();
@@ -120,7 +119,7 @@ class PrgPatternElementUser extends APrgPatternElement {
                 return;
                 break;
 
-            case  self::FORM_USER_ACTION_UPDATE_MY_ACCOUNT:
+            case self::FORM_USER_ACTION_UPDATE_MY_ACCOUNT:
                 $this->processPostUpdateUserMyAccount();
                 return;
                 break;
@@ -132,16 +131,14 @@ class PrgPatternElementUser extends APrgPatternElement {
 
         // admin area
         $this->prgElementLogin->redirectUserIfNonAdmin();
-        switch ($loginAction) {
-
+        switch ($loginAction)
+        {
             case self::FORM_USER_ACTION_INSERT_ACCOUNT:
                 $this->processPostRegisterUser();
                 break;
-
             case self::FORM_USER_ACTION_UPDATE_ACCOUNT:
                 $this->processPostUpdateUserAccount($this->getGetVariable("id"));
                 break;
-
             default:
                 # code...
                 break;
@@ -150,27 +147,33 @@ class PrgPatternElementUser extends APrgPatternElement {
         return;
     }
 
-    public function processGet(): void
+    public function processGet():void
     {
         // check if user is login
         $this->prgElementLogin->redirectUserIfNotLoggindIn();
 
         $action = $this->getGetVariable("action");
 
-        switch ($action) {
+        switch ($action)
+        {
             case 'delete':
                 $this->prgElementLogin->redirectUserIfnoRights('admin');
                 $id = $this->getGetVariable("id");
                 $this->processGetDeleteUserAccount($id);
                 break;
-
           default:
             # code...
             break;
         }
     }
 
-    private function processPostInsertUserAccount() {
+    /**
+     * Inser new User
+     *
+     * @return boolean
+     */
+    private function processPostInsertUserAccount(): bool
+    {
         // Check that all information has been posted
         $requireFields = array(self::FORM_USER_FNAME, self::FORM_USER_LNAME, self::FORM_USER_GENDER, self::FORM_USER_EMAIL);
         if (! $this->prgElementLogin->checkRequiredFields($requireFields)) 
@@ -184,7 +187,7 @@ class PrgPatternElementUser extends APrgPatternElement {
         $lastName   = $this->getPostVariableString(self::FORM_USER_LNAME);
         $gender     = $this->getPostVariableString(self::FORM_USER_GENDER);
 
-        if (! $this->validEMail($email) ) 
+        if (! $this->validEMail($email) )
         {
             $this->setFailedMessage(self::ERROR_USER_UPDATE_INVALID_EMAIL);
             return;
@@ -199,7 +202,8 @@ class PrgPatternElementUser extends APrgPatternElement {
         }
         $id = $this->brdb->insert_id();
 
-        if(!$this->processPostUpdateUserAccount($id)) {
+        if (!$this->processPostUpdateUserAccount($id))
+        {
             $this->setFailedMessage("Probleme beim anlegen. Bitte editieren Sie den Nutzer!");
             $this->customRedirectArray(array(
                 'page'   => "adminAllUser.php",
@@ -219,21 +223,28 @@ class PrgPatternElementUser extends APrgPatternElement {
 
     }
 
-    public function processPostRegisterUser() {
+    /**
+     * Register User by himself
+     *
+     * @return boolean
+     */
+    public function processPostRegisterUser():bool
+    {
         $requireFields = array(self::FORM_USER_FNAME, self::FORM_USER_LNAME, self::FORM_USER_GENDER, self::FORM_USER_EMAIL);
-        if (! $this->prgElementLogin->checkRequiredFields($requireFields)) 
+        if (! $this->prgElementLogin->checkRequiredFields($requireFields))
         {
             $this->setFailedMessage(self::ERROR_USER_UPDATE_MISSING_INFORMATION);
             return false;
         }
 
-        try {
+        try
+        {
             $user = new User();
             
         }
-        catch (Exception $e) 
+        catch (Exception $e)
         {
-            $this->log($this->__TABLE__, sprintf("Cannot Register User. %s Details %s", $user, $e->getMessage()), "", "POST", "");
+            $this->log($this->__TABLE__, sprintf("Cannot Register User. %s Details %s", $user, $e->getMessage()), "", "POST");
             $this->setFailedMessage($e->getMessage());
             return false;
         }    
@@ -246,19 +257,22 @@ class PrgPatternElementUser extends APrgPatternElement {
         $bday       = $this->issetPostVariable(self::FORM_USER_BDAY) ? date("Y-m-d", strtotime($this->getPostVariable(self::FORM_USER_BDAY))) : "";
 
         // First filter the email before continue
-        if (! $this->validEMail($email) ) {
+        if (! $this->validEMail($email) )
+        {
             $this->setFailedMessage(self::ERROR_USER_UPDATE_INVALID_EMAIL);
             return;
         }
         // Check if the user is already registered
         // In case it is we have to throw an error
         $res = $this->brdb->selectUserbyEmail($email);
-        if ($this->brdb->hasError()) {
+        if ($this->brdb->hasError())
+        {
             $this->setFailedMessage($this->brdb->getError());
             return;
         }
 
-        if ($res->num_rows > 0) {
+        if ($res->num_rows > 0)
+        {
             $this->setFailedMessage(self::ERROR_USER_EMAIL_EXISTS);
             return;
         }
@@ -266,7 +280,8 @@ class PrgPatternElementUser extends APrgPatternElement {
         // now everything is checked and the command for adding
         // the user can be called
         $res = $this->brdb->registerUser($email, $firstName, $lastName, $gender, $bday, $playerId);
-        if ($this->brdb->hasError()) {
+        if ($this->brdb->hasError())
+        {
             $this->setFailedMessage($this->brdb->getError());
             return;
         }
@@ -278,15 +293,18 @@ class PrgPatternElementUser extends APrgPatternElement {
     /**
       *
       */
-    public function processPostDeleteUserAccount() {
-        if (!$this->issetPostVariable(self::FORM_USER_ADMIN_USER_ID)) {
+    public function processPostDeleteUserAccount()
+    {
+        if (!$this->issetPostVariable(self::FORM_USER_ADMIN_USER_ID))
+        {
             $this->setFailedMessage(self::ERROR_USER_DELETE_NO_USERID);
             return;
         }
 
         // check if User is God
         $userId = intval($this->getPostVariable(self::FORM_USER_ADMIN_USER_ID));
-        if ($this->isUserGod($userId)) {
+        if ($this->isUserGod($userId))
+        {
             $this->setFailedMessage("User is protected");
             $this->customRedirectArray(array(
               'page' => "adminAllUser.php",
@@ -294,7 +312,8 @@ class PrgPatternElementUser extends APrgPatternElement {
             return;
         }
         $res = $this->brdb->deleteUserById($userId);
-        if ($this->brdb->hasError()) {
+        if ($this->brdb->hasError())
+        {
             $this->setFailedMessage($this->brdb->getError());
         }
 
@@ -305,7 +324,8 @@ class PrgPatternElementUser extends APrgPatternElement {
     /** Delete Player: Delete E-Mail, Password and rights
       *
       */
-    private function processGetDeleteUserAccount(int $userId) {
+    private function processGetDeleteUserAccount(int $userId)
+    {
         // check if User is God
         if ($this->isUserGod($userId)) 
         {
@@ -331,12 +351,12 @@ class PrgPatternElementUser extends APrgPatternElement {
     /**
      * Update User
      */
-    public function processPostUpdateUserAccount(int $userId) 
+    public function processPostUpdateUserAccount(int $userId)
     {
         $userLogginIn = $this->prgElementLogin->getLoggedInUser()->userId;
 
         // check if edit user is god and
-        if ($this->isUserGod($userId) && ! $this->isUserGod($userLogginIn)) 
+        if ($this->isUserGod($userId) && ! $this->isUserGod($userLogginIn))
         {
             $this->setFailedMessage("Sorry, aber ein Superadmin kann dies tun.");
             return;
@@ -366,13 +386,15 @@ class PrgPatternElementUser extends APrgPatternElement {
         // it would be possible to lockout oneself from the data base
         if ($userId == $this->prgElementLogin->getLoggedInUser()->userId &&
             $this->prgElementLogin->getLoggedInUser()->isAdmin() &&
-            $isAdmin == 0) {
+            $isAdmin == 0)
+            {
             $this->setFailedMessage(self::ERROR_USER_UPDATE_CANNOT_DEADMIN);
             return;
         }
 
         // First filter the email before continue
-        if (!isset($email) || !$this->validEMail($email) ) {
+        if (!isset($email) || !$this->validEMail($email) )
+        {
             $this->setFailedMessage(self::ERROR_USER_UPDATE_INVALID_EMAIL);
             return;
         }
@@ -380,14 +402,16 @@ class PrgPatternElementUser extends APrgPatternElement {
         // Check if the user is already registered
         // In case it is we have to throw an error
         $user = $this->brdb->selectUserbyEmail($email);
-        if ($this->brdb->hasError()) {
+        if ($this->brdb->hasError())
+        {
             $this->setFailedMessage($this->brdb->getError());
             return;
         }
 
         // Check that it is not my email, which is allowed to be set!
         $dataSetUser = new User($user);
-        if ($dataSetUser->userId != $userId) {
+        if ($dataSetUser->userId != $userId)
+        {
             $this->setFailedMessage(self::ERROR_USER_EMAIL_EXISTS);
             return;
         }
@@ -399,7 +423,8 @@ class PrgPatternElementUser extends APrgPatternElement {
         #updateAdminUser($userId, $email, $fname, $lName, $gender, $phone, $bday, $playerId, $isPlayer, $isReporter, $isAdmin)
         #try {
             $res = $this->brdb->updateAdminUser($userId, $email, $firstName, $lastName, $gender, $phone, $bday, $playerId, $isPlayer, $isReporter, $isAdmin);
-            if ($this->brdb->hasError()) {
+            if ($this->brdb->hasError())
+            {
                 $this->setFailedMessage($this->brdb->getError());
                 return;
             }
@@ -409,17 +434,18 @@ class PrgPatternElementUser extends APrgPatternElement {
         #}
     }
 
-    public function processPostUpdateUserMyAccount() 
+    public function processPostUpdateUserMyAccount()
     {
         // Check that all information has been posted
         $requireFields = array(self::FORM_USER_EMAIL, self::FORM_USER_FNAME, self::FORM_USER_LNAME, self::FORM_USER_NEW_PASSWORD, self::FORM_USER_REPEAT_NEW_PASSWORD);
-        if (! $this->prgElementLogin->checkRequiredFields($requireFields)) 
+        if (! $this->prgElementLogin->checkRequiredFields($requireFields))
         {
             $this->setFailedMessage(self::ERROR_USER_UPDATE_MISSING_INFORMATION);
             return false;
         }
 
-        try {
+        try
+        {
             $userId    = intval($this->prgElementLogin->getLoggedInUser()->userId);
             $email     = strtolower($this->getPostVariableString(self::FORM_USER_EMAIL));
             $firstName = $this->getPostVariableString(self::FORM_USER_FNAME);
@@ -431,7 +457,7 @@ class PrgPatternElementUser extends APrgPatternElement {
             $gender    = $this->getPostVariableString(self::FORM_USER_GENDER);
             $bday      = date("Y-m-d", strtotime($this->getPostVariableString(self::FORM_USER_BDAY)));
 
-            if (!empty($pass) && !empty($pass2) && $pass != $pass2) 
+            if (!empty($pass) && !empty($pass2) && $pass != $pass2)
             {
                 throw new Exception("self::ERROR_USER_UPDATE_PASSWORD_MISSMATCH");
             }
@@ -439,7 +465,7 @@ class PrgPatternElementUser extends APrgPatternElement {
             $this->brdb->updateUserPassword($userId, $passHash);
 
             // First filter the email before continue
-            if (! $this->validEMail($email)) 
+            if (! $this->validEMail($email))
             {
                 throw new Exception(self::ERROR_USER_UPDATE_INVALID_EMAIL);
             }
@@ -451,7 +477,7 @@ class PrgPatternElementUser extends APrgPatternElement {
 
             // Check that it is not my email, which is allowed to be set!
             $dataSetUser = new User($user);
-            if ($dataSetUser->userId != $userId) 
+            if ($dataSetUser->userId != $userId)
             {
                 throw new Exception(self::ERROR_USER_EMAIL_EXISTS);
             }
@@ -477,7 +503,7 @@ class PrgPatternElementUser extends APrgPatternElement {
     private function processPostUpdateUserPassword(): bool
     {
         $requireFields = array(self::FORM_USER_PASSWORD, self::FORM_USER_NEW_PASSWORD, self::FORM_USER_REPEAT_NEW_PASSWORD);
-        if (! $this->prgElementLogin->checkRequiredFields($requireFields)) 
+        if (! $this->prgElementLogin->checkRequiredFields($requireFields))
         {
             $this->setFailedMessage(self::ERROR_USER_UPDATE_MISSING_INFORMATION);
             return false;
@@ -490,21 +516,25 @@ class PrgPatternElementUser extends APrgPatternElement {
             $newPassword       = $this->getPostVariableString(self::FORM_USER_NEW_PASSWORD);
             $repeatNewPassword = $this->getPostVariableString(self::FORM_USER_REPEAT_NEW_PASSWORD);
 
-            if(empty($oldPassword) || empty($newPassword) || empty($repeatNewPassword)) {
+            if (empty($oldPassword) || empty($newPassword) || empty($repeatNewPassword))
+            {
                 throw new Exception(self::ERROR_USER_UPDATE_MISSING_INFORMATION);
             }
 
             $user = $this->brdb->selectUserById($userId);
-            if (!isset($user) || empty ($user)) {
+            if (!isset($user) || empty ($user))
+            {
                 throw new Exception("Missing Information. Go to support");
             }
 
             // fetch the dataset there is only one and try to verify the passowrd
-            if (!password_verify($oldPassword, $user['password'])) {
+            if (!password_verify($oldPassword, $user['password']))
+            {
                 throw new Exception("Das alte Passwort stimmt nicht.");
             }
 
-            if(strcmp($newPassword, $repeatNewPassword) != 0 ) {
+            if (strcmp($newPassword, $repeatNewPassword) != 0 )
+            {
                 throw new Exception("Das neue und das zu wiederholende Passwort stimmen nicht überein.");
             }
 
@@ -581,14 +611,14 @@ class PrgPatternElementUser extends APrgPatternElement {
 
         // resize image
         $imageFilename = $file->getFileName();
-        if ( ! $this->resizeImage($imageFilename,$imageFilename, 800)) {
+        if (! $this->resizeImage($imageFilename,$imageFilename, 800)) {
             $this->setFailedMessage("Fehler: Kann das Bild nicht verkleinern.");
             return false;
         }
 
         // create thumbnail
         $thumbImageName = 'thumb_'. $file->getFileName();
-        if ( ! $this->resizeImage($imageFilename, $thumbImageName, 80)) {
+        if (! $this->resizeImage($imageFilename, $thumbImageName, 80)) {
             $this->setFailedMessage("Fehler: Thumbnail konnte nicht erstellt werden.");
             return false;
         }

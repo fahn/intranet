@@ -6,7 +6,6 @@ services:
         env_file: .env
         #user: stefan
         volumes:
-            - "./data/config.ini:/var/www/html/inc/config.ini"
             - "./data/img/background.jpg:/var/www/html/static/img/background.jpg"
             - "./data/img/background_mobil.jpg:/var/www/html/static/img/background_mobil.jpg"
             - "./data/img/logo.png:/var/www/html/static/img/logo.png"
@@ -24,7 +23,6 @@ services:
         environment: 
             STAGE: "development"
         volumes:
-            - "./data/config.ini:/var/www/html/inc/config.ini"
             # Sending e-mail
             - ./data/msmtp/msmtprc:/etc/msmtprc:ro
             - ./data/msmtp/aliases:/etc/aliases:ro

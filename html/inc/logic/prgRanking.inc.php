@@ -13,14 +13,12 @@
  ******************************************************************************/
 include_once 'prgPattern.inc.php';
 
-include_once BASE_DIR .'/inc/db/brdb.inc.php';
-
-
-class PrgPatternElementRanking extends APrgPatternElement {
+class PrgPatternElementRanking extends APrgPatternElement 
+{
     // const
     const __TABLE__ = "Ranking";
 
-    protected $prgElementLogin;
+    protected PrgPatternElementLogin $prgElementLogin;
 
     // generell
     const FORM_FORM_ACTION  = "formAction";
@@ -42,7 +40,8 @@ class PrgPatternElementRanking extends APrgPatternElement {
     /**
      * construct
      */
-    public function __construct(PrgPatternElementLogin $prgElementLogin) {
+    public function __construct(PrgPatternElementLogin $prgElementLogin) 
+    {
         parent::__construct("ranking");
 
         $this->prgElementLogin = $prgElementLogin;
@@ -51,13 +50,15 @@ class PrgPatternElementRanking extends APrgPatternElement {
         $this->registerPostSessionVariable(self::FORM_INSERT_MATCH);
     }
 
-    public function __loadPattern() {
+    public function __loadPattern(): void
+    {
         
     }
 
     /********************************************* POST ***********************/
 
-    public function processPost() {
+    public function processPost(): void
+    {
         $this->prgElementLogin->redirectUserIfNotLoggindIn();
 
         // ADMIN AREA
@@ -88,80 +89,76 @@ class PrgPatternElementRanking extends APrgPatternElement {
 
 
 
-    private function insertMatch() {
-        if (! $this->issetPostVariable(self::FORM_ITEM_PLAYER) ||
-            ! $this->issetPostVariable(self::FORM_ITEM_OPPONENT) ||
-            ! $this->issetPostVariable(self::FORM_ITEM_GAMETIME) ||
-            ! $this->issetPostVariable(self::FORM_ITEM_SET1) ||
-            ! $this->issetPostVariable(self::FORM_ITEM_SET2)) {
-              $this->setFailedMessage("Bitte alle Informationen angeben.");
-        }
-
-        $player   = strval(trim($this->getPostVariable(self::FORM_ITEM_PLAYER)));
-        $opponent = strval(trim($this->getPostVariable(self::FORM_ITEM_OPPONENT)));
-        $gameTime = strval(trim($this->getPostVariable(self::FORM_ITEM_GAMETIME)));
-
-        $sets = array();
-        try {
-            $set1 = strval(trim(implode(":", $this->getPostVariable(self::FORM_ITEM_SET1))));
-            $sets[] = $set1;
-
-            $set2 = strval(trim(implode(":", $this->getPostVariable(self::FORM_ITEM_SET2))));
-            $sets[] = $set2;
-        } catch (Exception $e) {
+    private function insertMatch(): bool
+    {
+        $requireFields = array(self::FORM_ITEM_PLAYER, self::FORM_ITEM_OPPONENT, self::FORM_ITEM_GAMETIME, self::FORM_ITEM_SET1, self::FORM_ITEM_SET2);
+        if (! $this->prgElementLogin->checkRequiredFields($requireFields)) 
+        {
+            $this->setFailedMessage("Bitte alle Informationen angeben.");
             return false;
         }
 
+        $player   = $this->getPostVariableString(self::FORM_ITEM_PLAYER);
+        $opponent = $this->getPostVariableString(self::FORM_ITEM_OPPONENT);
+        $gameTime = $this->getPostVariableString(self::FORM_ITEM_GAMETIME);
+
+        $sets = array();
         try {
+            $set1 = strval(trim(implode(":", $this->getPostVariableArray(self::FORM_ITEM_SET1))));
+            $sets[] = $set1;
+
+            $set2 = strval(trim(implode(":", $this->getPostVariableArray(self::FORM_ITEM_SET2))));
+            $sets[] = $set2;
+        
             $set3Arr = $this->getPostVariable(self::FORM_ITEM_SET3);
             if (count($set3Arr) != 2 || empty($set3Arr[0]) || empty($set3Arr[1])) {
                 throw new Exception("Value must be 1 or below");
             }
             $set3 = strval(trim(implode(":", $set3Arr)));
             $sets[] = $set3;
+        
+            // serialize sets
+            $sets = serialize($sets);
+
+            // set winner
+            $winner = $this->getWinner($sets);
+
+            // date to timestamp
+            $gameTime = strtotime($gameTime);
+
+            // INSERT MATCH
+            if (!$this->db->insertMatch($player, $opponent, $sets, $winner, $gameTime)) {
+                throw new Exception("Das Spiel konnte nicht hingefügt werden.");
+            }
+            
+            // Points
+            $a1 = $this->getPointsByUserId($player);
+            $b1 = $this->getPointsByUserId($opponent);
+
+            // calc Points
+            $points = $this->calcMatch($a1, $b1, $winner);
+
+            // update points
+            // player A
+            $win  = ($winner == 1 ? 1 : 0);
+            $this->updatePoints($player, $points[0], $win);
+
+            // player B
+            $win  = $win  == 1 ? 0 : 1;
+            if (!$this->updatePoints($opponent, $points[1], $win)) {
+                throw new Exception(sprintf("Punkte konnten von %s nicht aktualisiert werden", $opponent));
+            }
+
+
+            $this->setSuccessMessage("Das Spiel wurde eingetragen und die Punkte wurden berechnet.");
+            $this->customRedirectArray(array('page' => 'ranking.php'));
+            return true;
+
         } catch (Exception $e) {
-            $set3 = "";
-        }
-        // serialize sets
-        $sets = serialize($sets);
-
-        // set winner
-        $winner = $this->getWinner($sets);
-
-        // date to timestamp
-        $gameTime = strtotime($gameTime);
-
-        // INSERT MATCH
-        $this->db->insertMatch($player, $opponent, $sets, $winner, $gameTime);
-        if ( $this->db->hasError()) {
-            $this->setFailedMessage($this->brdb->getError());
+            $this->log($this->__TABLE__, sprintf("Cannot insert Match. Details: %s", $e->getMessage()), "", "POST", "");
+            $this->setFailedMessage($e->getMessage());
             return false;
         }
-
-        // Points
-        $a1 = $this->getPointsByUserId($player);
-        $b1 = $this->getPointsByUserId($opponent);
-
-        // calc Points
-        $points = $this->calcMatch($a1, $b1, $winner);
-
-        // update points
-        // player A
-        $win  = ($winner == 1 ? 1 : 0);
-        $this->updatePoints($player, $points[0], $win);
-
-        // player B
-        $win  = $win  == 1 ? 0 : 1;
-        $this->updatePoints($opponent, $points[1], $win);
-
-        if ($this->db->hasError() ) {
-          $this->setFailedMessage($this->brdb->getError());
-          return false;
-        }
-
-        $this->setSuccessMessage("Das Spiel wurde eingetragen und die Punkte wurden berechnet.");
-        $this->customRedirectArray(array('page' => 'ranking.php'));
-        return true;
 
     }
 
@@ -173,18 +170,6 @@ class PrgPatternElementRanking extends APrgPatternElement {
             if (! $id) {
                 throw new Exception("Cannot identify id %s". strval($id));
             }
-        }
-        catch (Exception $e) 
-        {
-            // LOG EVENT
-            $this->log($this->__TABLE__, $e->getMessage(), "", "GET", "");
-
-            $this->setFailedMessage("Das Spiel konnte nicht gelöscht werden");
-            $this->customRedirectArray(array('page' => 'ranking.php'));
-            return false;
-        }
-
-        try {
             
             if (!$this->db->deleteMatch($id)) 
             {
@@ -247,7 +232,7 @@ class PrgPatternElementRanking extends APrgPatternElement {
 
     private function getNewRanking(): bool
     {
-        if ( ! $this->newRanking()) 
+        if (! $this->newRanking()) 
         {
             $this->setFailedMessage("Die Rankgliste konnte nicht erstellt werden.");
         } 
@@ -297,10 +282,15 @@ class PrgPatternElementRanking extends APrgPatternElement {
     }
 
     /**
-     * update Points from user
+     * Update Points from User
+     *
+     * @param integer $playerId
+     * @param integer $points
+     * @param integer $win
+     * @return boolean
      */
-    private function updatePoints($playerId, $points, $win) {
-        error_log ($playerId ." - ". $points ." - ". $win ."<br>");
+    private function updatePoints(int $playerId, int $points, int $win): bool
+    {
 
         $loss = ($win == 1 ? 0 : 1);
         $this->db->updatePoints($playerId, $points, $win, $loss);
@@ -313,47 +303,59 @@ class PrgPatternElementRanking extends APrgPatternElement {
     }
 
     /**
-     * calc Match
+     * Calc match
+     *
+     * @param int $a
+     * @param int $b
+     * @param boolean $winnerA
+     * @return void
      */
-    public function calcMatch($a, $b, $winnerA = true) {
+    public function calcMatch(int $userA, int $userB, bool $winnerA = true): array
+    {
         if ($winnerA == false) {
-            return array_reverse($this->calcMatch($b, $a, true));
+            return array_reverse($this->calcMatch($userB, $userA, true));
         }
-        $pointDiff = $b - $a;
+        $pointDiff = $userB - $userA;
         $weak = 1 / (1 + pow(10, ($pointDiff/200)));
 
         // NEW POINTS
-        $a1 = $this->getNewPoints($a, $winnerA, $weak);
-        $b1 = $this->getNewPoints($b, !$winnerA, $weak);
+        $a1 = $this->getNewPoints($userA, $winnerA, $weak);
+        $b1 = $this->getNewPoints($userB, !$winnerA, $weak);
 
         return array($a1, $b1);
+        unset($userB, $userA);
 
     }
 
     /**
-     * getNewPoints
+     * get new Points
+     *
+     * @param integer $points
+     * @param boolean $win
+     * @param integer $weak
+     * @return integer
      */
-    private function getNewPoints($points, $win, $weak) {
+    private function getNewPoints(int $points, bool $win, int $weak): int 
+    {
         return (int) ($points + 15 * (($win == true ? 1 : 0) - $weak));
     }
 
     /**
      * generate new Ranking
      */
-    public function newRanking() {
+    public function newRanking(): bool
+    {
         // clear Ranking
         $this->db->truncateRanking();
 
         // get all matches and recalc
         $gameList = $this->db->getMatches();
-        if ( !isset($gameList) || empty($gameList) ) {
+        if (!isset($gameList) || empty($gameList) ) {
             return false;
         }
 
         $games = 0;
         foreach ($gameList as $dataSet) {
-
-            #print_r($dataSet);
             // SET PLAYERS
             $a = $dataSet['playerId'];
             $b = $dataSet['opponentId'];

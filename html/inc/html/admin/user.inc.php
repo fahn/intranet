@@ -42,7 +42,7 @@ class BrdbHtmlAdminAllUserPage extends BrdbHtmlPage {
     public function htmlBody() {
         $content = "";
         // check if Admin
-        if(!$this->prgPatternElementLogin->getLoggedInUser()->isAdmin()) {
+        if (!$this->prgPatternElementLogin->getLoggedInUser()->isAdmin()) {
             $content = $this->smarty->fetch('no_access.tpl');
             return;
         }

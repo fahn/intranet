@@ -302,7 +302,7 @@ trait UserDB
     {
         $query = "SELECT userId, CONCAT_WS(' ', firstName, lastName) AS userName, bday
                     FROM `User`
-                    WHERE DATE_ADD(bday, INTERVAL YEAR(CURDATE())-YEAR(bday) + IF(DAYOFYEAR(CURDATE()) > DAYOFYEAR(bday),1,0) YEAR) BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 14 DAY)
+                    WHERE DATE_ADD(bday, INTERVAL YEAR(CURDATE())-YEAR(bday) + if (DAYOFYEAR(CURDATE()) > DAYOFYEAR(bday),1,0) YEAR) BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 14 DAY)
                     ORDER BY DAY(bday) ASC";
         $statement = $this->db->prepare($query);
         $statement->execute();
