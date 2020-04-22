@@ -1,8 +1,8 @@
 mysql
-inc/config.ini
 templates_c
-.remote-sync.json
 .vscode
 .settings
-html/vendor
-html/composer.lock
+src/vendor
+src/composer.lock
+src/composer.json
+report_phpcs

@@ -6,26 +6,24 @@ services:
         env_file: .env
         #user: stefan
         volumes:
-            - "./data/img/background.jpg:/var/www/html/static/img/background.jpg"
-            - "./data/img/background_mobil.jpg:/var/www/html/static/img/background_mobil.jpg"
-            - "./data/img/logo.png:/var/www/html/static/img/logo.png"
-            - "./data/img/favicon:/var/www/html/static/img/favicon:ro"
+            - "./data/intranet/img/background.jpg:/var/www/html/static/img/background.jpg"
+            - "./data/intranet/img/background_mobil.jpg:/var/www/html/static/img/background_mobil.jpg"
+            - "./data/intranet/img/logo.png:/var/www/html/static/img/logo.png"
+            - "./data/intranet/img/favicon:/var/www/html/static/img/favicon:ro"
             # user upload image dir
-            - "./data/img/user:/var/www/html/static/img/user"
+            - "./data/intranet/img/user:/var/www/html/static/img/user"
             # Sending e-mail
-            - ./data/msmtp/msmtprc:/etc/msmtprc:ro
-            - ./data/msmtp/aliases:/etc/aliases:ro
+            - ./data/intranet/msmtp/msmtprc:/etc/msmtprc:ro
+            - ./data/intranet/msmtp/aliases:/etc/aliases:ro
         depends_on:
             - database
 
     reminder:
         image: badtra/intranet:latest
-        environment: 
-            STAGE: "development"
         volumes:
             # Sending e-mail
-            - ./data/msmtp/msmtprc:/etc/msmtprc:ro
-            - ./data/msmtp/aliases:/etc/aliases:ro
+            - ./data/intranet/msmtp/msmtprc:/etc/msmtprc:ro
+            - ./data/intranet/msmtp/aliases:/etc/aliases:ro
         command: 
             - php /var/www/html/api/index.php tournament
 
@@ -34,5 +32,5 @@ services:
         env_file: .env
         restart: always
         volumes:
-            - "./mysql/mysql_schema.sql:/docker-entrypoint-initdb.d/mysql_schema.sql"
-            - "./mysql/_data:/var/lib/mysql"
+            - "./docker-build/mysql/mysql_schema.sql:/docker-entrypoint-initdb.d/mysql_schema.sql"
+            - "./data/mysql/:/var/lib/mysql"

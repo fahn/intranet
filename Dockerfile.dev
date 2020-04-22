@@ -1,7 +1,0 @@
-#
-#  Prepare docker dev version
-#
-FROM intranet:latest
-
-
-RUN mkdir -p /var/www/html/cache && chmod 777 /var/www/html/cache

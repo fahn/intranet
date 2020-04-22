@@ -159,5 +159,3 @@ Release 0.9.2 ALPHA
 - The first test release of Badminton Ranking Brandet for BC Comet.
 
 -----
-
-	
