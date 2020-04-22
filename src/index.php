@@ -28,7 +28,7 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Routing\Loader\YamlFileLoader;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
  
-$fileLocator = new FileLocator(array(__DIR__));
+$fileLocator = new FileLocator([__DIR__]);
 
 $requestContext = new RequestContext();
 $requestContext->fromRequest(Request::createFromGlobals());
@@ -36,7 +36,7 @@ $requestContext->fromRequest(Request::createFromGlobals());
 $router = new Router(
     new YamlFileLoader($fileLocator),
     'routes.yaml',
-    array('cache_dir' => __DIR__.'/cache'),
+    ['cache_dir' => __DIR__.'/cache'],
     $requestContext
 );
 
@@ -44,14 +44,15 @@ $router = new Router(
 $parameters = $router->match($requestContext->getPathInfo());
 
 // How to generate a SEO URL
-$routes = $router->getRouteCollection();
+$routes    = $router->getRouteCollection();
 $generator = new UrlGenerator($routes, $requestContext);
-$url = $generator->generate('foo_placeholder_route', array(
-  'id' => 123,
-));
+$url       = $generator->generate(
+    'foo_placeholder_route',
+    ['id' => 123    ]
+);
 
 echo '<pre>';
 print_r($parameters);
 
-echo 'Generated URL: ' . $url;
+echo 'Generated URL: '.$url;
 exit;

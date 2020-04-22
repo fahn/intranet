@@ -16,10 +16,11 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU General Public License
  * @link      https://www.badtra.de
  ******************************************************************************/
-require_once BASE_DIR ."/inc/model/club.inc.php";
+require_once BASE_DIR."/inc/model/club.inc.php";
 
-$data = array("clubName" => "FC Schwalbe Hannover", "clubNr" => "110");
+$data    = [
+    "clubName" => "FC Schwalbe Hannover",
+    "clubNr"   => "110",
+];
 $newClub = new Club($data);
 echo $newClub;
-
-

@@ -17,9 +17,11 @@
  * @link      https://www.badtra.de
  ******************************************************************************/
 namespace Tests\integration;
+
 use \PHPUnit\Framework\TestCase;
+
 class BaseTestCase extends TextCase
 {
-    private static $db;
-}
 
+    private static $db;
+}//end class

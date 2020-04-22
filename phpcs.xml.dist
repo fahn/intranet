@@ -2,10 +2,9 @@
 <ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="PHP_CodeSniffer" xsi:noNamespaceSchemaLocation="phpcs.xsd">
     <description>The coding standard for PHP_CodeSniffer itself.</description>
 
-    <exclude-pattern>*/html/smarty</exclude-pattern>
-    <exclude-pattern>*/html/templates_c</exclude-pattern>
-    <exclude-pattern>*/html/vendor</exclude-pattern>
-    <exclude-pattern>*/html/tests</exclude-pattern>
+    <exclude-pattern>*/src/templates_c</exclude-pattern>
+    <exclude-pattern>*/src/vendor</exclude-pattern>
+    <exclude-pattern>*/src/tests</exclude-pattern>
 
     <arg name="basepath" value="."/>
     <arg name="colors"/>

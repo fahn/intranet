@@ -18,7 +18,9 @@
  ******************************************************************************/
 class BadtraException extends Exception
 {
+
     private $title;
+
     protected $message;
 
     // Die Exception neu definieren, damit die Mitteilung nicht optional ist
@@ -27,20 +29,21 @@ class BadtraException extends Exception
         // etwas Code
         $this->title = $title;
         $this->title = $message;
-        #$this->message = $message != null ? $message : "";
+        // $this->message = $message != null ? $message : "";
         // sicherstellen, dass alles korrekt zugewiesen wird
-        #parent::__construct($message, $code, $previous);
-    }
+        // parent::__construct($message, $code, $previous);
+    }//end __construct()
+
 
     // maßgeschneiderte Stringdarstellung des Objektes
     public function __toString():string
     {
-        return __CLASS__ . ": {$this->message}\n";
-    }
+        return __CLASS__.": {$this->message}\n";
+    }//end __toString()
+
 
     public function exception_handler(Exception $exception):string
     {
-        return __CLASS__ . ": {$this->message}\n";
-    }
-}
-
+        return __CLASS__.": {$this->message}\n";
+    }//end exception_handler()
+}//end class

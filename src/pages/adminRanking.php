@@ -9,12 +9,9 @@
  *
  * Stefan Metzner <stefan@weinekind.de>
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
- *
  ******************************************************************************/
 require_once "_options.php";
-require_once BASE_DIR ."/inc/html/brdbHtmlAdminRanking.inc.php";
+require_once BASE_DIR."/inc/html/brdbHtmlAdminRanking.inc.php";
 
 $page = new BrdbHtmlAdminRanking();
 $page->processPage();
-
-

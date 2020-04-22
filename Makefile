@@ -28,7 +28,7 @@ sniff:
 	sudo phpcs --config-set tab_width 4
 	sudo phpcs --config-set show_progress 1
 	sudo phpcs -vv \
-	--report=full --report-file=report_phpcs -q --encoding=UTF-8 --error-severity=5 --warning-severity=5 .
+	--report=full --report-file=report_phpcs -q --encoding=UTF-8 --error-severity=5 --warning-severity=5 src/.
 	# --standard=/html/test/phpcs_ruleset.xml
 
 testreport:
