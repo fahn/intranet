@@ -19,6 +19,7 @@
 trait PlayerDB
 {
 
+
     /**
      * Get All Player
      *
@@ -26,25 +27,26 @@ trait PlayerDB
      */
     public function selectGetAllPlayer(): array
     {
-        $query = "SELECT Player.*, CONCAT_WS(' ', Player.firstName, Player.lastName) as fullName, Club.name AS clubName FROM Player
+        $query     = "SELECT Player.*, CONCAT_WS(' ', Player.firstName, Player.lastName) as fullName, Club.name AS clubName FROM Player
                     LEFT JOIN `Club` ON Club.clubId = Player.clubId
                     ORDER BY Player.lastName ASC";
         $statement = $this->db->prepare($query);
         $statement->execute();
        
         return $statement->fetchAll();
-    }
+    }//end selectGetAllPlayer()
+
 
     /**
      * Get All Player in list between N and M
      *
-     * @param integer $min
-     * @param integer $max
+     * @param  integer $min
+     * @param  integer $max
      * @return array
      */
-    public function selectGetAllPlayerMM(int $min=0, int $max=50): array
+    public function selectGetAllPlayerMM(int $min = 0, int $max = 50): array
     {
-        $query = "SELECT Player.*, CONCAT_WS(' ', Player.firstName, Player.lastName) as fullName, Club.name AS clubName FROM Player
+        $query     = "SELECT Player.*, CONCAT_WS(' ', Player.firstName, Player.lastName) as fullName, Club.name AS clubName FROM Player
                     LEFT JOIN `Club` ON Club.clubId = Player.clubId
                     ORDER BY Player.lastName ASC
                     LIMIT :min, :max";
@@ -54,17 +56,18 @@ trait PlayerDB
         $statement->execute();
        
         return $statement->fetchAll();
-    }
+    }//end selectGetAllPlayerMM()
+
 
     /**
      * Get Player by Id
      *
-     * @param integer $playerId
+     * @param  integer $playerId
      * @return array
      */
     public function selectPlayerById(int $playerId): array
     {
-        $query = "SELECT Player.*, Club.name AS clubName FROM Player
+        $query     = "SELECT Player.*, Club.name AS clubName FROM Player
                     LEFT JOIN `Club` ON Club.clubId = Player.clubId
                     WHERE playerId = :playerId";
         $statement = $this->db->prepare($query);
@@ -72,28 +75,30 @@ trait PlayerDB
         $statement->execute();
        
         return $statement->fetch();
-    }
+    }//end selectPlayerById()
+
 
     /**
      * Get Player by PlayerNr
      *
-     * @param String $playerNr
+     * @param  String $playerNr
      * @return array
      */
     public function selectPlayerByPlayerNr(String $playerNr): array
     {
-        $query = "SELECT * FROM Player WHERE playerNr = :playerNr";
+        $query     = "SELECT * FROM Player WHERE playerNr = :playerNr";
         $statement = $this->db->prepare($query);
         $statement->bindParam('playerNr', $playerNr, PDO::PARAM_STR);
         $statement->execute();
        
         return $statement->fetchAll();
-    }
+    }//end selectPlayerByPlayerNr()
+
 
     /**
      * Inser Player with Data
      *
-     * @param array $data
+     * @param  array $data
      * @return boolean
      */
     public function insertPlayer(Player $player): bool
@@ -110,18 +115,19 @@ trait PlayerDB
         $statement->bindParam('bday', $player->getBday());
 
         return $statement->execute();
-    }
+    }//end insertPlayer()
+
 
     /**
      * Update Player
      *
-     * @param Player $player
+     * @param  Player $player
      * @return boolean
      */
     public function updatePlayer(Player $player): bool
     {
         try {
-            $query = "UPDATE `Player` SET firstName = :firstName, lastName = :lastName, gender = :gender, bday = :bday, clubId = :clubId, playerNr = :playerNr
+            $query     = "UPDATE `Player` SET firstName = :firstName, lastName = :lastName, gender = :gender, bday = :bday, clubId = :clubId, playerNr = :playerNr
                         WHERE playerId = :playerId";
             $statement = $this->db->prepare($query);
             $statement->bindParam('playerId', $player->getPlayerId());
@@ -136,35 +142,38 @@ trait PlayerDB
         } catch (Exception $e) {
             return false;
         }
-    }
+    }//end updatePlayer()
+
 
     /**
      * delete player hy playerId
      *
-     * @param integer $playerId
+     * @param  integer $playerId
      * @return boolean
      */
-    public function deletePlayer(int $playerId): bool {
-        $query = "DELETE * FROM `Player` WHERE playerId = :playerId";
+    public function deletePlayer(int $playerId): bool
+    {
+        $query     = "DELETE * FROM `Player` WHERE playerId = :playerId";
         $statement = $this->db->prepare($query);
         $statement->bindParam('playerNr', $playerId);
 
         return $statement->execute();
-    }
+    }//end deletePlayer()
+
 
     /**
      * Get Player LIKE %term%
      *
-     * @param String $term
+     * @param  String $term
      * @return array
      */
     public function getPlayerByTerm(String $term): array
     {
         // preparing
-        $term = '%'. $term .'%';
+        $term = '%'.$term.'%';
 
         // sql query
-        $query = "SELECT Player.*, CONCAT_WS(', ', Player.lastName, Player.firstName) AS playerName, Club.name AS clubName FROM Player
+        $query     = "SELECT Player.*, CONCAT_WS(', ', Player.lastName, Player.firstName) AS playerName, Club.name AS clubName FROM Player
                     LEFT JOIN Club ON Club.clubId = Player.clubId
                     WHERE CONCAT_WS(' ', Player.firstName, Player.lastName) LIKE :term
                     ORDER BY Player.lastName";
@@ -173,7 +182,5 @@ trait PlayerDB
         $statement->execute();
        
         return $statement->fetchAll();
-    }
+    }//end getPlayerByTerm()
 }
-
-

@@ -17,17 +17,21 @@
  * @link      https://www.badtra.de
  ******************************************************************************/
 require_once "/brdbHtmlPage.inc.php";
-require_once BASE_DIR ."/inc/logic/prgCategory.inc.php";
+require_once BASE_DIR."/inc/logic/prgCategory.inc.php";
 
-class BrdbHtmlAdminCategoryPage extends BrdbHtmlPage {
+class BrdbHtmlAdminCategoryPage extends BrdbHtmlPage
+{
+
     // pattern
     private $prgPatternElementCategory;
 
-    private $_page  = "";
+    private $_page = "";
 
     const MAX_ENTRIES = 50;
 
-    public function __construct($page = null) {
+
+    public function __construct($page = null)
+    {
         parent::__construct();
 
         $this->prgPatternElementCategory = new prgPatternElementCategory($this->prgPatternElementLogin);
@@ -38,58 +42,71 @@ class BrdbHtmlAdminCategoryPage extends BrdbHtmlPage {
         }
 
 
-        # load links
-        $links = array(
-            "add"  => $this->prgPatternElementCategory->linkTo(array("page" => $this->_page, "action" => "add")),
-            "list" => $this->prgPatternElementCategory->linkTo(array("page" => $this->_page, "action" => "add")),
-            "home" => $this->prgPatternElementCategory->linkTo(array("page" => $this->_page)),
-        );
+        // load links
+        $links = [
+            "add"  => $this->prgPatternElementCategory->linkTo(["page" => $this->_page, "action" => "add"]),
+            "list" => $this->prgPatternElementCategory->linkTo(["page" => $this->_page, "action" => "add"]),
+            "home" => $this->prgPatternElementCategory->linkTo(["page" => $this->_page]),
+        ];
 
         $this->smarty->assign("links", $links);
-    }
+
+    }//end __construct()
 
 
     public function htmlBody(): void
     {
-        switch ($this->action)
-        {
-            case "add":
-            case "edit":
-                $content = $this->TMPL_update($this->action);
+        switch ($this->action) {
+        case "add":
+        case "edit":
+            $content = $this->TMPL_update($this->action);
                 break;
 
-            case "delete":
-                $content = $this->TMPL_delete();
+        case "delete":
+            $content = $this->TMPL_delete();
                 break;
 
-            default:
-                $content = $this->TMPL_list();
+        default:
+            $content = $this->TMPL_list();
                 break;
         }
 
-        $this->smarty->assign(array(
-            "content" => $content,
-        ));
+        $this->smarty->assign(
+            ["content" => $content]
+        );
 
         $this->smarty->display("index.tpl");
-    }
 
-    /******************* VIEWS */
+    }//end htmlBody()
 
-    private function TMPL_list() {
-        $this->smarty->assign(array(
-            "list"      => $this->loadCategoryList(),
-        ));
+
+    /*******************
+     * VIEWS
+     */
+
+
+    private function TMPL_list()
+    {
+        $this->smarty->assign(
+            [
+                "list" => $this->loadCategoryList(),
+            ]
+        );
         return $this->smarty->fetch("category/adminList.tpl");
-    }
 
-    private function TMPL_update(String $action) {
-        $this->smarty->assign(array(
-            "action"                 => $action,
-        ));
+    }//end TMPL_list()
+
+
+    private function TMPL_update(String $action)
+    {
+        $this->smarty->assign(
+            ["action" => $action]
+        );
 
         return $this->smarty->fetch("category/adminUpdate.tpl");
-    }
+
+    }//end TMPL_update()
+
 
     /**
      * Delete Category
@@ -98,33 +115,45 @@ class BrdbHtmlAdminCategoryPage extends BrdbHtmlPage {
      */
     private function TMPL_delete(): string
     {
-        $this->smarty->assign(array(
-            "item" => $this->getCategoryById($this->id),
-        ));
+        $this->smarty->assign(
+            [
+                "item" => $this->getCategoryById($this->id),
+            ]
+        );
 
         return $this->smarty->fetch("category/adminDelete.tpl");
-    }
 
-    /***************** FUNCTIONS */
+    }//end TMPL_delete()
 
-    private function loadCategoryList() {
-        $data = array();
-        $categoryList = $this->brdb->adminStatementGetAllCategories(); #($min, $max);
+
+    /*****************
+     * FUNCTIONS
+     */
+
+
+    private function loadCategoryList()
+    {
+        $data         = [];
+        $categoryList = $this->brdb->adminStatementGetAllCategories();
+        // ($min, $max);
         if (isset($categoryList) && !empty($categoryList)) {
             foreach ($categoryList as $dataSet) {
                 // links
-                $dataSet["editLink"]   = $this->prgPatternElementCategory->linkTo(array("page" => $this->_page, "action" => "edit",   "id" => $dataSet["categoryId"]));
-                $dataSet["deleteLink"] = $this->prgPatternElementCategory->linkTo(array("page" => $this->_page, "action" => "delete", "id" => $dataSet["categoryId"]));
+                $dataSet["editLink"]   = $this->prgPatternElementCategory->linkTo(["page" => $this->_page, "action" => "edit", "id" => $dataSet["categoryId"]]);
+                $dataSet["deleteLink"] = $this->prgPatternElementCategory->linkTo(["page" => $this->_page, "action" => "delete", "id" => $dataSet["categoryId"]]);
 
                 $data[] = $dataSet;
             }
         }
         return $data;
         unset($data, $categoryList, $dataSet);
-    }
 
-    private function getCategoryById(int $id) {
-        return $id > 0  ? $this->brdb->statementGetCategoryById($id) : array();
-    }
-}
+    }//end loadCategoryList()
 
+
+    private function getCategoryById(int $id)
+    {
+        return $id > 0 ? $this->brdb->statementGetCategoryById($id) : [];
+
+    }//end getCategoryById()
+}//end class

@@ -18,12 +18,14 @@
  ******************************************************************************/
 
 require_once "brdbHtmlPage.inc.php";
-require_once BASE_DIR ."/inc/logic/prgSupport.inc.php";
+require_once BASE_DIR."/inc/logic/prgSupport.inc.php";
 
 
 class brdbHtmlSupport extends BrdbHtmlPage
 {
+
     private $prgElementSupport;
+
 
     public function __construct()
     {
@@ -32,18 +34,19 @@ class brdbHtmlSupport extends BrdbHtmlPage
         $this->prgElementSupport = new PrgPatternElementSupport($this->prgPatternElementLogin);
         $this->prgPattern->registerPrg($this->prgElementSupport);
 
-    }
+    }//end __construct()
+
 
     protected function htmlBody(): void
     {
         $content = $this->loadContent();
 
-        $this->smarty->assign(array(
-            "content" => $content,
-        ));
+        $this->smarty->assign(
+            ["content" => $content]
+        );
 
         $this->smarty->display("index.tpl");
-    }
+    }//end htmlBody()
 
 
     private function loadContent(?string $param1 = null): string
@@ -53,35 +56,36 @@ class brdbHtmlSupport extends BrdbHtmlPage
         $message = "";
         $subject = "";
 
-        switch ($action)
-        {
+        switch ($action) {
             case "new_player":
                 $message = sprintf("Hallo,&#13;ich möchte hiermit folgenden SpielerIn melden.&#13;&#13;Name:???&#13;Spielernummer:???&#13;Verein:???&#13;Vereinsnummer:???&#13;");
                 $subject = "Neuer Spieler";
-                break;
+break;
 
             case "register":
                 $message = sprintf("Hallo,&#13;ich möchte hiermit registrieren.&#13;&#13;Name:???&#13;Spielernummer:???&#13;Verein:???&#13;");
                 $subject = "Registrierung";
-                break;
+break;
 
             default:
                 $message = "";
-                break;
+break;
         }
 
-        $this->smarty->assign(array(
-            "action"  => $action,
-            "subject" => $subject,
-            "message" => $message,
-        ));
+        $this->smarty->assign(
+            [
+                "action"  => $action,
+                "subject" => $subject,
+                "message" => $message,
+            ]
+        );
 
         return $this->smarty->fetch("support.tpl");
-    }
+    }//end loadContent()
+
 
     public function register(): string
     {
         return $this->loadContent("register");
-    }
-}
-
+    }//end register()
+}//end class

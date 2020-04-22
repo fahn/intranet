@@ -21,15 +21,16 @@ require_once "default.widget.php";
 class TeamWidget extends Widget
 {
 
+
     public function __construct()
     {
         parent::__construct();
-    }
+    }//end __construct()
+
 
     public function showWidget(?string $name)
     {
-        switch ($name)
-        {
+        switch ($name) {
             case "showAdminsAndReporter":
                 return $this->TMPL_AdminsAndReporter();
                 break;
@@ -43,24 +44,29 @@ class TeamWidget extends Widget
                 break;
         }
 
-    }
+    }//end showWidget()
+
 
     private function TMPL_AdminsAndReporter():string
     {
-        $this->smarty->assign(array(
-            "data" => $this->brdb->getStaffList(),
-        ));
+        $this->smarty->assign(
+            [
+                "data" => $this->brdb->getStaffList(),
+            ]
+        );
 
         return $this->smarty->fetch("team/widgetList.tpl");
-    }
+    }//end TMPL_AdminsAndReporter()
+
 
     private function TMPL_ShowTeam():string
     {
-        $this->smarty->assign(array(
-            "data" => $this->brdb->getStaffList(),
-        ));
+        $this->smarty->assign(
+            [
+                "data" => $this->brdb->getStaffList(),
+            ]
+        );
 
         return $this->smarty->fetch("team/widgetList.tpl");
-    }
-
-}
+    }//end TMPL_ShowTeam()
+}//end class

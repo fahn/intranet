@@ -23,40 +23,42 @@ class PrgPatternElementSetup extends APrgPatternElement
 
     private $page = "adminSetup.inc.php";
 
-    //private $requiredFields = array("FORM_STAFF_USERID", "FORM_STAFF_POSTION", "FORM_STAFF_DESCRIPTION", "FORM_STAFF_ROW");
-
-    public function __construct(PrgPatternElementLogin $prgElementLogin) {
+    // private $requiredFields = array("FORM_STAFF_USERID", "FORM_STAFF_POSTION", "FORM_STAFF_DESCRIPTION", "FORM_STAFF_ROW");
+    public function __construct(PrgPatternElementLogin $prgElementLogin)
+    {
         parent::__construct("setup");
 
         $this->prgElementLogin = $prgElementLogin;
 
-    }
+    }//end __construct()
 
-    public function processPost() {
+
+    public function processPost()
+    {
         // ADMIN AREA
         $this->prgElementLogin->redirectUserIfNotLoggindIn();
-        $this->prgElementLogin->redirectUserIfnoRights(array("admin"));
-    }
+        $this->prgElementLogin->redirectUserIfnoRights(["admin"]);
+    }//end processPost()
 
-    /** GET-Methods
-      *
-      */
-    public function processGet() {
+
+    /**
+     * GET-Methods
+     */
+    public function processGet()
+    {
 
         $this->prgElementLogin->redirectUserIfNotLoggindIn();
-        $this->prgElementLogin->redirectUserIfnoRights(array("admin"));
+        $this->prgElementLogin->redirectUserIfnoRights(["admin"]);
         // @TASK: Admin or not
         /*
-        $loginAction = $this->getGetVariable(self::GET_STAFF_ACTION);
-        switch ($loginAction) {
+            $loginAction = $this->getGetVariable(self::GET_STAFF_ACTION);
+            switch ($loginAction) {
             case self::GET_STAFF_ACTION_DELETE:
                 $this->processPostDeleteStaff();
                 break;
-        }
-        return;
+            }
+            return;
         */
-    }
 
-}
-
-
+    }//end processGet()
+}//end class

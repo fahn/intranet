@@ -20,7 +20,7 @@ require_once "prgPattern.inc.php";
 
 class PrgPatternElementNews extends APrgPatternElement
 {
-    const __TABLE__             = "News";
+    const __TABLE__ = "News";
 
     // FORMS
     const FORM_FIELD_ID         = "newsId";
@@ -36,6 +36,7 @@ class PrgPatternElementNews extends APrgPatternElement
 
     protected PrgPatternElementLogin $prgElementLogin;
 
+
     public function __construct(PrgPatternElementLogin $prgElementLogin)
     {
         parent::__construct("news");
@@ -45,14 +46,15 @@ class PrgPatternElementNews extends APrgPatternElement
         $this->registerPostSessionVariable(self::FORM_FIELD_TITLE);
         $this->registerPostSessionVariable(self::FORM_FIELD_CATEGORYID);
         $this->registerPostSessionVariable(self::FORM_FIELD_TEXT);
-    }
+    }//end __construct()
+
 
     public function processPost():void
     {
         $this->prgElementLogin->redirectUserIfNotLoggindIn();
        
         // ADMIN AREA
-        $this->prgElementLogin->redirectUserIfnoRights(array("reporter", "admin"), "or");
+        $this->prgElementLogin->redirectUserIfnoRights(["reporter", "admin"], "or");
 
         if (!$this->issetPostVariable(self::FORM_ACTION)) {
             $this->setFailedMessage("Kein Formular.");
@@ -79,13 +81,13 @@ class PrgPatternElementNews extends APrgPatternElement
                 break;
         }
 
-    }
+    }//end processPost()
+
 
     private function processPostDeleteNews(): bool
     {
-        $requireFields = array(self::FORM_FIELD_ID);
-        if (! $this->prgElementLogin->checkRequiredFields($requireFields))
-        {
+        $requireFields = [self::FORM_FIELD_ID];
+        if (! $this->prgElementLogin->checkRequiredFields($requireFields)) {
             $this->setFailedMessage("keine News-ID übergeben");
             return false;
         }
@@ -95,14 +97,13 @@ class PrgPatternElementNews extends APrgPatternElement
             $this->brdb->deleteNews($id);
             $this->setSuccessMessage("FAQ wurde gelöscht");
             return true;
-
-        } catch (Exception $e)
-        {
+        } catch (Exception $e) {
             $this->setFailedMessage($e->getMessage());
             return false;
         }
         unset($requireFields, $id);
-    }
+    }//end processPostDeleteNews()
+
 
     /**
      * Insert News
@@ -111,9 +112,12 @@ class PrgPatternElementNews extends APrgPatternElement
      */
     public function processPostInsertNews(): bool
     {
-        $requireFields = array(self::FORM_FIELD_TITLE, self::FORM_FIELD_CATEGORYID, self::FORM_FIELD_TEXT);
-        if (! $this->prgElementLogin->checkRequiredFields($requireFields))
-        {
+        $requireFields = [
+            self::FORM_FIELD_TITLE,
+            self::FORM_FIELD_CATEGORYID,
+            self::FORM_FIELD_TEXT,
+        ];
+        if (! $this->prgElementLogin->checkRequiredFields($requireFields)) {
             $this->setFailedMessage("News konnte nicht eingetragen werden");
             return false;
         }
@@ -126,18 +130,14 @@ class PrgPatternElementNews extends APrgPatternElement
 
             $this->brdb->insertNews($news);
 
-            $this->setSuccessMessage(sprintf("News "%s" wurde eingetragen", $news->getTitle()));
+            $this->setSuccessMessage(sprintf(("News " % s" wurde eingetragen"), $news->getTitle()));
             return true;
-
-        }
-        catch (Exception $e)
-        {
+        } catch (Exception $e) {
             $this->log($this->__TABLE__, sprintf("Cannot insert News. %s Details %s", $news, $e->getMessage()), "", "POST");
             $this->setFailedMessage("News konnte nicht eingetragen werden");
             return false;
         }
-    }
-
+    }//end processPostInsertNews()
 
 
     /**
@@ -148,9 +148,13 @@ class PrgPatternElementNews extends APrgPatternElement
     public function processPostUpdateNews(): bool
     {
         // Check that all information has been posted
-        $requireFields = array(self::FORM_FIELD_ID, self::FORM_FIELD_TITLE, self::FORM_FIELD_CATEGORYID, self::FORM_FIELD_TEXT);
-        if (! $this->prgElementLogin->checkRequiredFields($requireFields))
-        {
+        $requireFields = [
+            self::FORM_FIELD_ID,
+            self::FORM_FIELD_TITLE,
+            self::FORM_FIELD_CATEGORYID,
+            self::FORM_FIELD_TEXT,
+        ];
+        if (! $this->prgElementLogin->checkRequiredFields($requireFields)) {
             $this->setFailedMessage("News konnte nicht aktualisiert werden.");
             return false;
         }
@@ -166,13 +170,10 @@ class PrgPatternElementNews extends APrgPatternElement
 
             $this->setSuccessMessage("News wurde erfolgreich geändert.");
             return true;
-        }
-        catch (Exception $e)
-        {
+        } catch (Exception $e) {
             $this->log($this->__TABLE__, sprintf("Cannot update News. %s Details %s", $news, $e->getMessage()), "", "POST");
             $this->setFailedMessage("FAQ konnte nicht aktualisiert werden");
             return false;
         }
-    }
-}
-
+    }//end processPostUpdateNews()
+}//end class

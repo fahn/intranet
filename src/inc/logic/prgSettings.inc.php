@@ -35,6 +35,7 @@ class PrgPatternElemenSettings extends APrgPatternElement
     // PATTERN
     protected PrgPatternElementLogin $prgElementLogin;
 
+
     public function __construct(PrgPatternElementLogin $prgElementLogin = null)
     {
         parent::__construct("settings");
@@ -52,45 +53,49 @@ class PrgPatternElemenSettings extends APrgPatternElement
         $this->registerPostSessionVariable(self::FORM_FIELD_DATATYPE);
         $this->registerPostSessionVariable(self::FORM_FIELD_VALUE);
 
-    }
+    }//end __construct()
+
 
     public function processPost()
     {
         // ADMIN AREA
-        $this->prgElementLogin->redirectUserIfnoRights(array("admin"));
+        $this->prgElementLogin->redirectUserIfnoRights(["admin"]);
 
-        if (!$this->issetPostVariable(self::FORM_ACTION))
-        {
+        if (!$this->issetPostVariable(self::FORM_ACTION)) {
             $this->setFailedMessage("Kein Formular.");
             return;
         }
 
         $action = strval(trim($this->getPostVariable(self::FORM_ACTION)));
 
-        switch ($action)
-        {
+        switch ($action) {
             case self::FORM_INSERT:
                 $this->processPostInsertSettings();
                 break;
 
-            case self::FORM_DELETE:
-                $this->processPostDeleteSettings();
-                break;
+        case self::FORM_DELETE:
+            $this->processPostDeleteSettings();
+break;
 
-            case self::FORM_UPDATE:
-                $this->processPostUpdateSettings();
-                break;
+        case self::FORM_UPDATE:
+            $this->processPostUpdateSettings();
+break;
 
-            default:
-                return;
+        default:
+return;
                 break;
         }
-    }
+    }//end processPost()
 
-    private function processPostInsertSettings() {
-        $requireFields = array(self::FORM_FIELD_NAME, self::FORM_FIELD_DATATYPE, self::FORM_FIELD_VALUE);
-        if (! $this->prgElementLogin->checkRequiredFields($requireFields))
-        {
+
+    private function processPostInsertSettings()
+    {
+        $requireFields = [
+            self::FORM_FIELD_NAME,
+            self::FORM_FIELD_DATATYPE,
+            self::FORM_FIELD_VALUE,
+        ];
+        if (! $this->prgElementLogin->checkRequiredFields($requireFields)) {
             $this->setFailedMessage("keine Werte übergeben");
             return false;
         }
@@ -102,8 +107,7 @@ class PrgPatternElemenSettings extends APrgPatternElement
 
             // value
             $value = trim($this->getPostVariable(self::FORM_FIELD_VALUE));
-            if (is_array($value))
-            {
+            if (is_array($value)) {
                 $value = serialize($value);
             }
             $setting->setValue($value);
@@ -112,20 +116,23 @@ class PrgPatternElemenSettings extends APrgPatternElement
 
             $this->setSuccessMessage("FAQ wurde eingetragen");
             return true;
-
-        }
-        catch (Exception $e)
-        {
+        } catch (Exception $e) {
             $this->log($this->__TABLE__, sprintf("Cannot insert Setting. %s Details %s", $setting, $e->getMessage()), "", "POST");
             $this->setFailedMessage("Setting konnte nicht eingetragen werden");
             return false;
-        }       
-    }
+        }//end try
+    }//end processPostInsertSettings()
 
-    private function processPostUpdateSettings() {
-        $requireFields = array(self::FORM_FIELD_ID, self::FORM_FIELD_NAME, self::FORM_FIELD_DATATYPE, self::FORM_FIELD_VALUE);
-        if (! $this->prgElementLogin->checkRequiredFields($requireFields))
-        {
+
+    private function processPostUpdateSettings()
+    {
+        $requireFields = [
+            self::FORM_FIELD_ID,
+            self::FORM_FIELD_NAME,
+            self::FORM_FIELD_DATATYPE,
+            self::FORM_FIELD_VALUE,
+        ];
+        if (! $this->prgElementLogin->checkRequiredFields($requireFields)) {
             $this->setFailedMessage("keine ID übergeben");
             return false;
         }
@@ -147,21 +154,18 @@ class PrgPatternElemenSettings extends APrgPatternElement
 
             $this->setSuccessMessage("FAQ wurde eingetragen");
             return true;
-
-        }
-        catch (Exception $e)
-        {
+        } catch (Exception $e) {
             $this->log($this->__TABLE__, sprintf("Cannot update Setting. %s Details %s", $setting, $e->getMessage()), "", "POST");
             $this->setFailedMessage("Setting konnte nicht geändert werden");
             return false;
-        }       
-    }
+        }//end try
+    }//end processPostUpdateSettings()
+
 
     private function processPostDeleteSettings():bool
     {
-        $requireFields = array(self::FORM_FIELD_ID);
-        if (! $this->prgElementLogin->checkRequiredFields($requireFields))
-        {
+        $requireFields = [self::FORM_FIELD_ID];
+        if (! $this->prgElementLogin->checkRequiredFields($requireFields)) {
             $this->setFailedMessage("keine ID übergeben");
             return false;
         }
@@ -171,23 +175,21 @@ class PrgPatternElemenSettings extends APrgPatternElement
         try {
             $this->brdb->deleteSettings($id);
             return true;
-        }
-        catch (Exception $e)
-        {
+        } catch (Exception $e) {
             $this->log($this->__TABLE__, sprintf("Cannot delete Setting. %d Details %s", $id, $e->getMessage()), "", "POST");
             $this->setFailedMessage("Setting konnte nicht geändert werden");
             return false;
-        }  
-    }
+        }
+    }//end processPostDeleteSettings()
 
-
-   
 
     /**
-     *
      * {@inheritDoc}
+     *
      * @see IPrgPatternElement::processGet()
      */
-    public function processGet() {}
-}
+    public function processGet()
+    {
 
+    }//end processGet()
+}//end class

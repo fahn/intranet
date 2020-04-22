@@ -20,10 +20,13 @@ require_once "htmlLoginPage.inc.php";
 
 class BrdbHtmlPage extends AHtmlLoginPage
 {
+
+
     public function __construct()
     {
         parent::__construct();
-    }
+    }//end __construct()
+
 
     public function processPage()
     {
@@ -31,8 +34,5 @@ class BrdbHtmlPage extends AHtmlLoginPage
         $this->prgPattern->processPRG();
 
         parent::processPage();
-    }
-
-}
-
-
+    }//end processPage()
+}//end class

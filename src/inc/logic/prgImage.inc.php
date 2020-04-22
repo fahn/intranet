@@ -18,31 +18,34 @@
  ******************************************************************************/
 require_once "prgPattern.inc.php";
 
-class PrgPatternElementImage extends APrgPatternElement {
+class PrgPatternElementImage extends APrgPatternElement
+{
 
     protected $prgElementLogin;
    
-    const _USER_IMAGE_PATH_   = "/static/img/user/";
+    const _USER_IMAGE_PATH_ = "/static/img/user/";
+
 
     public function __construct(PrgPatternElementLogin $prgElementLogin)
     {
         parent::__construct("image");
 
         $this->prgElementLogin = $prgElementLogin;
-    }
+    }//end __construct()
+
 
     public function processPost(): void
     {
         $this->prgElementLogin->redirectUserIfNotLoggindIn();
 
         // ADMIN AREA
-        $this->prgElementLogin->redirectUserIfnoRights(array("reporter", "admin"), "or");
-    }
+        $this->prgElementLogin->redirectUserIfnoRights(["reporter", "admin"], "or");
+    }//end processPost()
 
 
     /**
-     *
      * {@inheritDoc}
+     *
      * @see IPrgPatternElement::processGet()
      */
     public function processGet(): void
@@ -50,7 +53,7 @@ class PrgPatternElementImage extends APrgPatternElement {
         $this->prgElementLogin->redirectUserIfNotLoggindIn();
 
         // ADMIN AREA
-        $this->prgElementLogin->redirectUserIfnoRights(array("admin"));
+        $this->prgElementLogin->redirectUserIfnoRights(["admin"]);
 
         $action = strval(trim($this->getGetVariable("action")));
         switch ($action) {
@@ -61,28 +64,28 @@ class PrgPatternElementImage extends APrgPatternElement {
             default:
                 break;
         }
-    }
-   
+    }//end processGet()
+
+
     /**
      * Delete image/Thumbnail from Server
      *
-     * @param string $image
+     * @param  string $image
      * @return boolean
      */
     private function processGetDeleteImage(string $image):bool
     {
-        try
-        {
+        try {
             if (!isset($image)) {
                 throw new Exception("kein Bild angegeben.");
             }
-            if ( in_array($image, $this->getUserImages())) {
+            if (in_array($image, $this->getUserImages())) {
                 throw new Exception("Bild ist noch aktiv");
             }
            
-            $servPath = BASE_DIR ."/";
-            $imagePath = $servPath . self::_USER_IMAGE_PATH_ . $image;
-            $thumnailImagePath = $servPath . self::_USER_IMAGE_PATH_ ."/thumb_". $image;
+            $servPath          = BASE_DIR."/";
+            $imagePath         = $servPath.self::_USER_IMAGE_PATH_.$image;
+            $thumnailImagePath = $servPath.self::_USER_IMAGE_PATH_."/thumb_".$image;
            
            
             if (!file_exists($imagePath)) {
@@ -98,18 +101,17 @@ class PrgPatternElementImage extends APrgPatternElement {
             }
    
             $this->setSuccessMessage("Das Bild wurde gelöscht.");
-            $this->customRedirectArray(array("page" => "adminAllImages.php"));
+            $this->customRedirectArray(["page" => "adminAllImages.php"]);
             return true;
-        }
-        catch (Exception $e)
-        {
+        } catch (Exception $e) {
             $this->log($this->__TABLE__, sprintf("Cannot delete Image. %s Details %s", $image, $e->getMessage()), "", "GET");
             $this->setFailedMessage($e->getMessage());
             return false;
-        }
-       
-    }
-   
+        }//end try
+
+    }//end processGetDeleteImage()
+
+
     /**
      * get all User Images
      *
@@ -118,6 +120,5 @@ class PrgPatternElementImage extends APrgPatternElement {
     public function getUserImages():?array
     {
         return $this->brdb->getUserImages();
-    }
-}
-
+    }//end getUserImages()
+}//end class

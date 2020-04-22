@@ -21,11 +21,11 @@ require_once "prgPattern.inc.php";
 class PrgPatternElementCategory extends APrgPatternElement
 {
 
-    const __TABLE__             = "Category";
+    const __TABLE__ = "Category";
     // FORMS
-    const FORM_FIELD_ID         = "id";
-    const FORM_FIELD_PID        = "pid";
-    const FORM_FIELD_TITLE      = "title";
+    const FORM_FIELD_ID    = "id";
+    const FORM_FIELD_PID   = "pid";
+    const FORM_FIELD_TITLE = "title";
 
     // FIELDS
     const FORM_ACTION = "formAction";
@@ -34,6 +34,7 @@ class PrgPatternElementCategory extends APrgPatternElement
     const FORM_DELETE = "Delete";
 
     protected $prgElementLogin;
+
 
     public function __construct(PrgPatternElementLogin $prgElementLogin)
     {
@@ -45,14 +46,15 @@ class PrgPatternElementCategory extends APrgPatternElement
         $this->registerPostSessionVariable(self::FORM_FIELD_ID);
         $this->registerPostSessionVariable(self::FORM_FIELD_PID);
         $this->registerPostSessionVariable(self::FORM_FIELD_TITLE);
-    }
+    }//end __construct()
+
 
     public function processPost():void
     {
         $this->prgElementLogin->redirectUserIfNotLoggindIn();
 
         // ADMIN AREA
-        $this->prgElementLogin->redirectUserIfnoRights(array("admin"));
+        $this->prgElementLogin->redirectUserIfnoRights(["admin"]);
 
         if (!$this->issetPostVariable(self::FORM_ACTION)) {
             $this->setFailedMessage("Kein Formular.");
@@ -65,7 +67,7 @@ class PrgPatternElementCategory extends APrgPatternElement
             case self::FORM_INSERT:
                 $this->processPostInsertCategory();
                 break;
-/*
+        /*
             case self::FORM_DELETE:
                 $this->processPostDeleteNews();
                 break; */
@@ -78,14 +80,17 @@ class PrgPatternElementCategory extends APrgPatternElement
                 return;
                 break;
         }
-    }
+    }//end processPost()
+
 
     private function processPostInsertCategory(): bool
     {
         // Check that all information has been posted
-        $requireFields = array(self::FORM_FIELD_PID, self::FORM_FIELD_TITLE);
-        if (! $this->prgElementLogin->checkRequiredFields($requireFields))
-        {
+        $requireFields = [
+            self::FORM_FIELD_PID,
+            self::FORM_FIELD_TITLE,
+        ];
+        if (! $this->prgElementLogin->checkRequiredFields($requireFields)) {
             $this->setFailedMessage("Kategorie konnte nicht eingetragen werden");
             return false;
         }
@@ -99,21 +104,22 @@ class PrgPatternElementCategory extends APrgPatternElement
 
             $this->setSuccessMessage("Kategorie wurde eingetragen");
             return true;
-        }
-
-        catch (Exception $e)
-        {
+        } catch (Exception $e) {
             $this->log($this->__TABLE__, sprintf("Cannot insert Kategorie. %s Details %s", $cat, $e->getMessage()), "", "POST");
             $this->setFailedMessage("Kategorie konnte nicht eingetragen werden");
             return false;
         }
-    }
+    }//end processPostInsertCategory()
+
 
     private function processPostUpdateCategory(): bool
     {
-        $requireFields = array(self::FORM_FIELD_ID, self::FORM_FIELD_PID, self::FORM_FIELD_TITLE);
-        if (! $this->prgElementLogin->checkRequiredFields($requireFields))
-        {
+        $requireFields = [
+            self::FORM_FIELD_ID,
+            self::FORM_FIELD_PID,
+            self::FORM_FIELD_TITLE,
+        ];
+        if (! $this->prgElementLogin->checkRequiredFields($requireFields)) {
             return false;
         }
 
@@ -127,34 +133,33 @@ class PrgPatternElementCategory extends APrgPatternElement
 
             $this->setSuccessMessage("Kategorie wurde aktualisiert");
             return true;
-        }
-
-        catch (Exception $e)
-        {
+        } catch (Exception $e) {
             $this->log($this->__TABLE__, sprintf("Cannot update Kategorie. %s Details %s", $cat, $e->getMessage()), "", "POST");
             $this->setFailedMessage("Kategorie konnte nicht aktualisiert werden");
             return false;
         }
-    }
+    }//end processPostUpdateCategory()
 
 
     private function processPostDeleteCategory(): bool
     {
-        $requireFields = array(self::FORM_FIELD_ID, self::FORM_FIELD_PID, self::FORM_FIELD_TITLE);
-        if (! $this->prgElementLogin->checkRequiredFields($requireFields))
-        {
+        $requireFields = [
+            self::FORM_FIELD_ID,
+            self::FORM_FIELD_PID,
+            self::FORM_FIELD_TITLE,
+        ];
+        if (! $this->prgElementLogin->checkRequiredFields($requireFields)) {
             return false;
         }
-
-    }
-
+    }//end processPostDeleteCategory()
 
 
     /**
-     *
      * {@inheritDoc}
+     *
      * @see IPrgPatternElement::processGet()
      */
-    public function processGet() {}
-}
-
+    public function processGet()
+    {
+    }//end processGet()
+}//end class

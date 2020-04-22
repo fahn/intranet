@@ -18,7 +18,7 @@
  ******************************************************************************/
 
 require_once "brdbHtmlPage.inc.php";
-require_once BASE_DIR ."/inc/logic/prgPattern.inc.php";
+require_once BASE_DIR."/inc/logic/prgPattern.inc.php";
 
 class BrdbHtmlTeam extends BrdbHtmlPage
 {
@@ -27,40 +27,42 @@ class BrdbHtmlTeam extends BrdbHtmlPage
     public function __construct()
     {
         parent::__construct();
-    }
+    }//end __construct()
+
 
     protected function htmlBody(): void
     {
         $content = $this->TMPL_showTeam();
 
-        $this->smarty->assign(array(
-            "content" => $content,
-        ));
+        $this->smarty->assign(
+            ["content" => $content]
+        );
 
         $this->smarty->display("index.tpl");
         unset($content);
-    }
+    }//end htmlBody()
+
 
     private function TMPL_showTeam(): string
     {
-        $this->smarty->assign(array(
-            "row"    => $this->getTeam(),
-        ));
+        $this->smarty->assign(
+            [
+                "row" => $this->getTeam(),
+            ]
+        );
 
         return $this->smarty->fetch("team/list.tpl");
-    }
+    }//end TMPL_showTeam()
+
 
     private function getTeam(): array
     {
         $teamList = $this->brdb->getStaffList();
-        $data = array();
+        $data     = [];
 
-        if (isset($teamList) && !empty($teamList))
-        {
-            foreach ($teamList as $dataSet)
-            {
-                if (isset($dataSet["row"]) && $dataSet["row"] > 0)
-                {
+        if (isset($teamList) && !empty($teamList)) {
+            foreach ($teamList as $dataSet) {
+                if (isset($dataSet["row"]) && $dataSet["row"] > 0) {
                     $data[$dataSet["row"]][] = $dataSet;
                 }
             }
@@ -68,7 +70,5 @@ class BrdbHtmlTeam extends BrdbHtmlPage
 
         return $data;
         unset($data, $dataSet, $teamList);
-    }
-
-}
-
+    }//end getTeam()
+}//end class

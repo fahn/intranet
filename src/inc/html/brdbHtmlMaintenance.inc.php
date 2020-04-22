@@ -18,28 +18,36 @@
  ******************************************************************************/
 require_once "htmlLoginPage.inc.php";
 
-class BrdbHtmlMaintenance extends HtmlPageProcessor {
-    public function __construct() {
+class BrdbHtmlMaintenance extends HtmlPageProcessor
+{
+
+
+    public function __construct()
+    {
         parent::__construct();
-    }
+    }//end __construct()
 
-    public function processPage() {
+
+    public function processPage()
+    {
         parent::processPage();
-    }
+    }//end processPage()
 
-    protected function htmlBody() {
-        $this->smarty->assign(array(
-            "headline" => $this->settings->getSettingString("MAINTENANCE_TITLE"),
-            "text"     => $this->settings->getSettingString("MAINTENANCE_TEXT"),
-            "date"     => $this->settings->getSettingString("MAINTENANCE_DATE"),
-            "link"     => $this->prgPatternElementLogin->linkTo(array("page" => "index.php")),
-        ));
+
+    protected function htmlBody()
+    {
+        $this->smarty->assign(
+            [
+                "headline" => $this->settings->getSettingString("MAINTENANCE_TITLE"),
+                "text"     => $this->settings->getSettingString("MAINTENANCE_TEXT"),
+                "date"     => $this->settings->getSettingString("MAINTENANCE_DATE"),
+                "link"     => $this->prgPatternElementLogin->linkTo(["page" => "index.php"]),
+            ]
+        );
 
         $content = $this->smarty->fetch("maintenance.tpl");
         $this->smarty->assign("content", $content);
 
         $this->smarty->display("index.tpl");
-    }
-
-}
-
+    }//end htmlBody()
+}//end class

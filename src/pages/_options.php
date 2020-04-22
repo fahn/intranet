@@ -16,4 +16,3 @@ session_start();
 if (!defined("BASE_DIR")) {
     define("BASE_DIR", "/var/www/html/");
 }
-

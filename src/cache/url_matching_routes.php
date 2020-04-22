@@ -6,12 +6,17 @@
  */
 
 return [
-    false, // $matchHost
-    [ // $staticRoutes
+    false,
+// $matchHost
+    [
+// $staticRoutes
     ],
-    [ // $regexpList
+    [
+    // $regexpList
     ],
-    [ // $dynamicRoutes
+    [
+    // $dynamicRoutes
     ],
-    null, // $checkCondition
+    null,
+    // $checkCondition
 ];

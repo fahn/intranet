@@ -14,25 +14,27 @@ require_once "_base.model.php";
 
 class Club extends BaseModel
 {
+
     private int    $clubId;
+
     private string $clubName;
+
     private string $clubNr;
+
     private string $association;
 
 
     public function __construct($dataSet = null)
     {
-        if ($dataSet)
-        {
-            foreach ($dataSet as $key => $value)
-            {
-                if ( property_exists($this,$key))
-                {
+        if ($dataSet) {
+            foreach ($dataSet as $key => $value) {
+                if (property_exists($this, $key)) {
                     $this->$key = $value;
                 }
             }
         }
-    }
+    }//end __construct()
+
 
     /**
      * get Club Id
@@ -42,7 +44,8 @@ class Club extends BaseModel
     public function getClubId(): int
     {
         return $this->clubId;
-    }
+    }//end getClubId()
+
 
     public function setClubId(int $id): void
     {
@@ -51,12 +54,14 @@ class Club extends BaseModel
         }
 
         $this->clubId = $id;
-    }
+    }//end setClubId()
+
 
     public function getClubNr(): string
     {
         return $this->clubNr;
-    }
+    }//end getClubNr()
+
 
     public function setClubNr(string $clubNr): void
     {
@@ -65,12 +70,14 @@ class Club extends BaseModel
         }
 
         $this->clubNr = $clubNr;
-    }
+    }//end setClubNr()
+
 
     public function getClubName(): string
     {
         return $this->clubName;
-    }
+    }//end getClubName()
+
 
     public function setClubName(string $name): void
     {
@@ -79,12 +86,14 @@ class Club extends BaseModel
         }
 
         $this->clubName = $name;
-    }
+    }//end setClubName()
+
 
     public function getAssociation(): string
     {
         return $this->association;
-    }
+    }//end getAssociation()
+
 
     public function setAssociation(string $association): void
     {
@@ -93,16 +102,18 @@ class Club extends BaseModel
         }
 
         $this->association = $association;
-    }
+    }//end setAssociation()
+
 
     public function getClubArray(): array
     {
-        return array(
+        return [
             'clubNr'      => $this->getClubNr(),
             'clubName'    => $this->getClubName(),
             'association' => $this->getAssociation(),
-        );
-    }
+        ];
+    }//end getClubArray()
+
 
     /**
      * Print Club-Infomration
@@ -110,6 +121,5 @@ class Club extends BaseModel
     public function __toString(): string
     {
         return sprintf("%s => %s [ID: %i]\n", $this->clubNr, $this->clubName, $this->clubId);
-    }
-}
-
+    }//end __toString()
+}//end class

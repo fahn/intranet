@@ -17,19 +17,21 @@
  * @link      https://www.badtra.de
  ******************************************************************************/
 require_once "brdbHtmlPage.inc.php";
-require_once BASE_DIR ."/inc/logic/prgSync.inc.php";
+require_once BASE_DIR."/inc/logic/prgSync.inc.php";
 // load models
-require_once BASE_DIR ."/inc/model/club.inc.php";
-require_once BASE_DIR ."/inc/model/player.inc.php";
+require_once BASE_DIR."/inc/model/club.inc.php";
+require_once BASE_DIR."/inc/model/player.inc.php";
 // load logic
-require_once BASE_DIR ."/inc/logic/prgClub.inc.php";
-require_once BASE_DIR ."/inc/logic/prgPlayer.inc.php";
+require_once BASE_DIR."/inc/logic/prgClub.inc.php";
+require_once BASE_DIR."/inc/logic/prgPlayer.inc.php";
 
 class BrdbHtmlAdminSyncPage extends BrdbHtmlPage
 {
+
     private $prgPatternElementSync;
 
     private $_page;
+
 
     public function __construct($page = null)
     {
@@ -42,13 +44,13 @@ class BrdbHtmlAdminSyncPage extends BrdbHtmlPage
              $this->_page = $page;
         }
 
-        # load links
-        $links = array(
-            'startSync' => $this->prgPatternElementSync->linkTo(array('page' => $this->_page, 'action' => 'sync')),
-        );
+        // load links
+        $links = [
+            'startSync' => $this->prgPatternElementSync->linkTo(['page' => $this->_page, 'action' => 'sync']),
+        ];
 
         $this->smarty->assign('links', $links);
-    }
+    }//end __construct()
 
 
     public function htmlBody(): void
@@ -61,19 +63,19 @@ class BrdbHtmlAdminSyncPage extends BrdbHtmlPage
                 break;
         }
 
-        $this->smarty->assign(array(
-            'content' => $content,
-        ));
+        $this->smarty->assign(
+            ['content' => $content]
+        );
 
         $this->smarty->display('index.tpl');
-    }
+    }//end htmlBody()
 
 
     private function loadContent(): string
     {
-        $this->smarty->assign(array(
-
-        ));
+        $this->smarty->assign(
+            []
+        );
         return $this->smarty->fetch('sync/status.tpl');
-    }
-}
+    }//end loadContent()
+}//end class

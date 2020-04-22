@@ -17,11 +17,13 @@
  * @link      https://www.badtra.de
  ******************************************************************************/
 require_once "brdbHtmlPage.inc.php";
-require_once BASE_DIR ."/inc/logic/prgUser.inc.php";
+require_once BASE_DIR."/inc/logic/prgUser.inc.php";
 
 class BrdbHtmlMyRegistrationPage extends BrdbHtmlPage
 {
+
     private PrgPatternElementUser $prgPatternElementRegister;
+
 
     public function __construct()
     {
@@ -29,25 +31,28 @@ class BrdbHtmlMyRegistrationPage extends BrdbHtmlPage
 
         $this->prgPatternElementRegister = new PrgPatternElementUser($this->prgPatternElementLogin);
         $this->prgPattern->registerPrg($this->prgPatternElementRegister);
-    }
+    }//end __construct()
 
 
     public function htmlBody(): void
     {
         $content = $this->loadContent();
-        $this->smarty->assign(array(
-            "content" => $content,
-        ));
+        $this->smarty->assign(
+            ["content" => $content]
+        );
 
         $this->smarty->display("index.tpl");
 
-    }
+    }//end htmlBody()
+
 
     private function loadContent(): string
     {
-        $this->smarty->assign(array(
-        ));
+        $this->smarty->assign(
+            []
+        );
         return $this->smarty->fetch("login/register.tpl");
-    }
-}
+    }//end loadContent()
 
+
+}//end class

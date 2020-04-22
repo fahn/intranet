@@ -21,10 +21,12 @@ require_once "default.widget.php";
 class NewsWidget extends Widget
 {
 
+
     public function __construct()
     {
         parent::__construct();
-    }
+    }//end __construct()
+
 
     public function showWidget(?string $name)
     {
@@ -41,27 +43,29 @@ class NewsWidget extends Widget
         return;
         unset($name);
 
-    }
+    }//end showWidget()
+
 
     private function TPML_latestNews(): string
     {
         $this->smarty->assign("data", $this->getLatestNews());
 
         return $this->smarty->fetch("news/widgetLatest.tpl");
-    }
+    }//end TPML_latestNews()
+
 
     private function getLatestNews():array
     {
-        $tmp = array();
+        $tmp      = [];
         $newsList = $this->brdb->selectLatestNews(5);
         if (isset($newsList) && !empty($newsList)) {
             foreach ($newsList as $dataSet) {
-                $dataSet["linkTo"] = $this->linkTo(array("page" => "news.php", "action" => "details", "id" => $dataSet["tournamentId"]));
-                $tmp[]             = $dataSet;
+                $dataSet["linkTo"] = $this->linkTo(["page" => "news.php", "action" => "details", "id" => $dataSet["tournamentId"]]);
+                $tmp[] = $dataSet;
             }
         }
 
         return $tmp;
         unset($newsList, $tmp, $dataSet);
-    }
-}
+    }//end getLatestNews()
+}//end class

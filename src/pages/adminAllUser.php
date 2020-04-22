@@ -9,12 +9,9 @@
  *
  * Stefan Metzner <stefan@weinekind.de>
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
- *
  ******************************************************************************/
 require_once "_options.php";
-require_once BASE_DIR ."/inc/html/admin/user.inc.php";
+require_once BASE_DIR."/inc/html/admin/user.inc.php";
 
 $page = new BrdbHtmlAdminAllUserPage();
 $page->processPage();
-
-

@@ -20,7 +20,7 @@ require_once "prgPattern.inc.php";
 
 class PrgPatternElementFaq extends APrgPatternElement
 {
-    const __TABLE__             = "FAQ";
+    const __TABLE__ = "FAQ";
 
     // FORMS
     const FORM_FIELD_ID         = "faqId";
@@ -46,50 +46,49 @@ class PrgPatternElementFaq extends APrgPatternElement
         $this->registerPostSessionVariable(self::FORM_FIELD_TITLE);
         $this->registerPostSessionVariable(self::FORM_FIELD_CATEGORYID);
         $this->registerPostSessionVariable(self::FORM_FIELD_TEXT);
-    }
+
+    }//end __construct()
+
 
     public function processPost(): void
     {
         $this->prgElementLogin->redirectUserIfNotLoggindIn();
        
         // ADMIN AREA
-        $this->prgElementLogin->redirectUserIfnoRights(array("reporter", "admin"), "or");
+        $this->prgElementLogin->redirectUserIfnoRights(["reporter", "admin"], "or");
 
-        if (!$this->issetPostVariable(self::FORM_ACTION))
-        {
+        if (!$this->issetPostVariable(self::FORM_ACTION)) {
             $this->setFailedMessage("Kein Formular.");
             return;
         }
 
         $action = strval(trim($this->getPostVariable(self::FORM_ACTION)));
 
-        switch ($action)
-        {
-            case self::FORM_INSERT:
-                $this->processPostInsertFaq();
+        switch ($action) {
+        case self::FORM_INSERT:
+            $this->processPostInsertFaq();
                 break;
 
-            case self::FORM_DELETE:
-                $this->processPostDeleteFaq();
+        case self::FORM_DELETE:
+            $this->processPostDeleteFaq();
                 break;
 
-            case self::FORM_UPDATE:
-                $this->processPostUpdateFaq();
+        case self::FORM_UPDATE:
+            $this->processPostUpdateFaq();
                 break;
 
-            default:
+        default:
                 return;
                 break;
         }
+    }//end processPost()
 
-    }
 
     private function processPostDeleteFaq(): bool
     {
 
-        $requireFields = array(self::FORM_FIELD_ID);
-        if (! $this->prgElementLogin->checkRequiredFields($requireFields))
-        {
+        $requireFields = [self::FORM_FIELD_ID];
+        if (! $this->prgElementLogin->checkRequiredFields($requireFields)) {
             $this->setFailedMessage("keine FAQ-ID übergeben");
             return false;
         }
@@ -99,20 +98,23 @@ class PrgPatternElementFaq extends APrgPatternElement
             $this->brdb->deleteFaq($id);
             $this->setSuccessMessage("FAQ wurde gelöscht");
             return true;
-
-        } catch (Exception $e)
-        {
+        } catch (Exception $e) {
             $this->setFailedMessage($this->brdb->getError());
             return false;
         }
         unset($requireFields, $id);
-    }
+
+    }//end processPostDeleteFaq()
+
 
     public function processPostInsertFaq(): bool
     {
-        $requireFields = array(self::FORM_FIELD_TITLE, self::FORM_FIELD_CATEGORYID, self::FORM_FIELD_TEXT);
-        if (! $this->prgElementLogin->checkRequiredFields($requireFields))
-        {
+        $requireFields = [
+            self::FORM_FIELD_TITLE,
+            self::FORM_FIELD_CATEGORYID,
+            self::FORM_FIELD_TEXT,
+        ];
+        if (! $this->prgElementLogin->checkRequiredFields($requireFields)) {
             $this->setFailedMessage("FAQ konnte nicht eingetragen werden");
             return false;
         }
@@ -127,16 +129,13 @@ class PrgPatternElementFaq extends APrgPatternElement
 
             $this->setSuccessMessage("FAQ wurde eingetragen");
             return true;
-
-        }
-        catch (Exception $e)
-        {
+        } catch (Exception $e) {
             $this->log($this->__TABLE__, sprintf("Cannot insert FAQ. %s Details %s", $faq, $e->getMessage()), "", "POST");
             $this->setFailedMessage("FAQ konnte nicht eingetragen werden");
             return false;
-        }       
-    }
+        }
 
+    }//end processPostInsertFaq()
 
 
     /**
@@ -147,9 +146,13 @@ class PrgPatternElementFaq extends APrgPatternElement
     public function processPostUpdateFaq(): bool
     {
         // Check that all information has been posted
-        $requireFields = array(self::FORM_FIELD_ID, self::FORM_FIELD_TITLE, self::FORM_FIELD_CATEGORYID, self::FORM_FIELD_TEXT);
-        if (! $this->prgElementLogin->checkRequiredFields($requireFields))
-        {
+        $requireFields = [
+            self::FORM_FIELD_ID,
+            self::FORM_FIELD_TITLE,
+            self::FORM_FIELD_CATEGORYID,
+            self::FORM_FIELD_TEXT,
+        ];
+        if (! $this->prgElementLogin->checkRequiredFields($requireFields)) {
             $this->setFailedMessage("FAQ konnte nicht aktualisiert werden.");
             return false;
         }
@@ -165,20 +168,22 @@ class PrgPatternElementFaq extends APrgPatternElement
 
             $this->setSuccessMessage("FAQ wurde erfolgreich geändert.");
             return true;
-        }
-        catch (Exception $e)
-        {
+        } catch (Exception $e) {
             $this->log($this->__TABLE__, sprintf("Cannot update FAQ. %s Details %s", $faq, $e->getMessage()), "", "POST");
             $this->setFailedMessage("FAQ konnte nicht aktualisiert werden");
             return false;
         }
-    }
+
+    }//end processPostUpdateFaq()
+
 
     /**
-     *
      * {@inheritDoc}
+     *
      * @see IPrgPatternElement::processGet()
      */
-    public function processGet() { }
-}
+    public function processGet()
+    {
 
+    }//end processGet()
+}//end class

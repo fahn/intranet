@@ -9,20 +9,25 @@
  *
  * Stefan Metzner <stefan@weinekind.de>
  * Philipp M. Fischer <phil.m.fischer@googlemail.com>
- *
  ******************************************************************************/
 
-Class Notification {
+class Notification
+{
+
     public int    $id;
+
     public int    $userId;
+
     public string $created;
+
     public string $text;
+
     public bool   $isRead;
+
 
     public function __construct($dataSet = null)
     {
-        if ($dataSet == null)
-        {
+        if ($dataSet == null) {
             break;
         }
 
@@ -31,12 +36,11 @@ Class Notification {
         $this->created = $dataSet['created'];
         $this->text    = $dataSet['text'];
         $this->isRead  = $dataSet['isRead'];
-    }
+    }//end __construct()
+
 
     public function isRead(): bool
     {
         return $this->isRead;
-    }
-}
-
-
+    }//end isRead()
+}//end class

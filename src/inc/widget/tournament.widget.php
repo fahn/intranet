@@ -21,7 +21,9 @@ require_once "default.widget.php";
 
 class TournamentWidget extends Widget
 {
+
     private string $_linkToTournament;
+
 
     /**
      * Default constructor
@@ -32,36 +34,35 @@ class TournamentWidget extends Widget
 
         // set link
         $this->_linkToTournament = $this->linkTo(
-            array(
-                "page" => "tournament.php",
-            )
+            ["page" => "tournament.php"]
         );
-    }
+
+    }//end __construct()
+
 
     /**
      * Decider which template has to shown up
      *
-     * @param string|null $name
+     * @param  string|null $name
      * @return string
      */
     public function showWidget(?string $name):string
     {
-        switch ($name)
-        {
-            case "latestTournaments":
+        switch ($name) {
+        case "latestTournaments":
                 return $this->TMPL_LatestTournament();
                 break;
 
-            case "upcomingTournaments":
+        case "upcomingTournaments":
                 return $this->TMPL_UpcomgingTournament();
                 break;
 
-            default:
+        default:
                 return "no name / or not exists";
                 break;
         }
+    }//end showWidget()
 
-    }
 
     /**
      * Template: get latests torunaments
@@ -75,7 +76,8 @@ class TournamentWidget extends Widget
         $this->smarty->assign("data", $data);
 
         return $this->smarty->fetch("tournament/widget_latest.tpl");
-    }
+
+    }//end TMPL_LatestTournament()
 
 
     /**
@@ -88,14 +90,15 @@ class TournamentWidget extends Widget
         $data = $this->getUpcomingTournaments();
 
         $this->smarty->assign(
-            array(
+            [
                 "_linkToTournament" => $this->_linkToTournament,
-                "data" => $data
-            )
+                "data"              => $data,
+            ]
         );
 
         return $this->smarty->fetch("tournament/widget_upcomging.tpl");
-    }
+
+    }//end TMPL_UpcomgingTournament()
 
 
     /**
@@ -105,22 +108,22 @@ class TournamentWidget extends Widget
      */
     private function getLatestTournament():array
     {
-        $data = array();
+        $data         = [];
         $tournamtList = $this->brdb->selectLatestTournamentList(5);
 
-        if (isset($tournamtList) && !empty($tournamtList))
-        {
-            foreach ($tournamtList as $dataSet)
-            {
+        if (isset($tournamtList) && !empty($tournamtList)) {
+            foreach ($tournamtList as $dataSet) {
                 $dataSet["classification"] = $this->formatClassification($dataSet["classification"]);
-                $dataSet["linkTo"]         = $this->linkTo(array("page" => "tournament.php", "action" => "details", "id" => $dataSet["tournamentId"]));
+                $dataSet["linkTo"]         = $this->linkTo(["page" => "tournament.php", "action" => "details", "id" => $dataSet["tournamentId"]]);
 
-                $data[]                    = $dataSet;
+                $data[] = $dataSet;
             }
         }
         return $data;
         unset($data, $dataSet, $tournamtList);
-    }
+
+    }//end getLatestTournament()
+
 
     /**
      * Undocumented function
@@ -129,24 +132,23 @@ class TournamentWidget extends Widget
      */
     private function getUpcomingTournaments():array
     {
-        $data = array();
+        $data         = [];
         $tournamtList = $this->brdb->selectUpcomingTournamentList(5);
       
-        if (isset($tournamtList) && !empty($tournamtList))
-        {
-            foreach ($tournamtList as $dataSet)
-            {
+        if (isset($tournamtList) && !empty($tournamtList)) {
+            foreach ($tournamtList as $dataSet) {
                 $dataSet["classification"] = $this->formatClassification($dataSet["classification"]);
-                $dataSet["linkTo"]         = $this->linkTo(array("page" => "tournament.php", "action" => "details", "id" => $dataSet["tournamentId"]));
+                $dataSet["linkTo"]         = $this->linkTo(["page" => "tournament.php", "action" => "details", "id" => $dataSet["tournamentId"]]);
                 // get unique player
                 $players = $this->brdb->selectUpcomingTournamentPlayer($dataSet["tournamentId"]);
               
                 $dataSet["participant"] = $players->num_rows;
 
-                $data[]                 = $dataSet;
+                $data[] = $dataSet;
             }
         }
         return $data;
         unset($data, $dataSet, $tournamtList);
-    }
-}
+
+    }//end getUpcomingTournaments()
+}//end class

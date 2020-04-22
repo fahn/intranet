@@ -18,6 +18,8 @@
  ******************************************************************************/
 trait CupDB
 {
+
+
     /**
      * Get all cups
      *
@@ -30,5 +32,7 @@ trait CupDB
         $statement->execute();
        
         return $statement->fetch();
-    }
+    }//end getAllCups()
+
+
 }
