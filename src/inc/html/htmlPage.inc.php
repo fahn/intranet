@@ -25,7 +25,6 @@ if ($stage == "development") {
     error_reporting(E_ALL);
 }
 
-require_once BASE_DIR .'/smarty/libs/Smarty.class.php';
 # libary
 require_once BASE_DIR .'/vendor/autoload.php';
 

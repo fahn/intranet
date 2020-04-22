@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 - implement codacy for automatic code quality and generating issue-management
 - improve complete Layout
 - add security
+- MOVE: smarty code to composer
 
 ## 1.0.6.4
 

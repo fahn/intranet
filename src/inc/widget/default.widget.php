@@ -19,8 +19,8 @@
 require_once dirname(dirname(__FILE__)) ."/config.php";
 require_once BASE_DIR ."/inc/logic/prgPattern.inc.php";
 
-// load smarty
-require_once BASE_DIR ."/smarty/libs/Smarty.class.php";
+# libary
+require_once BASE_DIR .'/vendor/autoload.php';
 
 abstract class Widget extends APrgPatternElement {
    
