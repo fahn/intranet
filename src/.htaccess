@@ -11,9 +11,10 @@
 </ifModule>
 
 #enable apache rewrite engine
-#<ifModule 
-RewriteEngine on
-RewriteCond %{SCRIPT_FILENAME} !-f
-RewriteCond %{SCRIPT_FILENAME} !-d
-RewriteCond %{SCRIPT_FILENAME} !-l
-RewriteRule ^(.*)$ test.php/$1
+<ifModule mod_rewrite.c>
+    RewriteEngine on
+    RewriteCond %{SCRIPT_FILENAME} !-f
+    RewriteCond %{SCRIPT_FILENAME} !-d
+    RewriteCond %{SCRIPT_FILENAME} !-l
+    RewriteRule .* index.php/$1
+</ifModule>

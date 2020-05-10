@@ -19,7 +19,7 @@
                 </div>
             {/if}
             <div class="btn-group mr-2" role="group" aria-label="Second group">
-                <a class="btn btn-primary" role="button" href="?action=download" target="_blank"><i class="fas fa-download"></i> PDF Download</a>
+                <a class="btn btn-primary" role="button" href="/generate_ranking" target="_blank"><i class="fas fa-download"></i> PDF Download</a>
             </div>
         </div>
     </div>

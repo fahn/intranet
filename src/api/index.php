@@ -1,5 +1,3 @@
-#!/usr/bin/php
-
 <?php
 /**
  * Badminton Intranet System
@@ -18,9 +16,10 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU General Public License
  * @link      https://www.badtra.de
  ******************************************************************************/
-$path=dirname(dirname(__FILE__));
-define(BASE_DIR, $path);
-require_once BASE_DIR ."/inc/logic/prgPattern.inc.php";
+namespace Badtra\Intranet\API;
+
+use Badtra\Intranet\Logic\APrgPatternElement;
+use Badtra\Intranet\API\ReminderTournment;
 
 class Api extends APrgPatternElement
 {
@@ -38,46 +37,12 @@ class Api extends APrgPatternElement
         switch ($action)
         {
             case 'tournament':
-                $this->reminderTournament();
+                $reminder = new ReminderTournment();
+                return $reminder->reminder();
                 break;
             default:
                 # code...
                 break;
-        }
-    }
-
-    private function reminderTournament():void
-    {
-        $tournamentList = $this->brdb->APIGetTournamentFromToday();
-        if (isset($tournamentList) && !empty($tournamentList))
-        {
-            foreach($tournamentList as $row)
-            {
-                if (isset($row) && isset($row['email']) && filter_var($row['email'], FILTER_VALIDATE_EMAIL))
-                {
-                    $subject   = sprintf("Meldeschluss für %s", $row['name']);
-                    // content
-                    $toUser    = $row['email'];
-                    $name      = $row['name'];
-                    $link      = $this->linkTo(array(
-                        'page'   => 'tournament.php',
-                        'action' => 'details',
-                        'id'     => $row['tournamentId'],
-                    ));
-                    // Mail Content
-                    $content = sprintf("Hallo %s,<br>Für das Turnier/Rangliste \"%s\" ist heute Meldeschluss.<br><br>Alle weiteren Informationen gibt es <a href='%s'>hier</a>.", $row['reporterName'], $row['name'], $link);
-                    // send mail
-                    if ($this->sendMail($toUser, $name, $subject, $subject, $content))
-                    {
-                        $row['mail'] = "success";
-                    }
-
-                    if (isset($row) && is_array($row) && count($row) > 0)
-                    {
-                        $this->content .= implode(", ", $row);
-                    }
-                }
-            }
         }
     }
 

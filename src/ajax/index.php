@@ -16,12 +16,9 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU General Public License
  * @link      https://www.badtra.de
  ******************************************************************************/
-if (defined("BASE_DIR") == false)
-{
-    define("BASE_DIR", $_SERVER['DOCUMENT_ROOT']);
-}
+namespace Badtra\Intranet\Ajax;
 
-require_once BASE_DIR ."/inc/logic/PrgPattern.inc.php";
+use Badtra\Intranet\Logic\APrgPatternElement;
 
 class AjaxQuery extends APrgPatternElement
 {
@@ -48,7 +45,7 @@ class AjaxQuery extends APrgPatternElement
                     $result = $this->brdb->getUserByTerm($this->term);
                     break;
                 default:
-                    throw new Exception("Unkown param");
+                    throw new \Exception("Unkown param");
                     break;
             }
 
@@ -56,7 +53,7 @@ class AjaxQuery extends APrgPatternElement
             $this->data = json_encode($data);
             unset($brdb, $_term, $data, $row, $userList);
 
-        } catch (Exception $e)
+        } catch (\Exception $e)
         {
             $this->data = sprintf("ERROR: Could not able to execute: %s", $e->getMessage());
             return false;
@@ -109,6 +106,11 @@ class AjaxQuery extends APrgPatternElement
     {
         return $this->data;
     }
+
+
+    public function processPost() {}
+
+    public function processGet() {}
 }
 
 // Clean

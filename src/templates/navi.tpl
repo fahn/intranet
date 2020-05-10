@@ -8,24 +8,19 @@
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="nav mr-auto nav-pills">
-                {if $cupEnable == "on"}
-                    <li class="nav-item"><a class="nav-link" href="cup.php"><i class="fas fa-trophy"></i> Cup</a></li>
+                {if isset($tournamentEnable) && $tournamentEnable == "on"}
+                    <li class="nav-item"><a class="nav-link" href="/tournament"><i class="fas fa-trophy"></i> Tuniere</a></li>
                 {/if}
-
-                {if $tournamentEnable == "on"}
-                    <li class="nav-item"><a class="nav-link" href="tournament.php"><i class="fas fa-trophy"></i> Tuniere</a></li>
-                {/if}
-
                 
                 {if $rankingEnable == "on"}
-                  <li class="nav-item"><a class="nav-link" href="ranking.php"><i class="fas fa-list-ol"></i> Ranking</a></li>
+                  <li class="nav-item"><a class="nav-link" href="/ranking"><i class="fas fa-list-ol"></i> Ranking</a></li>
                 {/if}
 
                 {if $faqEnabled == "on"}
-                    <li class="nav-item"><a class="nav-link" href="faq.php"><i class="fas fa-question"></i> FAQ</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/faq"><i class="fas fa-question"></i> FAQ</a></li>
                 {/if}
 
-                <li class="nav-item"><a class="nav-link" href="team.php"><i class="fas fa-users"></i> Team</a></li>
+                <li class="nav-item"><a class="nav-link" href="/staff"><i class="fas fa-users"></i> Team</a></li>
 
                 {if $isAdmin}
                     <li class="nav-item dropdown">
@@ -33,32 +28,32 @@
                           Admin
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="adminAllUser.php"><i class="fas fa-users"></i> Users</a>
-                            <a class="dropdown-item" href="/pages/adminStaff.inc.php"><i class="fas fa-user-tie"></i> Staff</a>
+                            <a class="dropdown-item" href="/admin/user"><i class="fas fa-users"></i> Users</a>
+                            <a class="dropdown-item" href="/admin/staff"><i class="fas fa-user-tie"></i> Staff</a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="adminAllImages.php"><i class="fas fa-images"></i> Bilder</a>
+                            <a class="dropdown-item" href="admin/images"><i class="fas fa-images"></i> Bilder</a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="adminAllPlayer.php"><i class="fas fa-user-friends"></i> Player</a>
-                            <a class="dropdown-item" href="adminAllClub.php"><i class="fas fa-shield-alt"></i> Vereine</a>
-                            <a class="dropdown-item" href="adminSync.php"><i class="fas fa-sync"></i> Sync</a>
+                            <a class="dropdown-item" href="/admin/player"><i class="fas fa-user-friends"></i> Player</a>
+                            <a class="dropdown-item" href="/admin/club"><i class="fas fa-shield-alt"></i> Vereine</a>
+                            <a class="dropdown-item" href="/admin/sync"><i class="fas fa-sync"></i> Sync</a>
                             <div class="dropdown-divider"></div>
                             {if $faqEnabled == "on"}
-                                <a class="dropdown-item" href="/pages/adminFaq.inc.php"><i class="fas fa-question-circle"></i> FAQ</a>
+                                <a class="dropdown-item" href="/admin/faq"><i class="fas fa-question-circle"></i> FAQ</a>
                             {/if}
-                            <a class="dropdown-item" href="/pages/adminNews.inc.php"><i class="fas fa-newspaper"></i> News</a>
-                            <a class="dropdown-item" href="/pages/adminCategory.inc.php"><i class="far fa-list-alt"></i> Kategorien</a>
+                            <a class="dropdown-item" href="/admin/news"><i class="fas fa-newspaper"></i> News</a>
+                            <a class="dropdown-item" href="/admin/category"><i class="far fa-list-alt"></i> Kategorien</a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="/pages/adminSettings.php"><i class="fas fa-wrench"></i> Einstellungen</a>
-                            <a class="dropdown-item" href="/pages/log.php"><i class="fas fa-list"></i> Logs</a>
+                            <a class="dropdown-item" href="/admin/settings"><i class="fas fa-wrench"></i> Einstellungen</a>
+                            <a class="dropdown-item" href="/admin/log"><i class="fas fa-list"></i> Logs</a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="/pages/adminSetup.php"><i class="fas fa-wrench"></i> Setup</a>
+                            <a class="dropdown-item" href="/admin/setup"><i class="fas fa-wrench"></i> Setup</a>
                         </div>
                     </li>
                 {/if}
             </ul>
 
             <ul class="nav navbar-nav navbar-right">
-                {if $notificationEnable == "on"}
+                {if isset($notificationEnable) && $notificationEnable == "on"}
                     <li class="nav-item">
                         {if isset($notification)}
                             {include file="notification.tpl"}
@@ -70,7 +65,7 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="avatar avatar-online"><img width="33px" style="border-radius: 1000px" src="{$currentUserImage}" alt="avatar"><i></i></span>
-                        {$currentUserName}
+                        {$currentUserName|default:""}
                     </a>
                     <div class="dropdown-menu dropdown-menu-right">
 

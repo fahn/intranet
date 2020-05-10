@@ -1,3 +1,5 @@
+{include file="page_wrap_header.tpl"}
+
 <div class="card mt-5 mb-5">
     <h5 class="card-header">Willkommen {$currentUserName}</h5>
     <div class="card-body">
@@ -22,10 +24,10 @@
 
 
         {if isset($widgetShowTeam) && isset($team)}
-            {$team|default:""}
+            {$widgetShowTeam|default:""}
         {/if}
 
-        {if isset($isAdmin)}
+        {if isset($isAdmin) && isset($widgetShowBdays)}
             {$widgetShowBdays}
         {/if}
 
@@ -52,3 +54,5 @@
         {/if}
     </div>
 </div>
+
+{include file="page_wrap_footer.tpl"}

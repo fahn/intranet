@@ -1,0 +1,3 @@
+app_controllers:
+    resource: inc/html/BrdbHtmlPage.php
+    type: annotation

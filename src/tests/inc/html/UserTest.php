@@ -37,4 +37,4 @@ class UserServiceTest extends TestCase {
         self::$id = $user->id;
         $this->assertStringContainsString('Eze', $user->name);
     }
-    
+}

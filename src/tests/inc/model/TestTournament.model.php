@@ -16,10 +16,9 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU General Public License
  * @link      https://www.badtra.de
  ******************************************************************************/
-require_once "/var/www/html/inc/model/tournament.mdl.php";
 
 #try {
-    $tournament = new Tournament();
+    $tournament = new \Badtra\Intranet\Model\Tournament();
     $tournament->setTournamentId(1);
     $tournament->setName("Test-Turnier");
     $tournament->setPlace("Hannover");
@@ -27,7 +26,7 @@ require_once "/var/www/html/inc/model/tournament.mdl.php";
 
     echo $tournament;
 /*
-} catch (Exception $e) {
+} catch (\Exception $e) {
     echo $e;
 }
 */

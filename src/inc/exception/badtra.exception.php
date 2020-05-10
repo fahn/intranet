@@ -16,7 +16,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU General Public License
  * @link      https://www.badtra.de
  ******************************************************************************/
-class BadtraException extends Exception
+namespace Badtra\Intranet\Exception;
+class BadtraException extends \Exception
 {
 
     private $title;
@@ -42,7 +43,7 @@ class BadtraException extends Exception
     }//end __toString()
 
 
-    public function exception_handler(Exception $exception):string
+    public function exception_handler(\Exception $exception):string
     {
         return __CLASS__.": {$this->message}\n";
     }//end exception_handler()

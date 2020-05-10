@@ -20,10 +20,10 @@
     <input type="submit" name="loginFormLoginAction" class="btn btn-success btn-block " value="Log In">
 
     <div class="row">
-        <div class="col-md-{if $registerEnabled}6{else}12{/if}">
+        <div class="col-md-{if isset($registerEnabled)}6{else}12{/if}">
             <a href="?action=request_password" class="btn btn-warning mt-5 btn-block" role="button">Passwort vergessen ?</a>
         </div>
-        {if $registerEnabled}
+        {if isset($registerEnabled)}
         <div class="col-md-6 text-right">
             <a href="?action=register" class="btn btn-outline-warning text-right mt-5" role="button" data-toggle="tooltip" data-placement="top" title="Funktioniert noch nicht! Bitte eine E-Mail an XXX senden">Registrieren</a>
         </div>
@@ -31,13 +31,13 @@
     </div>
     <hr>
     <p class="text-center">
-      {if $imprint}
+      {if isset($imprint)}
           <a href="{$imprint}">Impressum</a>
       {/if}
-      {if $imprint && $disclaimer}
+      {if isset($imprint) && isset($disclaimer)}
         //
       {/if}
-      {if $disclaimer}
+      {if isset($disclaimer)}
           <a href="{$disclaimer}">Datenschutz</a>
       {/if}
     </p>

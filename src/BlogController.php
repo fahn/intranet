@@ -1,14 +1,16 @@
-
 <?php
 namespace APP;
-#use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
-class BlogController {
+class BlogController extends AbstractController {
 
     public function __construct()
     {
-        echo "1";
     }
+
+
     /**
      * @Route("/blog", name="blog_list")
      */
@@ -18,12 +20,27 @@ class BlogController {
     }
 
     /**
-     * @Route("/")
+     * @Route("/das1")
      *
      * @return void
      */
     public function test()
     {
-        echo "1";
+        echo "default";
+    }
+
+    /**
+     * @Route("/foo2")
+     *
+     * @return void
+     */
+    public function foo()
+    {
+        return new Response("!!!", 200);
+    }
+
+    public function foo2()
+    {
+        return "2";
     }
 }
