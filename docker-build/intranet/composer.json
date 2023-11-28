@@ -3,7 +3,7 @@
         "smarty/smarty": "v3.1.36",
         "nette/mail" : "^2.4",
         "box/spout" : "^2.7",
-        "dompdf/dompdf" : "^0.8.3",
+        "dompdf/dompdf" : "^1.2.1",
         "gargron/fileupload" : "~1.4.0",
         "erusev/parsedown": "^1.7.3",
         "gumlet/php-image-resize": "~1.8.0",
