@@ -1,3 +1,8 @@
-inc/config.ini
+mysql
 templates_c
-.remote-sync.json
+.vscode
+.settings
+src/vendor
+src/composer.lock
+src/composer.json
+report_phpcs

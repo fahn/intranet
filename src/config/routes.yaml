@@ -1,0 +1,7 @@
+homepage:
+    path:       /
+    controller: App\Controller\MainController::homepage
+
+t2:
+    path: t2
+    controller Badtra\Tournament::showTournamentsTMPL    
