@@ -20,6 +20,7 @@ namespace Badtra\Intranet\DB;
 trait SettingsDB
 {
 
+    protected String $__TABLE__ = "Settings";
 
     public function loadAllSettings(): array
     {
@@ -37,6 +38,7 @@ trait SettingsDB
         $query     = "SELECT * FROM `Settings` WHERE `name` = :name";
         $statement = $this->db->prepare($query);
         $statement->bindParam('name', $name);
+
         $statement->execute();
 
         return $statement->fetch();

@@ -16,12 +16,12 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU General Public License
  * @link      https://www.badtra.de
  ******************************************************************************/
-namespace Badtra\Intranet\Html\admin;
+namespace Badtra\Intranet\Html\Admin;
 
 use \Badtra\Intranet\Html\BrdbHtmlPage;
 use \Badtra\Intranet\Logic\PrgPatternElementNews;
 
-class NewsAdminPage extends BrdbHtmlPage 
+class AdminNewsPage extends BrdbHtmlPage 
 {
   private prgPatternElementNews $prgPatternElementNews;
 
@@ -78,12 +78,12 @@ class NewsAdminPage extends BrdbHtmlPage
     }
 
 
-    private function TMPL_list() {
+    public function listView() {
         $this->smarty->assign(array(
             'newsList'      => $this->loadList(),
         ));
 
-        return $this->smarty->fetch('news/adminList.tpl');
+        return $this->smarty->fetch('news/admin/list.tpl');
     }
 
     /**
@@ -91,16 +91,24 @@ class NewsAdminPage extends BrdbHtmlPage
      *
      * @return string
      */
-    private function TMPL_update(): string
+    public function updateView(): string
     {
         // load categories
         $cats = new CategoryAdminPage();
 
         $this->smarty->assign(array(
-            'action'                 => $this->action,
+            'action'                 => 'update',
             'item'                   => $this->getNewsById($this->id),
         ));
-        return $this->smarty->fetch('news/adminUpdate.tpl');
+        return $this->smarty->fetch('news/admin/update.tpl');
+    }
+
+
+    public function addView(): string {
+        $this->smarty->assign(array(
+            'action'                 => 'add'
+        ));
+        return $this->smarty->fetch('news/admin/update.tpl');
     }
 
     private function loadList() {

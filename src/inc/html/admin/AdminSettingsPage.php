@@ -16,25 +16,27 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU General Public License
  * @link      https://www.badtra.de
  ******************************************************************************/
-namespace Badtra\Intranet\Html;
+namespace Badtra\Intranet\Html\Admin;
 
 use \Badtra\Intranet\Html\BrdbHtmlPage;
 use \Badtra\Intranet\Logic\PrgPatternElementSettings;
 
-class SettingsAdminPage extends BrdbHtmlPage
+class AdminSettingsPage extends BrdbHtmlPage
 {
+
+    private $__TABLE__ = "Settings";
 
     private $_page = "adminSettings.php";
 
     private PrgPatternElementSettings $prgPatternElementSettings;
 
 
-    public function __construct(?string $page)
+    public function __construct()
     {
         parent::__construct();
 
         // set page
-        $page = $page != null ?: $page;
+        //$page = $page != null ?: $page;
 
         $this->prgPatternElementSettings = new PrgPatternElementSettings($this->prgPatternElementLogin);
         $this->prgPattern->registerPrg($this->prgPatternElementSettings);
@@ -47,47 +49,20 @@ class SettingsAdminPage extends BrdbHtmlPage
     }//end processPage()
 
 
-    protected function htmlBody()
-    {
-        switch ($this->action) {
-            case 'add':
-                $content = $this->TMPL_update();
-                break;
-
-            case 'edit':
-                $content = $this->TMPL_update();
-                break;
-
-            case 'delete':
-                $content = $this->TMPL_delete();
-                break;
-
-            default:
-                $content = $this->TMPL_list();
-                break;
-        }
-
-        $this->smarty->assign(
-            ['content' => $content]
-        );
-        $this->smarty->display('index.tpl');
-    }//end htmlBody()
-
-
-    private function TMPL_list(): string
+    public function listView(): string
     {
         $this->smarty->assign(
             [
                 'list' => $this->loadList(),
             ]
         );
-        return $this->smarty->fetch('settings/AdminList.tpl');
+        return $this->smarty->fetch('settings/admin/list.tpl');
     }//end TMPL_list()
 
 
-    private function TMPL_update(): string
+    public function updateView(int $id): string
     {
-        $item = $this->brdb->getSettingById($this->id);
+        $item = $this->brdb->getSettingById($id);
         $this->smarty->assign(
             [
                 'dataTypeOptions' => [
@@ -98,14 +73,14 @@ class SettingsAdminPage extends BrdbHtmlPage
                 'item'            => $item,
             ]
         );
-        return $this->smarty->fetch('settings/AdminUpdate.tpl');
-    }//end TMPL_update()
+        return $this->smarty->fetch('settings/admin/update.tpl');
+    }
 
 
-    private function TMPL_delete(): void
+    public function deleteView(): void
     {
 
-    }//end TMPL_delete()
+    }
 
 
     private function loadList()

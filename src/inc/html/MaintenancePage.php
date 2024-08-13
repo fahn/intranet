@@ -18,23 +18,26 @@
  ******************************************************************************/
 namespace Badtra\Intranet\Html;
 
+require_once ROOT_PATH .'/vendor/autoload.php';
+
 use \Badtra\Intranet\Html\BrdbHtmlPage;
 
 class MaintenancePage extends BrdbHtmlPage
 {
     public function __construct()
-    {
+    {        
         parent::__construct();
+
     }//end __construct()
 
 
-    public function defaultView()
+    public function defaultView():string
     {
         $this->smarty->assign(
             [
-                "headline" => $this->settings->getSettingString("MAINTENANCE_TITLE"),
-                "text"     => $this->settings->getSettingString("MAINTENANCE_TEXT"),
-                "date"     => $this->settings->getSettingString("MAINTENANCE_DATE"),
+                "headline" => $this->prgPatternElementLogin->getSettingString("MAINTENANCE_TITLE"),
+                "text"     => $this->prgPatternElementLogin->getSettingString("MAINTENANCE_TEXT"),
+                "date"     => $this->prgPatternElementLogin->getSettingString("MAINTENANCE_DATE"),
                 "link"     => $this->prgPatternElementLogin->linkTo(["page" => "index.php"]),
             ]
         );

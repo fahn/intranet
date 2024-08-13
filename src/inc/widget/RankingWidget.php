@@ -18,25 +18,35 @@
  ******************************************************************************/
 namespace Badtra\Intranet\Widget;
 
-class RankingWidget extends \Badtra\Intranet\Widget\DefaultWidget
+use Badtra\Intranet\DB\BrankDB;
+
+use \Smarty;
+
+class RankingWidget 
 {
     private int $userId;
 
-    public function __construct(?int $userId = null) {
-        $this->userId = isset($userId) && is_numeric($userId) ?: $userId;
+    protected $brdb = null;
 
-        parent::__construct();
+    protected $smarty = null;
+
+    private int $_MAX_TOURNAMENT = 5;
+
+    public function __construct() {
+        //$this->userId = isset($userId) && is_numeric($userId) ?: $userId;
+        // @TODO FIX
+        $this->userId = 1;
+        $this->brdb = new BrankDB();
+        $this->smarty = new Smarty();
+
     }
-
     public function showWidget(?string $name) {
         switch ($name) {
             case "latestGames":
                 return $this->TPML_latestGames();
-                break;
 
             default:
                 return "no name / or not exists";
-                break;
         }
 
     }
@@ -55,11 +65,11 @@ class RankingWidget extends \Badtra\Intranet\Widget\DefaultWidget
 
     private function getLatestGames(): ?array
     {
+
         if ($this->userId == null) {
             return array();
         }
 
-        $data = array();
         $res  = $this->brdb->selectLatestRankingGamesByPlayerId($this->userId);
         try {
             while ($dataSet = $res)
@@ -74,13 +84,14 @@ class RankingWidget extends \Badtra\Intranet\Widget\DefaultWidget
                 $dataSet["chicken"] = $chicken;
                 $dataSet["sets"]    = $this->convertSets($dataSet["sets"]);
 
-                $data[] = $dataSet;
+                return $dataSet;
             }
         } catch (\Exception $e) {
            
         }
 
-        return $data;
+        return array();
+        
     }
 
     private function convertSets(string $sets):string

@@ -16,12 +16,12 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU General Public License
  * @link      https://www.badtra.de
  ******************************************************************************/
-namespace Badtra\Intranet\Html;
+namespace Badtra\Intranet\Html\Admin;
 
 use \Badtra\Intranet\Html\BrdbHtmlPage;
 use \Badtra\Intranet\Logic\PrgPatternElementUser;
 
-class UserAdminPage extends BrdbHtmlPage
+class AdminUserPage extends BrdbHtmlPage
 {
     private PrgPatternElementUser $prgPatternElementUser;
     private array $info;
@@ -61,7 +61,7 @@ class UserAdminPage extends BrdbHtmlPage
     }
 
 
-    public function editView(): string
+    public function updateView(): string
     {  
         $this->smarty->assign(array(
             'user'   => $this->getUserById($this->id),

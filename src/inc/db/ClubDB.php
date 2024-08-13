@@ -17,6 +17,7 @@
  * @link      https://www.badtra.de
  ******************************************************************************/
 namespace Badtra\Intranet\DB;
+
 trait ClubDB
 {
 

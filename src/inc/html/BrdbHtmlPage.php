@@ -18,11 +18,18 @@
  ******************************************************************************/
 namespace Badtra\Intranet\Html;
 
-use Symfony\Component\Routing\Annotation\Route;
 
-require_once BASE_DIR .'/vendor/autoload.php';
+use \Badtra\Intranet\Html\HtmlPageProcessor;
+use \Badtra\Intranet\Logic\PrgPatternElementLogin;
+use \Badtra\Intranet\Logic\PrgPattern;
+use \Badtra\Intranet\DB\BrankDB;
 
-class BrdbHtmlPage extends \Badtra\Intranet\Html\HtmlPageProcessor
+use \Badtra\Intranet\Widget\TournamentWidget;
+use \Badtra\Intranet\Widget\RankingWidget;
+
+
+
+class BrdbHtmlPage extends HtmlPageProcessor
 {
 
     // smarty
@@ -34,9 +41,9 @@ class BrdbHtmlPage extends \Badtra\Intranet\Html\HtmlPageProcessor
     // stage
     protected string $stage;
 
-    protected \Badtra\Intranet\DB\BrankDB $brdb;
-    protected \Badtra\Intranet\Logic\PrgPattern $prgPattern;
-    protected \Badtra\Intranet\Logic\PrgPatternElementLogin $prgPatternElementLogin;
+    protected BrankDB $brdb;
+    protected PrgPattern $prgPattern;
+    protected PrgPatternElementLogin $prgPatternElementLogin;
 
     protected int $id;
     protected string $action;
@@ -45,17 +52,22 @@ class BrdbHtmlPage extends \Badtra\Intranet\Html\HtmlPageProcessor
     protected bool $isUserLoggedIn;
 
 
+    protected string $version;
+
+
     public function __construct()
     {
+
+
        
         /* SQL CONNECTION */
-        $this->brdb = new \Badtra\Intranet\DB\BrankDB();
+        $this->brdb = new BrankDB();
 
         /* Login pattern */
-        $this->prgPatternElementLogin = new \Badtra\Intranet\Logic\PrgPatternElementLogin($this->brdb);
+        $this->prgPatternElementLogin = new PrgPatternElementLogin();
 
        
-        $this->prgPattern = new \Badtra\Intranet\Logic\PrgPattern();
+        $this->prgPattern = new PrgPattern();
         $this->prgPattern->registerPrg($this->prgPatternElementLogin);
 
         
@@ -75,14 +87,47 @@ class BrdbHtmlPage extends \Badtra\Intranet\Html\HtmlPageProcessor
         // load smarty
         $this->smarty = new \Smarty();
 
+        $this->smarty->registerPlugin('modifier', 'strtotime', 'strtotime');
+        $this->smarty->registerPlugin('modifier', 'count', 'count');
+        $this->smarty->registerPlugin('modifier', 'intval', 'intval');
+
+
         $this->version = $this->prgPatternElementLogin->getSettingString("VERSION");
 
         // set smarty settings
-        $this->smarty->setTemplateDir(BASE_DIR ."/templates");
-        $this->smarty->setCompileDir(BASE_DIR  ."/templates_c");
-        $this->smarty->setConfigDir(BASE_DIR  ."/smarty/configs");
+        $this->smarty->setTemplateDir(__BASE_DIR__ ."/templates");
+        $this->smarty->setCompileDir(__BASE_DIR__  ."/templates_c");
+        $this->smarty->setConfigDir(__BASE_DIR__  ."/smarty/configs");
+        $this->smarty->setCacheDir(__BASE_DIR__ . '/cache');
 
 
+        if ($this->prgPatternElementLogin->isDeployment())
+        {
+            $this->smarty->clearAllCache();
+            $this->smarty->force_compile  = true;
+            $this->smarty->debugging      = false;
+            $this->smarty->setErrorReporting(E_ALL);
+            $this->smarty->setDebugging(true);
+            $this->smarty->caching        = false;
+            $this->smarty->cache_lifetime = 0;
+            $this->version .="-dev";
+        } else {
+            // remove notice
+            $this->smarty->error_reporting = E_ALL & ~E_NOTICE;
+        }
+
+        // check maintenance
+        if ($this->prgPatternElementLogin->isMaintenance()) {
+            $this->prgPatternElementLogin->customRedirectArray(
+                array(
+                    "page" => "index.php",
+                    "action" => "maintenance",
+                )
+            );
+        }
+
+
+        // get Messages
         $this->getMessages();
 
         // load version
@@ -109,14 +154,53 @@ class BrdbHtmlPage extends \Badtra\Intranet\Html\HtmlPageProcessor
                 "cupEnable"          => true,
                 "tournamentEnable"   => $this->prgPatternElementLogin->getSettingBool("TOURNAMENT_ENABLE"),
                 "faqEnabled"         => $this->prgPatternElementLogin->getSettingBool("FAQ_ENABLE"),
-                //"social"             => $this->prgPatternElementLogin->getSettingArray("SOCIAL_LINK"),
+                "social"             => $this->prgPatternElementLogin->getSettingArray("SOCIAL_LINK"),
                 "newsEnable"         => $this->prgPatternElementLogin->getSettingBool("NEWS_ENABLE"),
                 "badtra"             => $badtra,
                 #$notification->getNotification(),
         ]);
 
+        // check if user is logged in
         $this->isUserLoggedIn = $this->prgPatternElementLogin->isUserLoggedIn();
+        // @TODO REMOVE
+        $this->isUserLoggedIn = 1;
+        $this->loadUserLoggingContent();
 
+
+        // $basename = basename($_SERVER["PHP_SELF"]);
+        $actionArray = ["login", "register", "requestPassword", "changePassword", "maintenance"];
+
+        if ($this->isUserLoggedIn === false && in_array($this->action, $actionArray)) {
+
+                // get REFERENCE URL and save to session
+                $_SESSION["ref"] = sprintf("%s://%s/%s",
+                    isset($_SERVER["HTTPS"]) ? "https" : "http",
+                    $_SERVER["HTTP_HOST"],
+                    $_SERVER["REQUEST_URI"]
+                );
+
+                /* $this->prgPatternElementLogin->customRedirectArray(
+                    array(
+                        "page" => "index.php",
+                        "action" => "login",
+                    )
+                );
+                */
+        }
+        
+
+        
+
+
+        $this->prgPattern->processPRG();
+
+
+
+
+        return; 
+    }//end __construct()
+
+    private function loadUserLoggingContent () {
         if (isset($this->isUserLoggedIn) && $this->isUserLoggedIn === true) {
             $user = $this->prgPatternElementLogin->getLoggedInUser();
             // get User Image
@@ -132,74 +216,60 @@ class BrdbHtmlPage extends \Badtra\Intranet\Html\HtmlPageProcessor
                 "userId"             => $this->prgPatternElementLogin->getLoggedInUser()->getId(),
             ]);
 
-            $randkedWidget    = new \Badtra\Intranet\Widget\RankingWidget($user->getUserId());
-            $tournamentWidget = new \Badtra\Intranet\Widget\TournamentWidget();
-            $staffWidget      = new \Badtra\Intranet\Widget\TeamWidget();
-            $bdayWidget       = new \Badtra\Intranet\Widget\BdayWidget();
-            $newsWidget       = new \Badtra\Intranet\Widget\NewsWidget();
+            //$randkedWidget    = new \Badtra\Intranet\Widget\RankingWidget($user->getUserId());
+            //$tournamentWidget = new \Badtra\Intranet\Widget\TournamentWidget();
+            //$staffWidget      = new \Badtra\Intranet\Widget\TeamWidget();
+            //$bdayWidget       = new \Badtra\Intranet\Widget\BdayWidget();
+            //$newsWidget       = new \Badtra\Intranet\Widget\NewsWidget();
 
 
             $this->smarty->assign([
-                "widgetRankingLatestGames"    => $randkedWidget->showWidget("latestGames"),
-                "widgetUpcomingTournaments"   => $tournamentWidget->showWidget("upcomingTournaments"),
-                "widgetShowTeam"              => $staffWidget->showWidget("showTeam"),
-                "widgetShowBdays"             => $bdayWidget->showWidget("nextBdays"),
-                "widgetLatestNews"            => $newsWidget->showWidget("latestNews"),
+                //"widgetRankingLatestGames"    => $randkedWidget->showWidget("latestGames"),
+                //"widgetUpcomingTournaments"   => $tournamentWidget->showWidget("upcomingTournaments"),
+                // "widgetShowTeam"              => $staffWidget->showWidget("showTeam"),
+                // "widgetShowBdays"             => $bdayWidget->showWidget("nextBdays"),
+                // "widgetLatestNews"            => $newsWidget->showWidget("latestNews"),
             ]);
             unset($randkedWidget, $tournamentWidget, $staffWidget, $bdayWidget, $newsWidget);
         }
+    }
 
 
-        $this->prgPattern->processPRG();
+    public function processPage() {
+        //phpinfo();
+        
+        //$this->loadContent();
+        //$this->defaultView();
+        //echo $this->loginView();
 
-
-        /*
-        if ($this->prgPatternElementLogin->isDeployment())
-        {
-            $this->smarty->setCacheDir(BASE_DIR  ."/cache");
-            // @TODO: set debug bar
-            $this->smarty->clear_all_cache();
-            $this->smarty->force_compile  = true;
-            $this->smarty->debugging      = false;
-            $this->smarty->caching        = false;
-            $this->smarty->cache_lifetime = 0;
-            $$this->version .="-dev";
-        }
-        else
-        {
-            // remove notice
-            $this->smarty->error_reporting = E_ALL & ~E_NOTICE;
-        }
+        //$this->smarty->display('default.tpl');
 
 
 
-        // check maintenance
-        #if ($this->prgPatternElementLogin->isMaintenance()) {
-        #    $this->prgPatternElementLogin->customRedirectArray("maintenance.php");
-        #}
+        // switch($this->action) {
+        //     case "login":
+        //         echo $this->loginView();
+        //         break;
+        //     case "register":
+        //         $register = new \Badtra\Intranet\Html\RegistrationPage();
+        //         echo $register->registerView();
+        //         break;
+        //     case "requestPassword":
+        //         echo $this->requestPasswordView();
+        //         break;
+        //     case "changePassword":
+        //         echo $this->changePasswordView();
+        //         break;
+        //     case "maintenance":
+        //         $maintenance = new \Badtra\Intranet\Html\MaintenancePage();
+        //         echo $maintenance->defaultView();
+        //         break;
+        //     default:
+                echo $this->defaultView();
+        //         break;
+        // }
 
-        /* LOAD SETTINGS */
-        //$this->settings = $this->brdb->loadAllSettings();
-
-        /* goto Login */
-        /*
-        $basename = basename($_SERVER["PHP_SELF"]);
-
-        $isUserLoggedIn = $this->prgPatternElementLogin->isUserLoggedIn();
-
-        if ($basename != "index.php" && $isUserLoggedIn === false)
-        {
-            $_SESSION["ref"] = (isset($_SERVER["HTTPS"]) ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
-            $this->PrgPatternElementLogin->customRedirectArray(array(
-              "page" => "index.php",
-            ));
-        }
-        return;
-        */
-    }//end __construct()
-
-
-    public function processPage() {}
+    }
 
 
 
@@ -217,7 +287,7 @@ class BrdbHtmlPage extends \Badtra\Intranet\Html\HtmlPageProcessor
      */
     protected function htmlBody() 
     {
-        /*
+        
         $isUserLoggedIn = $this->prgPatternElementLogin->isUserLoggedIn();
        
         // get Messages
@@ -229,9 +299,9 @@ class BrdbHtmlPage extends \Badtra\Intranet\Html\HtmlPageProcessor
                     "content"      => $this->loadContent(),
                     #"notification" => $this->getNotification(),
             ));
-            $this->smarty->display("index.tpl");
+            $this->smarty->display("default.tpl");
         }
-      */  
+       
     }
 
     protected function getMessages() 
@@ -255,7 +325,7 @@ class BrdbHtmlPage extends \Badtra\Intranet\Html\HtmlPageProcessor
 
         
 
-        return $this->smarty->fetch("default.tpl");
+        //return $this->smarty->fetch("default.tpl");
     }
 
     /**
@@ -265,15 +335,20 @@ class BrdbHtmlPage extends \Badtra\Intranet\Html\HtmlPageProcessor
      */
     public function defaultView():string
     {
-        /*
+
+        $tournamentWidget = new TournamentWidget();
+        $rankingWidget    = new RankingWidget();
+        $team = new \Badtra\Intranet\Widget\TeamWidget($this->smarty, $this->brdb);
+        $news = new \Badtra\Intranet\Widget\NewsWidget($this->smarty, $this->brdb);
+        
         $this->smarty->assign([
-            "widgetRankingLatestGames"    => \Badtra\Intranet\Widget\RankingWidget::showWidget("latestGames"),
-            "widgetUpcomingTournaments"   => \Badtra\Intranet\Widget\TournamentWidget::showWidget("upcomingTournaments"),
-            "widgetShowTeam"              => \Badtra\Intranet\Widget\TeamWidget::showWidget("showTeam"),
-            "widgetShowBdays"             => \Badtra\Intranet\Widget\BdayWidget::showWidget("nextBdays"),
-            "widgetLatestNews"            => \Badtra\Intranet\Widget\NewsWidget::showWidget("latestNews"),
+            "widgetRankingLatestGames"    => $rankingWidget->showWidget("latestGames"),
+            "widgetUpcomingTournaments"   => $tournamentWidget->upcomingTournamentView(),
+            "widgetShowTeam"              => $team->showWidget("showTeam"),
+            // "widgetShowBdays"             => \Badtra\Intranet\Widget\BdayWidget::showWidget("nextBdays"),
+            "widgetLatestNews"            => $news->showWidget("latestNews"),
         ]);
-        */
+        
 
         return $this->smarty->fetch("default.tpl");
     }
@@ -292,8 +367,8 @@ class BrdbHtmlPage extends \Badtra\Intranet\Html\HtmlPageProcessor
     }
 
     public function requestPasswordView(): string {
-        $token = $this->PrgPatternElementLogin->getGetVariable("token");
-        $mail  = $this->PrgPatternElementLogin->getGetVariable("mail");
+        $token = $this->prgPatternElementLogin->getGetVariable("token");
+        $mail  = $this->prgPatternElementLogin->getGetVariable("mail");
 
         return $this->showDefault($this->smarty->fetch('login/request_password.tpl'));       
     }
@@ -313,6 +388,8 @@ class BrdbHtmlPage extends \Badtra\Intranet\Html\HtmlPageProcessor
 
     public function smartyFetchWrap(string $filename) 
     {
-        return $this->smarty->fetch("page_wrap_header.tpl") . $this->smarty->fetch($filename) . $this->smarty->fetch("page_wrap_footer.tpl"); 
+        //return $this->smarty->fetch("page_wrap_header.tpl") . $this->smarty->fetch($filename) . $this->smarty->fetch("page_wrap_footer.tpl"); 
+
+        return $this->smarty->fetch($filename); 
     }
 }//end class

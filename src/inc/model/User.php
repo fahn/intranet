@@ -18,7 +18,13 @@
  ******************************************************************************/
 namespace Badtra\Intranet\Model;
 
-Class User extends \Badtra\Intranet\Model\DefaultModel
+use \Badtra\Intranet\Model\DefaultModel;
+use \Badtra\Intranet\Model\Club;
+use \Badtra\Intranet\Model\Player;
+use \Badtra\Intranet\Model\Reporter;
+use \Badtra\Intranet\Logic\PrgPatternElementLogin;
+
+Class User extends DefaultModel
 {
 
     // Constants for the User table in the database
@@ -57,12 +63,17 @@ Class User extends \Badtra\Intranet\Model\DefaultModel
     public string $bday;
     private string $userImage;
 
+    private PrgPatternElementLogin $prgPatternElementLogin;
+
     /**
      * Conmstructor that knows how to retrieve all fields from a given data set
      * @param array $dataSet a data set prefrably directly from an SQL statement
      */
     public function __construct($dataSet = null) 
     {
+        // init
+        $this->prgPatternElementLogin = new PrgPatternElementLogin();
+
         if (!isset($dataSet) || $dataSet == null) {
             throw new \Exception("NO USER MODELL");
         }
@@ -184,11 +195,13 @@ Class User extends \Badtra\Intranet\Model\DefaultModel
     }
 
     public function getDefaultUserImage(): string
-    {
-        $file = sprintf("%s/%s/%s", $_SERVER['DOCUMENT_ROOT'], self::USER_IMAGE_PATH , ($this->gender == 'Male' ? self::USER_IMAGE_MALE : self::USER_IMAGE_FEMALE));
-        return $file;
-    }
+{
+    $host = $this->prgPatternElementLogin->getSettingString("HOST");
+    $path = sprintf("/%s/%s", self::USER_IMAGE_PATH, ($this->gender === 'Male' ? self::USER_IMAGE_MALE : self::USER_IMAGE_FEMALE));
+    $file = sprintf("%s%s", $host, $path);
 
+    return $file;
+}
     private function getImage(string $prefix = ""): string
     {
         $file = sprintf("%s/%s/%s%s", $_SERVER['DOCUMENT_ROOT'], self::USER_IMAGE_PATH, $prefix, $this->userImage);

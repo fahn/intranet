@@ -23,9 +23,9 @@ trait UserDB
     /**
      * Call this method to hand back the User with the given email from the data base
      *
-     * @param  String $email
+     * @param  string $email
      *            the email to look for as string
-     * @return mysqli_result
+     * @return \mysqli_result
      */
     public function selectUserByEmail(string $email): ?array
     {
@@ -59,7 +59,7 @@ trait UserDB
         $statement->bindParam('userId', $userId, \PDO::PARAM_INT);
 
         return $statement->execute();
-        unset($userId, $query, $statement);
+        //unset($userId, $query, $statement);
     }//end setUserLastLogin()
 
 
@@ -86,7 +86,7 @@ trait UserDB
      *
      * @param  integer $userId
      *            the id of the user to be deleted
-     * @return mysqli_result result of the sql execution
+     * @return \mysqli_result result of the sql execution
      */
     public function deleteUserById(int $userId): bool
     {
@@ -101,7 +101,7 @@ trait UserDB
     /**
      * Get all users from the DB
      *
-     * @return mysqli_result all users from the database as SQL Result
+     * @return \mysqli_result all users from the database as SQL Result
      */
     public function selectAllUser(): array
     {
@@ -267,25 +267,25 @@ trait UserDB
     /**
      * Call this method to update a user
      *
-     * @param  unknown $userId
+     * @param  int $userId
      *            the id of the user to be updated
-     * @param  unknown $email
+     * @param  string $email
      *            the email of the user to be set
-     * @param  unknown $fname
+     * @param  string $fname
      *            the first name of the user
-     * @param  unknown $lName
+     * @param  string $lName
      *            the last name of the user
-     * @param  unknown $gender
+     * @param  string $gender
      *            the gender, set to either "Male" or "Female"
-     * @param  unknown $pass
+     * @param  string $pass
      *            password to be set or null in case the password should not be updated
-     * @param  unknown $isAdmin
+     * @param  string $isAdmin
      *            set to 1 if the suer is an admin 0 if not
-     * @param  unknown $isPlayer
+     * @param  string $isPlayer
      *            set to 1 if the user is an actoive palyer 0 if not
-     * @param  unknown $isReporter
+     * @param  string $isReporter
      *            set to 1 if the user is a reporter or 0 if not
-     * @return mysqli_result the result of the executed maysql statement
+     * @return \mysqli_result the result of the executed maysql statement
      */
     public function updateAdminUser($userId, $email, $fname, $lName, $gender, $phone, $bday, $playerId, $isPlayer, $isReporter, $isAdmin)
     {
@@ -348,8 +348,8 @@ trait UserDB
      * Insert PassHash for new password request
      *
      * @param  integer $userId
-     * @param  String  $token
-     * @param  String  $ip
+     * @param  string  $token
+     * @param  string  $ip
      * @return boolean
      */
     public function insertUserPassHash(int $userId, string $token, string $ip): bool

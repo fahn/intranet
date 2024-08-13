@@ -1,7 +1,7 @@
 <?php
 /**
  * Badminton Intranet System
- * Copyright 2017-2020
+ * Copyright 2017-2024
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -16,18 +16,18 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU General Public License
  * @link      https://www.badtra.de
  ******************************************************************************/
-namespace Badtra\Intranet\Html\admin;
+namespace Badtra\Intranet\Html\Admin;
 
 use \Badtra\Intranet\Html\BrdbHtmlPage;
-use \Badtra\Intranet\Html\admin\CategoryAdminPage;
+use \Badtra\Intranet\Html\Admin\AdminCategoryPage;
 
 use \Badtra\Intranet\Logic\PrgPatternElementFaq;
 
 
-class FaqAdminPage extends BrdbHtmlPage
+class AdminFaqPage extends BrdbHtmlPage
 {
     private PrgPatternElementFaq $prgPatternElementFaq;
-    private CategoryAdminPage $category;
+    private AdminCategoryPage $category;
 
     private string $_page = "";
 
@@ -36,7 +36,7 @@ class FaqAdminPage extends BrdbHtmlPage
     {
         parent::__construct();
 
-        $this->_page = $page != null ?: $page;
+        //$this->_page = $page != null ?: $page;
 
         $this->prgPatternElementFaq = new PrgPatternElementFaq($this->prgPatternElementLogin);
         $this->prgPattern->registerPrg($this->prgPatternElementFaq);
@@ -50,7 +50,7 @@ class FaqAdminPage extends BrdbHtmlPage
         $this->smarty->assign('links', $links);
 
         // load categories
-        $this->category = new CategoryAdminPage();
+        $this->category = new AdminCategoryPage();
     }
 
 
@@ -85,7 +85,16 @@ class FaqAdminPage extends BrdbHtmlPage
         $this->smarty->assign(array(
             'FaqList'      => $this->loadList(),
         ));
+
         return $this->smarty->fetch('faq/adminList.tpl');
+    }
+
+    public function listview() {
+        $this->smarty->assign([
+            'FaqList'      => $this->loadList(),
+        ]);
+
+        return $this->smarty->fetch('faq/admin/list.tpl');
     }
 
 

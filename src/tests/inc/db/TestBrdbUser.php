@@ -16,15 +16,15 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU General Public License
  * @link      https://www.badtra.de
  ******************************************************************************/
-namespace Tests\integration\User;
+namespace Badtra\Tests\integration\User;
 
 use PHPUnit\Framework\TestCase;
 use PHPUnit\DbUnit\TestCaseTrait;
 
-define("BASE_DIR", "/var/www/html/");
+define("__BASE_DIR__", "/var/www/html/");
 
-require_once BASE_DIR ."/Tests/baseTest.php";
-require_once BASE_DIR ."/inc/brdb/brdb.User.inc.php";
+require_once __BASE_DIR__ ."/Tests/baseTest.php";
+require_once __BASE_DIR__ ."/inc/brdb/brdb.User.inc.php";
 
 class UserBrdbTest extends BaseTestCase
 {

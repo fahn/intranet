@@ -37,8 +37,10 @@ class RegistrationPage extends BrdbHtmlPage
 
     public function registerView(): string
     {
-        $this->smarty->assign(
-            []
+        $this->smarty->assign([
+            "vars" => $_POST,
+            "clubs" => $this->brdb->selectAllClubs()
+            ]
         );
         return $this->smartyFetchWrap("login/register.tpl");
     }//end loadContent()

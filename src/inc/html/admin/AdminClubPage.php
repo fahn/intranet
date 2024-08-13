@@ -16,12 +16,12 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU General Public License
  * @link      https://www.badtra.de
  ******************************************************************************/
-namespace Badtra\Intranet\Html;
+namespace Badtra\Intranet\Html\Admin;
 
 use \Badtra\Intranet\Html\BrdbHtmlPage;
 use \Badtra\Intranet\Logic\PrgPatternElementClub;
 
-class ClubAdminPage extends BrdbHtmlPage
+class AdminClubPage extends BrdbHtmlPage
 {
     private PrgPatternElementClub $prgPatternElementClub;
 
@@ -33,14 +33,14 @@ class ClubAdminPage extends BrdbHtmlPage
         $this->prgPattern->registerPrg($this->prgPatternElementClub);
     }
 
-    private function listView(): string
+    public function listView(): string
     {
         $this->smarty->assign([
             "clubs"      => $this->loadClubList($this->page),
             //"pagination" => $this->prgPatternElementClub->getPageination($this->page),
         ]);
 
-        return $this->smartyFetchWrap("admin/ClubList.tpl");
+        return $this->smartyFetchWrap("club/admin/list.tpl");
     }
 
     public function addView(): string
@@ -48,9 +48,29 @@ class ClubAdminPage extends BrdbHtmlPage
       $this->smarty->assign([
           "action"   => $this->action,
           "clubs"    => $this->loadClubList(),
-          "variable" => $this->getClubById($this->id),
+          "id"       => $this->getClubById($this->id),
       ]);
-      return $this->smartyFetchWrap("admin/ClubEdit.tpl");
+      return $this->smartyFetchWrap("club/admin/update.tpl");
+    }
+
+    public function updateView(int $id): string
+    {
+      $this->smarty->assign([
+          "action"   => $this->action,
+          "clubs"    => $this->loadClubList(),
+          "id"       => $this->getClubById($id),
+      ]);
+
+      return $this->smartyFetchWrap("club/admin/update.tpl");
+    }
+
+    public function deleteView(int $id): string
+    {
+      $this->smarty->assign([
+          "club"       => $this->getClubById($id),
+      ]);
+
+      return $this->smartyFetchWrap("club/admin/delete.tpl");
     }
 
     /**
@@ -73,9 +93,9 @@ class ClubAdminPage extends BrdbHtmlPage
      * @param integer $id
      * @return array
      */
-    private function getClubById(): array
+    private function getClubById(int $id): array
     {
-        return $this->brdb->selectGetClubById($this->id);
+        return $this->brdb->selectGetClubById($id);
     }
 
 }

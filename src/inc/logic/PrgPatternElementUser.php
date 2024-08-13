@@ -21,11 +21,21 @@ namespace Badtra\Intranet\Logic;
 use \Badtra\Intranet\Logic\APrgPatternElement;
 use \Badtra\Intranet\Model\User;
 
-// vendor
-require_once BASE_DIR ."/vendor/autoload.php";
+use Symfony\Component\Validator\Validation;
+use Symfony\Component\Validator\Constraints as Assert;
+
+/**
+ * PrgPatternElementUser
+ *
+ * This class is responsible for the user management
+ *
+ * @category Badtra
+ * @package  Badtra\Intranet\Logic
+ */
 
 class PrgPatternElementUser extends APrgPatternElement
 {
+    const __TABLE__ = "user";
     const FORM_USER_ADMIN_USER_ID = "accountAdminUserId";
     const FORM_USER_EMAIL         = "accountEmail";
     const FORM_USER_FNAME         = "accountFirstName";
@@ -96,7 +106,7 @@ class PrgPatternElementUser extends APrgPatternElement
         $this->registerPostSessionVariable(self::FORM_USER_ADMIN_USER_ID);
 
         // set Image Path
-        $this->IMAGE_PATH = BASE_DIR ."static/img/user/";
+        $this->IMAGE_PATH = __BASE_DIR__ ."/static/img/user/";
        
     }
 
@@ -126,7 +136,6 @@ class PrgPatternElementUser extends APrgPatternElement
 
             case self::FORM_USER_ACTION_UPDATE_MY_ACCOUNT:
                 $this->processPostUpdateUserMyAccount();
-                return;
                 break;
 
             default:
@@ -412,6 +421,52 @@ class PrgPatternElementUser extends APrgPatternElement
      */
     private function processPostUpdateUserPassword(): bool
     {
+
+        $data = $_POST;
+        // Validator erstellen
+        $validator = Validation::createValidator();
+
+        // Constraints für jedes Feld definieren
+        $constraints = new Assert\Collection([
+            'current_password' => [
+                new Assert\NotBlank(),
+                new Assert\Callback(function ($currentPassword, $context) use ($currentPasswordInDatabase) {
+                    if ($currentPassword !== $currentPasswordInDatabase) {
+                        $context->buildViolation('Das aktuelle Passwort ist falsch.')
+                            ->addViolation();
+                    }
+                }),
+            ],
+            'new_password' => [
+                new Assert\NotBlank(),
+                new Assert\Length(['min' => 8]),
+                // Hier könnten zusätzliche Regeln wie Zahlen, Sonderzeichen usw. hinzugefügt werden
+            ],
+            'confirm_new_password' => [
+                new Assert\NotBlank(),
+                new Assert\EqualTo([
+                    'value' => $data['new_password'],  // Muss mit dem neuen Passwort übereinstimmen
+                    'message' => 'Die neuen Passwörter müssen übereinstimmen.',
+                ]),
+            ],
+        ]);
+
+        // Daten validieren
+        $violations = $validator->validate($data, $constraints);
+
+        // Daten validieren
+        $violations = $validator->validate($data, $constraints);
+
+        // Validierungsergebnisse auswerten
+        if (count($violations) > 0) {
+            // Es gibt Validierungsfehler
+            foreach ($violations as $violation) {
+                echo $violation->getPropertyPath() . ': ' . $violation->getMessage() . "\n";
+            }
+        } else {
+            echo "Das Formular wurde erfolgreich validiert!";
+        }
+
         $requireFields = array(self::FORM_USER_PASSWORD, self::FORM_USER_NEW_PASSWORD, self::FORM_USER_REPEAT_NEW_PASSWORD);
         if (! $this->prgElementLogin->checkRequiredFields($requireFields))
         {

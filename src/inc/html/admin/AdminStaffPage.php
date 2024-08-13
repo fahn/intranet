@@ -21,11 +21,11 @@ namespace Badtra\Intranet\Html;
 use \Badtra\Intranet\Html\BrdbHtmlPage;
 use \Badtra\Intranet\Logic\PrgPatternElementStaff;
 
-class StaffAdminPage extends BrdbHtmlPage
+class AdminStaffPage extends BrdbHtmlPage
 {
     private $prgPatternElementStaff;
 
-    private string $_page;
+    //private string $_page;
 
 
     public function __construct($page = null)
@@ -35,7 +35,7 @@ class StaffAdminPage extends BrdbHtmlPage
         $this->prgPatternElementStaff = new PrgPatternElementStaff($this->prgPatternElementLogin);
         $this->prgPattern->registerPrg($this->prgPatternElementStaff);
 
-        $this->_page = $page != null ?: $page;
+        //$this->_page = $page != null ?: $page;
     }
 
     protected function showProtectedArea(): bool
@@ -78,12 +78,12 @@ class StaffAdminPage extends BrdbHtmlPage
         $this->smarty->display('index.tpl');
     }
 
-    private function TMPL_listStaff() {
+    public function TMPL_listStaff() {
         $this->smarty->assign(array(
             'staff'     => $this->loadStaffList(),
         ));
 
-        return $this->smarty->fetch('staff/list.tpl');
+        return $this->smarty->fetch('team/admin/list.tpl');
     }
 
     private function TMPL_updatePlayer($laction) {
@@ -95,7 +95,7 @@ class StaffAdminPage extends BrdbHtmlPage
             'laction'   => $laction,
         ));
 
-        return $this->smarty->fetch('staff/update.tpl');
+        return $this->smarty->fetch('team/admin/update.tpl');
     }
 
     /**************************************************************************/

@@ -13,7 +13,10 @@
  ******************************************************************************/
 namespace Badtra\Intranet\Widget;
 
-class BdayWidget extends \Badtra\Intranet\Widget\DefaultWidget
+use DateTime;
+use \Badtra\Intranet\Widget\DefaultWidget;
+
+class BdayWidget extends DefaultWidget
 {
 
     public function __construct() 
@@ -26,11 +29,9 @@ class BdayWidget extends \Badtra\Intranet\Widget\DefaultWidget
         switch ($name) {
             case "nextBdays":
                 return $this->TPML_NextBdays();
-                break;
 
             default:
                 return "no name / or not exists";
-                break;
         }
 
     }
@@ -64,7 +65,7 @@ class BdayWidget extends \Badtra\Intranet\Widget\DefaultWidget
         return $data;
     }
 
-    private function calculate_age($date): string
+    private function calculate_age2($date): string
     {
        $year_diff = 0;
 
@@ -86,4 +87,30 @@ class BdayWidget extends \Badtra\Intranet\Widget\DefaultWidget
 
        return 1+$year_diff;
     }
+
+    private function calculate_age(string $date): int
+    {
+        // Datum validieren
+        if (empty($date) || $date == "0000-00-00") {
+            return 0; // Oder eine andere Fehlerrückgabe, falls das Datum ungültig ist
+        }
+
+        // Datum korrekt formatieren
+        $date = str_replace("/", "-", substr(trim($date), 0, 10));
+        
+        // Erstellen eines DateTime-Objekts
+        $birthdate = DateTime::createFromFormat('Y-m-d', $date);
+
+        // Falls das Datum ungültig ist, z.B. 31. Februar
+        if (!$birthdate) {
+            return 0;
+        }
+
+        // Berechnung des Alters
+        $today = new DateTime();
+        $age = $today->diff($birthdate)->y;
+
+        return $age;
+    }
+
 }

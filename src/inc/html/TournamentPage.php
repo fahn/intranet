@@ -57,20 +57,20 @@ class TournamentPage extends BrdbHtmlPage
      *
      * @return string
      */
-    private function detailView(): string
+    function detailView(int $id): string
     {
 
-        $tournament                   = $this->brdb->getTournamentData($this->id);
-        $tournament["classification"] = $this->prgElementTournament->formatClassification($tournament["classification"]);
-        $tournament["discipline"]     = $this->prgElementTournament->formatDiscipline($tournament["discipline"]);
+        $tournament                   = $this->brdb->getTournamentData($id)[0];
+        $tournament["classification"] = isset($tournament["classification"]) ?: $this->prgElementTournament->formatClassification($tournament["classification"]);
+        $tournament["discipline"]     = isset($tournament["discipline"]) ?: $this->prgElementTournament->formatDiscipline($tournament["discipline"]);
         if (isset($tournament["additionalClassification"])) {
           $tournament["additionalClassification"] = unserialize($tournament["additionalClassification"]);
         }
 
         $this->smarty->assign(array(
             "tournament"   => $tournament,
-            "players"      => $this->getPlayersByTournamentId($this->id),
-            "disciplines"  => $this->getDisciplinesByTournamentId($this->id),
+            "players"      => $this->getPlayersByTournamentId($id),
+            "disciplines"  => $this->getDisciplinesByTournamentId($id),
             "userPlayerId" => $this->prgPatternElementLogin->getLoggedInUser()->getPlayerId(),
         ));
 
@@ -197,10 +197,10 @@ class TournamentPage extends BrdbHtmlPage
      *
      * @return string
      */
-    private function addPlayerToTournamentTMPL(): string
+    public function addPlayerView(int $id): string
     {
         // load data
-        $tournament = $this->brdb->getTournamentData($this->id);
+        $tournament = $this->brdb->getTournamentData($id);
         $disciplines = "";
 
         if (isset($tournament["classification"]) && isset($tournament["discipline"])) {
@@ -226,7 +226,7 @@ class TournamentPage extends BrdbHtmlPage
           "action" => "new_player",
         ));
         $this->smarty->assign(array(
-            "tournament"     => $tournament,
+            "tournament"     => $tournament[0],
             "disciplines"    => $disciplines,
             "linkToSupport"  => $linkToSupport,
         ));
@@ -234,44 +234,7 @@ class TournamentPage extends BrdbHtmlPage
     }
 
 
-    /**
-     * Backup Tournament Data
-     *
-     * @return string
-     */
-    private function TMPL_backup():string
-    {
-      $diff    = "";
-      $backup = $this->brdb->getTournamentBackup($this->id);
-
-        $this->smarty->assign(array(
-            "backup" => $backup,
-            "diff"   => $diff,
-        ));
-
-        if (isset($this->id) && count($backup) > 1) {
-            $first  = $backup[0]["backupId"];
-            $second = $backup[1]["backupId"];
-            $rows = $this->brdb->getTournamentBackupDiff($first, $second);
-            if (isset($backup) && is_array($backup)) {
-                $rows = array();
-                foreach ($backup as $row) {
-                    $rows[] = unserialize($row["data"]);
-                }
-
-                $result = $this->arrayRecursiveDiff($rows[0], $rows[1]);
-               
-                $this->smarty->assign(array(
-                "diffResult"   => $result,
-                "diff"         => $rows,
-                ));
-
-                #$diff = Diff::toTable(Diff::compare($rows[0], $rows[1]));
-            }
-        }
-
-        return $this->smartyFetchWrap("tournament/backup.tpl");
-    }
+    
 
 
     private function arrayRecursiveDiff(array $aArray1, array $aArray2): array

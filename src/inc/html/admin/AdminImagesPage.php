@@ -16,12 +16,12 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU General Public License
  * @link      https://www.badtra.de
  ******************************************************************************/
-namespace Badtra\Intranet\Html\admin;
+namespace Badtra\Intranet\Html\Admin;
 
 use \Badtra\Intranet\Html\BrdbHtmlPage;
 use \Badtra\Intranet\Logic\PrgPatternElementImage;
 
-class ImagesAdminPage extends BrdbHtmlPage
+class AdminImagesPage extends BrdbHtmlPage
 {
 
     private PrgPatternElementImage $prgPatternElementImage;
@@ -60,7 +60,7 @@ class ImagesAdminPage extends BrdbHtmlPage
                 "images" => $this->scanDirectory(),
             ]
         );
-        return $this->smartyFetchWrap("images/adminList.tpl");
+        return $this->smartyFetchWrap("images/admin/list.tpl");
     }//end loadContent()
 
 
@@ -70,7 +70,7 @@ class ImagesAdminPage extends BrdbHtmlPage
         try {
             $userImages = $this->prgPatternElementImage->getUserImages();
         
-            $servPath = BASE_DIR."/";
+            $servPath = __BASE_DIR__ ."/";
             $images   = glob($servPath.self::_USER_IMAGE_PATH_."/*");
         
             $data = [];

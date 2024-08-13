@@ -37,11 +37,10 @@ class SupportPage extends BrdbHtmlPage
     }//end __construct()
 
 
-    public function defaultView(): void
+    public function showSupportForm(): string 
     {
 
-        $action = $param1 == null ? $this->prgElementSupport->getGetVariable("action") : $param1;
-
+        $action = "";
         $message = "";
         $subject = "";
 
@@ -49,16 +48,16 @@ class SupportPage extends BrdbHtmlPage
             case "new_player":
                 $message = sprintf("Hallo,&#13;ich möchte hiermit folgenden SpielerIn melden.&#13;&#13;Name:???&#13;Spielernummer:???&#13;Verein:???&#13;Vereinsnummer:???&#13;");
                 $subject = "Neuer Spieler";
-break;
+                break;
 
             case "register":
                 $message = sprintf("Hallo,&#13;ich möchte hiermit registrieren.&#13;&#13;Name:???&#13;Spielernummer:???&#13;Verein:???&#13;");
                 $subject = "Registrierung";
-break;
+                break;
 
             default:
                 $message = "";
-break;
+                break;
         }
 
         $this->smarty->assign(
@@ -69,7 +68,7 @@ break;
             ]
         );
 
-        $this->smartyFetchWrap("support.tpl");
+        return $this->smartyFetchWrap("support.tpl");
     }//end htmlBody()
 
 }//end class

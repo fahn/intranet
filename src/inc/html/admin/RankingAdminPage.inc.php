@@ -18,7 +18,9 @@
  ******************************************************************************/
 namespace Badtra\Intranet\Html;
 require_once "brdbHtmlPage.inc.php";
-require_once BASE_DIR .'/inc/logic/prgRanking.inc.php';
+
+use Badtra\Intranet\\BrdbHtmlPage
+use Badtra\Intranet\Logic\PrgPatternElementRanking;
 
 class BrdbHtmlAdminRanking extends BrdbHtmlPage
 {

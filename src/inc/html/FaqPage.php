@@ -23,7 +23,7 @@ use \Badtra\Intranet\Logic\PrgPatternElementFaq;
 
 class FaqPage extends BrdbHtmlPage
 {
-    private \Badtra\Intranet\Logic\PrgPatternElementFaq $prgPatternElementFaq;
+    private PrgPatternElementFaq $prgPatternElementFaq;
 
     public function __construct()
     {
