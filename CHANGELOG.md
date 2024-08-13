@@ -4,9 +4,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## 1.1.0
+
+-  UPDATE: Code Qualitiy
+-  UPDATE: file header date to 2024
+-  UPDATE: Smarty version to 4.5.3
+-  FIX: Docker Build
+
 ## 1.0.7
 
-**Date:** upcoming
+**Date:** 2020-??-??
 
 - implement codacy for automatic code quality and generating issue-management
 - improve complete Layout

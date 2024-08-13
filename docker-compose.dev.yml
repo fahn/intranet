@@ -1,0 +1,30 @@
+services:
+    intranet:
+        image: "intranet:latest"
+        env_file: .env
+        ports:
+            - "80:80/tcp"
+        mem_limit: 512m
+        volumes:
+            - ./src:/var/www/html
+            - ./composer.json:/var/www/html/composer.json:ro
+            - ./vendor:/var/www/html/vendor
+            - "./data/intranet/img/background.jpg:/var/www/html/static/img/background.jpg:ro"
+            - "./doc:/var/www/html/doc"
+
+    reminder:
+        image: "intranet:latest"
+
+    db:
+        image: mariadb:10
+        env_file: .env
+        restart: always
+        volumes:
+            - "./docker-build/mysql/mysql_schema.sql:/docker-entrypoint-initdb.d/mysql_schema.sql"
+            - "./data/mysql/:/var/lib/mysql"
+
+    adminer:
+        image: adminer
+        restart: always
+        ports:
+            - 8080:8080

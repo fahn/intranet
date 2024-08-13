@@ -10,18 +10,17 @@ clean:
 # BUILD
 .PHONY: build
 build:
-	make down
-	make clean
-	echo "build"
-	docker build --tag intranet_dev --compress docker-build/.
+	@make down
+	@make clean
+	@echo "build"
+	@docker build --tag intranet --compress --force-rm --no-cache .
 
 # RUN
-.PHONY: run
-run:
-	#make down
+run_dev:
 	docker-compose -f docker-compose.yml -f docker-compose.env.yml up -d
-	# CURRENT_UID=$(id -u):$(id -g) 
 
+run:
+	docker-compose -f docker-compose.dev.yml up -d --remove-orphans
 
 sniff:
 	-f report_phpcs && sudo rm report_phpcs
@@ -33,3 +32,7 @@ sniff:
 
 testreport:
 	./vendor/bin/phpunit --coverage-html reports/
+
+
+report:
+	vendor/bin/phpcs -d memory_limit=512M --report=full  --ignore=vendor/*,templates_c/* --report=full  --report-file=./report.txt /var/www/html/

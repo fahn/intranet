@@ -1,0 +1,52 @@
+{
+    "name": "badtra/intranet",
+    "description": "Intranet for badminton clubs",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Stefan Metzner",
+            "email": "stmetzner@gmail.com"
+        }
+    ],
+    "config": {
+        "platform": {
+            "php": "7.4"
+        }
+    },
+    "version": "1.6.5.4",
+    "autoload": {
+        "psr-4": {
+            "Badtra\\Intranet\\DB\\": "inc/db/",
+            "Badtra\\Intranet\\Html\\": "inc/html/",
+            "Badtra\\Intranet\\Logic\\": "inc/logic/",
+            "Badtra\\Intranet\\Model\\": "inc/model/",
+            "Badtra\\Intranet\\Controller\\": "inc/controller/",
+            "Badtra\\Intranet\\Libs\\": "inc/libs",
+            "Badtra\\Intranet\\Widget\\": "inc/widget/",
+            "Badtra\\Intranet\\Html\\Admin\\": "inc/html/admin/"
+        }
+    },
+    "require": {
+        "php": "^7.4",
+        "smarty/smarty": "v4.5.3",
+        "nette/mail": "^2.4",
+        "box/spout": "^2.7",
+        "dompdf/dompdf": "^3",
+        "gargron/fileupload": "^1.4",
+        "erusev/parsedown": "^1.7",
+        "gumlet/php-image-resize": "^1.8",
+        "eluceo/ical": "0.15.0",
+        "sebastian/diff": "^4.0",
+        "squizlabs/php_codesniffer":"^3.10",
+        "phpstan/phpstan":"^1.11",
+        "symfony/yaml":"^5.4",
+        "symfony/validator": "^5.4"
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "mkdir -p template_c",
+            "chmod 755 template_c"
+        ]
+    }
+}

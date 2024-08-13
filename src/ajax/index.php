@@ -41,12 +41,13 @@ class AjaxQuery extends APrgPatternElement
                 case "player":
                     $result = $this->brdb->getPlayerByTerm($this->term);
                     break;
+                    
                 case "user":
                     $result = $this->brdb->getUserByTerm($this->term);
                     break;
+
                 default:
                     throw new \Exception("Unkown param");
-                    break;
             }
 
             $data = $this->interpreteResult($result, "userId", "fullname");
@@ -56,7 +57,7 @@ class AjaxQuery extends APrgPatternElement
         } catch (\Exception $e)
         {
             $this->data = sprintf("ERROR: Could not able to execute: %s", $e->getMessage());
-            return false;
+
         }
 
     }
@@ -68,9 +69,9 @@ class AjaxQuery extends APrgPatternElement
     {
         if ($this->status)
         {
-            exit(0);
+            http_response_code(200);
         }
-        exit(99);
+        http_response_code(404);
     }
 
     /**
@@ -93,7 +94,7 @@ class AjaxQuery extends APrgPatternElement
         }
 
         return $data;
-        unset($data, $resultData, $index, $text);
+        //unset($data, $resultData, $index, $text);
 
     }
 
@@ -117,6 +118,11 @@ class AjaxQuery extends APrgPatternElement
 ob_clean();
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json");
-$ajaxQuery = new AjaxQuery();
-echo $ajaxQuery;
-exit(0);
+try {
+    $ajaxQuery = new AjaxQuery();
+    echo $ajaxQuery;
+    http_response_code(200);
+} catch (\Exception $e) {
+    echo json_encode(array("error" => $e->getMessage()));
+    http_response_code(404);
+}

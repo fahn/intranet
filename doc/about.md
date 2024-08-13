@@ -1,6 +1,6 @@
 Badtra
 =======
-**Version:** 1.0.6.4
+**Version:** 1.1.0
 
 [Badtra][1] bietet dem Vereine folgende Möglichkeiten für interne Zwecke die speziell auf Badminton abgestimmt sind:
 - vereinsinterne Rangliste

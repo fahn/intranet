@@ -1,3 +1,352 @@
-app_controllers:
-    resource: inc/html/BrdbHtmlPage.php
-    type: annotation
+# routes.yaml
+
+# Generell
+
+## HOME
+home:
+  path: /
+  controller: HomeController
+  method: index
+
+
+## About
+about_index:
+  path: /about
+  controller: GenerellController
+  method: aboutView
+
+## Login
+login:
+  path: /login
+  controller: AuthController
+  method: showLoginForm
+
+password_reset:
+  path: /passwort-vergessen
+  controller: AuthController
+  method: showPasswordResetForm
+
+## News
+news_index:
+  path: /news
+  controller: NewsController
+  method: showNewsList
+
+news_details:
+  path: /news/details/{id}
+  controller: NewsController
+  method: showNewsDetails
+  requirements:
+    id: \d+
+
+
+# Support
+support_index:
+  path: /support
+  controller: SupportController
+  method: showSupportForm
+
+# User
+user_details:
+  path: /user/details/{id}
+  controller: UserController
+  method: showUserDetails
+  requirements:
+    id: \d+
+
+user_myaccount:
+  path: /user/myAccount
+  controller: UserController
+  method: showMyAccount
+
+
+# Tournament
+tournament_index:
+  path: /tournament
+  controller: TournamentController
+  method: showTournamentList
+
+tournament_details:
+  path: /tournament/details/{id}
+  controller: TournamentController
+  method: showTournamentDetails
+  requirements:
+    id: \d+
+
+tournament_add_player:
+  path: /tournament/add_player/{id}
+  controller: TournamentController
+  method: showTournamentAddPlayerForm
+  requirements:
+    id: \d+
+
+tournament_add:
+  path: /admin/tournament/add
+  controller: TournamentController
+  method: showTournamentAddForm
+
+
+
+# Ranking
+ranking_index:
+  path: /ranking
+  controller: RankingController
+  method: showRankingList
+
+ranking_add_game:
+  path: /ranking/add_game
+  controller: RankingController
+  method: showNewGameForm
+
+ranking_download:
+  path: /ranking/download
+  controller: RankingController
+  method: showPdfRankingList
+
+
+
+# FAQ
+faq_index:
+  path: /faq
+  controller: FaqController
+  method: showFaqList
+
+
+
+# Staff
+staff_index:
+  path: /staff
+  controller: StaffController
+  method: showStaffList
+
+
+###################################################################################
+# Admin
+###################################################################################
+
+## Tournament
+
+
+## Images
+admin_images_index:
+  path: /admin/images
+  controller: AdminImagesController
+  method: showAdminImagesList
+
+## User
+admin_user_index:
+  path: /admin/user
+  controller: AdminUserController
+  method: showAdminUserList
+
+admin_user_add:
+  path: /admin/user/add
+  controller: AdminUserController
+  method: showAdminUserAddForm
+
+admin_user_update:
+  path: /admin/user/update/{id}
+  controller: AdminUserController
+  method: showAdminUserUpdateForm
+  requirements:
+    id: \d+
+
+admin_user_delete:
+  path: /admin/user/delete/{id}
+  controller: AdminUserController
+  method: showAdminUserDeleteForm
+  requirements:
+    id: \d+
+
+## Category
+admin_category_index:
+  path: /admin/category
+  controller: AdminCategoryController
+  method: showAdminCategoryList
+
+admin_category_add:
+  path: /admin/category/add
+  controller: AdminCategoryController
+  method: showAdminCategoryAddForm
+
+admin_category_update:
+  path: /admin/category/update/{id}
+  controller: AdminCategoryController
+  method: showAdminCategoryUpdateForm
+  requirements:
+    id: \d+
+
+admin_category_delete:
+  path: /admin/category/delete/{id}
+  controller: AdminCategoryController
+  method: showAdminCategoryDeleteForm
+  requirements:
+    id: \d+
+
+## Club
+admin_club_index:
+  path: /admin/club
+  controller: AdminClubController
+  method: showAdminClubList
+
+admin_club_add:
+  path: /admin/club/add
+  controller: AdminClubController
+  method: showAdminClubAddForm
+
+admin_club_update:
+  path: /admin/club/update/{id}
+  controller: AdminClubController
+  method: showAdminClubUpdateForm
+  requirements:
+    id: \d+
+
+admin_club_delete:
+  path: /admin/club/delete/{id}
+  controller: AdminClubController
+  method: showAdminClubDeleteForm
+  requirements:
+    id: \d+
+
+## FAQ
+admin_faq_index:
+  path: /admin/faq
+  controller: AdminFaqController
+  method: showAdminFaqList
+
+admin_faq_add:
+  path: /admin/faq/add
+  controller: AdminFaqController
+  method: showAdminFaqAddForm
+
+admin_faq_update:
+  path: /admin/faq/update/{id}
+  controller: AdminFaqController
+  method: showAdminFaqUpdateForm
+  requirements:
+    id: \d+
+
+admin_faq_delete:
+  path: /admin/faq/delete/{id}
+  controller: AdminFaqController
+  method: showAdminFaqDeleteForm
+  requirements:
+    id: \d+
+
+## Log
+admin_log_index:
+  path: /admin/log
+  controller: AdminLogController
+  method: showAdminLogList
+
+## News
+admin_news_index:
+  path: /admin/news
+  controller: AdminNewsController
+  method: showAdminNewsList
+
+admin_news_add:
+  path: /admin/news/add
+  controller: AdminNewsController
+  method: showAdminNewsAddForm
+
+admin_news_update:
+  path: /admin/news/update/{id}
+  controller: AdminNewsController
+  method: showAdminNewsUpdateForm
+  requirements:
+    id: \d+
+
+admin_news_delete:
+  path: /admin/news/delete/{id}
+  controller: AdminNewsController
+  method: showAdminNewsDeleteForm
+  requirements:
+    id: \d+
+
+## Ranking
+
+## Settings
+admin_settings_index:
+  path: /admin/settings
+  controller: AdminSettingsController
+  method: showAdminSettingsList
+
+admin_settings_add:
+  path: /admin/settings/add
+  controller: AdminSettingsController
+  method: showAdminSettingsAddForm
+
+admin_settings_update:
+  path: /admin/settings/update/{id}
+  controller: AdminSettingsController
+  method: showAdminSettingsUpdateForm
+  requirements:
+    id: \d+
+
+admin_settings_delete:
+  path: /admin/settings/delete/{id}
+  controller: AdminSettingsController
+  method: showAdminSettingsDeleteForm
+  requirements:
+    id: \d+
+
+## Staff
+admin_staff_index:
+  path: /admin/staff
+  controller: AdminStaffController
+  method: showAdminStaffList
+
+
+## Tournament
+admin_tournament_index:
+  path: /admin/tournament
+  controller: AdminTournamentController
+  method: showAdminTournamentList
+
+admin_tournament_add:
+  path: /admin/tournament/add
+  controller: AdminTournamentController
+  method: showAdminTournamentAddForm
+
+admin_tournament_update:
+  path: /admin/tournament/update/{id}
+  controller: AdminTournamentController
+  method: showAdminTournamentUpdateForm
+  requirements:
+    id: \d+
+
+admin_tournament_delete:
+  path: /admin/tournament/delete/{id}
+  controller: AdminTournamentController
+  method: showAdminTournamentDeleteForm
+  requirements:
+    id: \d+
+
+admin_tournament_lock:
+  path: /admin/tournament/lock/{id}
+  controller: AdminTournamentController
+  method: showAdminTournamentLockForm
+  requirements:
+    id: \d+
+
+admin_tournament_unlock:
+  path: /admin/tournament/undelete/{id}
+  controller: AdminTournamentController
+  method: showAdminTournamentUnlockForm
+  requirements:
+    id: \d+
+
+admin_tournament_backup:
+  path: /admin/tournament/backup/{id}
+  controller: AdminTournamentController
+  method: showAdminTournamentBackupForm
+  requirements:
+    id: \d+
+
+admin_tournament_export:
+  path: /admin/tournament/export/{id}
+  controller: AdminTournamentController
+  method: showAdminTournamentExportForm
+  requirements:
+    id: \d+

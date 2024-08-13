@@ -12,9 +12,17 @@
 
 #enable apache rewrite engine
 <ifModule mod_rewrite.c>
-    RewriteEngine on
-    RewriteCond %{SCRIPT_FILENAME} !-f
-    RewriteCond %{SCRIPT_FILENAME} !-d
-    RewriteCond %{SCRIPT_FILENAME} !-l
-    RewriteRule .* index.php/$1
+    # Aktivieren von URL-Rewriting
+    RewriteEngine On
+
+    # Alle Anfragen, die nicht zu einer echten Datei oder einem Verzeichnis gehören, an index.php weiterleiten
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php [QSA,L]
+
+    # Optionale: Verzeichnisindex deaktivieren (Verhindert die Auflistung von Dateien in Verzeichnissen)
+    Options -Indexes
 </ifModule>
+
+
+
