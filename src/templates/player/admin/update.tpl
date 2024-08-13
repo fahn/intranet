@@ -1,4 +1,4 @@
-<h1 class="display-1 mb-5">Spieler {if $task == "edit"}bearbeiten{else}Hinzufügen{/if}</h1>
+<h1 class="display-3 mb-5">Spieler {if $task == "edit"}bearbeiten{else}Hinzufügen{/if}</h1>
 
 <form action="" method="post">
     <input type="hidden" name="playerFormAction" id="playerFormAction" value="{$hidden}">

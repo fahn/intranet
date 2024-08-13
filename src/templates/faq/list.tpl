@@ -1,3 +1,5 @@
+{include file="page_wrap_header.tpl"}
+
 <h1 class="display-3 mb-5">FAQ</h1>
 
 <div id="accordion_search_bar_container mb-5">
@@ -46,3 +48,6 @@
         </div>
     </div>
 </div>
+
+
+{include file="page_wrap_footer.tpl"}

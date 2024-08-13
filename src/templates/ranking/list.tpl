@@ -1,4 +1,6 @@
-<h1 class="display-1 mb-5">Ranking {if $print}{$pageTitle}{/if}</h1>
+{include file="page_wrap_header.tpl"}
+
+<h1 class="display-3 mb-5">Ranking {if $print}{$pageTitle}{/if}</h1>
 
 {$message|default:""}
 
@@ -13,13 +15,13 @@
                 <div class="btn-group mr-2 pull-right" role="group" aria-label="First group">
                     <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Optionen</button>
                     <div class="dropdown-menu">
-                        <a class="dropdown-item" href="?action=add_game"><i class="fas fa-reply"></i> Spiel eintragen</a>
-                        <a class="dropdown-item" href="?action=renewRanking"><i class="fas fa-retweet"></i> Neu berechnung</a>
+                        <a class="dropdown-item" href="/ranking/add_game"><i class="fas fa-reply"></i> Spiel eintragen</a>
+                        <a class="dropdown-item" href="/ranking/calculate"><i class="fas fa-retweet"></i> Neu berechnung</a>
                     </div>
                 </div>
             {/if}
             <div class="btn-group mr-2" role="group" aria-label="Second group">
-                <a class="btn btn-primary" role="button" href="/generate_ranking" target="_blank"><i class="fas fa-download"></i> PDF Download</a>
+                <a class="btn btn-primary" role="button" href="/ranking/download" target="_blank"><i class="fas fa-download"></i> PDF Download</a>
             </div>
         </div>
     </div>
@@ -67,3 +69,6 @@
         <div class="pagenum-container">Seite <span class="pagenum"></span></div>
     </footer>
 {/if}
+
+
+{include file="page_wrap_footer.tpl"}

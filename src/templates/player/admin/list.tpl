@@ -1,4 +1,4 @@
-<h1 class="display-1">Spieler</h1>
+<h1 class="display-3">Spieler</h1>
 
 <p class="text-right">
     <a class="btn btn-success" href="?action=add_player">SpielerInnen hinzufügen</a>

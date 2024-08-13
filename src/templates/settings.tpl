@@ -1,4 +1,4 @@
-<h1 class="display-1 mb-5">Einstellungen</h1>
+<h1 class="display-3 mb-5">Einstellungen</h1>
 
 <form>
   <div class="form-row">

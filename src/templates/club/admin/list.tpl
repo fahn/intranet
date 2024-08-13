@@ -1,6 +1,10 @@
-<h1 class="display-2 mb-5">Vereine</h1>
+<!-- ADMIN CLUB LIST -->
+
+{include file="page_wrap_header.tpl"}
+
+<h1 class="display-3 mb-5">Vereine</h1>
 <p class="text-right">
-    <a class="btn btn-success" href="?action=add_club"><i class="fas fa-plus"></i> Club hinzufügen</a>
+    <a class="btn btn-success" href="/admin/club/add"><i class="fas fa-plus"></i> Club hinzufügen</a>
 </p>
 
 <div class="table-responsive">
@@ -19,7 +23,7 @@
                 <td>{$club.name}</td>
                 <td>{$club.clubNr}</td>
                 <td>{$club.association}</td>
-                <td class="text-center"><a class="btn btn-info" href="?action=edit&id={$club.clubId}">Editieren</a> <a class="btn btn-danger" href="?action=delete&id={$club.clubId}">Löschen</a></td>
+                <td class="text-center"><a class="btn btn-info" href="/admin/club/edit/{$club.clubId}">Editieren</a> <a class="btn btn-danger" href="/admin/club/update/{$club.clubId}">Löschen</a></td>
             </tr>
             {foreachelse}
             <tr>
@@ -29,3 +33,6 @@
         </tbody>
     </table>
 </div>
+
+
+{include file="page_wrap_footer.tpl"}

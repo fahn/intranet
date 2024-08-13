@@ -1,3 +1,7 @@
+ <!-- ADMIN NEWS UPDATE -->
+
+{include file="page_wrap_header.tpl"}
+
 <h1 class="display-3 mb-5">News {if $action == 'edit'}editieren{else}hinzufügen{/if}</h1>
 <form action="" method="post">
     <input type="hidden" name="newsFormAction" value="{if $action == 'edit'}Update{else}Insert{/if}">
@@ -6,7 +10,7 @@
     {/if}
     <div class="form-group">
         <label for="newsTitle">Titel</label>
-        <input type="text" class="form-control" id="newsTitle" name="newsTitle" value="{$item.title}">
+        <input type="text" class="form-control" id="newsTitle" name="newsTitle" value="{$item.title|default:''}">
     </div>
     <div class="row initline">
         <div class="col-md-6">
@@ -26,10 +30,12 @@
     </div>
     <div class="form-group">
         <label for="summernote">Text</label>
-        <textarea id="summernote" class="form-control" name="newsText" rows="3">{$item.text}</textarea>
+        <textarea id="summernote" class="form-control" name="newsText" rows="3">{$item.text|default:''}</textarea>
     </div>
     <button type="submit" class="btn btn-primary">{if $action == 'edit'}Editieren{else}Submit{/if}</button>
 
     <a href="{$links.home}" class="btn btn-danger">Zurück</a>
-
 </form>
+
+
+{include file="page_wrap_footer.tpl"}

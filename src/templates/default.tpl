@@ -9,12 +9,12 @@
 
 <div class="row">
     <div class="col-lg-8 col-lg-pull-4 mb-5">
-        {if $widgetUpcomingTournaments}
-            {$widgetUpcomingTournaments}
+        {if isset($widgetUpcomingTournaments)}
+            {$widgetUpcomingTournaments|default:""}
         {/if}
 
-        {if $newsEnable == "on" && $widgetLatestNews}
-                {$widgetLatestNews}
+        {if $newsEnable == "on" && isset($widgetLatestNews)}
+                {$widgetLatestNews|default:""}
         {/if}
     </div>
     <div class="col-lg-4 col-lg-push-8">
@@ -23,7 +23,7 @@
         {/if}
 
 
-        {if isset($widgetShowTeam) && isset($team)}
+        {if isset($widgetShowTeam) && isset($widgetShowTeam)}
             {$widgetShowTeam|default:""}
         {/if}
 
@@ -31,7 +31,7 @@
             {$widgetShowBdays}
         {/if}
 
-        {if isset($social.socialHomepage) || isset($social.socialFacebook) || isset($social.socialYoutube) || isset($social.socialTwitter)}
+        {if isset($social)}
             <div class="card mt-4 mb-4">
                 <h5 class="card-header">Social</h5>
                 <div class="card-body">

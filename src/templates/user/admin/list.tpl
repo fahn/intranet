@@ -1,10 +1,14 @@
-<h1 class="display-2 mb-5">Benutzerverwaltung</h1>
+<!-- ADMIN CLUB LIST -->
+
+{include file="page_wrap_header.tpl"}
+
+<h1 class="display-3 mb-5">Benutzerverwaltung</h1>
 <p class="text-right">
-    <a class="btn btn-success" href="?action=add_player"><i class="fas fa-plus"></i> Benutzer hinzufügen</a>
+    <a class="btn btn-success" href="/admin/user/add"><i class="fas fa-plus"></i> Benutzer hinzufügen</a>
 </p>
 
-{if $pagination}
-{include file="_pagination.tpl"}
+{if isset($pagination)}
+    {include file="_pagination.tpl"}
 {/if}
 
 <div class="table-responsive">
@@ -31,7 +35,7 @@
                     {if $user.isReporter}<i class="text-success far fa-check-circle"></i>{else}<i class="text-danger far fa-times-circle"></i>{/if} /
                     {if $user.isAdmin}<i class="text-success far fa-check-circle"></i>{else}<i class="text-danger far fa-times-circle"></i>{/if}
                 </td>
-                <td class="text-center"><a class="btn btn-info" href="?action=edit&id={$user.userId}">Editieren</a> <a class="btn btn-danger" href="?action=delete&id={$user.userId}">Löschen</a></td>
+                <td class="text-center"><a class="btn btn-info" href="/admin/user/update/{$user.userId}">Editieren</a> <a class="btn btn-danger" href="/admin/user/delete/{$user.userId}">Löschen</a></td>
             </tr>
             {foreachelse}
                 <tr>
@@ -42,6 +46,8 @@
     </table>
 </div>
 
-{if $pagination}
-{include file="_pagination.tpl"}
+{if isset($pagination)}
+    {include file="_pagination.tpl"}
 {/if}
+
+{include file="page_wrap_footer.tpl"}

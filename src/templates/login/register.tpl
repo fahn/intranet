@@ -1,3 +1,5 @@
+{include file="page_wrap_header.tpl"}
+
 <div id="formUserRegister">
   <h3>Update Your Account for Badminton Ranking</h3>
   <p>Change your email, full name, gender and password.</p>
@@ -102,3 +104,6 @@
     <input class="btn btn-success" type="submit" name="submit" value="Spieler anlegen">
   </form>
 </div>
+
+
+{include file="page_wrap_footer.tpl"}

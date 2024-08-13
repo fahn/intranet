@@ -1,5 +1,9 @@
-{if !$user}
-    <div class="alert alert-danger text-center">Bitte w�hlen Sie einen g�ltigen User aus</div>
+<!-- ADMIN TOURNAMENT LIST -->
+
+{include file="page_wrap_header.tpl"}
+
+{if !isset($user)}
+    <div class="alert alert-danger text-center">Bitte wählen Sie einen gültigen User aus</div>
 {else}
 
     {if $user.userId == $userId || $isAdmin}
@@ -32,14 +36,14 @@
                     <p class="card-text">
                         <div class="row">
                             <div class="col-md-6">
-                                {if $isAdmin || $isReported }
+                                {if isset($isAdmin) || isset($isReported)}
                                   {if $user.bday|intval != 0}
                                    <p><strong>Geburtstag:</strong> {$user.bday|date_format:"d.m.Y"}</p>
                                   {/if}
-                                  {if $user.email}
+                                  {if isset($user.email)}
                                     <p><strong>E-Mail:</strong> {$user.email}</p>
                                   {/if}
-                                  {if $user.phone}
+                                  {if isset($user.phone)}
                                     <p><strong>Telefon:</strong> {$user.phone}</p>
                                   {/if}
                                 {/if}
@@ -88,3 +92,7 @@
       <a class="btn btn-danger" href="javascript:history.back()">Zurück</a>
     </p>
 {/if}
+
+
+
+{include file="page_wrap_footer.tpl"}

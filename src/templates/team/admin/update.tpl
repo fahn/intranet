@@ -1,4 +1,8 @@
-<h1 class="display-1 mb-5">Staff {if $laction == 'edit'}editieren{else}anlegen{/if}</h1>
+<!-- Admin -->
+
+{include file="page_wrap_header.tpl"}
+
+<h1 class="display-3 mb-5">Staff {if $laction == 'edit'}editieren{else}anlegen{/if}</h1>
 <form action="" method="post">
     <input type="hidden" name="staffFormAction" id="staffFormAction" value="Insert Staff">
     <div class="row initline mb-5">
@@ -39,3 +43,5 @@
         </div>
     </div>
 </form>
+
+{include file="page_wrap_footer.tpl"}

@@ -3,9 +3,7 @@
     <div class="card-body">
         <p class="card-text">
             {foreach item=user from=$data}
-              <a href="/pages/user.php?id={$user['userId']}">
-                {$user['fullName']}
-              </a><br>
+              <a href="/pages/user.php?id={$user['userId']}">{$user['name']}</a><br>
             {foreachelse}
               Fehler. Bitte einen Admin kontaktieren
             {/foreach}

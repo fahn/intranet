@@ -1,4 +1,8 @@
-<h1 class="display-1 mb-5">Logs</h1>
+ <!-- ADMIN LOGS LIST -->
+
+{include file="page_wrap_header.tpl"}
+
+<h1 class="display-3 mb-5">Logs</h1>
 
 <div class="table-responsive">
     <table class="table table-striped table-hover" data-toggle="table" data-pagination="true" data-search="true" data-page-list="50">
@@ -24,3 +28,5 @@
         </tbody>
     </table>
 </div>
+
+{include file="page_wrap_footer.tpl"}

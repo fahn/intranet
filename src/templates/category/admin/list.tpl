@@ -1,8 +1,12 @@
-<h1 class="display-1 mb-5">Kategorien</h1>
+ <!-- ADMIN Category LIST -->
+
+{include file="page_wrap_header.tpl"}
+
+<h1 class="display-3 mb-5">Kategorien</h1>
 {if isset($links.add)}
     <div class="row mb-5">
         <div class="col-lg-12 text-right">
-            <a class="btn btn-success" href="{$links.add}" role="button"><i class="fas fa-plus"></i> Hinzufügen</a>
+            <a class="btn btn-success" href="/admin/category/add" role="button"><i class="fas fa-plus"></i> Hinzufügen</a>
         </div>
     </div>
 {/if}
@@ -32,3 +36,5 @@
         {/foreach}
     </tbody>
 </table>
+
+{include file="page_wrap_footer.tpl"}

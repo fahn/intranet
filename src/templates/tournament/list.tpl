@@ -1,4 +1,6 @@
-<h1 class="display-1 mb-5">Turniere / Ranglisten</h1>
+{include file="page_wrap_header.tpl"}
+
+<h1 class="display-3 mb-5">Turniere / Ranglisten</h1>
 
 <ul class="nav nav-tabs" style="margin-bottom: 20px;">
   <li class="nav-item">
@@ -16,6 +18,7 @@
   <div id="home" class="tab-pane container active">
     {if isset($tournamentList) && $tournamentList|count > 0}
         <div id="map" class="mb-5" style="width: 100%; height: 400px !important"></div>
+        <div id ="my-map" style = “width:800px; height:600px;"></div>
     {/if}
 
 
@@ -121,13 +124,13 @@ var map;
           '<div id="bodyContent">'+
           '<p>Von '+ feature.start +' - '+ feature.end +' ('+ feature.deadline +')</p>'+
           '<p>Ort: '+ feature.place +'</p>'+
-          '<p><a href="/pages/rankingTournament.php?action=details&id='+ feature.id +'">Details</a></p>'+
+          '<p><a href="/tournament/details/'+ feature.id +'">Details</a></p>'+
           '</div>'+
           '</div>';
 
           google.maps.event.addListener(marker, 'click', function(){
                   if (feature.id) {
-                    content = "<div id='infowindow'><a href='pages/rankingTournament.php?action=details&id="+ feature.id +"'>"+ feature.name +" in "+ feature.place +"</a><br></div>";
+                    content = "<div id='infowindow'><a href='/tournament/details/"+ feature.id +"'>"+ feature.name +" in "+ feature.place +"</a><br></div>";
                   } else {
                     content = "<div id='infowindow'>"+ feature.name +" in "+ feature.place +"</div>";
                   }
@@ -144,3 +147,6 @@ var map;
 
   <script async defer src="https://maps.googleapis.com/maps/api/js?key={$googleMaps.key}&callback=initMap"></script>
 {/if}
+
+
+{include file="page_wrap_footer.tpl"}
