@@ -1,9 +1,13 @@
-<h2 class="display-1 mb-5">Turnier {if $task == "add"}hinzufügen{else}editieren{/if}</h2>
-{{$vars|print_r}}
+<!-- ADMIN TOURNAMENT LIST -->
+
+{include file="page_wrap_header.tpl"}
+
+<h2 class="display-3 mb-5">Turnier {if $task == "add"}hinzufügen{else}editieren{/if}</h2>
+
 {if $task == "edit" && $vars.visible == 0}
-<div class="alert alert-danger">
-    <strong>Achtung</strong> Das Turnier wurde gelöscht
-</div>
+    <div class="alert alert-danger">
+        <strong>Achtung</strong> Das Turnier wurde gelöscht
+    </div>
 {/if}
 
 <form action="" method="post">
@@ -71,7 +75,7 @@
             <div class="form-group">
                 <label for="tournamentClassification">Altersklasse:</label>
                 <select multiple="multiple" class="form-control js-example-basic-single" name="tournamentClassification[]" id="tournamentClassification" autocomplete="off">
-                    {html_options options=$classificationArr selected=$vars.classification}
+                    {html_options options=$classificationArr selected=$vars.classification|default:""}
                 </select>
             </div>
         </div>
@@ -87,7 +91,7 @@
             <div class="form-group">
                 <label for="tournamentDiscipline">Diziplinen:</label>
                 <select multiple="multiple" class="form-control js-example-basic-single" name="tournamentDiscipline[]" id="tournamentDiscipline" autocomplete="off">
-                    {html_options options=$disciplineArr selected=$vars.discipline}
+                    {html_options options=$disciplineArr selected=$vars.discipline|default:""}
                 </select>
             </div>
         </div>
@@ -99,7 +103,7 @@
             <div class="form-group">
                 <label for="tournamentReporterId">Reporter:</label>
                 <select  class="form-control js-example-basic-single" id="tournamentReporterId" name="tournamentReporterId" autocomplete="off">
-                    {html_options options=$reporterArr selected=$vars.reporterId}
+                    {html_options options=$reporterArr selected=$vars.reporterId|default:""}
                 </select>
             </div>
         </div>
@@ -107,7 +111,7 @@
             <div class="form-group">
                 <label for="tournamentTournamentType">Type des Turniers:</label>
                 <select class="form-control js-example-basic-single" name="tournamentTournamentType" autocomplete="off">
-                    {html_options options=$tournamentType selected=$vars.tournamentType}
+                    {html_options options=$tournamentType selected=$vars.tournamentType|default:""}
                 </select>
             </div>
         </div>
@@ -120,7 +124,7 @@
     </div>
 
 
-    {if $task == "edit"}
+    {if $task == "update"}
     <div class="row mt-5 mb-5">
         <div class="col-md-12">
             <div class="alert alert-warning">
@@ -134,8 +138,11 @@
 
     <div class="row mt-5">
         <div class="col-md-6">
-            <input type="submit" name="submit" class="btn btn-success btn-wide" value="Turnier {if $task == " add"}hinzufügen{else}editieren{/if}"> </div> <div class="col-md-6 text-right">
-            <a class="btn btn-danger" href="/pages/rankingTournament.php">Zurück</a>
+            <input type="submit" name="submit" class="btn btn-success btn-wide" value="Turnier {if $task == "add"}hinzufügen{else}editieren{/if}"> </div> <div class="col-md-6 text-right">
+            <a class="btn btn-danger" href="/tournament">Zurück</a>
         </div>
     </div>
 </form>
+
+
+{include file="page_wrap_footer.tpl"}

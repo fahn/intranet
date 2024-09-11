@@ -17,7 +17,9 @@
  * @link      https://www.badtra.de
  ******************************************************************************/
 namespace Badtra\Intranet\Logic;
-require_once BASE_DIR ."/inc/logic/PrgPattern.php";
+
+
+use Badtra\Intranet\Logic\APrgPatternElement;
 
 class PrgPatternElementStaff extends APrgPatternElement
 {

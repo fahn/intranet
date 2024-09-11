@@ -24,7 +24,7 @@ use \Badtra\Intranet\Model\User;
 
 // vendor
 require_once BASE_DIR ."/vendor/autoload.php";
-
+ 
 class PrgPatternElementRegister extends APrgPatternElement
 {
     const FORM_USER_EMAIL         = "accountEmail";

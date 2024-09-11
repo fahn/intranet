@@ -18,30 +18,36 @@
  ******************************************************************************/
 namespace Badtra\Intranet\Widget;
 
-class TeamWidget extends \Badtra\Intranet\Widget\DefaultWidget
+use \Badtra\Intranet\Widget\DefaultWidget;
+use Badtra\Intranet\DB\BrankDB;
+use \Smarty;
+
+class TeamWidget extends DefaultWidget
 {
 
 
-    public function __construct()
+    public function __construct(Smarty $smarty, BrankDB $brdb)
     {
-        parent::__construct();
+        parent::__construct($smarty, $brdb);
     }//end __construct()
 
 
+    /**
+     * Show Team Widget
+     * @param mixed $name
+     * @return string
+     */
     public function showWidget(?string $name)
     {
         switch ($name) {
             case "showAdminsAndReporter":
                 return $this->adminView();
-                break;
 
             case "showTeam":
                 return $this->teamView();
-                break;
 
             default:
                 return "no name / or not exists";
-                break;
         }
 
     }//end showWidget()
@@ -61,11 +67,9 @@ class TeamWidget extends \Badtra\Intranet\Widget\DefaultWidget
 
     private function teamView():string
     {
-        $this->smarty->assign(
-            [
-                "data" => $this->brdb->getStaffList(),
-            ]
-        );
+        $this->smarty->assign([
+            "data" => $this->brdb->getStaffList(),
+        ]);
 
         return $this->smarty->fetch("team/widget/list.tpl");
     }//end teamView()

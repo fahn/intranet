@@ -19,7 +19,11 @@
 namespace Badtra\Intranet\Html;
 
 use \Badtra\Intranet\Html\BrdbHtmlPage;
+
 use \Badtra\Intranet\Logic\PrgPatternElementUser;
+
+// use \Badtra\Intranet\Widget\TournamentWidget;
+// use \Badtra\Intranet\Widget\RankingWidget;
 
 class UserInformationPage extends BrdbHtmlPage
 {
@@ -44,14 +48,14 @@ class UserInformationPage extends BrdbHtmlPage
      *
      * @return string
      */
-    public function profilView(): string
+    public function profilView($id): string
     {
-        $user = $this->brdb->selectUserById($this->id);
+        $user = $this->brdb->selectUserById($id);
         // $club = $this->brdb->selectGetClubById($user["clubId"]);
 
         // Widgets
-        $widgetTournament = new \Badtra\Intranet\Widget\TournamentWidget();
-        $widgetRanking =new \Badtra\Intranet\Widget\RankingWidget();
+        // $widgetTournament = new TournamentWidget();
+        // $widgetRanking = new RankingWidget();
 
         // render
         $this->smarty->assign(
@@ -60,13 +64,19 @@ class UserInformationPage extends BrdbHtmlPage
                 // "club"       => $club,
                 "tournament" => $this->getLatestTournamentFromUserId($this->id),
                 // "games"      => $this->getRankedGamesByUser(),
-                "latestTournament"     => $widgetTournament->showWidget("latestTournaments"),
-                "latestGamesInRanking" => $widgetRanking->showWidget("latestGames"),
+                // "latestTournament"     => $widgetTournament->showWidget("latestTournaments"),
+                // "latestGamesInRanking" => $widgetRanking->showWidget("latestGames"),
             ]
         );
 
         return $this->smartyFetchWrap("user/profil.tpl");
     }//end loadContent()
+
+
+    public function showMyAccountView() {
+        // @TODO replace 1 with USER_ID
+        return $this->profilView(1);
+    }
 
     private function getLatestTournamentFromUserId($id): array
     {

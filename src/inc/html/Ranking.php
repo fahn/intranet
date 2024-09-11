@@ -18,11 +18,12 @@
  ******************************************************************************/
 namespace Badtra\Intranet\Html;
 
-require_once BASE_DIR ."/vendor/autoload.php";
+use \Badtra\Intranet\Logic\PrgPatternElementRanking;
+
 
 class Ranking extends BrdbHtmlPage
 {
-    private \Badtra\Intranet\Logic\PrgPatternElementRanking $prgElementRanking;
+    private PrgPatternElementRanking $prgElementRanking;
 
     
 
@@ -36,9 +37,9 @@ class Ranking extends BrdbHtmlPage
     {
         parent::__construct();
 
-        $this->cssPrint = BASE_DIR ."/static/css/print.css";
+        $this->cssPrint = __BASE_DIR__ ."/static/css/print.css";
 
-        $this->prgElementRanking = new \Badtra\Intranet\Logic\PrgPatternElementRanking($this->prgPatternElementLogin);
+        $this->prgElementRanking = new PrgPatternElementRanking($this->prgPatternElementLogin);
         $this->prgPattern->registerPrg($this->prgElementRanking);
     }
 
@@ -75,7 +76,7 @@ class Ranking extends BrdbHtmlPage
      *
      * @return string
      */
-    public function addView(): string
+    public function addGameView(): string
     {
         $this->smarty->assign(array(
             "task" => "add",

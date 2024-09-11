@@ -17,6 +17,8 @@
  * @link      https://www.badtra.de
  ******************************************************************************/
 namespace Badtra\Intranet\DB;
+
+use PDOException;
 trait LogDB
 {
 
@@ -48,7 +50,8 @@ trait LogDB
     public function insertLog(string $fromTable, string $details, string $logdata, string $action, ?int $userId = 0): bool
     {
         try {
-            $query     = "INSERT INTO `Log` (userId, `action`, fromTable, details, logdata) VALUES (:userId, :fromTable, :table, :details, :logdata)";
+            $query     = "INSERT INTO `Log` (`userId`, `action`, `fromTable`, `details`, `logdata`) 
+            VALUES (:userId, :action, :fromTable, :details, :logdata)";
             $statement = $this->db->prepare($query);
             $statement->bindParam('fromTable', $fromTable);
             $statement->bindParam('details', $details);
@@ -56,11 +59,27 @@ trait LogDB
             $statement->bindParam('action', $action);
             $statement->bindParam('userId', $userId);
             echo "<pre>";
+            echo "Table: ".$fromTable ."<br>";
+            echo "Details: ".$details ."<br>";
+            echo "Logdata: ".$logdata ."<br>";
+            echo "Action: ".$action ."<br>";
+            echo "Userid: ".$userId ."<br>";
+            echo "</pre>";
+
+            
+
+            if (!$statement->execute()) {
+                $errorInfo = $statement->errorInfo();
+                echo "SQL Error: " . $errorInfo[2];
+            }
+
             $statement->errorInfo();
             $statement->debugDumpParams();
            
             return $statement->execute();
-        } catch (\Exception $e) {
+
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
             throw new \Exception($statement->errorInfo());
         }
     }//end insertLog()

@@ -1,5 +1,6 @@
+{include file="page_wrap_header.tpl"}
 
-<h1 class="display-1 mb-5">{$headline}</h1>
+<h1 class="display-3 mb-5">{$headline}</h1>
 <div class="row">
     <div class="col-md-12">
         <div class="alert alert-warning text-center">
@@ -11,3 +12,5 @@
         </p>
     </div>
 </div>
+
+{include file="page_wrap_footer.tpl"}

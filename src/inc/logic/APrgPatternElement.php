@@ -17,12 +17,6 @@
  ******************************************************************************/
 namespace Badtra\Intranet\Logic;
 
-if (defined("BASE_DIR") === false) {
-    define("BASE_DIR", $_SERVER["DOCUMENT_ROOT"]);
-}
-
-require_once BASE_DIR."/vendor/autoload.php";
-
 use Nette\Mail\SendmailMailer;
 use Nette\Mail\Message;
 
@@ -546,12 +540,13 @@ abstract class APrgPatternElement implements IPrgPatternElement
             if (!isset($name) || strlen($name) == 0) {
                 throw new \Exception("Cannot get Variable from Content. Not set or empty");
             }
-
+           
             $data = $this->brdb->getSetting($name);
             if (!isset($data) || !is_array($data)) {
                 throw new \Exception(sprintf("Cannot find Setting %s", $name));
             }
             return $data;
+
         } catch (\Exception $e) {
             $title = sprintf("Cannot find Setting: %s", $name);
             $this->log("Settings", $title, $e->getMessage(), "DB-QUERY");
@@ -564,6 +559,7 @@ abstract class APrgPatternElement implements IPrgPatternElement
     {
         try {
             $data = $this->getSetting($name);
+            
             if (!isset($data["dataType"]) || $data["dataType"] != $dataType) {
                 throw new \Exception(sprintf("Except %s. Found ???", $dataType));
             }
@@ -580,11 +576,14 @@ abstract class APrgPatternElement implements IPrgPatternElement
     public function getSettingString(string $name): ?string
     {
         try {
-            return strval($this->getSettingByDataType($name, "string"));
+            return strval($this->getSettingByDataType($name, "String"));
+
         } catch (\Exception $e) {
             $title = sprintf("Cannot cast Setting: '%s'", $name);
             $this->log("Settings", $title, $e->getMessage(), "DB-QUERY");
+            
             return "";
+
             unset($title, $e);
         }
     }//end getSettingString()
@@ -593,10 +592,11 @@ abstract class APrgPatternElement implements IPrgPatternElement
     public function getSettingBool(string $name): ?bool
     {
         try {
-            return boolval($this->getSettingByDataType($name, "bool"));
+            return boolval($this->getSettingByDataType($name, "Boolean"));
         } catch (\Exception $e) {
             $title = sprintf("Cannot cast Setting: %s", $name);
             $this->log("Settings", $title, $e->getMessage(), "DB-QUERY");
+            
             return null;
             unset($title, $e);
         }
@@ -612,7 +612,7 @@ abstract class APrgPatternElement implements IPrgPatternElement
     public function getSettingInt(string $name): ?int
     {
         try {
-            return intval($this->getSettingByDataType($name, "int"));
+            return intval($this->getSettingByDataType($name, "Integer"));
         } catch (\Exception $e) {
             $title = sprintf("Cannot cast Setting: %s", $name);
             $this->log("Settings", $title, $e->getMessage(), "DB-QUERY");
@@ -631,12 +631,13 @@ abstract class APrgPatternElement implements IPrgPatternElement
     public function getSettingArray(string $name): ?array
     {
         try {
-            return unserialize($this->getSettingByDataType($name, "array"));
+            return unserialize($this->getSettingByDataType($name, "Array"));
+
         } catch (\Exception $e) {
             $title = sprintf("Cannot cast Setting: %s", $name);
             $this->log("Settings", $title, $e->getMessage(), "DB-QUERY");
+            
             return null;
-            unset($title, $e);
         }
     }//end getSettingArray()
 
@@ -858,9 +859,9 @@ abstract class APrgPatternElement implements IPrgPatternElement
 
         // message
         $smarty = new \Smarty();
-        $smarty->setTemplateDir(BASE_DIR."templates");
-        $smarty->setCompileDir(BASE_DIR."templates_c");
-        $smarty->setConfigDir(BASE_DIR."configs");
+        $smarty->setTemplateDir(__BASE_DIR__ ."/templates");
+        $smarty->setCompileDir(__BASE_DIR__ ."/templates_c");
+        $smarty->setConfigDir(__BASE_DIR__ ."/configs");
         $smarty->assign(
             [
                 "content"   => $content,
@@ -932,7 +933,7 @@ abstract class APrgPatternElement implements IPrgPatternElement
     function linkTo(array $data): string
     {
         if (isset($data) && is_array($data) && count($data) > 0) {
-            if (!isset($data["page"]) || !file_exists(BASE_DIR."/pages/".$data["page"])) {
+            if (!isset($data["page"]) || !file_exists(__BASE_DIR__."/pages/".$data["page"])) {
                 return "#";
             }
 

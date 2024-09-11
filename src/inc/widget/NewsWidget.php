@@ -18,13 +18,24 @@
  ******************************************************************************/
 namespace Badtra\Intranet\Widget;
 
-class NewsWidget extends \Badtra\Intranet\Widget\DefaultWidget
+use \Smarty;
+use Badtra\Intranet\DB\BrankDB;
+use \Badtra\Intranet\Widget\DefaultWidget;
+
+class NewsWidget extends DefaultWidget
 {
 
+    // protected $smarty;
 
-    public function __construct()
+    // protected $brdb;
+
+
+    public function __construct(Smarty $smarty, BrankDB $brdb)
     {
-        parent::__construct();
+        // $this->smarty = $smarty;
+        // $this->brdb = $brdb;
+        parent::__construct($smarty, $brdb);
+        //$aPrgPatternElement = APrgPatternElement::getInstance();
     }//end __construct()
 
 
@@ -33,16 +44,10 @@ class NewsWidget extends \Badtra\Intranet\Widget\DefaultWidget
         switch ($name) {
             case "latestNews":
                 return $this->TPML_latestNews();
-                break;
 
             default:
                 return "no name / or not exists";
-                break;
         }
-
-        return;
-        unset($name);
-
     }//end showWidget()
 
 
@@ -56,16 +61,15 @@ class NewsWidget extends \Badtra\Intranet\Widget\DefaultWidget
 
     private function getLatestNews():array
     {
-        $tmp      = [];
-        $newsList = $this->brdb->selectLatestNews(5);
-        if (isset($newsList) && !empty($newsList)) {
-            foreach ($newsList as $dataSet) {
-                $dataSet["linkTo"] = $this->linkTo(["page" => "news.php", "action" => "details", "id" => $dataSet["tournamentId"]]);
-                $tmp[] = $dataSet;
+        $dataSet = array();
+        $data = $this->brdb->selectLatestNews(5);
+        if (isset($data) && !empty($data)) {
+            foreach ($data as $item) {
+                $item["linkTo"] = "/news/". $item["newsId"]; //$APrgPatternElement->linkTo(["page" => "news.php", "action" => "details", "id" => $dataSet["tournamentId"]]);
+                $dataSet[] = $item;
             }
         }
 
-        return $tmp;
-        unset($newsList, $tmp, $dataSet);
+        return $dataSet;
     }//end getLatestNews()
 }//end class

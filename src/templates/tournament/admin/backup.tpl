@@ -1,4 +1,4 @@
-<h1 class="display-1">Sicherung</h1>
+<h1 class="display-3">Sicherung</h1>
 <div class="alert alert-danger">
     Arbeite noch daran.
 </div>

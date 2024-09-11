@@ -58,7 +58,7 @@ trait TournamentDB
     {
         $query     = "SELECT * FROM Tournament WHERE visible = 1 AND enddate < NOW() ORDER by startdate ASC LIMIT :limit";
         $statement = $this->db->prepare($query);
-        $statement->bindParam('limit', $max);
+        $statement->bindParam(':limit', $max);
         $statement->execute();
 
         return $statement->fetchAll();
@@ -82,10 +82,10 @@ trait TournamentDB
         $query     = "SELECT Tournament.*
                     FROM Tournament
                     WHERE visible = 1 AND startdate > NOW()
-                    ORDER by startdate ASC LIMIT :max";
+                    ORDER by startdate ASC LIMIT :limit";
         $statement = $this->db->prepare($query);
-        $statement->bindParam('max', $max);
         // (SELECT COUNT(*) FROM TournamentPlayer AS TP WHERE TP.tournamentId = Tournament.tournamentId AND TP.visible = 1  ) AS participant#
+        $statement->bindValue(':limit', $max, \PDO::PARAM_INT);
         $statement->execute();
 
         return $statement->fetchAll();
@@ -134,12 +134,12 @@ trait TournamentDB
     {
         $query     = "SELECT Tournament.*, CONCAT_WS(' ', User.firstName, User.lastName) AS reporterName FROM Tournament
                     LEFT JOIN User ON User.userId = Tournament.reporterId
-                    WHERE Tournament.tournamentId = :tournamentId";
+                    WHERE Tournament.tournamentId = :tournamentId LIMIT 1";
         $statement = $this->db->prepare($query);
         $statement->bindParam('tournamentId', $tournamentId);
         $statement->execute();
 
-        return $statement->fetch();
+        return $statement->fetchAll();
     }//end getTournamentData()
 
 

@@ -1,7 +1,7 @@
 {if isset($isUserLoggedIn) and $isUserLoggedIn == 1}
 
     <nav class="navbar navbar-expand-lg navbar-light bg-light mt-2 mb-3">
-        <a class="navbar-brand" href="index.php"><img src="/static/img/logo.png" width="30" alt="Intern">{$logoTitle}</a>
+        <a class="navbar-brand" href="/"><img src="/static/img/logo.png" width="30" alt="Intern">{$logoTitle}</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -31,7 +31,7 @@
                             <a class="dropdown-item" href="/admin/user"><i class="fas fa-users"></i> Users</a>
                             <a class="dropdown-item" href="/admin/staff"><i class="fas fa-user-tie"></i> Staff</a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="admin/images"><i class="fas fa-images"></i> Bilder</a>
+                            <a class="dropdown-item" href="/admin/images"><i class="fas fa-images"></i> Bilder</a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="/admin/player"><i class="fas fa-user-friends"></i> Player</a>
                             <a class="dropdown-item" href="/admin/club"><i class="fas fa-shield-alt"></i> Vereine</a>
@@ -69,14 +69,14 @@
                     </a>
                     <div class="dropdown-menu dropdown-menu-right">
 
-                        <a class="dropdown-item" href="/pages/user.php?id={$userId}"><i class="fas fa-user-circle" aria-hidden="true"></i> My Account</a>
-                        <a class="dropdown-item" href="myAccount.php"><i class="fas fa-edit"></i> Edit Account</a>
+                        <a class="dropdown-item" href="/user/myAccount"><i class="fas fa-user-circle" aria-hidden="true"></i> My Account</a>
+                        <a class="dropdown-item" href="/user/edit/{$userId}"><i class="fas fa-edit"></i> Edit Account</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="/pages/support.php"><i class="fas fa-medkit"></i> Support</a>
+                        <a class="dropdown-item" href="/support"><i class="fas fa-medkit"></i> Support</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="/pages/about.php"><i class="fas fa-bookmark"></i> About</a>
+                        <a class="dropdown-item" href="/about"><i class="fas fa-bookmark"></i> About</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="logout.php"><i class="fas fa-power-off"></i> Logout</a>
+                        <a class="dropdown-item" href="/logout"><i class="fas fa-power-off"></i> Logout</a>
                     </div>
                 </li>
                 

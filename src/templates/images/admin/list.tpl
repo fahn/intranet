@@ -1,4 +1,9 @@
-<h1>Bildergallerie</h1>
+ <!-- ADMIN IMAGES LIST -->
+
+{include file="page_wrap_header.tpl"}
+
+<h1 class="display-3 mb-5">Bildergallerie</h1>
+
 
 <div class="alert alert-danger">
     <p>Grün umrandete Bilder sind aktive Benutzerbilder und können nicht gelöscht werden.</p>
@@ -119,3 +124,6 @@
     -->
 </style>
 {/literal}
+
+
+{include file="page_wrap_footer.tpl"}

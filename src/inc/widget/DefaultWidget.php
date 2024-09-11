@@ -1,7 +1,7 @@
 <?php
 /*******************************************************************************
  * Badminton Intranet System
- * Copyright 2017-2020
+ * Copyright 2017-2024
  * All Rights Reserved
  *
  * Copying, distribution, usage in any form is not
@@ -12,33 +12,32 @@
  * @category  BadtraIntranet
  * @package   BadtraIntranet
  * @author    Stefan Metzner <stmetzner@gmail.com>
- * @copyright 2017-2020 Badtra
+ * @copyright 2017-2024 Badtra
  * @license   http://www.gnu.org/copyleft/gpl.html GNU General Public License
  * @link      https://www.badtra.de
  ******************************************************************************/
 namespace Badtra\Intranet\Widget;
-# libary
-require_once BASE_DIR .'/vendor/autoload.php';
 
-abstract class DefaultWidget extends \Badtra\Intranet\Logic\APrgPatternElement 
+use Badtra\Intranet\DB\BrankDB;
+use \Smarty;
+
+abstract class DefaultWidget
 {
    
-    // smarty object
+    // // smarty object
     protected $smarty;
 
-    function __construct()
-    {
-        parent::__construct("Widget");
+    // // brdb object
+    protected $brdb;
 
-        // load own smarty element
-        $this->smarty = new \Smarty;
-        $this->smarty->setTemplateDir(BASE_DIR .'/templates');
-        $this->smarty->setCompileDir(BASE_DIR .'/templates_c');
-        $this->smarty->setConfigDir(BASE_DIR .'/smarty/configs');      
+    function __construct(Smarty $smarty, BrankDB $brdb)
+    {
+        $this->smarty = $smarty;
+        $this->brdb = $brdb;
     }
 
     public function processPost(): void {}
     public function processGet(): void {}
 
-    abstract protected function showWidget(?string $name);
+    //abstract protected function showWidget(?string $name);
 }

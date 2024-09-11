@@ -33,12 +33,15 @@ use Badtra\Intranet\DB\StaffDB;
 use Badtra\Intranet\DB\FaqDB;
 use Badtra\Intranet\DB\CategoryDB;
 use Badtra\Intranet\DB\ApiDB;
+use PDOException;
 
 class BrankDB
 {
 
-    private \PDO $db;
+    private PDO $db;
     private string $error;
+
+    private string $MYSQL_USER;
 
     // load User
     use UserDB;
@@ -81,12 +84,22 @@ class BrankDB
 
     public function __construct()
     {
+
+
+
+
         // load connection
         try {
             $database = sprintf('mysql:host=%s;dbname=%s', $this->getEnv('MYSQL_HOST'), $this->getEnv('MYSQL_DATABASE'));
-            
-            $this->db = new \PDO($database, $this->getEnv('MYSQL_PASSWORD'), $this->getEnv('MYSQL_PASSWORD'));
-        } catch (\Exception $e) {
+
+            $this->db = new PDO($database, $this->getEnv('MYSQL_PASSWORD'), $this->getEnv('MYSQL_PASSWORD'), [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+            ]);
+
+
+
+
+        } catch (PDOException $e) {
             echo "<pre>";
             print_r($e);
             echo "</pre>";

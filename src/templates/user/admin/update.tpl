@@ -1,4 +1,8 @@
-<h1 class="display-2 mb-5">Benutzer {if $task == "edit"}bearbeiten{else}Hinzufügen{/if}</h1>
+<!-- ADMIN CLUB UPDATE -->
+
+{include file="page_wrap_header.tpl"}
+
+<h1 class="display-3 mb-5">Benutzer {if $task == "edit"}bearbeiten{else}Hinzufügen{/if}</h1>
 
 <form action="" method="post">
     <input type="hidden" name="userRegisterFormAction" id="userRegisterFormAction" value="{$hidden}">
@@ -99,3 +103,6 @@
         </div>
     </div>
 </form>
+
+
+{include file="page_wrap_footer.tpl"}

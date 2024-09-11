@@ -2,7 +2,7 @@
     <input type="hidden" name="loginFormLoginAction" id="loginFormLoginAction" value="request_password">
     <div class="login-form">
       {include file="messages.tpl"}
-    <h2 class="display-4 mb-3 mt-3 mr-sm-3">Passwort anfordern</h2>
+    <h2 class="display-3 mb-3 mt-3 mr-sm-3">Passwort anfordern</h2>
     <label class="sr-only" for="{$variableNameEmail}"></label>
     <div class="input-group mb-2 mr-sm-2">
       <div class="input-group-prepend">

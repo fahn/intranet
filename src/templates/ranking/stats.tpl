@@ -13,10 +13,10 @@ type: 'line',
 data: {
     labels: labels,
     datasets: [{
-        label: "My First dataset",
+        label: "Spiele",
         backgroundColor: 'rgb(255, 99, 132)',
         borderColor: 'rgb(255, 99, 132)',
-        data: [0, 10, 5, 2, 20, 30, 45],
+        data: [0, 15, 5, 2, 20, 30, 45],
     }]
 },
 

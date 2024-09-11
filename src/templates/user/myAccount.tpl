@@ -1,4 +1,4 @@
-<h2 class="display-1 mb-5">Profil aktualisieren</h2>
+<h2 class="display-3 mb-5">Profil aktualisieren</h2>
 
 <ul class="nav nav-tabs justify-content-center" style="margin-bottom: 20px;">
   <li class="nav-item">

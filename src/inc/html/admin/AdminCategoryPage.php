@@ -16,11 +16,12 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU General Public License
  * @link      https://www.badtra.de
  ******************************************************************************/
-namespace Badtra\Intranet\Html\admin;
+namespace Badtra\Intranet\Html\Admin;
 
 use \Badtra\Intranet\Html\BrdbHtmlPage;
+use \Badtra\Intranet\Logic\PrgPatternElementCategory;
 
-class CategoryAdminPage extends BrdbHtmlPage
+class AdminCategoryPage extends BrdbHtmlPage
 {
 
     // pattern
@@ -35,7 +36,7 @@ class CategoryAdminPage extends BrdbHtmlPage
     {
         parent::__construct();
 
-        $this->prgPatternElementCategory = new \Badtra\Intranet\Logic\prgPatternElementCategory($this->prgPatternElementLogin);
+        $this->prgPatternElementCategory = new PrgPatternElementCategory($this->prgPatternElementLogin);
         $this->prgPattern->registerPrg($this->prgPatternElementCategory);
 
         $this->_page = $page != null ?: $page;
@@ -51,57 +52,51 @@ class CategoryAdminPage extends BrdbHtmlPage
 
     }//end __construct()
 
-
-    public function htmlBody(): void
-    {
-        switch ($this->action) {
-        case "add":
-        case "edit":
-            $content = $this->TMPL_update($this->action);
-                break;
-
-        case "delete":
-            $content = $this->TMPL_delete();
-                break;
-
-        default:
-            $content = $this->TMPL_list();
-                break;
-        }
-
-        $this->smarty->assign(
-            ["content" => $content]
-        );
-
-        $this->smarty->display("index.tpl");
-
-    }//end htmlBody()
-
-
-    /*******************
-     * VIEWS
+    /**
+     * List Category
+     *
+     * @return string
      */
-
-
-    private function TMPL_list()
+    public function listView()
     {
         $this->smarty->assign(
             [
                 "list" => $this->loadCategoryList(),
             ]
         );
-        return $this->smarty->fetch("category/adminList.tpl");
+        return $this->smarty->fetch("category/admin/list.tpl");
 
     }//end TMPL_list()
 
 
-    private function TMPL_update(String $action)
+    /**
+     * Add Category
+     *
+     * @return string
+     */
+    public function addView()
     {
-        $this->smarty->assign(
-            ["action" => $action]
-        );
+        $this->smarty->assign([
+            "action" => "add"
+        ]);
 
-        return $this->smarty->fetch("category/adminUpdate.tpl");
+        return $this->smarty->fetch("category/admin/update.tpl");
+
+    }
+
+
+    /**
+     * Update Category
+     *
+     * @return string
+     */
+    public function updateView(int $id): string
+    {
+        $this->smarty->assign([
+            "item" => $this->getCategoryById($id),
+        ]);
+
+        return $this->smarty->fetch("category/admin/update.tpl");
 
     }//end TMPL_update()
 
@@ -111,17 +106,17 @@ class CategoryAdminPage extends BrdbHtmlPage
      *
      * @return string
      */
-    private function TMPL_delete(): string
+    public function deleteView(int $id): string
     {
         $this->smarty->assign(
             [
-                "item" => $this->getCategoryById($this->id),
+                "item" => $this->getCategoryById($id),
             ]
         );
 
-        return $this->smarty->fetch("category/adminDelete.tpl");
+        return $this->smarty->fetch("category/admin/delete.tpl");
 
-    }//end TMPL_delete()
+    }
 
 
     /*****************
@@ -148,6 +143,10 @@ class CategoryAdminPage extends BrdbHtmlPage
 
     }//end loadCategoryList()
 
+    public function getCategories()
+    {
+        return $this->brdb->adminStatementGetAllCategories();
+    }
 
     private function getCategoryById(int $id)
     {

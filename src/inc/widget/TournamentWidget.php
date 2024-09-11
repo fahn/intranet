@@ -18,10 +18,20 @@
  ******************************************************************************/
 namespace Badtra\Intranet\Widget;
 
-class TournamentWidget extends \Badtra\Intranet\Widget\DefaultWidget
+use \Badtra\Intranet\Widget\DefaultWidget;
+
+use Badtra\Intranet\Db\BrankDB;
+
+class TournamentWidget extends DefaultWidget
 {
 
     private string $_linkToTournament;
+
+    protected $brdb = null;
+
+    protected $smarty = null;
+
+    private int $_MAX_TOURNAMENT = 5;
 
 
     /**
@@ -29,38 +39,16 @@ class TournamentWidget extends \Badtra\Intranet\Widget\DefaultWidget
      */
     public function __construct()
     {
-        parent::__construct();
+        $this->brdb = new BrankDB();
+        $this->smarty = new \Smarty();
+        //parent::__construct();
 
         // set link
-        $this->_linkToTournament = $this->linkTo(
-            ["page" => "tournament.php"]
-        );
+        // $this->_linkToTournament = $this->linkTo(
+        //     ["page" => "tournament"]
+        // );
 
     }//end __construct()
-
-
-    /**
-     * Decider which template has to shown up
-     *
-     * @param  string|null $name
-     * @return string
-     */
-    public function showWidget(?string $name):string
-    {
-        switch ($name) {
-        case "latestTournaments":
-                return $this->latestView();
-                break;
-
-        case "upcomingTournaments":
-                return $this->upcomingView();
-                break;
-
-        default:
-                return "no name / or not exists";
-                break;
-        }
-    }//end showWidget()
 
 
     /**
@@ -68,7 +56,7 @@ class TournamentWidget extends \Badtra\Intranet\Widget\DefaultWidget
      *
      * @return string
      */
-    private function latestView(): string
+    public function latestTournamentView(): string
     {
         $data = $this->getLatestTournament();
 
@@ -84,16 +72,16 @@ class TournamentWidget extends \Badtra\Intranet\Widget\DefaultWidget
      *
      * @return string
      */
-    private function upcomingView(): string
+    public function upcomingTournamentView(): string
     {
         $data = $this->getUpcomingTournaments();
 
-        $this->smarty->assign(
-            [
-                "_linkToTournament" => $this->_linkToTournament,
+        $this->smarty->assign([
                 "data"              => $data,
-            ]
-        );
+                // "_linkToTournament" => $this->_linkToTournament,
+                "linkToTournament" => "/tournament",
+                
+            ]);
 
         return $this->smarty->fetch("tournament/widget/upcoming.tpl");
 
@@ -101,53 +89,49 @@ class TournamentWidget extends \Badtra\Intranet\Widget\DefaultWidget
 
 
     /**
-     * GEt latest Tournaments
-     *
+     * Summary of latest Torunament
      * @return array
      */
     private function getLatestTournament():array
     {
-        $data         = [];
-        $tournamtList = $this->brdb->selectLatestTournamentList(5);
+        $tournamtList = $this->brdb->selectLatestTournamentList($this->_MAX_TOURNAMENT);
 
         if (isset($tournamtList) && !empty($tournamtList)) {
             foreach ($tournamtList as $dataSet) {
-                $dataSet["classification"] = $this->formatClassification($dataSet["classification"]);
-                $dataSet["linkTo"]         = $this->linkTo(["page" => "tournament.php", "action" => "details", "id" => $dataSet["tournamentId"]]);
+                // $dataSet["classification"] = $this->formatClassification($dataSet["classification"]);
+                // $dataSet["linkTo"]         = $this->linkTo(["page" => "tournament.php", "action" => "details", "id" => $dataSet["tournamentId"]]);
 
                 $data[] = $dataSet;
             }
         }
         return $data;
-        unset($data, $dataSet, $tournamtList);
 
     }//end getLatestTournament()
 
 
     /**
-     * Undocumented function
-     *
+     * 
+     * Get upcoming Tournaments
      * @return array
      */
     private function getUpcomingTournaments():array
     {
-        $data         = [];
-        $tournamtList = $this->brdb->selectUpcomingTournamentList(5);
+        $tournamtList = $this->brdb->selectUpcomingTournamentList($this->_MAX_TOURNAMENT);
       
         if (isset($tournamtList) && !empty($tournamtList)) {
             foreach ($tournamtList as $dataSet) {
-                $dataSet["classification"] = $this->formatClassification($dataSet["classification"]);
-                $dataSet["linkTo"]         = $this->linkTo(["page" => "tournament.php", "action" => "details", "id" => $dataSet["tournamentId"]]);
+                // $dataSet["classification"] = $this->formatClassification($dataSet["classification"]);
+                // $dataSet["linkTo"]         = $this->linkTo(["page" => "tournament.php", "action" => "details", "id" => $dataSet["tournamentId"]]);
                 // get unique player
                 $players = $this->brdb->selectUpcomingTournamentPlayer($dataSet["tournamentId"]);
               
-                $dataSet["participant"] = $players->num_rows;
+                // $dataSet["participant"] = $players->num_rows;
 
                 $data[] = $dataSet;
             }
         }
         return $data;
-        unset($data, $dataSet, $tournamtList);
+        //unset($data, $dataSet, $tournamtList);
 
     }//end getUpcomingTournaments()
 }//end class

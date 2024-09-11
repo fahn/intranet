@@ -16,11 +16,11 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU General Public License
  * @link      https://www.badtra.de
  ******************************************************************************/
-namespace Badtra\Intranet\Html\admin;
+namespace Badtra\Intranet\Html\Admin;
 
 use \Badtra\Intranet\Html\BrdbHtmlPage;
 
-class LogAdminPage extends BrdbHtmlPage
+class AdminLogPage extends BrdbHtmlPage
 {
     //
     private $_page = "";
@@ -36,7 +36,7 @@ class LogAdminPage extends BrdbHtmlPage
     {
         $this->smarty->assign('logList', $this->_getLogs());
 
-        return $this->smartyFetchWrap('log/list.tpl');
+        return $this->smartyFetchWrap('log/admin/list.tpl');
     }
 
     private function _getLogs(): array
@@ -47,7 +47,7 @@ class LogAdminPage extends BrdbHtmlPage
         {
             foreach ($logList as $dataSet)
             {
-                $dataSet['logdata'] = unserialize($dataSet['logdata']);
+                $dataSet['logdata'] = isset($dataSet['logdata']) ?: unserialize($dataSet['logdata']);
                 $data[] = $dataSet;
             }
         }

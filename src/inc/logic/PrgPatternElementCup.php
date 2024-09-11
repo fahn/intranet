@@ -81,7 +81,6 @@ class PrgPatternElementCup extends APrgPatternElement
 */
             default:
                 return;
-                break;
         }
 
     }

@@ -17,6 +17,9 @@
  * @link      https://www.badtra.de
  ******************************************************************************/
 namespace Badtra\Intranet\DB;
+
+use PDO;
+
 trait NewsDB
 {
 
@@ -48,9 +51,9 @@ trait NewsDB
     {
         $query     = "SELECT News.*, Cat.title as categoryTitle, Cat.categoryId FROM `News`
                     LEFT JOIN `Category` AS `Cat` ON Cat.categoryId = News.categoryId
-                    LIMIT :max";
+                    LIMIT :limit";
         $statement = $this->db->prepare($query);
-        $statement->bindParam('max', $max);
+        $statement->bindParam(':limit', $max, PDO::PARAM_INT);
         $statement->execute();
 
         return $statement->fetchAll();

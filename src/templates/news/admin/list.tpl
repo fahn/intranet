@@ -1,8 +1,13 @@
+ <!-- ADMIN NEWS LIST -->
+
+{include file="page_wrap_header.tpl"}
+
 <h1 class="display-3">News</h1>
+
 {if isset($links.add)}
     <div class="row mb-5">
         <div class="col-lg-12 text-right">
-            <a class="btn btn-success" href="{$links.add}" role="button"><i class="fas fa-plus"></i> Hinzufügen</a>
+            <a class="btn btn-success" href="/admin/news/add" role="button"><i class="fas fa-plus"></i> Hinzufügen</a>
         </div>
     </div>
 {/if}
@@ -36,3 +41,6 @@
         </tbody>
     </table>
 </div>
+
+
+{include file="page_wrap_footer.tpl"}

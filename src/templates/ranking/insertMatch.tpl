@@ -1,4 +1,6 @@
-<h2 class="display-1 mb-5">Spiel hinzufügen</h2>
+{include file="page_wrap_header.tpl"}
+
+<h2 class="display-3 mb-5">Spiel hinzufügen</h2>
 <form action="" method="post">
     <input type="hidden" name="rankingFormAction" id="rankingFormAction" value="insertMatch">
     <div class="row">
@@ -93,3 +95,6 @@
         </div>
     </div>
 </form>
+
+
+{include file="page_wrap_footer.tpl"}

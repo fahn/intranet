@@ -1,10 +1,7 @@
-version: '2.0'
-
 services:
     intranet:
         image: "badtra/intranet:latest"
         env_file: .env
-        #user: stefan
         volumes:
             - "./data/intranet/img/background.jpg:/var/www/html/static/img/background.jpg"
             - "./data/intranet/img/background_mobil.jpg:/var/www/html/static/img/background_mobil.jpg"
@@ -16,7 +13,7 @@ services:
             - ./data/intranet/msmtp/msmtprc:/etc/msmtprc:ro
             - ./data/intranet/msmtp/aliases:/etc/aliases:ro
         depends_on:
-            - database
+            - db
 
     reminder:
         image: badtra/intranet:latest
@@ -27,7 +24,7 @@ services:
         command: 
             - php /var/www/html/api/index.php tournament
 
-    database:
+    db:
         image: mariadb:10
         env_file: .env
         restart: always

@@ -18,18 +18,16 @@
  ******************************************************************************/
 namespace Badtra\Intranet\Html;
 
-require_once BASE_DIR ."/vendor/autoload.php";
+use \Parsedown;
+
 
 class ParseMDPage extends BrdbHtmlPage
 {
 
-    protected $markDownFile;
-    protected \Parsedown $parsedown;
-
     public function __construct()
     {
         parent::__construct();
-        $this->parsedown = new \Parsedown();
+        
     }
 
 
@@ -58,15 +56,22 @@ class ParseMDPage extends BrdbHtmlPage
 
     private function renderMD(string $filename): string
     {
-        if (is_file($this->markDownFile)) {
-            $mdfile = $this->parsedown->text(file_get_contents($this->filename));
-        } else {
-            $mdfile = "No content found.";
-        }
+        if (!is_file($filename)) {
+            
+            return $mdfile = "No content found.";
+        } 
 
-        $this->smarty->assign(
-            'content', $this->renderMD($mdfile)
-        );
+        $parsedown = new Parsedown();
+        $mdfile = $parsedown->text(file_get_contents($filename));
+
+        $parsedown->setSafeMode(true);
+        $parsedown->setMarkupEscaped(true);
+        $parsedown->setBreaksEnabled(true);
+        
+
+        $this->smarty->assign([
+            'content' => $mdfile,
+        ]);
 
         return $this->smartyFetchWrap("markdown.tpl");
     }

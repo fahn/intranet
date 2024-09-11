@@ -202,7 +202,7 @@ Class News extends \Badtra\Intranet\Model\BaseModel
     {
         return sprintf(
             "ID: %i\nTitle: %s\nText: %s",
-            $this->faqId,
+            $this->newsId,
             $this->title,
             $this->text
         );

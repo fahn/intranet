@@ -1,3 +1,7 @@
+<!-- ADMIN FAQ LIST -->
+
+{include file="page_wrap_header.tpl"}
+
 <h1>FAQ</h1>
 <div class="row">
     <div class="col-lg-12 text-right">
@@ -22,3 +26,6 @@
         {/foreach}
     </tbody>
 </table>
+
+
+{include file="page_wrap_footer.tpl"}

@@ -1,3 +1,7 @@
+<!-- TOURNAMENT DETAILS -->
+
+{include file="page_wrap_header.tpl"}
+
 <h2 class="display-3 mb-5">{$tournament.name}</h2>
 
 <div class="row equal">
@@ -11,7 +15,7 @@
                     {if $tournament.startdate|date_format:"d.m.y" != $tournament.enddate|date_format:"d.m.y"}
                         - {$tournament.enddate|date_format:"%d.%m.%Y"}
                     {/if}
-                    <a href="?action=calendar&id={$tournament.tournamentId}" title="add to calendar"><i class="fas fa-calendar-check"></i></a>
+                    <a href="/tournament/calendar/{$tournament.tournamentId}" title="add to calendar"><i class="fas fa-calendar-check"></i></a>
                 </p>
                 <p><strong>Meldeschluss:</strong> <span class="text-{if $tournament.deadline|strtotime < $smarty.now}danger{else}success{/if}">{$tournament.deadline|date_format:"%d.%m.%Y"}</span></p>
                 <p><strong>Ausschreibung:</strong> {if $tournament.link}<a href="{$tournament.link}" target="_blank">Link zur Ausschreibung</a>{else}-{/if}</p>
@@ -56,12 +60,12 @@
         <div class="btn-group">
             <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Optionen</button>
             <div class="dropdown-menu">
-                <a class="dropdown-item" href="?action=export&id={$tournament.tournamentId}"><i class="fas fa-bullhorn"></i> Meldung</a>
-                <a class="dropdown-item" href="?action=backup&id={$tournament.tournamentId}"><i class="fas fa-cloud"></i> Sicherungen</a>
-                <a class="dropdown-item" href="?action=lock&id={$tournament.tournamentId}{$link.linkUnlockAll}"><i class="fas fa-lock"></i> Alle gemeldet</a>
-                <a class="dropdown-item" href="?action=unlock&id={$tournament.tournamentId}{$link.linkLockAll}"><i class="fas fa-lock-open"></i> Alle ungemeldet</a>
+                <a class="dropdown-item" href="/tournament/export/{$tournament.tournamentId}"><i class="fas fa-bullhorn"></i> Meldung</a>
+                <a class="dropdown-item" href="/tournament/backup/{$tournament.tournamentId}"><i class="fas fa-cloud"></i> Sicherungen</a>
+                <a class="dropdown-item" href="/tournament/lock/{$tournament.tournamentId}{$link.linkUnlockAll}"><i class="fas fa-lock"></i> Alle gemeldet</a>
+                <a class="dropdown-item" href="/tournament/unlock/{$tournament.tournamentId}{$link.linkLockAll}"><i class="fas fa-lock-open"></i> Alle ungemeldet</a>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="?action=edit_tournament&id={$tournament.tournamentId}"><i class="fas fa-edit"></i> Turnier bearbeiten</a>
+                <a class="dropdown-item" href="/admin/tournament/update/{$tournament.tournamentId}"><i class="fas fa-edit"></i> Turnier bearbeiten</a>
             </div>
         </div>
     </div>
@@ -69,7 +73,7 @@
 
     {if $tournament.openSubscription == 1 && $smarty.now < $tournament.deadline|strtotime}
     <div class="p-2">
-        <a class="btn btn-success" href="?action=add_player&id={$tournament.tournamentId}">Spieler melden</a>
+        <a class="btn btn-success" href="/tournament/add_player/{$tournament.tournamentId}">Spieler melden</a>
     </div>
     {/if}
 </div>
@@ -125,3 +129,6 @@
         </tbody>
     </table>
 </div>
+
+
+{include file="page_wrap_footer.tpl"}

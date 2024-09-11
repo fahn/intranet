@@ -26,18 +26,17 @@ $(document).ready(
             {
                 placeholder: "",
                 tabsize: 2,
-                height: 150,
+                height: 200,
                 lang: "de-DE",
                 codeview: false,
                 toolbar: [
-                // [groupName, [list of button]]
-                ["style", ["style", "bold", "italic", "underline", "clear"]],
-                ["font", ["strikethrough", "superscript", "subscript"]],
-                ["fontsize", ["fontsize"]],
-                ["color", ["color"]],
-                ["insert", ["link"]],
-                ["para", ["ul", "ol", "paragraph"]],
-                ["height", ["height"]]
+                    // [groupName, [list of button]]
+                    ["style", ["bold", "italic", "underline", "clear"]],
+                    ["font", ["strikethrough", "superscript", "subscript"]],
+                    ["fontsize", ["fontsize"]],
+                    ["color", ["color"]],
+                    ["insert", ["link"]],
+                    ["para", ["ul", "ol",]]
                 ]
             }
         );
@@ -141,5 +140,23 @@ $(document).ready(
                 hideSelectionInSingle: true,
             }
         );
+    
+
+        var mapOptions = {
+        center: [52.2056804, 8.048224,17],
+        zoom: 10
+        }
+        
+        // Creating a map object
+        var map = new L.map('map', mapOptions);
+        
+        // Creating a Layer object
+        var layer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+        
+        // Adding layer to the map
+        map.addLayer(layer);
+
     }
+
 );
+ 

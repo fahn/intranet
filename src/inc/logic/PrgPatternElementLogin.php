@@ -278,6 +278,7 @@ class PrgPatternElementLogin extends APrgPatternElement
             if (!isset($dataSet) || !is_array($dataSet)) {
                 throw new \Exception("User not exists");
             }
+            
 
             $loadedUser = new \Badtra\Intranet\Model\User($dataSet);
             if (!password_verify($pass, $loadedUser->passHash)) {
@@ -386,6 +387,8 @@ class PrgPatternElementLogin extends APrgPatternElement
     }
 
     public function getLoggedInUser() {
+        // TODO
+        $this->loggedInUser = new \Badtra\Intranet\Model\User($this->brdb->selectUserById(1));
         return $this->loggedInUser;
     }
 
@@ -432,7 +435,6 @@ class PrgPatternElementLogin extends APrgPatternElement
                         break;
                     default:
                         return;
-                        break;
                 }
 
                 if ( $status && $relationship == "or") {
