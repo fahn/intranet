@@ -44,10 +44,7 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.16.0/locale/bootstrap-table-de-DE.min.js"></script>
 
 
-    <!-- leaflet -->
-    <link rel = "stylesheet" href = "http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
-    <script src = "http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
-
+    
     <!-- custom -->
     <script src="/static/js/custom.js"></script>
 

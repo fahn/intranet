@@ -1,15 +1,9 @@
-<div id="fullCalendar"></div>
+<div id="calendar" style="height: 800px"></div>
 
 {literal}
 <script type='text/javascript'>
-<!--
-      document.addEventListener('DOMContentLoaded', function() {
-        var calendarEl = document.getElementById('fullCalendar');
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-        });
 
-        calendar.render();
-      });
--->
+
+
 </script>
 {/literal}  

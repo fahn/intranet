@@ -140,22 +140,43 @@ $(document).ready(
                 hideSelectionInSingle: true,
             }
         );
-    
 
-        var mapOptions = {
-        center: [52.2056804, 8.048224,17],
-        zoom: 10
-        }
-        
-        // Creating a map object
-        var map = new L.map('map', mapOptions);
-        
-        // Creating a Layer object
-        var layer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
-        
-        // Adding layer to the map
-        map.addLayer(layer);
 
+        const calendar = new Calendar('#calendar', {
+            defaultView: 'week',
+            template: {
+              time(event) {
+                const { start, end, title } = event;
+          
+                return `<span style="color: white;">${formatTime(start)}~${formatTime(end)} ${title}</span>`;
+              },
+              allday(event) {
+                return `<span style="color: gray;">${event.title}</span>`;
+              },
+            },
+            calendars: [
+              {
+                id: 'cal1',
+                name: 'Personal',
+                backgroundColor: '#03bd9e',
+              },
+              {
+                id: 'cal2',
+                name: 'Work',
+                backgroundColor: '#00a9ff',
+              },
+            ],
+          });
+
+
+
+          var Calendar = window.tui.Calendar;
+
+          var cal = new Calendar('#app', {
+            defaultView: 'month',
+            calendars: MOCK_CALENDARS,
+          });
+        
     }
 
 );

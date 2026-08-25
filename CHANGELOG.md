@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 
 ## 1.1.0
 
+**Date:** 2020-??-??
+
 -  UPDATE: Code Qualitiy
 -  UPDATE: file header date to 2024
 -  UPDATE: Smarty version to 4.5.3

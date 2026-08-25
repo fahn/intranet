@@ -41,7 +41,8 @@
         "squizlabs/php_codesniffer":"^3.10",
         "phpstan/phpstan":"^1.11",
         "symfony/yaml":"^5.4",
-        "symfony/validator": "^5.4"
+        "symfony/validator": "^5.4",
+        "fullcalendar/fullcalendar":"^3.10"
     },
     "scripts": {
         "post-install-cmd": [
