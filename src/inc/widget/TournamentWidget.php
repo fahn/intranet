@@ -40,7 +40,7 @@ class TournamentWidget extends DefaultWidget
     public function __construct()
     {
         $this->brdb = new BrankDB();
-        $this->smarty = new \Smarty();
+        $this->smarty = new \Smarty\Smarty();
         //parent::__construct();
 
         // set link

@@ -7,3 +7,5 @@ src/composer.lock
 src/composer.json
 report_phpcs
 vendor
+.env
+.claude/settings.local.json

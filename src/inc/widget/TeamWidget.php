@@ -20,7 +20,7 @@ namespace Badtra\Intranet\Widget;
 
 use \Badtra\Intranet\Widget\DefaultWidget;
 use Badtra\Intranet\DB\BrankDB;
-use \Smarty;
+use \Smarty\Smarty;
 
 class TeamWidget extends DefaultWidget
 {

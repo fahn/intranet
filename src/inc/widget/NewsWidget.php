@@ -18,7 +18,7 @@
  ******************************************************************************/
 namespace Badtra\Intranet\Widget;
 
-use \Smarty;
+use \Smarty\Smarty;
 use Badtra\Intranet\DB\BrankDB;
 use \Badtra\Intranet\Widget\DefaultWidget;
 

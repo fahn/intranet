@@ -858,7 +858,7 @@ abstract class APrgPatternElement implements IPrgPatternElement
     {
 
         // message
-        $smarty = new \Smarty();
+        $smarty = new \Smarty\Smarty();
         $smarty->setTemplateDir(__BASE_DIR__ ."/templates");
         $smarty->setCompileDir(__BASE_DIR__ ."/templates_c");
         $smarty->setConfigDir(__BASE_DIR__ ."/configs");

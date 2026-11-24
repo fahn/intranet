@@ -19,7 +19,7 @@
 namespace Badtra\Intranet\Widget;
 
 use Badtra\Intranet\DB\BrankDB;
-use \Smarty;
+use \Smarty\Smarty;
 
 abstract class DefaultWidget
 {
