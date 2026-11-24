@@ -18,7 +18,9 @@ RUN apt-get update && apt-get install -y \
     wget \
     zip \
     zlib1g-dev \
-    && docker-php-ext-install mysqli pdo pdo_mysql iconv gd zip intl pdo_mysql mbstring zip intl pdo_mysql mbstring
+    netcat-openbsd \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) mysqli pdo pdo_mysql iconv gd zip intl mbstring
 
 # Kopiere den Quellcode ins Apache-Verzeichnis
 COPY src/ /var/www/html/
@@ -32,6 +34,12 @@ RUN a2enmod http2 expires deflate rewrite session
 
 # Setze korrekte Berechtigungen (optional, je nach Anwendungsfall)
 RUN chown -R www-data:www-data /var/www/html && chmod -R 755 /var/www/html
+
+# Smarty-Compile-/Cache-Verzeichnisse: templates_c ist git-ignored und existiert
+# bei einem frischen Checkout nicht, muss also explizit angelegt und beschreibbar sein
+RUN mkdir -p /var/www/html/templates_c /var/www/html/cache \
+    && chown -R www-data:www-data /var/www/html/templates_c /var/www/html/cache \
+    && chmod -R 775 /var/www/html/templates_c /var/www/html/cache
 
 
 

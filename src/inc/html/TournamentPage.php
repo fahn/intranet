@@ -87,7 +87,7 @@ class TournamentPage extends BrdbHtmlPage
         return $this->updateTournament("edit");
     }
 
-    /*            VIEWS            */
+
 
     private function getAllGoogleMapsSettings():array
     {
@@ -109,7 +109,7 @@ class TournamentPage extends BrdbHtmlPage
      * @param string $action
      * @return void
      */
-    private function updateTournament(string $action = "add"):string
+    private function updateTournament(string $action = "add"): string
     {
         $classificationArr = $this->valueIsKey($this->prgElementTournament->getTournamentAgeClass());
         $disciplineArr     = $this->valueIsKey($this->prgElementTournament->getTournamentModeArr());
@@ -337,9 +337,9 @@ class TournamentPage extends BrdbHtmlPage
      *
      * @return array
      */
-    private function getPlayersByTournamentId(): array
+    private function getPlayersByTournamentId($id): array
     {
-        $playerList = $this->brdb->getPlayersByTournamentId($this->id);
+        $playerList = $this->brdb->getPlayersByTournamentId($id);
         if (isset($playerList) && !empty($playerList))
         {
             $data = array();
@@ -375,14 +375,13 @@ class TournamentPage extends BrdbHtmlPage
             return $data;
         }
 
-        return array();
-        unset($playerList, $this->id, $dataSet, $data);
+        return [];
     }
 
-    private function getDisciplinesByTournamentId(): array
+    private function getDisciplinesByTournamentId($id): array
     {
         $data = array();
-        $disciplinesList = $this->brdb->getDisciplinesByTournamentId($this->id);
+        $disciplinesList = $this->brdb->getDisciplinesByTournamentId($id);
         if (isset($disciplinesList) && !empty($disciplinesList)) {
            
             foreach ($disciplinesList as $dataSet) {

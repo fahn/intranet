@@ -155,8 +155,7 @@ class PrgPatternElementTournament extends APrgPatternElement
             {
                 throw new \Exception("Informationen fehlen.");
             }
-            print_r($_POST);
-           
+          
             $name           = $this->getPostVariableString(self::FORM_INPUT_TOURNAMENT_NAME);
             $place          = $this->getPostVariableString(self::FORM_INPUT_TOURNAMENT_PLACE);
             $startdate      = date("Y-m-d", strtotime($this->getPostVariable(self::FORM_INPUT_TOURNAMENT_STARTDATE)));

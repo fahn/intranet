@@ -22,7 +22,7 @@
                 <p><strong>Melder:</strong> <a href="/pages/user.php?id={$tournament.reporterId}">{$tournament.reporterName}</a><br>
                     {if $tournament.classification}
                     <p><strong>Altersklassen:</strong> {$tournament.classification}
-                        {if $tournament.additionalClassification}{$tournament.additionalClassification|implode:","}{/if}</p>
+                        {if $tournament.additionalClassification}{$tournament.additionalClassification|join:","}{/if}</p>
                     {/if}
                     {if $tournament.discipline}
                     <p><strong>Disziplinen:</strong> {$tournament.discipline}</p>

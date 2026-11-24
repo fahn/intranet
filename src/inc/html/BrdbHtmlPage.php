@@ -85,7 +85,7 @@ class BrdbHtmlPage extends HtmlPageProcessor
 
         
         // load smarty
-        $this->smarty = new \Smarty();
+        $this->smarty = new \Smarty\Smarty();
 
         $this->smarty->registerPlugin('modifier', 'strtotime', 'strtotime');
         $this->smarty->registerPlugin('modifier', 'count', 'count');

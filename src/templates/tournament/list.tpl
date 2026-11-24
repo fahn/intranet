@@ -2,6 +2,10 @@
 
 <h1 class="display-3 mb-5">Turniere / Ranglisten</h1>
 
+
+<div id="calendar" style="height: 800px"></div>
+<main id="app"></main>
+
 <ul class="nav nav-tabs" style="margin-bottom: 20px;">
   <li class="nav-item">
       <a class="nav-link active" data-toggle="tab" href="#home">Aktuelle</a>
@@ -56,9 +60,52 @@
   </div>
 </div>
 
+
+<script type="text/javascript">
+        var mapOptions = {
+        center: [52.2056804, 8.048224,17],
+        zoom: 10
+        }
+
+        
+        
+        // Creating a map object
+        var map = new L.map('map', mapOptions);
+        
+        // Creating a Layer object
+        {literal}
+        var layer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+        {/literal}
+        
+        // Adding layer to the map
+        map.addLayer(layer);
+
+        var marker = L.marker([52.2056804, 8.048224,17]).addTo(map);
+</script>
+
+
 {if isset($googleMaps.key) && $googleMaps.key|count_characters > 0}
 <script>
 {literal}
+
+
+        var mapOptions = {
+        center: [52.2056804, 8.048224,17],
+        zoom: 10
+        }
+
+        var marker = L.marker([52.2056804, 8.048224,17]).addTo(map);
+        
+        // Creating a map object
+        var map = new L.map('map', mapOptions);
+        
+        // Creating a Layer object
+        var layer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+        
+        // Adding layer to the map
+        map.addLayer(layer);
+
+
 var map;
       function initMap() {
         var infowindow = new google.maps.InfoWindow(); /* SINGLE */
@@ -90,7 +137,15 @@ var map;
           },
         ];
 
+
+
+
+
+        
+
         {/literal}
+
+        
 
         {foreach item=tournament from=$tournamentList}
             features.push({ldelim}
